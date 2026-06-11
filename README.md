@@ -1,5 +1,3 @@
-# WE-CON-CRM
-WEİCON CRM
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -8,90 +6,92 @@ WEİCON CRM
 <title>WEICON ASIST</title>
 <style>
 *{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:0;}
-body{background-color:#f5f7fa;color:#333;padding:10px;display:flex;justify-content:center;}
+body{background-color:#f5f7fa;color:#333;padding:6px;display:flex;justify-content:center;}
 .phone-container{width:100%;max-width:480px;background:#fff;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);min-height:100vh;display:flex;flex-direction:column;overflow:hidden;position:relative;}
-.app-header{text-align:center;padding:15px 10px 5px;font-size:20px;font-weight:bold;color:#003a70;}
-.nav-tabs{display:flex;padding:8px 8px 0;gap:4px;}
-.tab-btn{flex:1;padding:8px 2px;font-size:11px;font-weight:700;border:none;border-radius:4px 4px 0 0;cursor:pointer;text-align:center;background:#bcbcbc;color:#333;line-height:1.2;white-space:nowrap;overflow:hidden;}
+.app-header{text-align:center;padding:8px 10px 3px;font-size:18px;font-weight:bold;color:#003a70;}
+.tarih-satir{text-align:center;font-size:11px;color:#888;padding:2px 0 4px;font-weight:500;}
+.nav-tabs{display:flex;padding:5px 5px 0;gap:3px;}
+.tab-btn{flex:1;padding:6px 2px;font-size:11px;font-weight:700;border:none;border-radius:4px 4px 0 0;cursor:pointer;text-align:center;background:#bcbcbc;color:#333;line-height:1.2;white-space:nowrap;overflow:hidden;}
 .tab-btn.active{filter:brightness(0.85);}
-.content-page{padding:10px;flex:1;display:none;margin-bottom:65px;overflow-y:auto;}
+.content-page{padding:7px;flex:1;display:none;margin-bottom:55px;overflow-y:auto;}
 .content-page.active{display:flex;flex-direction:column;}
-.page-info{text-align:center;font-size:12px;color:#666;margin-bottom:8px;font-weight:bold;}
-.step-label{display:inline-block;background:#e2e8f0;color:#4a5568;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:4px;margin-bottom:6px;text-transform:uppercase;}
-.search-box-container{border:1px solid #999;border-radius:6px;padding:5px;margin-bottom:10px;background:#fff;}
-.search-input{width:100%;border:none;outline:none;padding:8px;font-size:18px;}
-.btn-primary{width:100%;background:#003a70;color:#fff;border:none;padding:12px;font-size:14px;font-weight:bold;letter-spacing:1px;border-radius:4px;cursor:pointer;margin-bottom:12px;text-transform:uppercase;}
-.btn-update-container{text-align:right;margin-bottom:10px;}
+.page-info{text-align:center;font-size:11px;color:#666;margin-bottom:5px;font-weight:bold;}
+.step-label{display:inline-block;background:#e2e8f0;color:#4a5568;font-size:9px;font-weight:bold;padding:2px 5px;border-radius:4px;margin-bottom:5px;text-transform:uppercase;}
+.search-box-container{border:1px solid #999;border-radius:6px;padding:4px;margin-bottom:7px;background:#fff;}
+.search-input{width:100%;border:none;outline:none;padding:6px;font-size:16px;}
+.btn-primary{width:100%;background:#003a70;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;letter-spacing:1px;border-radius:4px;cursor:pointer;margin-bottom:8px;text-transform:uppercase;}
+.btn-update-container{text-align:right;margin-bottom:7px;}
 .data-table-container{overflow-x:auto;}
 .data-table{width:100%;border-collapse:collapse;table-layout:fixed;}
-.data-table th{background:#003a70;color:#fff;font-size:11px;font-weight:bold;padding:6px 4px;text-align:left;}
+.data-table th{background:#003a70;color:#fff;font-size:10px;font-weight:bold;padding:5px 3px;text-align:left;}
 .col-kodlar{width:25%;}.col-urun{width:49%;}.col-euro{width:14%;}.col-islem{width:12%;}
-.data-table td{padding:6px 4px;font-size:11px;border-bottom:1px solid #e0e0e0;vertical-align:middle;}
-.kod-container{font-size:10px;color:#555;line-height:1.3;}
+.data-table td{padding:5px 3px;font-size:10px;border-bottom:1px solid #e0e0e0;vertical-align:middle;}
+.kod-container{font-size:9px;color:#555;line-height:1.3;}
 .kod-b{color:#003a70;font-weight:bold;}.kod-a{color:#d9534f;font-weight:bold;}
 .product-cell{font-weight:500;color:#222;word-break:break-word;}
-.price-tag{background:#e8f4fd;color:#003a70;padding:2px 4px;border-radius:4px;font-weight:bold;display:inline-block;}
-.btn-add{background:#003a70;color:#fff;border:none;padding:6px 4px;font-size:10px;border-radius:3px;cursor:pointer;width:100%;text-align:center;font-weight:bold;}
+.price-tag{background:#e8f4fd;color:#003a70;padding:2px 3px;border-radius:4px;font-weight:bold;display:inline-block;}
+.btn-add{background:#003a70;color:#fff;border:none;padding:5px 3px;font-size:9px;border-radius:3px;cursor:pointer;width:100%;text-align:center;font-weight:bold;}
 .btn-add.added{background:#d9534f!important;}
-.no-data-msg{text-align:center;color:#888;padding:20px;font-size:12px;font-style:italic;}
-.list-item-block{background:#f8f9fa;border:1px solid #ddd;border-radius:6px;padding:10px;margin-bottom:8px;position:relative;}
-.btn-item-remove{position:absolute;top:8px;right:8px;background:#d9534f;color:#fff;border:none;padding:3px 8px;font-size:10px;font-weight:bold;border-radius:4px;cursor:pointer;}
-.list-item-header{font-size:12px;font-weight:bold;margin-bottom:4px;color:#222;padding-right:50px;}
-.btn-sepette-hesapla{background:#28a745;color:#fff;border:none;padding:5px 8px;font-size:10px;font-weight:bold;border-radius:4px;cursor:pointer;white-space:nowrap;}
-.placeholder-page{text-align:center;padding:20px;color:#666;font-size:13px;}
-.hesap-section{background:#f7f9fc;border:1px solid #dce3ef;border-radius:8px;padding:12px 14px;margin-bottom:10px;}
-.hesap-section-title{font-size:10px;font-weight:bold;color:#7a8bab;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;}
-.hesap-field{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.no-data-msg{text-align:center;color:#888;padding:15px;font-size:11px;font-style:italic;}
+.list-item-block{background:#f8f9fa;border:1px solid #ddd;border-radius:6px;padding:7px;margin-bottom:6px;position:relative;}
+.btn-item-remove{position:absolute;top:6px;right:6px;background:#d9534f;color:#fff;border:none;padding:2px 6px;font-size:9px;font-weight:bold;border-radius:4px;cursor:pointer;}
+.list-item-header{font-size:11px;font-weight:bold;margin-bottom:3px;color:#222;padding-right:45px;}
+.btn-sepette-hesapla{background:#28a745;color:#fff;border:none;padding:4px 7px;font-size:9px;font-weight:bold;border-radius:4px;cursor:pointer;white-space:nowrap;}
+.placeholder-page{text-align:center;padding:15px;color:#666;font-size:12px;}
+/* SAYFA 3 KOMPAKT */
+.hesap-section{background:#f7f9fc;border:1px solid #dce3ef;border-radius:6px;padding:6px 8px;margin-bottom:6px;}
+.hesap-section-title{font-size:9px;font-weight:bold;color:#7a8bab;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;}
+.hesap-field{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .hesap-field:last-child{margin-bottom:0;}
-.hesap-field label{font-size:12px;color:#3a4a6b;flex:1;}
-.hesap-input{width:120px;padding:5px 8px;border:1px solid #c5cfe0;border-radius:5px;font-size:13px;color:#1a2a4a;text-align:right;background:#fff;}
+.hesap-field label{font-size:11px;color:#3a4a6b;flex:1;}
+.hesap-input{width:100px;padding:4px 6px;border:1px solid #c5cfe0;border-radius:4px;font-size:12px;color:#1a2a4a;text-align:right;background:#fff;}
 .hesap-input:focus{outline:none;border-color:#003a70;}
-.hesap-result{width:120px;padding:5px 8px;background:#e8eef8;border:1px solid #c5cfe0;border-radius:5px;font-size:13px;font-weight:bold;color:#003a70;text-align:right;}
-.hesap-result-vurgulu{width:120px;padding:6px 10px;background:#fff3e0;border:2px solid #ff9900;border-radius:5px;font-size:16px;font-weight:900;color:#ff9900;text-align:right;}
-.hesap-two-col{display:flex;gap:8px;}
+.hesap-result{width:100px;padding:4px 6px;background:#e8eef8;border:1px solid #c5cfe0;border-radius:4px;font-size:12px;font-weight:bold;color:#003a70;text-align:right;}
+.hesap-result-vurgulu{width:100px;padding:4px 8px;background:#fff3e0;border:2px solid #ff9900;border-radius:4px;font-size:14px;font-weight:900;color:#ff9900;text-align:right;}
+.hesap-two-col{display:flex;gap:6px;}
 .hesap-two-col .hesap-section{flex:1;}
-.hesap-fatura-box{background:#003a70;color:#fff;border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.hesap-fatura-box .lbl{font-size:11px;color:#a8c0e8;}
-.hesap-fatura-box .val{font-size:20px;font-weight:bold;}
-.btn-hesapla{width:100%;background:#28a745;color:#fff;border:none;padding:12px;font-size:14px;font-weight:bold;border-radius:4px;cursor:pointer;text-transform:uppercase;margin-bottom:8px;}
-.tcmb-row{display:flex;align-items:center;justify-content:space-between;background:#eef2f7;padding:8px 10px;border-radius:6px;margin-bottom:10px;border:1px dashed #003a70;}
-.tcmb-row span{font-size:11px;font-weight:bold;color:#003a70;}
-.btn-tcmb{background:#6c757d;color:#fff;border:none;padding:5px 10px;font-size:11px;border-radius:4px;cursor:pointer;font-weight:bold;}
-.aktarilan-kart{background:#fff3cd;border:1px solid #ff9900;border-radius:8px;padding:10px 12px;margin-bottom:10px;position:relative;}
-.aktarilan-kart-baslik{font-size:10px;font-weight:bold;color:#ff9900;text-transform:uppercase;margin-bottom:4px;}
-.aktarilan-kart-ad{font-size:12px;font-weight:bold;color:#222;padding-right:50px;line-height:1.3;}
-.aktarilan-kart-kod{font-size:10px;color:#555;margin-top:3px;}
-.btn-kart-sil{position:absolute;top:8px;right:8px;background:#d9534f;color:#fff;border:none;padding:3px 8px;font-size:10px;font-weight:bold;border-radius:4px;cursor:pointer;}
-.btn-hareket-aktar{width:100%;background:#ff9900;color:#fff;border:none;padding:12px;font-size:14px;font-weight:bold;border-radius:4px;cursor:pointer;text-transform:uppercase;}
-.hareket-urun-kart{background:#f8f9fa;border:1px solid #ddd;border-left:4px solid #ff9900;border-radius:6px;padding:10px;margin-bottom:8px;position:relative;}
-.hareket-urun-ad{font-size:12px;font-weight:bold;color:#222;padding-right:50px;margin-bottom:3px;}
-.hareket-urun-detay{font-size:11px;color:#555;margin-bottom:2px;}
-.hareket-urun-fiyat{font-size:15px;font-weight:900;color:#ff9900;margin-top:6px;background:#fff8ee;padding:5px 8px;border-radius:5px;border-left:3px solid #ff9900;}
-.hareket-liste-fiyat{font-size:12px;color:#555;margin-bottom:1px;}
-.hareket-iskonto-satir{font-size:13px;font-weight:bold;color:#ff9900;}
-.mod-group{display:flex;gap:6px;margin-bottom:14px;}
-.btn-mod{flex:1;padding:10px 4px;font-size:11px;font-weight:bold;border:2px solid #003a70;background:#fff;color:#003a70;border-radius:6px;cursor:pointer;text-align:center;line-height:1.4;}
+.hesap-fatura-box{background:#003a70;color:#fff;border-radius:6px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.hesap-fatura-box .lbl{font-size:10px;color:#a8c0e8;}
+.hesap-fatura-box .val{font-size:17px;font-weight:bold;}
+.btn-hesapla{width:100%;background:#28a745;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:4px;cursor:pointer;text-transform:uppercase;margin-bottom:6px;}
+.tcmb-row{display:flex;align-items:center;justify-content:space-between;background:#eef2f7;padding:6px 8px;border-radius:6px;margin-bottom:7px;border:1px dashed #003a70;}
+.tcmb-row span{font-size:10px;font-weight:bold;color:#003a70;}
+.btn-tcmb{background:#6c757d;color:#fff;border:none;padding:4px 8px;font-size:10px;border-radius:4px;cursor:pointer;font-weight:bold;}
+.aktarilan-kart{background:#fff3cd;border:1px solid #ff9900;border-radius:6px;padding:7px 10px;margin-bottom:7px;position:relative;}
+.aktarilan-kart-baslik{font-size:9px;font-weight:bold;color:#ff9900;text-transform:uppercase;margin-bottom:3px;}
+.aktarilan-kart-ad{font-size:11px;font-weight:bold;color:#222;padding-right:45px;line-height:1.3;}
+.aktarilan-kart-kod{font-size:9px;color:#555;margin-top:2px;}
+.btn-kart-sil{position:absolute;top:6px;right:6px;background:#d9534f;color:#fff;border:none;padding:2px 6px;font-size:9px;font-weight:bold;border-radius:4px;cursor:pointer;}
+.btn-hareket-aktar{width:100%;background:#ff9900;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:4px;cursor:pointer;text-transform:uppercase;}
+.hareket-urun-kart{background:#f8f9fa;border:1px solid #ddd;border-left:4px solid #ff9900;border-radius:6px;padding:7px;margin-bottom:6px;position:relative;}
+.hareket-urun-ad{font-size:11px;font-weight:bold;color:#222;padding-right:45px;margin-bottom:2px;}
+.hareket-urun-detay{font-size:10px;color:#555;margin-bottom:2px;}
+.hareket-urun-fiyat{font-size:13px;font-weight:900;color:#ff9900;margin-top:4px;background:#fff8ee;padding:4px 7px;border-radius:4px;border-left:3px solid #ff9900;}
+.hareket-liste-fiyat{font-size:11px;color:#555;margin-bottom:1px;}
+.hareket-iskonto-satir{font-size:12px;font-weight:bold;color:#ff9900;}
+.mod-group{display:flex;gap:5px;margin-bottom:10px;}
+.btn-mod{flex:1;padding:7px 3px;font-size:10px;font-weight:bold;border:2px solid #003a70;background:#fff;color:#003a70;border-radius:6px;cursor:pointer;text-align:center;line-height:1.3;}
 .btn-mod.secili{background:#003a70;color:#fff;}
-.hareket-toplam-box{background:#003a70;color:#fff;border-radius:8px;padding:12px;text-align:right;margin-bottom:10px;}
-.hareket-toplam-box .ht-label{font-size:11px;color:#a8c0e8;}
-.hareket-toplam-box .ht-euro{font-size:20px;font-weight:bold;}
-.hareket-toplam-box .ht-tl{font-size:14px;color:#ffcc00;font-weight:bold;}
-.btn-iletisim-aktar{width:100%;background:#e67e22;color:#fff;border:none;padding:13px;font-size:14px;font-weight:bold;border-radius:4px;cursor:pointer;text-transform:uppercase;}
-.communication-box{display:flex;flex-direction:column;gap:12px;padding:5px;}
-.customer-input-panel{background:#f8fafc;border:1px dashed #003a70;border-radius:8px;padding:10px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;}
-.customer-row-fields{display:flex;gap:8px;}
-.customer-field-group{flex:1;display:flex;flex-direction:column;gap:4px;}
-.customer-field-group label{font-size:11px;font-weight:bold;color:#003a70;}
-.customer-input{width:100%;padding:6px 8px;font-size:12px;border:1px solid #cbd5e1;border-radius:4px;outline:none;}
-.comm-header{font-size:13px;font-weight:bold;color:#003a70;text-align:center;margin-bottom:2px;text-transform:uppercase;}
-.text-preview-area{width:100%;height:290px;padding:12px;font-size:11px;border:1px solid #003a70;border-radius:6px;background:#fafafa;resize:none;font-family:'Courier New',monospace;color:#222;line-height:1.4;outline:none;}
-.btn-copy-action{width:100%;background:#003a70;color:#fff;border:none;padding:12px;font-size:14px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
-.btn-email-action{width:100%;background:#e67e22;color:#fff;border:none;padding:12px;font-size:14px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
-.btn-whatsapp{width:100%;background:#25D366;color:#fff;border:none;padding:12px;font-size:14px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
-.bottom-nav-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:10px;gap:10px;z-index:999;}
-.nav-arrow-btn{flex:1;padding:12px;font-size:13px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;background:#4a5568;color:#fff;}
+.hareket-toplam-box{background:#003a70;color:#fff;border-radius:6px;padding:8px;text-align:right;margin-bottom:8px;}
+.hareket-toplam-box .ht-label{font-size:10px;color:#a8c0e8;}
+.hareket-toplam-box .ht-euro{font-size:17px;font-weight:bold;}
+.hareket-toplam-box .ht-tl{font-size:13px;color:#ffcc00;font-weight:bold;}
+.btn-iletisim-aktar{width:100%;background:#e67e22;color:#fff;border:none;padding:10px;font-size:13px;font-weight:bold;border-radius:4px;cursor:pointer;text-transform:uppercase;}
+.communication-box{display:flex;flex-direction:column;gap:8px;padding:3px;}
+.customer-input-panel{background:#f8fafc;border:1px dashed #003a70;border-radius:6px;padding:7px;margin-bottom:7px;display:flex;flex-direction:column;gap:6px;}
+.customer-row-fields{display:flex;gap:6px;}
+.customer-field-group{flex:1;display:flex;flex-direction:column;gap:3px;}
+.customer-field-group label{font-size:10px;font-weight:bold;color:#003a70;}
+.customer-input{width:100%;padding:5px 7px;font-size:11px;border:1px solid #cbd5e1;border-radius:4px;outline:none;}
+.comm-header{font-size:12px;font-weight:bold;color:#003a70;text-align:center;margin-bottom:2px;text-transform:uppercase;}
+.text-preview-area{width:100%;height:240px;padding:9px;font-size:10px;border:1px solid #003a70;border-radius:6px;background:#fafafa;resize:none;font-family:'Courier New',monospace;color:#222;line-height:1.4;outline:none;}
+.btn-copy-action{width:100%;background:#003a70;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
+.btn-email-action{width:100%;background:#e67e22;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
+.btn-whatsapp{width:100%;background:#25D366;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
+.bottom-nav-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:7px;gap:8px;z-index:999;}
+.nav-arrow-btn{flex:1;padding:10px;font-size:12px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;background:#4a5568;color:#fff;}
 .nav-arrow-btn:disabled{background:#cbd5e1;color:#94a3b8;cursor:not-allowed;}
-.toast-notification{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(0,58,112,0.95);color:#fff;padding:12px 24px;border-radius:30px;font-size:13px;font-weight:bold;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:all 0.3s ease;pointer-events:none;text-align:center;white-space:nowrap;}
+.toast-notification{position:fixed;top:15px;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(0,58,112,0.95);color:#fff;padding:10px 20px;border-radius:30px;font-size:12px;font-weight:bold;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:all 0.3s ease;pointer-events:none;text-align:center;white-space:nowrap;}
 .toast-notification.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #page1{background:#eef7ff;}#page2{background:#fff8ef;}#page3{background:#f3fff1;}#page4{background:#fdf3ff;}#page5{background:#f7f7f7;}
 #tabBtn1{background:#003a70;color:#fff;}
@@ -105,6 +105,7 @@ body{background-color:#f5f7fa;color:#333;padding:10px;display:flex;justify-conte
 <div id="toast" class="toast-notification">Basarili</div>
 <div class="phone-container">
 <div class="app-header">WEICON ASIST</div>
+<div class="tarih-satir" id="gunTarihi"></div>
 <div class="nav-tabs">
   <button class="tab-btn active" id="tabBtn1" onclick="switchTab(1)">Urun Bul</button>
   <button class="tab-btn" id="tabBtn2" onclick="switchTab(2)">Sepet <span id="sepetSayac">(0)</span></button>
@@ -273,6 +274,12 @@ var demoCatalog = [
 ];
 
 window.onload = function(){
+  // Tarih göster
+  var aylar=["Ocak","Subat","Mart","Nisan","Mayis","Haziran","Temmuz","Agustos","Eylul","Ekim","Kasim","Aralik"];
+  var gunler=["Pazar","Pazartesi","Sali","Carsamba","Persembe","Cuma","Cumartesi"];
+  var bugun=new Date();
+  var tarihStr=gunler[bugun.getDay()]+", "+bugun.getDate()+" "+aylar[bugun.getMonth()]+" "+bugun.getFullYear();
+  document.getElementById("gunTarihi").textContent=tarihStr;
   loadCatalogFromMemory();
   document.getElementById("searchBtn").addEventListener("click", performFilter);
   document.getElementById("searchInput").addEventListener("input", performFilter);
@@ -315,3 +322,333 @@ function switchTab(n){
 
 function loadCatalogFromMemory(){
   var s=localStorage.getItem(STORAGE_KEY);
+  if(s){ try{ globalProductCatalog=JSON.parse(s); }catch(e){ globalProductCatalog=demoCatalog; } }
+  else{ globalProductCatalog=demoCatalog; localStorage.setItem(STORAGE_KEY,JSON.stringify(demoCatalog)); }
+  performFilter();
+}
+
+function processJsonUpload(event){
+  var file=event.target.files[0]; if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var p=JSON.parse(e.target.result);
+      if(Array.isArray(p)){
+        globalProductCatalog=p;
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(p));
+        showToast(p.length+" urun yuklendi!");
+        performFilter();
+      } else { showToast("Hata: Gecersiz JSON."); }
+    }catch(err){ showToast("JSON okunamadi: "+err.message); }
+  };
+  reader.readAsText(file);
+  // Aynı dosyayı tekrar seçebilmek için sıfırla
+  event.target.value="";
+}
+
+function performFilter(){
+  var q=document.getElementById("searchInput").value.trim().toLowerCase();
+  var tb=document.getElementById("productTableBody");
+  var ph=document.getElementById("noDataPlaceholder");
+  tb.innerHTML="";
+  if(!globalProductCatalog||globalProductCatalog.length===0){ ph.style.display="block"; return; }
+  var m=[];
+  for(var i=0;i<globalProductCatalog.length;i++){
+    var item=globalProductCatalog[i];
+    var b=(item.berta||item.BERTA||"").toString().toLowerCase();
+    var a=(item.abas||item.ABAS||"").toString().toLowerCase();
+    var nn=(item.name||item.NAME||item.urun||item.URUN||"").toString().toLowerCase();
+    if(b.indexOf(q)>=0||a.indexOf(q)>=0||nn.indexOf(q)>=0) m.push(item);
+  }
+  if(m.length===0){ ph.style.display="block"; return; }
+  ph.style.display="none";
+  for(var i=0;i<m.length;i++){
+    var item=m[i];
+    var bt=item.berta||item.BERTA||"";
+    var at=item.abas||item.ABAS||"";
+    var nt=item.name||item.NAME||item.urun||item.URUN||"";
+    if(bt.toString().toLowerCase()==="nan") bt="";
+    if(at.toString().toLowerCase()==="nan") at="";
+    if(nt.toString().toLowerCase()==="nan") nt="";
+    var pt = (item.fiyat!==undefined) ? item.fiyat :
+             (item.price!==undefined) ? item.price :
+             (item.PRICE!==undefined) ? item.PRICE :
+             (item.euro!==undefined)  ? item.euro  :
+             (item.Euro!==undefined)  ? item.Euro  : 0;
+    var cp=0;
+    if(pt!==null && pt!==undefined && pt!==""){
+      var pf=parseFloat(String(pt).replace(",","."));
+      if(!isNaN(pf)) cp=pf;
+    }
+    var id=(bt||at||String(i));
+    var inBasket=false;
+    for(var j=0;j<basket.length;j++){ if(basket[j].id===id){ inBasket=true; break; } }
+    var tr=document.createElement("tr");
+    tr.innerHTML="<td><div class=\"kod-container\"><span class=\"kod-b\">B:</span> "+bt+"<br><span class=\"kod-a\">A:</span> "+at+"</div></td>"
+      +"<td class=\"product-cell\">"+nt+"</td>"
+      +"<td><span class=\"price-tag\">"+cp.toFixed(2)+" EUR</span></td>"
+      +"<td><button class=\"btn-add"+(inBasket?" added":"")+"\" id=\"addbtn-"+id+"\" onclick=\"addToBasket(this,'"+id+"','"+nt.replace(/'/g,"&#39;")+"',"+cp+",'"+bt+"','"+at+"')\">"+(inBasket?"EKLENDI":"Ekle")+"</button></td>";
+    tb.appendChild(tr);
+  }
+}
+
+function addToBasket(btn,id,name,price,berta,abas){
+  for(var i=0;i<basket.length;i++){
+    if(basket[i].id===id){ showToast("Urun zaten sepette."); return; }
+  }
+  basket.push({id:id,name:name,price:parseFloat(price)||0,berta:berta,abas:abas,quantity:1});
+  updateBasketCount();
+  btn.classList.add("added"); btn.innerText="EKLENDI";
+  showToast(name+" sepete eklendi.");
+}
+
+function updateBasketCount(){
+  var total=0;
+  for(var i=0;i<basket.length;i++) total+=basket[i].quantity;
+  document.getElementById("sepetSayac").innerText="("+total+")";
+}
+
+function removeFromBasket(id){
+  var newb=[];
+  for(var i=0;i<basket.length;i++) if(basket[i].id!==id) newb.push(basket[i]);
+  basket=newb;
+  updateBasketCount(); renderBasket(); showToast("Urun sepetten silindi.");
+}
+
+function renderBasket(){
+  var c=document.getElementById("basketItemsContainer");
+  var e=document.getElementById("emptyBasketMsg");
+  c.innerHTML="";
+  if(basket.length===0){ e.style.display="block"; return; }
+  e.style.display="none";
+  for(var i=0;i<basket.length;i++){
+    var item=basket[i];
+    var div=document.createElement("div"); div.className="list-item-block";
+    var safeId=item.id.toString().replace(/'/g,"&#39;");
+    var safeName=item.name.replace(/'/g,"&#39;");
+    var hesapBtnClass = item.sentToCalc ? "btn-sepette-hesapla" : "btn-sepette-hesapla";
+    var hesapBtnStyle = item.sentToCalc ? "background:#d9534f;" : "";
+    var hesapBtnText  = item.sentToCalc ? "Gonderildi" : "Hesapla &#8594;";
+    div.innerHTML="<button class=\"btn-item-remove\" onclick=\"removeFromBasket('"+safeId+"')\">Sil</button>"
+      +"<div class=\"list-item-header\">"+item.name+"</div>"
+      +"<div class=\"kod-container\" style=\"margin-bottom:5px;\"><span class=\"kod-b\">B:</span> "+(item.berta||"-")+" | <span class=\"kod-a\">A:</span> "+(item.abas||"-")+"</div>"
+      +"<div style=\"display:flex;align-items:center;gap:8px;margin-top:4px;\">"
+      +"<span class=\"price-tag\">"+item.price.toFixed(2)+" EUR</span>"
+      +"<button class=\"btn-sepette-hesapla\" style=\""+hesapBtnStyle+"\" onclick=\"sepettenHesaplaAktar('"+safeId+"','"+safeName+"',"+item.price+",'"+item.berta+"','"+item.abas+"')\">"+hesapBtnText+"</button>"
+      +"</div>";
+    c.appendChild(div);
+  }
+}
+
+function sepettenHesaplaAktar(id,name,price,berta,abas){
+  // Sepette bu ürünü gönderildi olarak işaretle
+  for(var i=0;i<basket.length;i++){
+    if(basket[i].id===id){ basket[i].sentToCalc=true; break; }
+  }
+  aktarilanUrun={id:id,name:name,price:parseFloat(price)||0,berta:berta,abas:abas};
+  document.getElementById("listeFiyat").value=parseFloat(price).toFixed(2);
+  document.getElementById("adet").value=1;
+  document.getElementById("aktarilanKart").style.display="block";
+  document.getElementById("kart-urunAd").textContent=name;
+  document.getElementById("kart-urunKod").textContent="B: "+(berta||"-")+" | A: "+(abas||"-")+" | Liste: "+parseFloat(price).toFixed(2)+" EUR";
+  hesapla();
+  renderBasket();
+  switchTab(3);
+  showToast(name+" hesaplamaya aktarildi.");
+}
+
+function aktarilanUrununSil(){
+  aktarilanUrun=null;
+  document.getElementById("aktarilanKart").style.display="none";
+  document.getElementById("listeFiyat").value="0";
+  document.getElementById("dipFiyat").value="0";
+  document.getElementById("iskonto").value="0";
+  document.getElementById("adet").value="1";
+  var ids=["iskontoluFiyat","tlBirimFiyat","maliyetKar","mudurPrim","mudurPrimTL","toplamEuro","tlKdvsizToplam","faturaToplam"];
+  for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).textContent="-";
+  showToast("Temizlendi.");
+}
+
+function fmt(n){ return n.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function hesapla(){
+  var kur=parseFloat(document.getElementById("kur").value)||0;
+  var listeFiyat=parseFloat(document.getElementById("listeFiyat").value)||0;
+  var dipFiyat=parseFloat(document.getElementById("dipFiyat").value)||0;
+  var iskonto=parseFloat(document.getElementById("iskonto").value)||0;
+  var adet=parseFloat(document.getElementById("adet").value)||1;
+  var iskontoluFiyat=listeFiyat-(listeFiyat*iskonto/100);
+  var tlBirimFiyat=iskontoluFiyat*kur;
+  var maliyetKar=iskontoluFiyat-dipFiyat;
+  var mudurPrim=iskontoluFiyat*0.08919;
+  var mudurPrimTL=adet*mudurPrim*kur;
+  var toplamEuro=adet*iskontoluFiyat;
+  var tlKdvsizToplam=adet*tlBirimFiyat;
+  var faturaToplam=adet*tlBirimFiyat*1.2;
+  document.getElementById("iskontoluFiyat").textContent=fmt(iskontoluFiyat)+" EUR";
+  document.getElementById("tlBirimFiyat").textContent=fmt(tlBirimFiyat)+" TL";
+  document.getElementById("maliyetKar").textContent=fmt(maliyetKar)+" EUR";
+  document.getElementById("mudurPrim").textContent=fmt(mudurPrim)+" EUR";
+  document.getElementById("mudurPrimTL").textContent=fmt(mudurPrimTL)+" TL";
+  document.getElementById("toplamEuro").textContent=fmt(toplamEuro)+" EUR";
+  document.getElementById("tlKdvsizToplam").textContent=fmt(tlKdvsizToplam)+" TL";
+  document.getElementById("faturaToplam").textContent=fmt(faturaToplam)+" TL";
+}
+
+function hareketeSaklar(){
+  var kur=parseFloat(document.getElementById("kur").value)||0;
+  var listeFiyat=parseFloat(document.getElementById("listeFiyat").value)||0;
+  var dipFiyat=parseFloat(document.getElementById("dipFiyat").value)||0;
+  var iskonto=parseFloat(document.getElementById("iskonto").value)||0;
+  var adet=parseFloat(document.getElementById("adet").value)||1;
+  if(listeFiyat===0){ showToast("Liste fiyati girilmemis!"); return; }
+  var iskBirim=listeFiyat-(listeFiyat*iskonto/100);
+  var toplamEuro=iskBirim*adet;
+  var toplamTL=toplamEuro*kur;
+  var urun={
+    id: aktarilanUrun ? aktarilanUrun.id : ("m"+Date.now()),
+    name: aktarilanUrun ? aktarilanUrun.name : "Manuel Urun",
+    berta: aktarilanUrun ? (aktarilanUrun.berta||"-") : "-",
+    abas: aktarilanUrun ? (aktarilanUrun.abas||"-") : "-",
+    listeFiyat:listeFiyat, dipFiyat:dipFiyat, iskonto:iskonto, adet:adet, kur:kur,
+    iskBirim:iskBirim, toplamEuro:toplamEuro, toplamTL:toplamTL
+  };
+  hareketListesi.push(urun);
+  showToast(urun.name+" hareket listesine eklendi!");
+  aktarilanUrununSil();
+}
+
+function modSec(mod){
+  secilenMod=mod;
+  var mods=["siparis","proforma","teklif"];
+  for(var i=0;i<mods.length;i++){
+    var el=document.getElementById("mod-"+mods[i]);
+    if(mods[i]===mod) el.classList.add("secili");
+    else el.classList.remove("secili");
+  }
+}
+
+function harekettenSil(idx){
+  hareketListesi.splice(idx,1);
+  renderHareket();
+  showToast("Urun listeden silindi.");
+}
+
+function renderHareket(){
+  var c=document.getElementById("hareketListesiDiv");
+  var e=document.getElementById("emptyHareketMsg");
+  var tb=document.getElementById("hareketToplamBox");
+  var btn=document.getElementById("btnIletisimAktar");
+  c.innerHTML="";
+  if(hareketListesi.length===0){
+    e.style.display="block"; tb.style.display="none"; btn.style.display="none"; return;
+  }
+  e.style.display="none"; tb.style.display="block"; btn.style.display="block";
+  var gtEuro=0, gtTL=0;
+  for(var i=0;i<hareketListesi.length;i++){
+    var item=hareketListesi[i];
+    gtEuro+=item.toplamEuro; gtTL+=item.toplamTL;
+    var div=document.createElement("div"); div.className="hareket-urun-kart";
+    div.innerHTML="<button class=\"btn-item-remove\" onclick=\"harekettenSil("+i+")\">Sil</button>"
+      +"<div class=\"hareket-urun-ad\">"+item.name+"</div>"
+      +"<div class=\"hareket-urun-detay\"><span class=\"kod-b\">B:</span> "+item.berta+" | <span class=\"kod-a\">A:</span> "+item.abas+"</div>"
+      +"<div class=\"hareket-liste-fiyat\">Liste: "+fmt(item.listeFiyat)+" EUR | Adet: "+item.adet+"</div>"
+      +"<div class=\"hareket-iskonto-satir\">%"+item.iskonto+" iskonto &rarr; Birim: "+fmt(item.iskBirim)+" EUR</div>"
+      +"<div class=\"hareket-urun-fiyat\">TUTAR: "+fmt(item.toplamEuro)+" EUR / "+fmt(item.toplamTL)+" TL</div>";
+    c.appendChild(div);
+  }
+  document.getElementById("hareketToplamEuro").textContent=fmt(gtEuro)+" EUR";
+  document.getElementById("hareketToplamTL").textContent=fmt(gtTL)+" TL";
+}
+
+function iletisimeAktar(){
+  if(hareketListesi.length===0){ showToast("Listede urun yok."); return; }
+  switchTab(5);
+  showToast("Iletisim sayfasina aktarildi!");
+}
+
+function getDynamicCustomerName(){ return document.getElementById("custNameInput").value.trim()||"Musteri"; }
+function getDynamicCustomerVade(){ return document.getElementById("custVadeInput").value.trim()||"30"; }
+function getDynamicCustomerFatura(){ return document.getElementById("custFaturaInput").value.trim()||"TL"; }
+
+function getModLabel(){
+  if(secilenMod==="siparis") return "SIPARIS";
+  if(secilenMod==="proforma") return "PROFORMA FATURA";
+  return "FIYAT TEKLIFI";
+}
+
+function buildEmailBody(){
+  var cn=getDynamicCustomerName(); var cv=getDynamicCustomerVade(); var cf=getDynamicCustomerFatura();
+  var ml=getModLabel();
+  var body="Merhaba;\n\n";
+  if(secilenMod==="siparis")
+    body+="Bilgilerini paylastigim Firma icin SiPARiSiN isleme alinmasini rica ederim.\n\n";
+  else if(secilenMod==="proforma")
+    body+="Bilgilerini paylastigim Firma icin PROFORMA FATURA gondermenizi rica ederim.\n\n";
+  else
+    body+="Bilgilerini paylastigim Firma icin FiYAT TEKLiFi gondermenizi rica ederim.\n\n";
+  body+="MUSTERI BiLGiLERi:\n";
+  body+="--------------------------------------------------\n";
+  body+="Musteri Adi: "+cn+"\n";
+  body+="Vade: "+cv+"\n";
+  body+="Fatura: "+cf+"\n";
+  body+="--------------------------------------------------\n\n";
+  body+="URUN LiSTESi VE DETAYLARI:\n";
+  body+="--------------------------------------------------\n";
+  for(var i=0;i<hareketListesi.length;i++){
+    var item=hareketListesi[i];
+    body+="Berta : "+item.berta+"  -  Abas  "+item.abas+"\n";
+    body+=item.adet+" adet - "+item.name+"  -  "+fmt(item.iskBirim)+" EUR\n";
+    body+="--------------------------------------------------\n";
+    if(i<hareketListesi.length-1) body+="\n";
+  }
+  return body;
+}
+
+function buildWhatsAppBody(){
+  var body="Merhaba ;\n";
+  body+="istediginiz urunler icin urun bilgi ve fiyatini paylasiyorum\n\n";
+  body+="--------------------------------------------------\n";
+  for(var i=0;i<hareketListesi.length;i++){
+    var item=hareketListesi[i];
+    body+="Berta : "+item.berta+"  -  Abas  "+item.abas+"\n";
+    body+=item.adet+" adet - "+item.name+"  -  "+fmt(item.iskBirim)+" EUR\n";
+    body+="--------------------------------------------------\n";
+    if(i<hareketListesi.length-1) body+="\n";
+  }
+  return body;
+}
+
+function generateCommunicationData(){
+  var em=document.getElementById("emptyCommMsg");
+  var cb=document.getElementById("communicationBlock");
+  var ta=document.getElementById("emailTemplateTextarea");
+  var hdr=document.getElementById("commHeader");
+  if(hareketListesi.length===0){ em.style.display="block"; cb.style.display="none"; return; }
+  em.style.display="none"; cb.style.display="flex";
+  var ml=getModLabel(); var cn=getDynamicCustomerName();
+  hdr.textContent=ml+" - "+cn;
+  var header="Kime:\n";
+  header+="Bilgi/Gizli, Kimden:  A.Karaman@weicon.com.tr\n";
+  header+="Konu: ** "+ml+" ** "+cn+"\n";
+  header+="\n";
+  ta.value=header+buildEmailBody();
+}
+
+function sendDirectEmail(){
+  var cn=getDynamicCustomerName(); var ml=getModLabel();
+  window.location.href="mailto:ofis@weicon.com.tr?subject="+encodeURIComponent(ml+" - "+cn)+"&body="+encodeURIComponent(buildEmailBody());
+}
+
+function sendWhatsAppMessage(){
+  window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(buildWhatsAppBody()),"_blank");
+}
+
+function copyEmailText(){
+  var ta=document.getElementById("emailTemplateTextarea");
+  ta.select(); ta.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(ta.value); showToast("Kopyalandi!");
+}
+</script>
+</body>
+</html>
