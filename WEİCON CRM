@@ -243,27 +243,38 @@ body{background-color:#f5f7fa;color:#333;padding:6px;display:flex;justify-conten
 <div class="customer-input-panel">
   <div class="customer-field-group">
     <label>Müşteri Adı:</label>
-    <input type="text" id="custNameInput" class="customer-input" value="HiTiT MAKiNA - CORUM" oninput="generateCommunicationData()">
+    <input type="text" id="custNameInput" class="customer-input" value="HİTİT MAKİNA - ÇORUM" oninput="generateCommunicationData()">
   </div>
   <div class="customer-row-fields">
     <div class="customer-field-group">
       <label>Vade:</label>
-      <input type="text" id="custVadeInput" class="customer-input" value="45 gun" oninput="generateCommunicationData()">
+      <input type="text" id="custVadeInput" class="customer-input" value="45 gün" oninput="generateCommunicationData()">
     </div>
     <div class="customer-field-group">
       <label>Fatura:</label>
       <input type="text" id="custFaturaInput" class="customer-input" value="EURO fatura" oninput="generateCommunicationData()">
     </div>
   </div>
+  <div class="customer-row-fields">
+    <div class="customer-field-group">
+      <label>Yetkili:</label>
+      <input type="text" id="custYetkiliInput" class="customer-input" placeholder="Ad Soyad - email" oninput="generateCommunicationData()">
+    </div>
+    <div class="customer-field-group">
+      <label>Kargo:</label>
+      <input type="text" id="custKargoInput" class="customer-input" placeholder="Kargo firması" oninput="generateCommunicationData()">
+    </div>
+  </div>
 </div>
 <div id="emptyCommMsg" class="placeholder-page" style="display:block;">Önce 4. sayfada ürün ekleyin ve işlem türü seçin.</div>
 <div id="communicationBlock" class="communication-box" style="display:none;">
   <div class="comm-header" id="commHeader">Müşteri Paylaşım Paneli</div>
-  <div id="mailOnizleme" style="width:100%;min-height:220px;max-height:260px;padding:9px;font-size:10px;border:1px solid #003a70;border-radius:6px;background:#fafafa;font-family:'Courier New',monospace;color:#222;line-height:1.6;white-space:pre-wrap;overflow-y:auto;"></div>
+  <div id="mailOnizleme" style="width:100%;min-height:220px;max-height:260px;padding:9px;font-size:10px;border:1px solid #003a70;border-radius:6px;background:#fafafa;font-family:'Courier New',monospace;color:#222;line-height:1.35;white-space:pre-wrap;overflow-y:auto;"></div>
   <textarea id="emailTemplateTextarea" class="text-preview-area" readonly style="display:none;"></textarea>
   <button class="btn-copy-action" onclick="copyEmailText()">Metni Kopyala</button>
   <button class="btn-email-action" onclick="sendDirectEmail()">E-Posta Gönder</button>
   <button class="btn-whatsapp" onclick="sendWhatsAppMessage()">WhatsApp ile Gönder</button>
+  <button style="width:100%;background:#c0392b;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;" onclick="arsiveKaydetIletisimden()">ARŞİVE KAYDET</button>
 </div>
 </div>
 
@@ -273,16 +284,38 @@ body{background-color:#f5f7fa;color:#333;padding:6px;display:flex;justify-conten
 </div>
 
 <!-- SAYFA 6: ARŞİV -->
-<div id="page6" class="content-page" style="display:none;">
+<div id="page6" class="content-page">
 <div class="step-label">[İşlem 6.1] Arşiv</div>
-<div class="arsiv-tab-group">
-  <button class="arsiv-tab-btn aktif" id="arsivTab-siparis" onclick="arsivTabSec('siparis')">SİPARİŞ</button>
-  <button class="arsiv-tab-btn" id="arsivTab-proforma" onclick="arsivTabSec('proforma')">PROFORMA</button>
-  <button class="arsiv-tab-btn" id="arsivTab-teklif" onclick="arsivTabSec('teklif')">FİYAT TEKLİFİ</button>
+
+<!-- 3 Büyük Buton -->
+<div id="arsivBtnPanel" style="display:block;margin-bottom:10px;">
+  <button onclick="arsivKategoriAc('siparis')"
+    style="width:100%;padding:14px;background:#003a70;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span>SİPARİŞLER</span>
+    <span id="arsivSayac-siparis" style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:12px;">0</span>
+  </button>
+  <button onclick="arsivKategoriAc('teklif')"
+    style="width:100%;padding:14px;background:#28a745;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span>FİYAT TEKLİFLERİ</span>
+    <span id="arsivSayac-teklif" style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:12px;">0</span>
+  </button>
+  <button onclick="arsivKategoriAc('proforma')"
+    style="width:100%;padding:14px;background:#8e44ad;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+    <span>PROFORMA FATURALAR</span>
+    <span id="arsivSayac-proforma" style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:12px;">0</span>
+  </button>
 </div>
-<div id="arsivListesiDiv"></div>
-<div id="arsivBosMsg" class="placeholder-page">Bu kategoride kayıt yok.</div>
-<button class="btn-arsive-kaydet" onclick="arsiveKaydet()">MEVCUT HAREKETI ARŞİVLE</button>
+
+<!-- Kayıt Listesi (gizli başlar) -->
+<div id="arsivDetayPanel" style="display:none;">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <button onclick="arsivGeriDon()" style="background:#6c757d;color:#fff;border:none;padding:5px 12px;border-radius:4px;font-size:11px;font-weight:bold;cursor:pointer;">← Geri</button>
+    <div id="arsivKategoriBaslik" style="font-size:13px;font-weight:bold;color:#003a70;"></div>
+  </div>
+  <div id="arsivListesiDiv"></div>
+  <div id="arsivBosMsg" class="placeholder-page" style="display:none;">Bu kategoride kayıt yok.</div>
+</div>
+
 </div>
 
 </div>
@@ -345,7 +378,7 @@ function switchTab(n){
   if(n===3) hesapla();
   if(n===4) renderHareket();
   if(n===5) generateCommunicationData();
-  if(n===6) renderArsiv();
+  if(n===6){ arsivSayaclariGuncelle(); document.getElementById("arsivBtnPanel").style.display="block"; document.getElementById("arsivDetayPanel").style.display="none"; }
 }
 
 function loadCatalogFromMemory(){
@@ -605,10 +638,14 @@ function getModLabel(){
   return "FİYAT TEKLİFİ";
 }
 
+function getDynamicCustomerYetkili(){ return document.getElementById("custYetkiliInput").value.trim()||""; }
+function getDynamicCustomerKargo(){ return document.getElementById("custKargoInput").value.trim()||""; }
+
 function buildEmailBody(){
   var cn=getDynamicCustomerName(); var cv=getDynamicCustomerVade(); var cf=getDynamicCustomerFatura();
+  var cy=getDynamicCustomerYetkili(); var ck=getDynamicCustomerKargo();
   var ml=getModLabel();
-  var body="Merhaba,\n\n";
+  var body="Merhaba,\n";
   if(secilenMod==="siparis")
     body+="Bilgilerini paylaştığım Firma için SİPARİŞİN işleme alınmasını rica ederim.\n\n";
   else if(secilenMod==="proforma")
@@ -620,6 +657,8 @@ function buildEmailBody(){
   body+="Müşteri Adı: "+cn+"\n";
   body+="Vade: "+cv+"\n";
   body+="Fatura: "+cf+"\n";
+  if(cy) body+="Yetkili : "+cy+"\n";
+  if(ck) body+="Kargo: "+ck+"\n";
   body+="--------------------------------------------------\n\n";
   body+="ÜRÜN LİSTESİ VE DETAYLARI:\n";
   body+="--------------------------------------------------\n";
@@ -628,7 +667,6 @@ function buildEmailBody(){
     body+="Berta : "+item.berta+"  -  Abas  "+item.abas+"\n";
     body+=item.adet+" adet - "+item.name+"  -  "+fmt(item.iskBirim)+" EUR\n";
     body+="--------------------------------------------------\n";
-    if(i<hareketListesi.length-1) body+="\n";
   }
   return body;
 }
@@ -691,39 +729,73 @@ if(!arsivData.proforma) arsivData.proforma=[];
 if(!arsivData.teklif) arsivData.teklif=[];
 var aktifArsivTab = "siparis";
 
-function arsivTabSec(tip){
+function arsivTabSec(tip){ aktifArsivTab=tip; }
+
+function arsivGeriDon(){
+  document.getElementById("arsivDetayPanel").style.display="none";
+  document.getElementById("arsivBtnPanel").style.display="block";
+  arsivSayaclariGuncelle();
+}
+
+function arsivSayaclariGuncelle(){
+  arsivData = JSON.parse(localStorage.getItem("weicon_arsiv")||"{}");
+  if(!arsivData.siparis) arsivData.siparis=[];
+  if(!arsivData.proforma) arsivData.proforma=[];
+  if(!arsivData.teklif) arsivData.teklif=[];
+  document.getElementById("arsivSayac-siparis").textContent = arsivData.siparis.length;
+  document.getElementById("arsivSayac-teklif").textContent  = arsivData.teklif.length;
+  document.getElementById("arsivSayac-proforma").textContent= arsivData.proforma.length;
+}
+
+function arsivKategoriAc(tip){
   aktifArsivTab=tip;
-  var tipler=["siparis","proforma","teklif"];
-  for(var i=0;i<tipler.length;i++){
-    var el=document.getElementById("arsivTab-"+tipler[i]);
-    if(tipler[i]===tip) el.classList.add("aktif");
-    else el.classList.remove("aktif");
-  }
+  var basliklar={siparis:"📦 SİPARİŞLER", teklif:"💬 FİYAT TEKLİFLERİ", proforma:"🧾 PROFORMA FATURALAR"};
+  document.getElementById("arsivKategoriBaslik").textContent = basliklar[tip];
+  document.getElementById("arsivBtnPanel").style.display="none";
+  document.getElementById("arsivDetayPanel").style.display="block";
   renderArsiv();
 }
 
 function arsiveKaydet(){
   if(hareketListesi.length===0){ showToast("Hareket listesi boş!"); return; }
+  _arsiveKaydetIslem(secilenMod);
+}
+
+function arsiveKaydetIletisimden(){
+  if(hareketListesi.length===0){ showToast("Hareket listesi boş!"); return; }
+  _arsiveKaydetIslem(secilenMod);
+}
+
+function _arsiveKaydetIslem(tip){
+  arsivData = JSON.parse(localStorage.getItem("weicon_arsiv")||"{}");
+  if(!arsivData.siparis) arsivData.siparis=[];
+  if(!arsivData.proforma) arsivData.proforma=[];
+  if(!arsivData.teklif) arsivData.teklif=[];
   var cn=getDynamicCustomerName(); var cv=getDynamicCustomerVade(); var cf=getDynamicCustomerFatura();
+  var cy=getDynamicCustomerYetkili(); var ck=getDynamicCustomerKargo();
   var bugun=new Date();
   var aylar=["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
-  var tarih=bugun.getDate()+" "+aylar[bugun.getMonth()]+" "+bugun.getFullYear();
+  var saat=bugun.getHours().toString().padStart(2,"0")+":"+bugun.getMinutes().toString().padStart(2,"0");
+  var tarih=bugun.getDate()+" "+aylar[bugun.getMonth()]+" "+bugun.getFullYear()+" - "+saat;
+  var ts=bugun.getTime();
   var kayit={
-    tarih:tarih,
-    musteri:cn,
-    vade:cv,
-    fatura:cf,
-    mod:secilenMod,
+    tarih:tarih, ts:ts,
+    musteri:cn, vade:cv, fatura:cf, yetkili:cy, kargo:ck,
+    mod:tip,
     urunler:JSON.parse(JSON.stringify(hareketListesi))
   };
-  arsivData[secilenMod].unshift(kayit);
+  arsivData[tip].unshift(kayit);
+  // Tarihe göre sırala (en yeni üstte)
+  arsivData[tip].sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
   localStorage.setItem("weicon_arsiv", JSON.stringify(arsivData));
-  arsivTabSec(secilenMod);
-  switchTab(6);
   showToast("Arşive kaydedildi!");
+  arsivKategoriAc(tip);
+  switchTab(6);
 }
 
 function arsivKayitSil(tip, idx){
+  arsivData = JSON.parse(localStorage.getItem("weicon_arsiv")||"{}");
+  if(!arsivData[tip]) return;
   arsivData[tip].splice(idx,1);
   localStorage.setItem("weicon_arsiv", JSON.stringify(arsivData));
   renderArsiv();
@@ -731,6 +803,10 @@ function arsivKayitSil(tip, idx){
 }
 
 function renderArsiv(){
+  arsivData = JSON.parse(localStorage.getItem("weicon_arsiv")||"{}");
+  if(!arsivData.siparis) arsivData.siparis=[];
+  if(!arsivData.proforma) arsivData.proforma=[];
+  if(!arsivData.teklif) arsivData.teklif=[];
   var c=document.getElementById("arsivListesiDiv");
   var e=document.getElementById("arsivBosMsg");
   c.innerHTML="";
@@ -743,13 +819,12 @@ function renderArsiv(){
     var urunMetin="";
     for(var j=0;j<k.urunler.length;j++){
       var u=k.urunler[j];
-      urunMetin+=u.adet+"x "+u.name+" — "+fmt(u.iskBirim)+" EUR\n";
+      urunMetin+="• "+u.adet+"x "+u.name+"\n";
     }
     div.innerHTML="<button class=\"btn-arsiv-sil\" onclick=\"arsivKayitSil('"+aktifArsivTab+"',"+i+")\">Sil</button>"
       +"<div class=\"arsiv-kayit-tarih\">"+k.tarih+"</div>"
       +"<div class=\"arsiv-kayit-musteri\">"+k.musteri+"</div>"
-      +"<div class=\"arsiv-kayit-detay\">Vade: "+k.vade+" | Fatura: "+k.fatura+"</div>"
-      +"<div class=\"arsiv-kayit-detay\" style=\"margin-top:4px;white-space:pre-line;\">"+urunMetin+"</div>";
+      +"<div class=\"arsiv-kayit-detay\" style=\"white-space:pre-line;margin-top:4px;\">"+urunMetin+"</div>";
     c.appendChild(div);
   }
 }
