@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" style="width:100%;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASIST</title>
 <style>
 *{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:0;}
-body{background-color:#f5f7fa;color:#333;padding:6px;display:flex;justify-content:center;}
-.phone-container{width:100%;max-width:680px;background:#fff;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);min-height:100vh;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+body{background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify-content:center;min-height:100vh;}
+.phone-container{width:100%;max-width:680px;min-width:0;background:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;position:relative;}
 .app-header{text-align:center;padding:8px 10px 3px;font-size:18px;font-weight:bold;color:#003a70;}
 .tarih-satir{text-align:center;font-size:11px;color:#888;padding:2px 0 4px;font-weight:500;}
 .nav-tabs{display:flex;padding:5px 5px 0;gap:3px;}
 .tab-btn{flex:1;padding:6px 2px;font-size:11px;font-weight:700;border:none;border-radius:4px 4px 0 0;cursor:pointer;text-align:center;background:#bcbcbc;color:#333;line-height:1.2;white-space:nowrap;overflow:hidden;}
 .tab-btn.active{filter:brightness(0.85);}
-.content-page{padding:7px;flex:1;display:none;margin-bottom:55px;overflow-y:auto;}
-.content-page.active{display:flex;flex-direction:column;}
+.content-page{padding:7px;width:100%;flex:1;display:none;margin-bottom:55px;overflow-y:auto;overflow-x:hidden;}
+.content-page.active{display:flex;flex-direction:column;width:100%;}
 .page-info{text-align:center;font-size:11px;color:#666;margin-bottom:5px;font-weight:bold;}
 .step-label{display:inline-block;background:#e2e8f0;color:#4a5568;font-size:9px;font-weight:bold;padding:2px 5px;border-radius:4px;margin-bottom:5px;text-transform:uppercase;}
 .search-box-container{border:1px solid #999;border-radius:6px;padding:4px;margin-bottom:7px;background:#fff;}
 .search-input{width:100%;border:none;outline:none;padding:6px;font-size:16px;}
 .btn-primary{width:100%;background:#003a70;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;letter-spacing:1px;border-radius:4px;cursor:pointer;margin-bottom:8px;text-transform:uppercase;}
 .btn-update-container{text-align:right;margin-bottom:7px;}
-.data-table-container{overflow-x:auto;}
+.data-table-container{overflow-x:auto;width:100%;}
 .data-table{width:100%;border-collapse:collapse;table-layout:fixed;}
 .data-table th{background:#003a70;color:#fff;font-size:10px;font-weight:bold;padding:5px 3px;text-align:left;}
 .col-kodlar{width:25%;}.col-urun{width:49%;}.col-euro{width:14%;}.col-islem{width:12%;}
@@ -39,7 +39,7 @@ body{background-color:#f5f7fa;color:#333;padding:6px;display:flex;justify-conten
 .btn-sepette-hesapla{background:#28a745;color:#fff;border:none;padding:4px 7px;font-size:9px;font-weight:bold;border-radius:4px;cursor:pointer;white-space:nowrap;}
 .placeholder-page{text-align:center;padding:15px;color:#666;font-size:12px;}
 /* SAYFA 3 KOMPAKT */
-.hesap-section{background:#f7f9fc;border:1px solid #dce3ef;border-radius:6px;padding:6px 8px;margin-bottom:6px;}
+.hesap-section{background:#f7f9fc;border:1px solid #dce3ef;border-radius:6px;padding:6px 8px;margin-bottom:6px;width:100%;}
 .hesap-section-title{font-size:9px;font-weight:bold;color:#7a8bab;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;}
 .hesap-field{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .hesap-field:last-child{margin-bottom:0;}
@@ -48,7 +48,7 @@ body{background-color:#f5f7fa;color:#333;padding:6px;display:flex;justify-conten
 .hesap-input:focus{outline:none;border-color:#003a70;}
 .hesap-result{width:100px;padding:4px 6px;background:#e8eef8;border:1px solid #c5cfe0;border-radius:4px;font-size:12px;font-weight:bold;color:#003a70;text-align:right;}
 .hesap-result-vurgulu{width:100px;padding:4px 8px;background:#fff3e0;border:2px solid #ff9900;border-radius:4px;font-size:14px;font-weight:900;color:#ff9900;text-align:right;}
-.hesap-two-col{display:flex;gap:6px;}
+.hesap-two-col{display:flex;gap:6px;width:100%;}
 .hesap-two-col .hesap-section{flex:1;}
 .hesap-fatura-box{background:#003a70;color:#fff;border-radius:6px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
 .hesap-fatura-box .lbl{font-size:10px;color:#a8c0e8;}
@@ -77,7 +77,7 @@ body{background-color:#f5f7fa;color:#333;padding:6px;display:flex;justify-conten
 .hareket-toplam-box .ht-euro{font-size:17px;font-weight:bold;}
 .hareket-toplam-box .ht-tl{font-size:13px;color:#ffcc00;font-weight:bold;}
 .btn-iletisim-aktar{width:100%;background:#e67e22;color:#fff;border:none;padding:10px;font-size:13px;font-weight:bold;border-radius:4px;cursor:pointer;text-transform:uppercase;}
-.communication-box{display:flex;flex-direction:column;gap:8px;padding:3px;}
+.communication-box{display:flex;flex-direction:column;gap:8px;padding:3px;width:100%;}
 .customer-input-panel{background:#f8fafc;border:1px dashed #003a70;border-radius:6px;padding:7px;margin-bottom:7px;display:flex;flex-direction:column;gap:6px;}
 .customer-row-fields{display:flex;gap:6px;}
 .customer-field-group{flex:1;display:flex;flex-direction:column;gap:3px;}
