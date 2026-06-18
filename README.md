@@ -287,6 +287,24 @@ body{background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify
 <div id="page6" class="content-page">
 <div class="step-label">[İşlem 6.1] Arşiv</div>
 
+<!-- Arama Kutusu - her zaman görünür -->
+<div style="display:flex;gap:6px;margin-bottom:10px;">
+  <input type="text" id="arsivAramaInput"
+    style="flex:1;padding:8px 10px;font-size:13px;border:2px solid #003a70;border-radius:6px;outline:none;"
+    placeholder="Müşteri adı ile ara..."
+    oninput="arsivAra()">
+  <button onclick="arsivAramaSifirla()"
+    style="background:#6c757d;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;">
+    Temizle
+  </button>
+</div>
+
+<!-- Arama Sonuçları Paneli -->
+<div id="arsivAramaSonucPanel" style="display:none;">
+  <div style="font-size:11px;font-weight:bold;color:#003a70;margin-bottom:8px;" id="arsivAramaSonucBaslik"></div>
+  <div id="arsivAramaSonucListesi"></div>
+</div>
+
 <!-- 3 Büyük Buton -->
 <div id="arsivBtnPanel" style="display:block;margin-bottom:10px;">
   <button onclick="arsivKategoriAc('siparis')"
@@ -306,7 +324,7 @@ body{background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify
   </button>
 </div>
 
-<!-- Kayıt Listesi (gizli başlar) -->
+<!-- Kayıt Listesi -->
 <div id="arsivDetayPanel" style="display:none;">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
     <button onclick="arsivGeriDon()" style="background:#6c757d;color:#fff;border:none;padding:5px 12px;border-radius:4px;font-size:11px;font-weight:bold;cursor:pointer;">← Geri</button>
@@ -314,8 +332,6 @@ body{background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify
   </div>
   <div id="arsivListesiDiv"></div>
   <div id="arsivBosMsg" class="placeholder-page" style="display:none;">Bu kategoride kayıt yok.</div>
-</div>
-
 </div>
 
 </div>
@@ -378,7 +394,13 @@ function switchTab(n){
   if(n===3) hesapla();
   if(n===4) renderHareket();
   if(n===5) generateCommunicationData();
-  if(n===6){ arsivSayaclariGuncelle(); document.getElementById("arsivBtnPanel").style.display="block"; document.getElementById("arsivDetayPanel").style.display="none"; }
+  if(n===6){
+    document.getElementById("arsivAramaInput").value="";
+    document.getElementById("arsivAramaSonucPanel").style.display="none";
+    arsivSayaclariGuncelle();
+    document.getElementById("arsivBtnPanel").style.display="block";
+    document.getElementById("arsivDetayPanel").style.display="none";
+  }
 }
 
 function loadCatalogFromMemory(){
@@ -729,10 +751,82 @@ if(!arsivData.proforma) arsivData.proforma=[];
 if(!arsivData.teklif) arsivData.teklif=[];
 var aktifArsivTab = "siparis";
 
-function arsivTabSec(tip){ aktifArsivTab=tip; }
+function arsivAra(){
+  var q = document.getElementById("arsivAramaInput").value.trim().toLocaleLowerCase("tr-TR");
+  var sonucPanel = document.getElementById("arsivAramaSonucPanel");
+  var btnPanel   = document.getElementById("arsivBtnPanel");
+  var detayPanel = document.getElementById("arsivDetayPanel");
+  var sonucListesi = document.getElementById("arsivAramaSonucListesi");
+  var sonucBaslik  = document.getElementById("arsivAramaSonucBaslik");
+
+  if(q.length < 1){
+    sonucPanel.style.display = "none";
+    btnPanel.style.display   = "block";
+    detayPanel.style.display = "none";
+    return;
+  }
+
+  // Tüm kategorilerde ara
+  arsivData = JSON.parse(localStorage.getItem("weicon_arsiv")||"{}");
+  if(!arsivData.siparis)  arsivData.siparis=[];
+  if(!arsivData.proforma) arsivData.proforma=[];
+  if(!arsivData.teklif)   arsivData.teklif=[];
+
+  var kategoriler = [
+    {tip:"siparis",  renk:"#003a70", ad:"SİPARİŞ"},
+    {tip:"teklif",   renk:"#28a745", ad:"FİYAT TEKLİFİ"},
+    {tip:"proforma", renk:"#8e44ad", ad:"PROFORMA"}
+  ];
+
+  var toplamSonuc = 0;
+  sonucListesi.innerHTML = "";
+
+  for(var k=0; k<kategoriler.length; k++){
+    var kat = kategoriler[k];
+    var liste = arsivData[kat.tip]||[];
+    for(var i=0; i<liste.length; i++){
+      var kayit = liste[i];
+      if(kayit.musteri.toLocaleLowerCase("tr-TR").indexOf(q) >= 0){
+        toplamSonuc++;
+        var div = document.createElement("div");
+        div.className = "arsiv-kayit";
+        div.style.borderLeftColor = kat.renk;
+        var urunMetin = "";
+        for(var j=0; j<kayit.urunler.length; j++){
+          var u = kayit.urunler[j];
+          urunMetin += "• "+u.adet+"x "+u.name+"\n";
+        }
+        div.innerHTML =
+          "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;'>"
+          +"<span style='font-size:9px;font-weight:bold;color:"+kat.renk+";background:#f0f0f0;padding:2px 6px;border-radius:10px;'>"+kat.ad+"</span>"
+          +"<span class='arsiv-kayit-tarih'>"+kayit.tarih+"</span>"
+          +"</div>"
+          +"<div class='arsiv-kayit-musteri'>"+kayit.musteri+"</div>"
+          +"<div class='arsiv-kayit-detay' style='white-space:pre-line;margin-top:4px;'>"+urunMetin+"</div>";
+        sonucListesi.appendChild(div);
+      }
+    }
+  }
+
+  btnPanel.style.display   = "none";
+  detayPanel.style.display = "none";
+  sonucPanel.style.display = "block";
+  sonucBaslik.textContent  = "\""+q+"\" için "+toplamSonuc+" kayıt bulundu:";
+  if(toplamSonuc === 0){
+    sonucListesi.innerHTML = "<div class='placeholder-page'>Kayıt bulunamadı.</div>";
+  }
+}
+
+function arsivAramaSifirla(){
+  document.getElementById("arsivAramaInput").value = "";
+  document.getElementById("arsivAramaSonucPanel").style.display = "none";
+  document.getElementById("arsivBtnPanel").style.display = "block";
+  document.getElementById("arsivDetayPanel").style.display = "none";
+}
 
 function arsivGeriDon(){
   document.getElementById("arsivDetayPanel").style.display="none";
+  document.getElementById("arsivAramaSonucPanel").style.display="none";
   document.getElementById("arsivBtnPanel").style.display="block";
   arsivSayaclariGuncelle();
 }
