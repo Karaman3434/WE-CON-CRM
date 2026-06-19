@@ -6,15 +6,16 @@
 <title>WEICON ASIST</title>
 <style>
 *{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:0;}
-body{background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify-content:center;min-height:100vh;}
-.phone-container{width:100%;max-width:680px;min-width:0;background:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;position:relative;}
-.app-header{text-align:center;padding:8px 10px 3px;font-size:18px;font-weight:bold;color:#003a70;}
-.tarih-satir{text-align:center;font-size:11px;color:#888;padding:2px 0 4px;font-weight:500;}
-.nav-tabs{display:flex;padding:5px 5px 0;gap:3px;}
+html{width:100%;height:100%;}
+body{width:100%;height:100vh;background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify-content:center;overflow:hidden;}
+.phone-container{width:100%;max-width:680px;height:100vh;background:#fff;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.app-header{text-align:center;padding:8px 10px 3px;font-size:18px;font-weight:bold;color:#003a70;flex-shrink:0;}
+.tarih-satir{text-align:center;font-size:11px;color:#888;padding:2px 0 4px;font-weight:500;flex-shrink:0;}
+.nav-tabs{display:flex;padding:5px 5px 0;gap:3px;flex-shrink:0;}
 .tab-btn{flex:1;padding:6px 2px;font-size:11px;font-weight:700;border:none;border-radius:4px 4px 0 0;cursor:pointer;text-align:center;background:#bcbcbc;color:#333;line-height:1.2;white-space:nowrap;overflow:hidden;}
 .tab-btn.active{filter:brightness(0.85);}
-.content-page{padding:7px;width:100%;flex:1;display:none;margin-bottom:55px;overflow-y:auto;overflow-x:hidden;}
-.content-page.active{display:flex;flex-direction:column;width:100%;}
+.content-page{padding:7px;width:100%;display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;flex:1;padding-bottom:60px;}
+.content-page.active{display:flex;}
 .page-info{text-align:center;font-size:11px;color:#666;margin-bottom:5px;font-weight:bold;}
 .step-label{display:inline-block;background:#e2e8f0;color:#4a5568;font-size:9px;font-weight:bold;padding:2px 5px;border-radius:4px;margin-bottom:5px;text-transform:uppercase;}
 .search-box-container{border:1px solid #999;border-radius:6px;padding:4px;margin-bottom:7px;background:#fff;}
@@ -88,7 +89,7 @@ body{background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify
 .btn-copy-action{width:100%;background:#003a70;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
 .btn-email-action{width:100%;background:#e67e22;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
 .btn-whatsapp{width:100%;background:#25D366;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
-.bottom-nav-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:7px;gap:8px;z-index:999;}
+.bottom-nav-bar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:7px;gap:8px;z-index:999;flex-shrink:0;}
 .nav-arrow-btn{flex:1;padding:10px;font-size:12px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;background:#4a5568;color:#fff;}
 .nav-arrow-btn:disabled{background:#cbd5e1;color:#94a3b8;cursor:not-allowed;}
 .toast-notification{position:fixed;top:15px;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(0,58,112,0.95);color:#fff;padding:10px 20px;border-radius:30px;font-size:12px;font-weight:bold;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:all 0.3s ease;pointer-events:none;text-align:center;white-space:nowrap;}
