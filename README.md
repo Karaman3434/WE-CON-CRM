@@ -2,13 +2,35 @@
 <html lang="tr" style="width:100%;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=480, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+@media screen and (max-width:480px){
+  .phone-container{
+    width:100vw!important;
+    min-width:100vw!important;
+    max-width:100vw!important;
+  }
+  .bottom-nav-bar{width:100vw!important;}
+}
+</style>
+<style>
 <title>WEICON ASIST</title>
 <style>
 *{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:0;}
-html{width:100%;height:100%;}
-body{width:100%;height:100vh;background-color:#f5f7fa;color:#333;padding:0;margin:0;display:flex;justify-content:center;overflow:hidden;}
-.phone-container{width:100%;max-width:680px;height:100vh;background:#fff;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+html,body{width:100%;height:100%;background-color:#e8edf2;overflow:hidden;}
+body{display:flex;justify-content:center;align-items:flex-start;}
+.phone-container{
+  width:480px;
+  min-width:480px;
+  max-width:480px;
+  height:100vh;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 30px rgba(0,0,0,0.15);
+}
 .app-header{text-align:center;padding:8px 10px 3px;font-size:18px;font-weight:bold;color:#003a70;flex-shrink:0;}
 .tarih-satir{text-align:center;font-size:11px;color:#888;padding:2px 0 4px;font-weight:500;flex-shrink:0;}
 .nav-tabs{display:flex;padding:5px 5px 0;gap:3px;flex-shrink:0;}
@@ -89,7 +111,7 @@ body{width:100%;height:100vh;background-color:#f5f7fa;color:#333;padding:0;margi
 .btn-copy-action{width:100%;background:#003a70;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
 .btn-email-action{width:100%;background:#e67e22;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
 .btn-whatsapp{width:100%;background:#25D366;color:#fff;border:none;padding:9px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;text-transform:uppercase;}
-.bottom-nav-bar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:7px;gap:8px;z-index:999;flex-shrink:0;}
+.bottom-nav-bar{position:absolute;bottom:0;left:0;right:0;width:480px;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:7px;gap:8px;z-index:999;flex-shrink:0;}
 .nav-arrow-btn{flex:1;padding:10px;font-size:12px;font-weight:bold;border:none;border-radius:6px;cursor:pointer;background:#4a5568;color:#fff;}
 .nav-arrow-btn:disabled{background:#cbd5e1;color:#94a3b8;cursor:not-allowed;}
 .toast-notification{position:fixed;top:15px;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(0,58,112,0.95);color:#fff;padding:10px 20px;border-radius:30px;font-size:12px;font-weight:bold;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:all 0.3s ease;pointer-events:none;text-align:center;white-space:nowrap;}
