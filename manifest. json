@@ -1,0 +1,22 @@
+{
+  "name": "WEICON ASİST",
+  "short_name": "WEICON ASİST",
+  "start_url": "https://karaman3434.github.io/WE-CON-CRM/",
+  "scope": "https://karaman3434.github.io/WE-CON-CRM/",
+  "display": "standalone",
+  "theme_color": "#0d3d8c",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
