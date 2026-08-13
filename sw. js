@@ -1,0 +1,45 @@
+// WEICON ASİST — Service Worker
+// AMAÇ: Sadece "Ana Ekrana Ekle" kısayolunun gerçek bir standalone uygulama
+// (adres çubuksuz) olarak açılabilmesi için gereken teknik şartı sağlamak.
+//
+// ÖNEMLİ: Bu Service Worker BİLİNÇLİ olarak "ağ öncelikli" (network-first)
+// çalışır — internet varken HER ZAMAN sunucudaki en güncel dosyayı çeker,
+// hiçbir zaman eski bir sürümü önbellekten göstermez. Önbellek sadece
+// gerçekten interneti yokken (çevrimdışı) bir yedek olarak devreye girer.
+// Bu, projenin sıkı versiyonlama kuralıyla (her zaman en güncel HTML)
+// çelişmemesi için kasıtlı bir tercihtir.
+
+const CACHE_ADI = "weicon-asist-cache-v1";
+
+self.addEventListener("install", function (event) {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", function (event) {
+  event.waitUntil(
+    caches.keys().then(function (isimler) {
+      return Promise.all(
+        isimler
+          .filter(function (isim) { return isim !== CACHE_ADI; })
+          .map(function (isim) { return caches.delete(isim); })
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+self.addEventListener("fetch", function (event) {
+  event.respondWith(
+    fetch(event.request)
+      .then(function (yanit) {
+        var kopya = yanit.clone();
+        caches.open(CACHE_ADI).then(function (cache) {
+          cache.put(event.request, kopya);
+        });
+        return yanit;
+      })
+      .catch(function () {
+        return caches.match(event.request);
+      })
+  );
+});
