@@ -1,5 +1,5 @@
 const CACHE_ADI = "weicon-asist-cache-v4";
-const BUILD = "20260815-02";
+const BUILD = "CG 1508262345-006";
 const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js?v=' + BUILD + '"></script>';
 const CUSTOMER_MEMORY_CARD_SRC = '<script src="js/customers/customer-memory-card.js?v=' + BUILD + '"></script>';
 
@@ -24,9 +24,9 @@ function modularHtmlResponse(response) {
       html = html.replace(/<\/body>/i, CUSTOMER_MEMORY_CARD_SRC + "\n</body>");
     }
 
-    // Visible build marker: this lets us immediately verify that the new
-    // service-worker-transformed HTML is actually reaching the device.
-    html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._-]+/g, "WEİCON ASİST V" + BUILD);
+    // Tek resmi sürüm kodu: CG 1508262345-006.
+    // Bu işaret, cihazda çalışan HTML üzerinde doğrudan görünür.
+    html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._ -]+/g, "WEİCON ASİST " + BUILD);
 
     return new Response(html, {
       status: response.status,
