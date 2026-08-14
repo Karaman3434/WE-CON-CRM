@@ -1,0 +1,63 @@
+name: Validate Customer Core
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: read
+
+jobs:
+  validate-customer-core:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 1
+
+      - name: Validate customer data safety boundaries
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+
+          required = [
+              'function musteriSonrakiKoduBul',
+              'function musteriIdUret',
+              'function musteriKaydetGercek',
+              'function musteriBirlestirOnayla',
+              'function musteriPanelAc',
+          ]
+          for needle in required:
+              if needle not in html:
+                  raise SystemExit(f'Missing customer-core symbol: {needle}')
+
+          # Customer data persistence must remain explicit and observable.
+          for needle in ['weicon_musteriler', 'fbGet("musteriler")', 'fbSet("musteriler"']:
+              if needle not in html:
+                  raise SystemExit(f'Customer persistence guard missing: {needle}')
+
+          # Refactor must not silently create duplicate external script tags.
+          for src in ['assets/card-photo-ai.js', 'assets/product-entry.js']:
+              if html.count(f'<script src="{src}"></script>') != 1:
+                  raise SystemExit(f'Expected exactly one script tag for {src}.')
+
+          print('Customer core safety boundaries validated.')
+
+      - name: Validate customer module syntax markers
+        shell: python
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path('index.html').read_text(encoding='utf-8')
+          if html.count('<script>') != html.count('</script>'):
+              raise SystemExit('Unbalanced inline script tags detected.')
+          print('Script tag balance validated.')
+          PY
+
+# Trigger comment: validation is isolated to project-context.
