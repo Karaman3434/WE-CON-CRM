@@ -57,7 +57,22 @@ A module is not to be extracted until its dependencies and runtime behavior have
 - JavaScript modularization: not started.
 - `main`: untouched by this refactor work.
 
-## 6. Critical architecture areas to preserve
+## 6. Verified JavaScript architecture observations
+The source inspection has now confirmed several concrete runtime dependencies in `index.html`:
+- External Firebase compat libraries are loaded for Firebase App, Realtime Database, Storage, and Auth.
+- `html2canvas` and `xlsx` are also loaded externally.
+- A `firebaseConfig` object initializes the `weicon-asist` Firebase project.
+- Runtime state includes `db`, `auth`, PIN-lock timing variables, and Firebase readiness state.
+- `firebaseBaslat()` is the central Firebase initialization function and dispatches the `firebaseHazir` event after initialization.
+- Authentication/PIN setup is coupled to Firebase initialization through `girisSistemiKur()` and PIN synchronization functions.
+- `sayaclarFirebasdenSenkronla()` synchronizes counters between Firebase and local storage and explicitly preserves the larger counter value across devices.
+- `pinFirebasdenYukle()` synchronizes the shared PIN hash to local storage.
+- The source contains a fail-closed authentication startup path: if the authentication system cannot be established within the configured timeout, the application remains locked rather than opening without authentication.
+- These initialization and synchronization relationships are high-risk refactor boundaries and must not be split casually.
+
+Detailed Firebase paths and additional exact function names must continue to be added only after direct source verification.
+
+## 7. Critical architecture areas to preserve
 Based on the verified project analysis so far, the following areas require special care during modularization:
 - Firebase/shared data synchronization.
 - localStorage/local state and cache behavior.
@@ -69,9 +84,7 @@ Based on the verified project analysis so far, the following areas require speci
 - Product, price and calculation logic.
 - Son Hareket/visit records and their relationship to customer data.
 
-Detailed Firebase paths and exact function names must be added only after they are directly verified from the source.
-
-## 7. Working method for AI-assisted development
+## 8. Working method for AI-assisted development
 For every development request:
 1. Read the current repository state before proposing code changes.
 2. Identify the exact files/functions/components involved.
@@ -82,10 +95,10 @@ For every development request:
 7. Update this context file when architecture or important behavior changes.
 8. Continue autonomously through low-risk steps; only ask Abdullah when a decision is genuinely consequential or ambiguous.
 
-## 8. Current objective
+## 9. Current objective
 Convert the large monolithic `index.html` into a maintainable modular application without breaking the CRM that Abdullah currently uses for daily work.
 
-The immediate next task is to map the JavaScript responsibilities and dependencies in the real source before extracting the first JS module. CSS extraction remains a separate controlled step and must not be activated until the stylesheet replacement is verified.
+The immediate technical task is to complete source-level mapping of JavaScript responsibilities and dependencies before extracting the first JS module. CSS extraction remains a separate controlled step and must not be activated until the complete stylesheet replacement is verified.
 
-## 9. Non-negotiable principle
+## 10. Non-negotiable principle
 The live/working CRM is more important than refactoring speed. If a proposed change cannot be verified safely, preserve the existing working code and investigate further rather than guessing.
