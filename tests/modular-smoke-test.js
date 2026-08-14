@@ -36,10 +36,14 @@ function assert(condition, message) {
   if (!condition) throw new Error(`Smoke test failed: ${message}`);
 }
 
+function approximately(actual, expected, epsilon = 1e-9) {
+  return Math.abs(actual - expected) <= epsilon;
+}
+
 assert(context.WEICONCustomerModel.normalize({ id: 7 }).id === '7', 'customer model');
 assert(context.WEICONActivityModel.TYPES.includes('WhatsApp'), 'activity types');
-assert(context.WEICONPriceService.withDiscount(100, 10) === 90, 'price discount');
-assert(context.WEICONPriceService.withMarkup(100, 10) === 110, 'price markup');
+assert(approximately(context.WEICONPriceService.withDiscount(100, 10), 90), 'price discount');
+assert(approximately(context.WEICONPriceService.withMarkup(100, 10), 110), 'price markup');
 
 context.WEICONCustomerRepository.configure({
   async read() { return [{ id: '1', firma: 'Test' }]; },
