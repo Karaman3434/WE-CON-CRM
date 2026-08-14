@@ -16,21 +16,29 @@
 
 ## Verified JavaScript state
 - Four previously inline, explicitly marked low-risk utility blocks (`R003.1`, `R003.4`, `R003.5`, `R003.6`) were extracted into `assets/core-utils.js`.
-- `index.html` now loads `assets/core-utils.js` before the Firebase application scripts, preserving the original synchronous script ordering for these utilities.
-- The extracted module contains `safeText`, `lsGet`, `lsSet`, service-worker registration, DOM helpers, render cache state, event registry helpers, and related utility functions from those exact source blocks.
+- `index.html` now loads `assets/core-utils.js` before the Firebase application scripts, preserving the original synchronous classic-script order for these utilities.
+- Two small UI helper blocks (`updateHTML` and the upper-panel-height measurement logic) were extracted in place into `assets/ui-helpers.js`.
+- The UI helper extraction preserves the original position in `index.html`, so the classic external script executes at the same point in document parsing as the original inline scripts.
 - Structural extraction validation passed in GitHub Actions.
-- A Chrome headless smoke test passed after the utility extraction.
+- A Chrome headless smoke test passed after the UI helper extraction.
 - The one-time extraction and smoke-test workflows were removed after successful validation.
 
+## Current architecture map
+- The remaining major inline JavaScript is the Firebase/authentication block (~21.6 KB) and the large business/application block (~465.6 KB).
+- The Firebase/authentication block is high risk and remains inline.
+- The large business/application block contains backup, pricing, customer, product, rendering, synchronization, reporting and other application responsibilities and must be decomposed only after dependency mapping.
+- `docs/JS_MAP.md` records the current script-block map.
+
 ## Refactor rule
-CSS and the first low-risk JavaScript utility module are now externalized on the isolated branch. The branch is still not a candidate for `main` until broader functional review/testing is complete. No merge is performed automatically.
+CSS plus the first two low-risk JavaScript extractions are now externalized on the isolated branch. The branch is still not a candidate for `main` until broader functional review/testing is complete. No merge is performed automatically.
 
 ## Next safe phase
-1. Continue mapping the remaining JavaScript responsibilities and dependencies from the real `index.html` source.
-2. Avoid splitting Firebase/PIN/offline-sync/customer-data logic until each dependency boundary is verified.
-3. Identify the next low-risk module boundary.
-4. Extract one module at a time and run structural/browser smoke validation after each extraction.
-5. Verify the complete branch before considering any merge into `main`.
+1. Continue source-level mapping inside the large application script.
+2. Identify a cohesive, low-risk business module with a clear dependency boundary.
+3. Extract one module at a time while preserving script execution order and globals.
+4. Run structural validation and a Chrome smoke test after each extraction.
+5. Keep Firebase/PIN/offline-sync/customer-data boundaries untouched until verified.
+6. Verify the complete branch before considering any merge into `main`.
 
 ## Safety
 Do not modify Firebase synchronization, localStorage behavior, offline queueing, customer/customer-contact relationships, product/pricing logic, visit/last-activity records, PWA behavior, or authentication logic without source-level verification.
