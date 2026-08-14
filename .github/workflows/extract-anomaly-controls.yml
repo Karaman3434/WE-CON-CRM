@@ -52,12 +52,14 @@ jobs:
                   if needle not in block:
                       raise SystemExit(f'Expected function not found in extraction block: {needle}')
 
-              # Remove the inline block first. Recalculate the closing script
-              # position afterwards because the document length has changed.
+              # Remove the inline block first, then find the containing script's
+              # closing tag using a marker that remains after the removal.
               html = html[:start] + html[end:]
-              close_pos = html.find('</script>', marker_pos - len(block))
-              if close_pos < 0:
+              marker_after = html.find('// DERİN AI ANALİZİ')
+              close_pos = html.find('</script>', marker_after)
+              if marker_after < 0 or close_pos < 0:
                   raise SystemExit('Containing inline script closing tag was not found after extraction.')
+
               close_end = close_pos + len('</script>')
               html = html[:close_end] + '\n' + tag + html[close_end:]
               path.write_text(html, encoding='utf-8')
