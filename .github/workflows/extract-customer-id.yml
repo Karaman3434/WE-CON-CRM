@@ -1,0 +1,74 @@
+name: Extract Customer ID Core
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract-customer-id:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract customer ID core
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          path = Path('index.html')
+          module_path = Path('assets/customer-id-core.js')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="assets/customer-id-core.js"></script>'
+          if tag in html:
+              print('Customer ID core already externalized.')
+          else:
+              start_re = re.compile(r'//\s*--- Müşteri kalıcı ID sistemi')
+              end_re = re.compile(r'\n//\s*--- Mükerrer müşteri tespiti')
+              start_match = start_re.search(html)
+              end_match = end_re.search(html, start_match.end() if start_match else 0)
+              if not start_match or not end_match:
+                  raise SystemExit('Customer ID boundaries were not found; refusing to modify index.html.')
+              block = html[start_match.start():end_match.start()]
+              required = ['function musteriSonrakiKoduBul','function musteriIdUret','function musteriIdEksikleriTamamla']
+              for needle in required:
+                  if needle not in block:
+                      raise SystemExit(f'Required customer ID symbol missing: {needle}')
+              module_path.write_text(block.rstrip() + '\n', encoding='utf-8')
+              html = html[:start_match.start()] + tag + '\n' + html[end_match.start():]
+              path.write_text(html, encoding='utf-8')
+
+      - name: Validate extraction
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          html = Path('index.html').read_text(encoding='utf-8')
+          module = Path('assets/customer-id-core.js').read_text(encoding='utf-8')
+          if html.count('<script src="assets/customer-id-core.js"></script>') != 1:
+              raise SystemExit('Expected exactly one customer-id-core.js script tag.')
+          for name in ['musteriSonrakiKoduBul','musteriIdUret','musteriIdEksikleriTamamla']:
+              if not re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', module):
+                  raise SystemExit(f'Customer ID function missing: {name}')
+          if '<script src="assets/card-photo-ai.js"></script>' not in html:
+              raise SystemExit('Card-photo module ordering changed unexpectedly.')
+          if '<script src="assets/product-entry.js"></script>' not in html:
+              raise SystemExit('Product-entry module ordering changed unexpectedly.')
+          print('Customer ID extraction validated.')
+
+      - name: Commit extraction
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/customer-id-core.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'refactor: extract customer ID core [refactor-bot]'
+          git push origin HEAD:project-context
