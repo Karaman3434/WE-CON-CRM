@@ -9,12 +9,14 @@
 
 ## 2. Verified repository state
 - `main` remains the working baseline for the live application.
-- On `project-context`, the monolithic `index.html` remains the application entry point; its JavaScript and markup have not yet been modularized.
+- On `project-context`, `index.html` remains the application entry point; the remaining business JavaScript and markup are still monolithic.
 - Root application files include `index.html`, `manifest.json`, `sw.js`, icon files, `.nojekyll`, and `README.md`.
 - `assets/styles.css` is now the external stylesheet on `project-context` and contains the previously inline CSS blocks in their original order.
-- `index.html` now contains one reference to `assets/styles.css` and no static inline `<style>` blocks.
-- `sw.js` has NOT been changed as part of the current CSS extraction; it remains the existing cache-first/fetch-fallback implementation with cache name `weicon-asist-cache-v1`.
-- Therefore the CSS extraction is isolated to `project-context`; `main` remains untouched.
+- `index.html` contains one reference to `assets/styles.css` and no static inline `<style>` blocks.
+- `assets/core-utils.js` now contains four verified low-risk utility script blocks extracted from `index.html`.
+- `index.html` loads `assets/core-utils.js` before the Firebase application scripts, preserving synchronous classic-script order for those utilities.
+- `sw.js` has NOT been changed as part of the refactor; it remains the existing cache-first/fetch-fallback implementation with cache name `weicon-asist-cache-v1`.
+- The CSS and utility extractions are isolated to `project-context`; `main` remains untouched.
 
 ## 3. Development safety rules
 1. Keep the currently working application usable throughout development.
@@ -32,6 +34,7 @@ The long-term goal is to reduce the responsibilities of `index.html` by separati
 
 Areas to investigate and separate incrementally:
 - CSS/styles — extracted to `assets/styles.css` on `project-context`.
+- Core utility helpers — extracted to `assets/core-utils.js` on `project-context`.
 - customer management
 - customer contacts
 - products/catalog
@@ -44,7 +47,7 @@ Areas to investigate and separate incrementally:
 - backup/archive
 - PIN/authentication-related UI/logic
 - settings
-- shared utilities
+- remaining shared utilities
 
 A module is not to be extracted until its dependencies and runtime behavior have been inspected.
 
@@ -52,12 +55,13 @@ A module is not to be extracted until its dependencies and runtime behavior have
 - Repository structure review: completed.
 - Initial architecture/refactor planning: completed.
 - Project context document: created and maintained on `project-context`.
-- CSS extraction: completed on `project-context`; validation passed in GitHub Actions.
-- JavaScript modularization: not started.
+- CSS extraction: completed and browser-smoke tested on `project-context`.
+- First low-risk JavaScript utility extraction: completed and browser-smoke tested on `project-context`.
+- JavaScript business-logic modularization: not yet started.
 - `main`: untouched by this refactor work.
 
 ## 6. Verified JavaScript architecture observations
-The source inspection has now confirmed several concrete runtime dependencies in `index.html`:
+The source inspection has confirmed several concrete runtime dependencies in `index.html`:
 - External Firebase compat libraries are loaded for Firebase App, Realtime Database, Storage, and Auth.
 - `html2canvas` and `xlsx` are also loaded externally.
 - A `firebaseConfig` object initializes the `weicon-asist` Firebase project.
@@ -97,7 +101,7 @@ For every development request:
 ## 9. Current objective
 Convert the large monolithic `index.html` into a maintainable modular application without breaking the CRM that Abdullah currently uses for daily work.
 
-The immediate technical task is to browser-verify the CSS-extracted branch, then complete source-level mapping of JavaScript responsibilities and dependencies before extracting the first JS module.
+The immediate technical task is to continue source-level mapping of the remaining JavaScript responsibilities and dependencies and identify the next low-risk module boundary.
 
 ## 10. Non-negotiable principle
 The live/working CRM is more important than refactoring speed. If a proposed change cannot be verified safely, preserve the existing working code and investigate further rather than guessing.
