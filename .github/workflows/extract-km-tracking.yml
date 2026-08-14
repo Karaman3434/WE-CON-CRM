@@ -1,0 +1,89 @@
+name: Extract KM Tracking
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract-km-tracking:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract KM tracking block
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('index.html')
+          module_path = Path('assets/km-tracking.js')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="assets/km-tracking.js"></script>'
+          start_marker = '// ============ ARAÇ KM TAKİBİ ============'
+          end_marker = '// ============ ZİYARET TAKVİMİ ============'
+
+          if tag in html:
+              print('KM tracking already externalized.')
+          else:
+              start = html.find(start_marker)
+              end = html.find(end_marker, start + len(start_marker))
+              if start < 0 or end < 0 or end <= start:
+                  raise SystemExit('KM tracking boundaries were not found; refusing to modify index.html.')
+
+              block = html[start:end]
+              required = [
+                  'var kmTakipAyarlariObj',
+                  'var kmTakipKayitlariObj',
+                  'function kmGuvenliKaydet',
+                  'function kmTakipSayfasiAc',
+                  'function kmTakipKaydet',
+                  'function kmGunDuzenlePopupAc',
+                  'function kmExcelIndir',
+              ]
+              for needle in required:
+                  if needle not in block:
+                      raise SystemExit(f'Required KM symbol missing: {needle}')
+
+              module_path.write_text(block + '\n', encoding='utf-8')
+              html = html[:start] + tag + '\n\n' + html[end:]
+              path.write_text(html, encoding='utf-8')
+
+      - name: Validate extraction
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          module = Path('assets/km-tracking.js').read_text(encoding='utf-8')
+
+          if html.count('<script src="assets/km-tracking.js"></script>') != 1:
+              raise SystemExit('Expected exactly one km-tracking.js script tag.')
+          if '// ============ ARAÇ KM TAKİBİ ============' in html:
+              raise SystemExit('Inline KM tracking block remains in index.html.')
+          if '// ============ ZİYARET TAKVİMİ ============' not in html:
+              raise SystemExit('Visit calendar boundary was damaged.')
+
+          for name in ['kmGuvenliKaydet','kmTakipSayfasiAc','kmTakipKaydet','kmGunDuzenlePopupAc','kmExcelIndir']:
+              if not re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', module):
+                  raise SystemExit(f'KM function missing from extracted module: {name}')
+
+          print('KM tracking extraction validated.')
+
+      - name: Commit extraction
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/km-tracking.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'refactor: extract KM tracking [refactor-bot]'
+          git push origin HEAD:project-context
