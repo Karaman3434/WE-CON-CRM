@@ -1,8 +1,8 @@
-/* WEICON ASIST — Müşteri Hafızası / legacy index.html entegrasyonu */
+/* WEICON ASIST — Müşteri Hafızası / İşlem Geçmişi entegrasyonu */
 (function(global){
   'use strict';
-  if(global.__WEICON_MEMORY_V3__) return;
-  global.__WEICON_MEMORY_V3__ = true;
+  if(global.__WEICON_MEMORY_V4__) return;
+  global.__WEICON_MEMORY_V4__ = true;
 
   var PANEL_ID='weicon-customer-memory-card';
   var TYPES=['numune','teklif','proforma','siparis'];
@@ -29,23 +29,29 @@
   function styles(){
     if(document.getElementById('weicon-memory-style'))return;
     var s=document.createElement('style');s.id='weicon-memory-style';
-    s.textContent='#'+PANEL_ID+'{margin:18px 0 20px;border:3px solid #3569b8;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 3px 12px rgba(0,58,112,.14)}#'+PANEL_ID+' .wm-head{background:#003a70;color:#fff;padding:12px 16px;font-size:21px;font-weight:900}#'+PANEL_ID+' .wm-body{padding:13px 16px}#'+PANEL_ID+' .wm-sub{font-size:12px;font-weight:900;color:#8a94a3;margin-bottom:5px;letter-spacing:.4px}#'+PANEL_ID+' .wm-last{font-size:17px;font-weight:900;color:#003a70;margin-bottom:11px}#'+PANEL_ID+' .wm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}#'+PANEL_ID+' .wm-item{background:#eef4fe;border-radius:9px;padding:9px}#'+PANEL_ID+' .wm-item:nth-child(2){background:#eefaf1}#'+PANEL_ID+' .wm-item:nth-child(3){background:#fff8e8}#'+PANEL_ID+' .wm-item:nth-child(4){background:#f3f4f6}#'+PANEL_ID+' .wm-item:nth-child(5){background:#f4efff}#'+PANEL_ID+' .wm-item:nth-child(6){background:#eefaf8}#'+PANEL_ID+' .wm-label{font-size:10px;font-weight:900;color:#718096}#'+PANEL_ID+' .wm-value{font-size:15px;font-weight:900;color:#003a70;margin-top:3px;line-height:1.2}#'+PANEL_ID+' .wm-foot{margin-top:9px;padding-top:8px;border-top:1px solid #dbe5f2;font-size:11px;color:#718096;font-weight:800}';
+    s.textContent='#'+PANEL_ID+'{margin:4px 0 18px;border:2px solid #3569b8;border-radius:13px;overflow:hidden;background:#fff;box-shadow:0 3px 12px rgba(0,58,112,.12)}#'+PANEL_ID+' .wm-head{background:#003a70;color:#fff;padding:10px 14px;font-size:21px;font-weight:900}#'+PANEL_ID+' .wm-body{padding:11px 14px}#'+PANEL_ID+' .wm-sub{font-size:11px;font-weight:900;color:#7b8794;margin-bottom:3px;letter-spacing:.4px}#'+PANEL_ID+' .wm-last{font-size:16px;font-weight:900;color:#003a70;margin-bottom:9px}#'+PANEL_ID+' .wm-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}#'+PANEL_ID+' .wm-item{background:#eef4fe;border-radius:8px;padding:8px}#'+PANEL_ID+' .wm-item:nth-child(2){background:#eefaf1}#'+PANEL_ID+' .wm-item:nth-child(3){background:#fff8e8}#'+PANEL_ID+' .wm-item:nth-child(4){background:#f3f4f6}#'+PANEL_ID+' .wm-item:nth-child(5){background:#f4efff}#'+PANEL_ID+' .wm-item:nth-child(6){background:#eefaf8}#'+PANEL_ID+' .wm-label{font-size:10px;font-weight:900;color:#718096}#'+PANEL_ID+' .wm-value{font-size:14px;font-weight:900;color:#003a70;margin-top:2px;line-height:1.18;word-break:break-word}#'+PANEL_ID+' .wm-foot{margin-top:8px;padding-top:7px;border-top:1px solid #dbe5f2;font-size:11px;color:#718096;font-weight:800;line-height:1.35}';
     document.head.appendChild(s);
   }
 
+  function removeFromCustomerCard(){
+    var old=document.getElementById(PANEL_ID);
+    if(old) old.remove();
+  }
+
   function render(){
-    var modal=document.getElementById('musteriCariKartModal');
+    var modal=document.getElementById('musteriGecmisIslemlerModal');
     if(!modal)return;
     var display=global.getComputedStyle?global.getComputedStyle(modal).display:modal.style.display;
     if(display==='none')return;
     var m=customer();if(!m)return;
     styles();
+
     var panel=document.getElementById(PANEL_ID);
     if(!panel){
       panel=document.createElement('section');panel.id=PANEL_ID;panel.setAttribute('aria-label','Müşteri Hafızası');
-      var anchor=document.getElementById('cariKartSonTemas');
-      if(anchor&&anchor.parentNode)anchor.parentNode.parentNode.insertBefore(panel,anchor.parentNode.nextSibling);
-      else{var content=modal.firstElementChild;if(content)content.appendChild(panel);}
+      var anchor=document.getElementById('surecListesiDiv');
+      if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(panel,anchor);
+      else{var list=document.getElementById('gecmisIslemlerListesi');if(list&&list.parentNode)list.parentNode.insertBefore(panel,list);}
     }
 
     var last=latest(m), order=latestOrder(m), k=last&&last.kayit, u=firstProduct(last), ou=firstProduct(order);
@@ -74,11 +80,12 @@
   }
 
   function hook(){
-    if(typeof global.musteriCariKartAc!=='function')return false;
-    if(global.musteriCariKartAc.__weiconMemoryWrapped)return true;
-    var original=global.musteriCariKartAc;
+    removeFromCustomerCard();
+    if(typeof global.musteriGecmisIslemleriAc!=='function')return false;
+    if(global.musteriGecmisIslemleriAc.__weiconMemoryWrapped)return true;
+    var original=global.musteriGecmisIslemleriAc;
     function wrapped(){var r=original.apply(this,arguments);setTimeout(render,0);setTimeout(render,100);return r;}
-    wrapped.__weiconMemoryWrapped=true;global.musteriCariKartAc=wrapped;return true;
+    wrapped.__weiconMemoryWrapped=true;global.musteriGecmisIslemleriAc=wrapped;return true;
   }
 
   var tries=0;
