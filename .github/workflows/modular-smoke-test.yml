@@ -22,3 +22,10 @@ jobs:
         run: node tests/modular-smoke-test.js
       - name: Run modular static integration test
         run: node tests/modular-integration-static-test.js
+      - name: Run Firebase path audit
+        run: node tests/firebase-path-audit.js > firebase-path-audit.txt
+      - name: Upload Firebase path audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-path-audit
+          path: firebase-path-audit.txt
