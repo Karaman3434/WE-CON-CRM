@@ -19,39 +19,43 @@ jobs:
           ref: project-context
           fetch-depth: 0
 
-      - name: Extract the existing inline stylesheet
+      - name: Extract the existing inline styles
         shell: python
         run: |
           from pathlib import Path
+          import re
 
           index = Path('index.html')
           css = Path('assets/styles.css')
           text = index.read_text(encoding='utf-8')
 
-          start = text.find('<style>')
-          end = text.find('</style>', start + 7)
-          if start < 0 or end < 0:
-              raise SystemExit('No complete <style>...</style> block found; nothing changed.')
+          pattern = re.compile(r'<style>(.*?)</style>', re.DOTALL | re.IGNORECASE)
+          matches = list(pattern.finditer(text))
+          if not matches:
+              raise SystemExit('No complete plain <style>...</style> blocks found; nothing changed.')
 
-          second = text.find('<style>', end + 8)
-          if second >= 0:
-              raise SystemExit('More than one <style> block detected; refusing automatic extraction.')
-
-          stylesheet = text[start + len('<style>'):end]
-          if not stylesheet.strip():
-              raise SystemExit('Stylesheet is empty; refusing automatic extraction.')
+          stylesheet_parts = []
+          for i, match in enumerate(matches, 1):
+              part = match.group(1)
+              if not part.strip():
+                  raise SystemExit(f'Style block {i} is empty; refusing automatic extraction.')
+              stylesheet_parts.append(f'/* Original inline style block {i} */\n{part.strip()}\n')
 
           css.parent.mkdir(parents=True, exist_ok=True)
-          css.write_text(stylesheet.lstrip('\n'), encoding='utf-8')
+          css.write_text('\n\n'.join(stylesheet_parts) + '\n', encoding='utf-8')
 
           replacement = '<link rel="stylesheet" href="assets/styles.css">'
-          updated = text[:start] + replacement + text[end + len('</style>'):]
+          updated = pattern.sub(replacement, text)
           index.write_text(updated, encoding='utf-8')
+
+          print(f'Inline style blocks extracted: {len(matches)}')
+          print(f'Extracted CSS bytes: {len(css.read_bytes())}')
 
       - name: Validate the extracted stylesheet
         shell: python
         run: |
           from pathlib import Path
+          import re
 
           html = Path('index.html').read_text(encoding='utf-8')
           css = Path('assets/styles.css').read_text(encoding='utf-8')
@@ -60,11 +64,13 @@ jobs:
               raise SystemExit('Stylesheet link missing from index.html')
           if not css.strip():
               raise SystemExit('Extracted CSS is empty')
-          if '<style>' in html or '</style>' in html:
-              raise SystemExit('Inline style block still present after extraction')
+          if re.search(r'<style(?:\s|>)', html, re.IGNORECASE):
+              raise SystemExit('Inline <style> block still present after extraction')
+          if re.search(r'</style>', html, re.IGNORECASE):
+              raise SystemExit('Closing </style> tag still present after extraction')
 
-          print(f'Extracted CSS bytes: {len(css.encode("utf-8"))}')
           print(f'Updated HTML bytes: {len(html.encode("utf-8"))}')
+          print('CSS extraction validation passed.')
 
       - name: Commit extracted stylesheet
         shell: bash
