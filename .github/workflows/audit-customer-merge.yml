@@ -1,6 +1,12 @@
 name: Audit customer merge dependencies
 
 on:
+  push:
+    branches: [project-context]
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - '.github/workflows/audit-customer-merge.yml'
   workflow_dispatch:
 
 jobs:
@@ -17,9 +23,24 @@ jobs:
           from pathlib import Path
           s = Path('index.html').read_text(encoding='utf-8')
           start = s.find('function musteriBirlestirOnayla')
-          end = s.find('// ---', start + 10) if start >= 0 else -1
           assert start >= 0, 'musteriBirlestirOnayla bulunamadı'
+          end = s.find('// ---', start + 10)
+          body = s[start:end if end > start else len(s)]
+          required = ['musteriListesi', 'localStorage']
           print('customer merge function located:', start)
-          for name in ['musteriListesi','firebase','localStorage','temas','gorev','arsiv']:
-              print(name, s.find(name, start, end if end > start else len(s)))
+          for name in required:
+              print(name, body.find(name))
+          assert 'musteriListesi' in body, 'müşteri listesi bağımlılığı yok'
+          assert 'localStorage' in body, 'localStorage bağımlılığı yok'
+          print('customer merge dependency audit: PASS')
+          PY
+      - name: Check script tag balance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path('index.html').read_text(encoding='utf-8')
+          assert s.count('<script') == s.count('</script>'), 'script tag dengesi bozuk'
+          print('script tag balance: PASS')
           PY
