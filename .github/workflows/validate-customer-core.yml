@@ -22,28 +22,33 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re
 
           html = Path('index.html').read_text(encoding='utf-8')
+          module = Path('assets/customer-id-core.js').read_text(encoding='utf-8')
 
-          required = [
+          # Customer ID helpers are intentionally externalized.
+          for needle in [
               'function musteriSonrakiKoduBul',
               'function musteriIdUret',
+              'function musteriIdEksikleriTamamla',
+          ]:
+              if needle not in module:
+                  raise SystemExit(f'Missing customer ID module symbol: {needle}')
+
+          # Remaining customer operations stay in the main application.
+          for needle in [
               'function musteriKaydetGercek',
               'function musteriBirlestirOnayla',
               'function musteriPanelAc',
-          ]
-          for needle in required:
+          ]:
               if needle not in html:
-                  raise SystemExit(f'Missing customer-core symbol: {needle}')
+                  raise SystemExit(f'Missing customer-core application symbol: {needle}')
 
-          # Customer data persistence must remain explicit and observable.
           for needle in ['weicon_musteriler', 'fbGet("musteriler")', 'fbSet("musteriler"']:
               if needle not in html:
                   raise SystemExit(f'Customer persistence guard missing: {needle}')
 
-          # Refactor must not silently create duplicate external script tags.
-          for src in ['assets/card-photo-ai.js', 'assets/product-entry.js']:
+          for src in ['assets/customer-id-core.js', 'assets/card-photo-ai.js', 'assets/product-entry.js']:
               if html.count(f'<script src="{src}"></script>') != 1:
                   raise SystemExit(f'Expected exactly one script tag for {src}.')
 
@@ -60,4 +65,4 @@ jobs:
           print('Script tag balance validated.')
           PY
 
-# Trigger comment: validation is isolated to project-context.
+# Validation is isolated to project-context.
