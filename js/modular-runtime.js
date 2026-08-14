@@ -31,14 +31,19 @@
     'js/reports/report-model.js'
   ];
 
-  const state = global.WEICONModularRuntime = { status: 'loading', loaded: [], failed: [], startedAt: Date.now() };
+  const state = global.WEICONModularRuntime = {
+    status: 'loading',
+    loaded: [],
+    failed: [],
+    startedAt: Date.now()
+  };
 
   function load(src) {
     return new Promise(function (resolve, reject) {
       const script = document.createElement('script');
       script.src = src;
       script.async = false;
-      script.onload = resolve;
+      script.onload = function () { resolve(); };
       script.onerror = function () { reject(new Error('Module load failed: ' + src)); };
       document.head.appendChild(script);
     });
@@ -46,19 +51,35 @@
 
   async function boot() {
     for (const src of MODULES) {
-      try { await load(src); state.loaded.push(src); }
-      catch (error) { state.failed.push({ src: src, message: error.message }); }
+      try {
+        await load(src);
+        state.loaded.push(src);
+      } catch (error) {
+        state.failed.push({ src: src, message: error.message });
+      }
     }
+
     state.status = state.failed.length ? 'degraded' : 'ready';
     state.finishedAt = Date.now();
+
     const registry = global.WEICONCRM && global.WEICONCRM.modules;
     if (registry && typeof registry.register === 'function' && !registry.has('modular-runtime')) {
-      registry.register('modular-runtime', { status: state.status, loaded: state.loaded.length, failed: state.failed.length });
+      registry.register('modular-runtime', {
+        status: state.status,
+        loaded: state.loaded.length,
+        failed: state.failed.length
+      });
     }
-    if (typeof global.CustomEvent === 'function') global.dispatchEvent(new global.CustomEvent('weicon:modular-ready', { detail: state }));
+
+    if (typeof global.CustomEvent === 'function') {
+      global.dispatchEvent(new global.CustomEvent('weicon:modular-ready', { detail: state }));
+    }
     console.info('[WE-CON-CRM] Modular runtime:', state.status, state.loaded.length + '/' + MODULES.length);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
-  else boot();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
+  }
 })(window);
