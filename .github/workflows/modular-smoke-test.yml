@@ -1,0 +1,37 @@
+name: Modular CRM Smoke Test
+
+on:
+  push:
+    branches:
+      - refactor/modular-crm
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run modular smoke test
+        run: node tests/modular-smoke-test.js
+      - name: Run modular static integration test
+        run: node tests/modular-integration-static-test.js
+      - name: Run customer activity adapter test
+        run: node tests/customer-activity-adapter-test.js
+      - name: Run customer selection UI integration test
+        run: node tests/customer-selection-ui-integration-test.js
+      - name: Run customer memory live panel test
+        run: node tests/customer-memory-live-panel-test.js
+      - name: Run Firebase path audit
+        run: node tests/firebase-path-audit.js > firebase-path-audit.txt
+      - name: Upload Firebase path audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-path-audit
+          path: firebase-path-audit.txt
