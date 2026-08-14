@@ -28,20 +28,19 @@ jobs:
           tag = '<script src="assets/anomaly-controls.js"></script>'
 
           if tag not in html:
-              start = html.find('var anomaliUyariKaynagi = null;')
+              section_marker = '// ============================================================\n// ANOMALİ KONTROLÜ'
+              start = html.rfind(section_marker, 0, html.find('var anomaliUyariKaynagi = null;') + 1)
               marker_pos = html.find('// DERİN AI ANALİZİ', start)
               close_pos = html.find('</script>', marker_pos)
               if start < 0 or marker_pos < 0 or close_pos < 0:
                   raise SystemExit('Anomaly control boundaries were not found; refusing to modify index.html.')
 
               end = html.rfind('// ============================================================', start, marker_pos)
-              if end < 0:
-                  raise SystemExit('Anomaly section separator was not found; refusing to modify index.html.')
+              if end < 0 or end <= start:
+                  raise SystemExit('Anomaly section end separator was not found; refusing to modify index.html.')
 
-              block_start = html.rfind('\n', 0, start) + 1
-              block = html[block_start:end]
+              block = html[start:end]
               expected = [
-                  'var anomaliUyariKaynagi',
                   'function hareketAnomaliKontrolEt',
                   'function anomaliUyariPopupGoster',
                   'function anomaliUyariGormezdenGel',
@@ -53,9 +52,8 @@ jobs:
                       raise SystemExit(f'Expected function not found in extraction block: {needle}')
 
               # Remove the inline block, then load the classic external module
-              # after the containing inline script has closed. This preserves the
-              # global-function execution model without nesting <script> tags.
-              html = html[:block_start] + html[end:]
+              # after the containing inline script has closed.
+              html = html[:start] + html[end:]
               close_end = close_pos + len('</script>')
               html = html[:close_end] + '\n' + tag + html[close_end:]
               path.write_text(html, encoding='utf-8')
@@ -76,7 +74,6 @@ jobs:
               if re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', html):
                   raise SystemExit(f'Inline anomaly function remains: {name}')
 
-          # Verify the external tag is not inside a script block.
           for m in re.finditer(r'<script\b[^>]*>(.*?)</script>', html, re.DOTALL | re.IGNORECASE):
               if tag in m.group(0):
                   raise SystemExit('External anomaly script tag is nested inside an inline script block.')
