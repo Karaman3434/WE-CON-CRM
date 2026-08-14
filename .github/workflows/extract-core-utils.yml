@@ -1,0 +1,112 @@
+name: Extract Core Utilities
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract-core-utils:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project-context
+        uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract verified utility script blocks
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          index = Path('index.html')
+          module = Path('assets/core-utils.js')
+          text = index.read_text(encoding='utf-8')
+
+          wanted = [
+              '/* R003.1 Security/Utility Patch */',
+              '/* R003.4 DOM Optimization */',
+              '/* R003.5 Render Cache */',
+              '/* R003.6 Event & Memory Optimizations */',
+          ]
+
+          script_pattern = re.compile(r'<script(?:\s[^>]*)?>(.*?)</script>', re.DOTALL | re.IGNORECASE)
+          blocks = list(script_pattern.finditer(text))
+          selected = []
+          for marker in wanted:
+              matches = [m for m in blocks if marker in m.group(1)]
+              if len(matches) != 1:
+                  raise SystemExit(f'Expected exactly one script block for {marker!r}, found {len(matches)}')
+              selected.append(matches[0])
+
+          positions = sorted(selected, key=lambda m: m.start())
+          parts = []
+          for i, match in enumerate(positions, 1):
+              parts.append(f'// Extracted from original index.html utility block {i}\n{match.group(1).strip()}')
+
+          module.parent.mkdir(parents=True, exist_ok=True)
+          module.write_text('\n\n'.join(parts) + '\n', encoding='utf-8')
+
+          updated = text
+          for match in reversed(positions):
+              updated = updated[:match.start()] + updated[match.end():]
+
+          link = '<script src="assets/core-utils.js"></script>'
+          if link not in updated:
+              firebase_marker = '<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>'
+              pos = updated.find(firebase_marker)
+              if pos < 0:
+                  raise SystemExit('Firebase app script marker not found; refusing extraction.')
+              updated = updated[:pos] + link + '\n' + updated[pos:]
+
+          index.write_text(updated, encoding='utf-8')
+          print(f'Extracted {len(positions)} verified utility blocks.')
+          print(f'Core utility module bytes: {len(module.read_bytes())}')
+
+      - name: Validate utility extraction
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          js = Path('assets/core-utils.js').read_text(encoding='utf-8')
+          link = '<script src="assets/core-utils.js"></script>'
+
+          if html.count(link) != 1:
+              raise SystemExit(f'Expected one core-utils script link, found {html.count(link)}')
+          for marker in [
+              'R003.1 Security/Utility Patch',
+              'R003.4 DOM Optimization',
+              'R003.5 Render Cache',
+              'R003.6 Event & Memory Optimizations',
+          ]:
+              if marker in html:
+                  raise SystemExit(f'Utility marker still present in index.html: {marker}')
+              if marker not in js:
+                  raise SystemExit(f'Utility marker missing from core-utils.js: {marker}')
+          if not js.strip():
+              raise SystemExit('core-utils.js is empty')
+
+          print(f'Updated HTML bytes: {len(html.encode("utf-8"))}')
+          print(f'Core utility bytes: {len(js.encode("utf-8"))}')
+          print('Core utility extraction validation passed.')
+
+      - name: Commit extracted module
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html assets/core-utils.js; then
+            echo 'No extraction changes detected.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/core-utils.js
+          git commit -m 'refactor: extract core utility module [refactor-bot]'
+          git push origin HEAD:project-context
