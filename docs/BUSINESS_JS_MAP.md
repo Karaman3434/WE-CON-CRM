@@ -2,8 +2,8 @@
 
 Generated from the largest remaining inline application script on `project-context`.
 
-- Script size: **421,551 bytes**
-- Function declarations found: **423**
+- Script size: **416,116 bytes**
+- Function declarations found: **413**
 
 ## Comment/section markers
 
@@ -209,289 +209,282 @@ Generated from the largest remaining inline application script on `project-conte
 | 3881 | aynı ön kontrolleri (boş sepet, işlem türü seçilmedi, anomali) uygular. |
 | 3901 | Kaydet öncesi son bir onay — yanlışlıkla tek dokunuşla kayıt gitmesin diye. |
 | 3920 | ============================================================ |
-| 3921 | ANOMALİ KONTROLÜ — Gönder'e basmadan önce kural tabanlı, anında, |
-| 3922 | internetsiz kontrol: aşırı iskonto, zararına satış, son 7 günde |
-| 3923 | aynı müşteriye aynı ürün tekrarı, alışılmadık yüksek adet. |
+| 3921 | DERİN AI ANALİZİ — kural tabanlı kontrolün ötesinde, Gemini'ye |
+| 3922 | "bu işlem ticari açıdan normal mi?" diye sorar. Sadece istenirse |
+| 3923 | çalışır (otomatik değil), Cloudflare Worker kurulumu gerektirir. |
 | 3924 | ============================================================ |
-| 4000 | ============================================================ |
-| 4001 | DERİN AI ANALİZİ — kural tabanlı kontrolün ötesinde, Gemini'ye |
-| 4002 | "bu işlem ticari açıdan normal mi?" diye sorar. Sadece istenirse |
-| 4003 | çalışır (otomatik değil), Cloudflare Worker kurulumu gerektirir. |
-| 4004 | ============================================================ |
-| 4060 | "🧹 Temizle" — Hesaplama ekranındaki tüm alanları ve aktarılan ürün bağını |
-| 4061 | sıfırlar, böylece bir önceki ürünün liste/dip/iskonto/adet değerleri |
-| 4062 | yanlışlıkla bir sonraki işleme karışmaz. |
-| 4082 | HIZLI HESAPLA — müşteri/işlem türü seçmeden, direkt Hesapla ekranını açar; ürün arama o ekranın içinden yapılır |
-| 4085 | SATIŞ MENÜSÜ — Müşteri / Ziyaret Takvimi / İstatistikler / Görevlerim tek buton altında |
-| 4247 | Sepette bu ürünü gönderildi olarak işaretle |
-| 4255 | Dip maliyet otomatik = liste × %36,35 |
-| 4257 | Önceki üründen kalan iskonto oranı yeni ürüne sızmasın diye her yeni ürün aktarımında sıfırlanır. |
-| 4284 | Otomatik dip maliyet = liste × %36,35 |
-| 4291 | MÜŞTERİ BAZLI FİYAT GEÇMİŞİ — bu müşteriye bu ürün daha önce satılmış mı, en son kaça? |
-| 4350 | Müşteri bazlı fiyat geçmişi uyarısı |
-| 4373 | Fiyat geçmişi uyarısındaki "O Kaydı Görüntüle" bağlantısı: Hesaplama popup'ını |
-| 4374 | kapatıp o ürünün daha önce daha yüksek fiyata satıldığı kaydı açar. |
-| 4384 | "LİSTEYE EKLE" butonuna basılınca çağrılır: eğer bu ürün bu müşteriye daha |
-| 4385 | önce daha yüksek fiyata satılmışsa, direkt eklemek yerine önce onay ister |
-| 4386 | (Kapat = geri dön düzenle, Devam Et = yine de bu fiyatla ekle). |
-| 4438 | Bekleyen ürün kalmadı - Ürün Bul sepetini de otomatik temizle |
-| 4492 | Eşleşen sepet ürünü varsa "beklemede" durumuna geri al |
-| 4512 | Aynı ürün Hesapla sayfasındaki bekleyen sepette (basket) de varsa oradan da kaldır |
-| 4587 | KAYITLI (arşivlenmiş) bir işlem görüntüleniyorsa (tip/idx verilmişse) bu kaydın kendisi burada |
-| 4588 | tek seferde tutulur — aşağıdaki tüm alanlar (yetkili dahil) buradan okunur, aksi halde o an aktif |
-| 4589 | "Hesapla" ekranında başka bir müşteri için seçili duran bir yetkili kişi buraya sızabilir. |
-| 4603 | Dinamik müşteri bilgileri (Yetkili Kişi/Telefon/E-Posta/Teslimat Adresi/Vade/Fatura/Kargo) — |
-| 4604 | KAYITLI (arşivlenmiş) bir işlem görüntüleniyorsa aşağıdaki aktifKayit'ten okunur. |
-| 4612 | Telefon/e-posta arşivde ayrı saklanmıyor — o kaydın ait olduğu müşterinin kişi listesinden, |
-| 4613 | isim eşleşmesiyle bulunur. Eşleşme yoksa boş bırakılır (yanlış kişinin bilgisini göstermemek için). |
-| 4751 | --- Kaçan Sipariş işaretleme ------------------------------------------- |
-| 4809 | -------------------------------------------------------------------------- |
-| 4811 | Kaydı İptal veya İade olarak işaretler (kayıt SİLİNMEZ, listede üzeri çizili görünür). |
-| 4812 | Aynı duruma tekrar dokunulursa işaret kaldırılır (normale döner). |
-| 4860 | Açık süreç bannerındaki tarih/tip satırına dokununca o kaydın fatura önizlemesini İlerlet butonuyla birlikte açar |
-| 4947 | --- Mesaj Şablonları (kullanıcı özelleştirebilir) ------------------------- |
-| 4989 | ----------------------------------------------------------------------- |
-| 5044 | HTML önizleme - başlıkları kırmızı kalın, ürün isimlerini kalın+%30 büyük yap |
-| 5081 | Mail metnini "ÜRÜN LİSTESİ VE DETAYLARI" kısmından önce kes - o kısmın yerini PNG alacak |
-| 5112 | Kod üzerinden bu belgenin revize edilip edilmediğini arşivden bul |
-| 5153 | Alt çizgili (underline) etiket+değer kutusu — referans görseldeki gibi |
-| 5303 | TABLOYU KOPYALA / İNDİR — müşteriden gelen bir maile aynı zincir üzerinden |
-| 5304 | yanıt vermek için, hareket tablosunu resim olarak panoya kopyalama veya |
-| 5305 | PNG olarak indirme imkânı sağlar (yeni mail göndermeden, mevcut yanıt |
-| 5306 | penceresine yapıştırılabilir/eklenebilir). |
-| 5425 | MAIL ve WHATSAPP: telefonun paylaşım penceresi kullanılıyor — PNG resim |
-| 5426 | otomatik ekleniyor, "title" olarak Konu da gönderiliyor (Gmail çoğunlukla |
-| 5427 | bunu Konu alanına yazar). Web paylaşım penceresinde "Kime" diye bir alan |
-| 5428 | olmadığı için o kısım (ofis@weicon.com.tr) mail uygulamasında elle girilmeli. |
-| 5430 | Paylaşım penceresi HEMEN tetiklenmeli (kullanıcı dokunuşu izni süresi kısa). |
-| 5431 | Arşivleme, paylaşımın sonucunu beklemeden hemen arkasından (ufak bir gecikmeyle) çalışır; |
-| 5432 | böylece ne paylaşım penceresi engellenir ne de arşivleme arka plana atılınca kaybolur. |
-| 5444 | Paylaşım desteklenmiyorsa, en son çare olarak indir + wa.me/mailto ile aç |
-| 5462 | ============================================================ |
-| 5465 | ŞEHİR FORMATLAMA — nasıl girilmiş olursa olsun İl her zaman büyük harf ve başta gösterilir |
-| 5490 | İki cihaz aynı anda FARKLI arşiv kayıtlarını değiştirirse/silerse/eklerse |
-| 5491 | birbirinin işlemini kaybetmesin diye: Firebase'e yazmadan hemen önce |
-| 5492 | sunucudaki EN GÜNCEL arşivi çekip, sadece BU işlemin değişikliklerini |
-| 5493 | (bir veya daha fazla tip içinde eklenen/güncellenen/silinen kayıtlar) o |
-| 5494 | güncel arşivin içine "kod" (veya kod yoksa "ts") ile eşleştirerek |
-| 5495 | uygulayıp öyle yazıyoruz. Eskiden bu cihazdaki (bayat olabilecek) local |
-| 5496 | arsivData komple üzerine yazılıyordu ve diğer cihazın az önce farklı bir |
-| 5497 | tipe/kayda yaptığı değişiklik sessizce kaybolabiliyordu. |
-| 5498 | degisiklikler: {tip, kayit} \| {tip, silinecekKod} \| {tip, silinecekTs} \| dizi |
-| 5534 | Sunucudan taze veri çekilemezse (yetki/ağ hatası vb.), işlemi tamamen |
-| 5535 | kaybetmemek için kuyruğa alıyoruz — bir sonraki senkronda güvenli |
-| 5536 | birleştirme ile tekrar denenecek (komple arşiv ile üzerine yazmıyoruz). |
-| 5560 | Tüm kategorilerde ara |
-| 5696 | "İş günü" penceresi: her gün sabah 09:00'da sıfırlanır, ertesi gün sabah 06:00'a |
-| 5697 | kadar o günün verilerini göstermeye devam eder. 06:00-09:00 arası (yeni gün henüz |
-| 5698 | başlamadan önceki geçiş aralığı) hiçbir iş günü aktif değildir, gösterge boş kalır. |
-| 5778 | Diğer panelleri (Ziyaret Takvimi, Ajanda) kapat |
-| 5794 | ============ ARAÇ KM TAKİBİ ============ |
-| 5798 | Değişen günleri biriktirir — debounce'lu kmAylikTabloKaydet çağrılmadan hemen |
-| 5799 | önce hangi TEK günün/günlerin değiştiğini işaretlemek için kullanılır, böylece |
-| 5800 | güvenli-birleştirme fonksiyonu tüm ayı değil sadece bu günleri uygular. |
-| 5807 | KM Takip — güvenli birleştirme (müşteri/arşiv'de kullandığımız aynı desen): |
-| 5808 | yazmadan önce sunucudaki EN GÜNCEL tüm ay verisini çekip, sadece BU an |
-| 5809 | değişen günü/günleri onun içine uygulayıp öyle yazıyoruz. ESKİDEN cihazın |
-| 5810 | belleğindeki (kmTakipKayitlariObj) TÜM ay ham olarak üzerine yazılıyordu — |
-| 5811 | bellek eksik/bayat olduğunda (örn. sayfa yeni açılmışken Firebase henüz tam |
-| 5812 | senkron olmadan bir alana dokunulursa) diğer günlerin verisi sessizce |
-| 5813 | TAMAMEN kaybolabiliyordu. Bu fonksiyon tek bir günü bile asla toptan silmez. |
-| 5834 | Sunucudan taze veri çekilemezse (yetki/ağ hatası vb.), işlemi tamamen |
-| 5835 | kaybetmemek için kuyruğa alıyoruz — bir sonraki senkronda güvenli |
-| 5836 | birleştirme ile tekrar denenecek (komple ay ile üzerine yazmıyoruz). |
-| 5856 | Bugünün araç KM kaydı girilip "Günü Kaydet" ile onaylanmış mı? Girilmediyse |
-| 5857 | uygulamanın geri kalanı kilitlenir — kullanıcı önce KM fotoğrafını çekip |
-| 5858 | kaydetmeden başka hiçbir işlev kullanamaz. |
-| 5865 | "1 Saat Ertele" — araç şu an yanında değilse kilidi geçici olarak (60 dk) askıya alır. |
-| 5866 | Süre dolunca kilit otomatik geri döner. |
-| 5947 | Aylık tabloda bu arada değişiklik yapılmış olabilir (KM/Saat) — güncel |
-| 5948 | veriyle yeniden yükle ki BAŞLANGIÇ/BİTİŞ KM kutuları hemen yansısın. |
-| 5965 | YENİ MANTIK: Bir günün fotoğraflanan KM'si O GÜNÜN BAŞLANGICI'dır (istisnasız). |
-| 5966 | Bir günün BİTİŞ KM'si ise SONRAKİ günün fotoğraflanan (başlangıç) değeridir. |
-| 5967 | Bu yüzden "bitiş" için artık ileri yönlü arama gerekiyor. |
-| 5980 | "Bir önceki tarih" burada TAKVİMDE dünü değil, kayıtlı olan EN YAKIN önceki |
-| 5981 | günü ifade eder (araya boş — fotoğrafsız — günler girse bile). Sistem sadece |
-| 5982 | fotoğrafın çekildiği günleri baz alır, aradaki tarihler tabloda hiç yer almaz. |
-| 5984 | "YYYY-MM-DD" formatındaki bir tarih anahtarını N gün kaydırıp yeni anahtarı döndürür. |
-| 5992 | Bitiş KM - Başlangıç KM farkını verir. Değerlerden biri boş/geçersizse null döner. |
-| 6001 | Bir günün kaydını, otomatik kurallara göre yeniden hesaplar: |
-| 6002 | 1) Başlangıç KM boşsa, bir önceki günün Bitiş KM'si otomatik yazılır. |
-| 6003 | 2) Bitiş KM - Başlangıç KM farkı, o gün için seçili kategoriye (İş/Özel) |
-| 6004 | göre ilgili alana otomatik yazılır, diğer alan temizlenir. |
-| 6022 | Bir günün Bitiş KM'si girildiğinde/değiştiğinde, bir SONRAKİ günün Başlangıç |
-| 6023 | KM'sini otomatik olarak bu değere eşitler (araç kilometresi fiziksel olarak |
-| 6024 | süreklidir: bugünün bitişi = yarının başlangıcı). |
-| 6041 | YENİ MANTIKTA ARTIK GEREKSİZ: her gün kendi fotoğrafıyla kendi başlangıcını taşıyor, |
-| 6042 | önceki bir kayda bağımlı değil. Fonksiyon geriye dönük uyumluluk için duruyor ama hep false döner. |
-| 6083 | Kayıt henüz oluşturulmamışsa: Pazartesi-Cuma (hafta içi) "Normal İş Günü", |
-| 6084 | Cumartesi/Pazar "Hafta Sonu Tatil" olarak otomatik seçilir. |
-| 6096 | TARİH kutusu artık sistem tarihini değil, "Tarih ve Saat Gir" ile ÇEKİLEN |
-| 6097 | fotoğraftan okunan tarihi gösterir. Henüz fotoğraf çekilmediyse boş kalır. |
-| 6118 | Tarih navigasyonunun altında, görüntülenen günden BİR ÖNCEKİ günün |
-| 6119 | başlangıç/bitiş/toplam km özetini gösterir. |
-| 6151 | Gün zaten kaydedilmiş olsa bile (kilitli görünüm), Gün Tipi değişikliği |
-| 6152 | anında sessizce kaydedilir — kullanıcı tekrar "Günü Kaydet"e basmak zorunda kalmaz. |
-| 6169 | Artık alanlar arasında zorla sıralama YOK — kullanıcı istediği alana |
-| 6170 | istediği sırayla girebilir. Bu fonksiyon sadece görsel/erişilebilirlik |
-| 6171 | için tüm alanların açık kaldığından emin olur (geçmiş sürümle uyum için |
-| 6172 | tutuluyor, çağıran yerler dokunulmadan bırakıldı). |
-| 6187 | Kaydet sırasında eksik çıkan alanları kırmızı çerçeveyle işaretler ve |
-| 6188 | ilk eksik alana ekranı kaydırır. Kullanıcı o alana bir şey yazdığı an |
-| 6189 | kırmızı çerçeve otomatik kalkar. |
-| 6219 | NOT: "kmGunTipiSelect" (Gün Tipi) ve "kmKategoriSelect" (İş/Özel KM) BİLİNÇLİ |
-| 6220 | olarak bu kilit listesinde YOK — gün kaydedilse bile bu iki seçim kutusu her |
-| 6221 | zaman açık/değiştirilebilir kalır (aşağıdaki onchange'ler değişikliği anında |
-| 6222 | sessizce kaydeder, "Günü Kaydet"e tekrar basmaya gerek kalmaz). |
-| 6236 | Bugünün kaydı zaten yapılmışsa TÜM alanlar kilitlenir (yanlışlıkla |
-| 6237 | bozulmasın diye). Tek bir "Düzenle" tuşu YOK — her alan kendi başına, |
-| 6238 | üzerine 5 saniye BASILI TUTULARAK açılır; sadece o hücre aktif olur ve |
-| 6239 | elle giriş yapılabilir. Bu kilit, ertesi günün sabah ilk KM girişine |
-| 6240 | kadar (yani gün değişip yeni bir kayıt başlayana kadar) geçerlidir. |
-| 6256 | Her kilitli alana bir kere bağlanır (sayfa açılışında). Alan disabled |
-| 6257 | iken 5 saniye basılı tutulursa sadece o alanın kilidi açılır. |
-| 6293 | BAŞLANGIÇ KM artık BUGÜNÜN KENDİ okunan değeri (KM Gir ile girilen/fotoğraflanan) |
-| 6298 | BİTİŞ KM artık SONRAKİ günün okunan değeri — henüz o gün gelmediyse "—" |
-| 6305 | En son KM kaydı girilmiş günden bir sonraki (boş) günü bulur. Hiç kayıt |
-| 6306 | yoksa bugünü döner. Bulunan gün bugünden ileriyse (gelecek), bugüne sabitlenir. |
-| 6307 | NOT: Eskiden burada "kmSonrakiBosGunuBul()" adlı bir fonksiyon vardı; okunan KM'yi |
-| 6308 | "son kayıtlı günden sonraki ilk BOŞ güne" yerleştiriyordu. Bu YANLIŞTI — fotoğrafsız |
-| 6309 | (es geçilen) günleri geçmişe dönük doldurmaya çalışıyor, bugünün okumasını yanlış bir |
-| 6310 | güne yazabiliyordu. Artık kmFotoSecildi() doğrudan cihazın GERÇEK bugünkü tarihini |
-| 6311 | kullanıyor, bu fonksiyona gerek kalmadı. |
-| 6313 | KM/Tarih-Saat fotoğrafından okuma (kartFotoGonder ile aynı Cloud Function, "kmOku" hedefi) |
-| 6322 | ÖNEMLİ: Fotoğraf hangi gün çekiliyorsa, okuma HER ZAMAN o günün |
-| 6323 | (cihazın GERÇEK bugünkü tarihinin) kaydı olur — "son kayıtlı günden |
-| 6324 | sonraki boş gün" gibi bir arayışla GEÇMİŞTEKİ bir güne asla yazılmaz. |
-| 6325 | Fotoğrafsız günler otomatik olarak es geçilir (o gün km yapılmamış |
-| 6326 | sayılır) — aradaki boşluk hiçbir zaman doldurulmaya çalışılmaz. |
-| 6336 | KM okunur okunmaz, diğer alanlar (güzergah, ziyaret vb.) boş kalsa bile |
-| 6337 | sessizce kaydet — böylece Aylık Rapor'a KM hemen yansır, geri kalanı |
-| 6338 | gün içinde doldurulup normal "KM Kaydet" ile tamamlanabilir. |
-| 6355 | KM fotoğrafı çekilip okunduğu ANDAKİ cihaz tarih/saatini TARİH ve SAAT |
-| 6356 | kutularına otomatik yazar — bu, km okuma anının kaydıdır. |
-| 6371 | KM okuma tuşunu "KM Gir" (fotoğraf çek) durumundan "KM Kaydet" durumuna |
-| 6372 | çevirir — km başarıyla okunup alana yazıldıktan sonra çağrılır. |
-| 6381 | KM okuma tuşunu tekrar "KM Gir" (fotoğraf çek) durumuna döndürür — |
-| 6382 | yeni bir güne geçildiğinde veya kayıt henüz yapılmamışken çağrılır. |
-| 6436 | Boş bir gün ise (hiçbir şey girilmemiş, normal tipte) kaydı sil |
-| 6458 | Aylık tablo artık Excel çıktısıyla BİREBİR AYNI 8 sütun: Tarih \| Başlangıç-Bitiş |
-| 6459 | Saati \| Seyir Güzergahı \| Ziyaret Yerleri \| Başlangıç KM \| Bitiş KM \| İş KM \| Özel KM. |
-| 6460 | Gün Tipi seçimi Tarih hücresinin altına küçük bir kutu olarak gömülüdür (ayrı |
-| 6461 | sütun DEĞİL). Kategori (İş/Özel) seçimi de İş KM / Özel KM hücresine dokunularak |
-| 6462 | yapılır — ayrı bir Kategori sütunu yoktur. Böylece görünen sütunlar Excel ile |
-| 6463 | tıpatıp aynıdır; ekstra alanlar sadece hücre içi küçük kontrollerdir. |
-| 6483 | Sistem SADECE fotoğrafın çekildiği (kaydın gerçekten girildiği) günleri baz |
-| 6484 | alır — takvimde ardışık gitmek zorunda değil. Fotoğraf/kayıt olmayan bir gün |
-| 6485 | (bugün dahil) tabloda hiç görünmez, aradaki tarihler tamamen atlanır. |
-| 6492 | Excel/tablo görünümüyle birebir: hücreler düz görünür (görünmez kenarlıklı, |
-| 6493 | saydam zeminli input), sadece odaklanınca hafif çerçeve belirir. |
-| 6517 | OTOMATİK KURALLAR: |
-| 6518 | 1) Bir günün Başlangıç KM'si boşsa, bir önceki günün Bitiş KM'si otomatik |
-| 6519 | olarak o kutuya yazılır (araç kilometresi süreklidir). |
-| 6520 | 2) Bitiş KM - Başlangıç KM farkı, o gün için seçili kategoriye (İş/Özel |
-| 6521 | KM hücresine dokunarak seçilir) göre otomatik olarak ilgili hücreye |
-| 6522 | yazılır. Kullanıcı isterse üzerine yazıp elle değiştirebilir. |
-| 6539 | Elle Bitiş KM girilmemişse: Günlük Kayıt'tan gelen bir sonraki günün |
-| 6540 | KENDİ KM okuması otomatik olarak bu günün Bitiş KM'si sayılır |
-| 6541 | (araç kilometresi süreklidir — bugünün bitişi = yarının okuması). |
-| 6581 | Herhangi bir satıra BASILI TUTULURSA (500ms), o günün tüm bilgilerini tek |
-| 6582 | popup'ta düzenleyebileceğimiz ekranı açar. Var olan hücre-içi düzenleme |
-| 6583 | (input'a dokunup yazma) de aynen çalışmaya devam eder. |
-| 6585 | ÖNEMLİ DÜZELTME: Eskiden dokunma anında tarayıcı hücreyi HEMEN odaklayıp |
-| 6586 | klavyeyi açıyordu (native davranış), biz 500ms sonra popup'ı bunun ÜSTÜNE |
-| 6587 | açıyorduk — bu da "popup, kutunun içine giriyor ve yanlış yazıma neden |
-| 6588 | oluyor" şikayetine yol açıyordu. Artık dokunma anında native odaklanmayı |
-| 6589 | BİZ engelliyoruz (preventDefault); basılı tutma tamamlanmadan parmak |
-| 6590 | kalkarsa (kısa/normal dokunuş) hücreyi KENDİMİZ odaklıyoruz — yani tek |
-| 6591 | dokunuşla düzenleme aynen çalışır ama klavye popup'la asla çakışmaz. |
-| 6592 | Sürükleme/scroll varsa basılı tutma iptal edilir. |
-| 6612 | Kısa dokunuş — popup açılmadı, normal düzenleme odaklanmasını biz tetikliyoruz. |
-| 6623 | Parmağın en ufak titremesinde (gerçek kaydırma olmadan) basılı tutma iptal |
-| 6624 | OLMASIN diye 12px'lik bir eşik mesafe var — sadece bu eşiği aşan gerçek |
-| 6625 | bir sürükleme/scroll hareketinde basılı tutma iptal edilir. |
-| 6636 | Masaüstü/mouse ile test için: burada native odaklanma zaten sorun |
-| 6637 | yaratmadığından preventDefault gerekmez, davranış olduğu gibi bırakıldı. |
-| 6646 | Düzenleme sırasında odak kaybolmasın diye, aynı hücreye tekrar odaklan |
-| 6653 | İş KM / Özel KM hücresine dokunularak o günün kategorisini seçme (ayrı bir |
-| 6654 | Kategori sütunu olmadan, Excel'deki 8 sütun görünümünü bozmadan). |
-| 6672 | Tablodaki herhangi bir hücre değiştirildiğinde çağrılır: ilgili günün |
-| 6673 | kaydını (yoksa oluşturarak) günceller, yerelde ve Firebase'de saklar, |
-| 6674 | başlangıç/bitiş KM zincirinin doğru görünmesi için tabloyu yeniden çizer. |
-| 6675 | "+ Gün Ekle" kutusu: tablo artık sadece kayıtlı günleri gösterdiği için, izin/tatil |
-| 6676 | gibi Günlük Kayıt'tan geçmeyen bir günü elle eklemek istediğinde bu kullanılır. |
-| 6677 | Seçilen tarih için (henüz kaydı yoksa) boş bir kayıt oluşturur, gerekiyorsa o ayı |
-| 6678 | gösterir ve tabloyu yeniden çizip o günün Başlangıç KM alanına odaklanır. |
-| 6731 | Başlangıç/Bitiş KM değiştiyse, o günün İş/Özel KM farkını seçili |
-| 6732 | kategoriye göre otomatik yeniden hesapla. |
-| 6736 | Bugünün Bitiş KM'si, yarının Başlangıç KM'sine otomatik aktarılır. |
-| 6746 | Aynı anda açık olan Günlük Kayıt ekranı bu güne bakıyorsa, orayı da tazele. |
-| 6754 | Bu genel kaydetme birden çok yerden (hücre düzenleme, gün ekleme/silme, |
-| 6755 | zincirleme bitiş-KM aktarımı) çağrılıyor — hangi günlerin değiştiğini |
-| 6756 | kmBekleyenDegisiklikler kuyruğu tutuyor. Kuyrukta bir şey varsa SADECE o |
-| 6757 | günleri güvenli birleştirerek yazıyoruz (tüm ayı ham üzerine yazmıyoruz). |
-| 6758 | Kuyruk boşsa (bilinmeyen bir çağrı yolu), son çare olarak eski davranışa |
-| 6759 | (ham üzerine yazma) düşüyoruz — ama bu artık istisna, kural değil. |
-| 6770 | Bir güne BASILI TUTULUNCA açılan tam-detay düzenleme popup'ı — o günün TÜM |
-| 6771 | alanlarını (gün tipi, saat, güzergah, ziyaret yerleri, başlangıç/bitiş KM, |
-| 6772 | iş/özel KM, kategori) tek ekranda gösterir ve hepsini birden değiştirmeyi |
-| 6773 | sağlar. Geçmişe dönük herhangi bir günü (bugün olmasa bile) düzenlemek için. |
-| 6828 | "🗑 Bu Günü Tamamen Sil" — önce net bir onay ister (kalıcı silme, geri |
-| 6829 | alınamaz), onaylanırsa kaydı tamamen kaldırır ve tabloyu yeniden çizer. |
-| 6844 | Ana Sayfa'dan doğrudan Aylık (düzenlenebilir) tabloya geçiş |
-| 6930 | Kolon başlıkları satırı (3. satır, 0-index BAS_SATIR-1): açık mavi zemin, kalın, ortalı. |
-| 6942 | Veri satırları: tek satır, kenarlıklı, Tarih sola / diğerleri ortaya hizalı. |
-| 6962 | ============ ZİYARET TAKVİMİ ============ |
-| 6990 | Diğer panelleri (Aylık Özet, Ajanda) kapat |
-| 7007 | ============ GÜNLÜK AJANDA ============ |
-| 7021 | Diğer panelleri (Aylık Özet, Ziyaret Takvimi) kapat |
-| 7126 | Tüm müşterilerin ziyaretGecmisi'ni tek düz listeye toplar: {musteri, sehir, ts, not} |
-| 7146 | Pazartesi=0 olacak şekilde haftanın gününü ayarla |
-| 7182 | Özet tablo: bu ay toplamı + bu hafta (son 7 gün, tüm ziyaretler üzerinden gerçek zamana göre) |
-| 7194 | 15+ gündür ziyaret edilmeyenler (tüm müşteriler üzerinden, ay'dan bağımsız gerçek zaman) |
-| 7411 | ❌ Kaçan Siparişler özeti: bu ayki sayı/tutar, kaybedilme sebebi dağılımı, |
-| 7412 | rakip firma dağılımı ve Teklif→Sipariş dönüşüm oranı. |
-| 7451 | "KAÇAN İŞLEM" kutusuna dokununca — bu ayki kaçan kayıtların listesi (sebep, |
-| 7452 | rakip firma, tutar dahil) ayrı bir popup'ta açılır. |
-| 7478 | KAYIT DÜZENLEME — geçmişte yanlış kaydedilmiş bir işlemi manuel düzeltmek için |
-| 7508 | Bu modalı tetikleyebilecek tüm üst popup'lar kapatılır — aksi halde |
-| 7509 | Revize tuşuna basınca bu modal arkada açılır, görünmez kalır. |
-| 7671 | Tip veya tarih değiştiyse belge kodu da (SIP/TEK/PRO/NUM + tarih + sıra) |
-| 7672 | yeni duruma göre tazelenir, aksi halde eski koddaki tarih/tip yanıltıcı kalır. |
-| 7884 | Firebase'e artık TÜM sayaçlar nesnesi komple üzerine yazılmıyor — sadece bu |
-| 7885 | tipin sayacı, sunucuda ATOMİK olarak (transaction) en az bu değere yükseltiliyor. |
-| 7886 | Böylece iki cihaz aynı anda kod üretse bile birbirinin artışını silmiyor |
-| 7887 | (eskiden fbSet ile komple nesne yazıldığında diğer cihazın az önce yaptığı |
-| 7888 | artış sessizce kaybolabiliyordu). |
-| 7935 | Aynı gün + aynı müşteri + aynı işlem türü + BİREBİR AYNI ürün seti (Berta/Abas |
-| 7936 | kodlarına göre — sadece adet/iskonto/fiyat farkı olabilir, ürün eklenip/çıkarılmamış |
-| 7937 | olmalı) bulunursa ikinci bir evrak açmak yerine mevcut kaydı güncelleyip REVİZE damgası |
-| 7938 | basıyoruz. Böylece unutularak art arda gönderilen aynı sipariş, mükerrer kayıt olmuyor. |
-| 7957 | REVİZE GEÇMİŞİ: üzerine yazmadan önce eski hâli (fiyat/ürün seti + zaman) |
-| 7958 | revizeGecmisi dizisine ekleniyor — böylece bir teklif/sipariş birden |
-| 7959 | fazla kez revize edilse bile önceki fiyatların tamamı kayboluyor değil, |
-| 7960 | "v1 → 1.250€, v2 → 1.180€" gibi bir tarihçe olarak saklanıyor. |
-| 7988 | "İlerlet" ile (Numune→Teklif→Proforma→Sipariş) hazırlanan bir belgeyse, eski aşamanın |
-| 7989 | kaydını arşivden SİL — artık iki ayrı kayıt değil, tek kayıt yeni türe dönüşmüş olur. |
-| 8016 | Arşive gitme - sadece bildir |
-| 8082 | ============================================================ |
-| 8085 | Bir teklif/numune/proforma kaydını "düzenlenebilir" (bekleyen) halde Sepet'e taşır, |
-| 8086 | ürünlere dokunup gramaj/ürün değiştirilebilir, hesaplandıktan sonra hedef SİPARİŞ olarak gönderilir. |
-| 8087 | ============================================================ |
-| 8088 | HAREKET SEÇ — Müşteri kartı / İşlem Geçmişi / İstatistikler'den ulaşılan |
-| 8089 | TEK ORTAK akış: bir kaydın (teklif/numune/proforma/sipariş) ürünlerini, |
-| 8090 | MEVCUT fiyat/iskonto/adediyle DOĞRUDAN hesaplanmış olarak Sepet'e yükler. |
-| 8091 | Hiçbir ürünü yeniden hesaplamaya zorlamaz — değişecek ürün varsa |
-| 8092 | kullanıcı sadece o ürüne dokunup düzenler, diğerleri olduğu gibi kalır. |
-| 8093 | ============================================================ |
-| 8124 | Ürünleri mevcut fiyat/iskonto/adediyle DOĞRUDAN HESAPLANMIŞ (yeşil) olarak yükle. |
-| 8174 | Ürünleri HESAPLANMIŞ olarak değil, BEKLEYEN (sarı) olarak sepete koy — |
-| 8175 | böylece her ürüne dokunup "✏️ Düzenle" ile farklı bir ürün/gramaj seçilebilir. |
-| 8190 | Hedef işlem türünü SİPARİŞ olarak ayarla (teklif/numune/proforma -> sipariş dönüşümü) |
-| 8214 | Müşteriyi bul (kayıtlı müşteri listesinde varsa tam profiliyle, yoksa kayıttaki bilgilerle) |
-| 8223 | Ürünleri hareket listesine yükle (tarih, gönderim anında otomatik bugünün tarihi olacak) |
-| 8228 | İşlem türünü kayıttaki türle eşle |
-| 8233 | Vade/Fatura/Kargo/Yetkili'yi kaydın kendi değerleriyle güncelle (müşteri profilindeki genel değerler yerine) |
+| 3980 | "🧹 Temizle" — Hesaplama ekranındaki tüm alanları ve aktarılan ürün bağını |
+| 3981 | sıfırlar, böylece bir önceki ürünün liste/dip/iskonto/adet değerleri |
+| 3982 | yanlışlıkla bir sonraki işleme karışmaz. |
+| 4002 | HIZLI HESAPLA — müşteri/işlem türü seçmeden, direkt Hesapla ekranını açar; ürün arama o ekranın içinden yapılır |
+| 4005 | SATIŞ MENÜSÜ — Müşteri / Ziyaret Takvimi / İstatistikler / Görevlerim tek buton altında |
+| 4167 | Sepette bu ürünü gönderildi olarak işaretle |
+| 4175 | Dip maliyet otomatik = liste × %36,35 |
+| 4177 | Önceki üründen kalan iskonto oranı yeni ürüne sızmasın diye her yeni ürün aktarımında sıfırlanır. |
+| 4204 | Otomatik dip maliyet = liste × %36,35 |
+| 4211 | MÜŞTERİ BAZLI FİYAT GEÇMİŞİ — bu müşteriye bu ürün daha önce satılmış mı, en son kaça? |
+| 4270 | Müşteri bazlı fiyat geçmişi uyarısı |
+| 4293 | Fiyat geçmişi uyarısındaki "O Kaydı Görüntüle" bağlantısı: Hesaplama popup'ını |
+| 4294 | kapatıp o ürünün daha önce daha yüksek fiyata satıldığı kaydı açar. |
+| 4304 | "LİSTEYE EKLE" butonuna basılınca çağrılır: eğer bu ürün bu müşteriye daha |
+| 4305 | önce daha yüksek fiyata satılmışsa, direkt eklemek yerine önce onay ister |
+| 4306 | (Kapat = geri dön düzenle, Devam Et = yine de bu fiyatla ekle). |
+| 4358 | Bekleyen ürün kalmadı - Ürün Bul sepetini de otomatik temizle |
+| 4412 | Eşleşen sepet ürünü varsa "beklemede" durumuna geri al |
+| 4432 | Aynı ürün Hesapla sayfasındaki bekleyen sepette (basket) de varsa oradan da kaldır |
+| 4507 | KAYITLI (arşivlenmiş) bir işlem görüntüleniyorsa (tip/idx verilmişse) bu kaydın kendisi burada |
+| 4508 | tek seferde tutulur — aşağıdaki tüm alanlar (yetkili dahil) buradan okunur, aksi halde o an aktif |
+| 4509 | "Hesapla" ekranında başka bir müşteri için seçili duran bir yetkili kişi buraya sızabilir. |
+| 4523 | Dinamik müşteri bilgileri (Yetkili Kişi/Telefon/E-Posta/Teslimat Adresi/Vade/Fatura/Kargo) — |
+| 4524 | KAYITLI (arşivlenmiş) bir işlem görüntüleniyorsa aşağıdaki aktifKayit'ten okunur. |
+| 4532 | Telefon/e-posta arşivde ayrı saklanmıyor — o kaydın ait olduğu müşterinin kişi listesinden, |
+| 4533 | isim eşleşmesiyle bulunur. Eşleşme yoksa boş bırakılır (yanlış kişinin bilgisini göstermemek için). |
+| 4671 | --- Kaçan Sipariş işaretleme ------------------------------------------- |
+| 4729 | -------------------------------------------------------------------------- |
+| 4731 | Kaydı İptal veya İade olarak işaretler (kayıt SİLİNMEZ, listede üzeri çizili görünür). |
+| 4732 | Aynı duruma tekrar dokunulursa işaret kaldırılır (normale döner). |
+| 4780 | Açık süreç bannerındaki tarih/tip satırına dokununca o kaydın fatura önizlemesini İlerlet butonuyla birlikte açar |
+| 4920 | HTML önizleme - başlıkları kırmızı kalın, ürün isimlerini kalın+%30 büyük yap |
+| 4957 | Mail metnini "ÜRÜN LİSTESİ VE DETAYLARI" kısmından önce kes - o kısmın yerini PNG alacak |
+| 4988 | Kod üzerinden bu belgenin revize edilip edilmediğini arşivden bul |
+| 5029 | Alt çizgili (underline) etiket+değer kutusu — referans görseldeki gibi |
+| 5179 | TABLOYU KOPYALA / İNDİR — müşteriden gelen bir maile aynı zincir üzerinden |
+| 5180 | yanıt vermek için, hareket tablosunu resim olarak panoya kopyalama veya |
+| 5181 | PNG olarak indirme imkânı sağlar (yeni mail göndermeden, mevcut yanıt |
+| 5182 | penceresine yapıştırılabilir/eklenebilir). |
+| 5301 | MAIL ve WHATSAPP: telefonun paylaşım penceresi kullanılıyor — PNG resim |
+| 5302 | otomatik ekleniyor, "title" olarak Konu da gönderiliyor (Gmail çoğunlukla |
+| 5303 | bunu Konu alanına yazar). Web paylaşım penceresinde "Kime" diye bir alan |
+| 5304 | olmadığı için o kısım (ofis@weicon.com.tr) mail uygulamasında elle girilmeli. |
+| 5306 | Paylaşım penceresi HEMEN tetiklenmeli (kullanıcı dokunuşu izni süresi kısa). |
+| 5307 | Arşivleme, paylaşımın sonucunu beklemeden hemen arkasından (ufak bir gecikmeyle) çalışır; |
+| 5308 | böylece ne paylaşım penceresi engellenir ne de arşivleme arka plana atılınca kaybolur. |
+| 5320 | Paylaşım desteklenmiyorsa, en son çare olarak indir + wa.me/mailto ile aç |
+| 5338 | ============================================================ |
+| 5341 | ŞEHİR FORMATLAMA — nasıl girilmiş olursa olsun İl her zaman büyük harf ve başta gösterilir |
+| 5366 | İki cihaz aynı anda FARKLI arşiv kayıtlarını değiştirirse/silerse/eklerse |
+| 5367 | birbirinin işlemini kaybetmesin diye: Firebase'e yazmadan hemen önce |
+| 5368 | sunucudaki EN GÜNCEL arşivi çekip, sadece BU işlemin değişikliklerini |
+| 5369 | (bir veya daha fazla tip içinde eklenen/güncellenen/silinen kayıtlar) o |
+| 5370 | güncel arşivin içine "kod" (veya kod yoksa "ts") ile eşleştirerek |
+| 5371 | uygulayıp öyle yazıyoruz. Eskiden bu cihazdaki (bayat olabilecek) local |
+| 5372 | arsivData komple üzerine yazılıyordu ve diğer cihazın az önce farklı bir |
+| 5373 | tipe/kayda yaptığı değişiklik sessizce kaybolabiliyordu. |
+| 5374 | degisiklikler: {tip, kayit} \| {tip, silinecekKod} \| {tip, silinecekTs} \| dizi |
+| 5410 | Sunucudan taze veri çekilemezse (yetki/ağ hatası vb.), işlemi tamamen |
+| 5411 | kaybetmemek için kuyruğa alıyoruz — bir sonraki senkronda güvenli |
+| 5412 | birleştirme ile tekrar denenecek (komple arşiv ile üzerine yazmıyoruz). |
+| 5436 | Tüm kategorilerde ara |
+| 5572 | "İş günü" penceresi: her gün sabah 09:00'da sıfırlanır, ertesi gün sabah 06:00'a |
+| 5573 | kadar o günün verilerini göstermeye devam eder. 06:00-09:00 arası (yeni gün henüz |
+| 5574 | başlamadan önceki geçiş aralığı) hiçbir iş günü aktif değildir, gösterge boş kalır. |
+| 5654 | Diğer panelleri (Ziyaret Takvimi, Ajanda) kapat |
+| 5670 | ============ ARAÇ KM TAKİBİ ============ |
+| 5674 | Değişen günleri biriktirir — debounce'lu kmAylikTabloKaydet çağrılmadan hemen |
+| 5675 | önce hangi TEK günün/günlerin değiştiğini işaretlemek için kullanılır, böylece |
+| 5676 | güvenli-birleştirme fonksiyonu tüm ayı değil sadece bu günleri uygular. |
+| 5683 | KM Takip — güvenli birleştirme (müşteri/arşiv'de kullandığımız aynı desen): |
+| 5684 | yazmadan önce sunucudaki EN GÜNCEL tüm ay verisini çekip, sadece BU an |
+| 5685 | değişen günü/günleri onun içine uygulayıp öyle yazıyoruz. ESKİDEN cihazın |
+| 5686 | belleğindeki (kmTakipKayitlariObj) TÜM ay ham olarak üzerine yazılıyordu — |
+| 5687 | bellek eksik/bayat olduğunda (örn. sayfa yeni açılmışken Firebase henüz tam |
+| 5688 | senkron olmadan bir alana dokunulursa) diğer günlerin verisi sessizce |
+| 5689 | TAMAMEN kaybolabiliyordu. Bu fonksiyon tek bir günü bile asla toptan silmez. |
+| 5710 | Sunucudan taze veri çekilemezse (yetki/ağ hatası vb.), işlemi tamamen |
+| 5711 | kaybetmemek için kuyruğa alıyoruz — bir sonraki senkronda güvenli |
+| 5712 | birleştirme ile tekrar denenecek (komple ay ile üzerine yazmıyoruz). |
+| 5732 | Bugünün araç KM kaydı girilip "Günü Kaydet" ile onaylanmış mı? Girilmediyse |
+| 5733 | uygulamanın geri kalanı kilitlenir — kullanıcı önce KM fotoğrafını çekip |
+| 5734 | kaydetmeden başka hiçbir işlev kullanamaz. |
+| 5741 | "1 Saat Ertele" — araç şu an yanında değilse kilidi geçici olarak (60 dk) askıya alır. |
+| 5742 | Süre dolunca kilit otomatik geri döner. |
+| 5823 | Aylık tabloda bu arada değişiklik yapılmış olabilir (KM/Saat) — güncel |
+| 5824 | veriyle yeniden yükle ki BAŞLANGIÇ/BİTİŞ KM kutuları hemen yansısın. |
+| 5841 | YENİ MANTIK: Bir günün fotoğraflanan KM'si O GÜNÜN BAŞLANGICI'dır (istisnasız). |
+| 5842 | Bir günün BİTİŞ KM'si ise SONRAKİ günün fotoğraflanan (başlangıç) değeridir. |
+| 5843 | Bu yüzden "bitiş" için artık ileri yönlü arama gerekiyor. |
+| 5856 | "Bir önceki tarih" burada TAKVİMDE dünü değil, kayıtlı olan EN YAKIN önceki |
+| 5857 | günü ifade eder (araya boş — fotoğrafsız — günler girse bile). Sistem sadece |
+| 5858 | fotoğrafın çekildiği günleri baz alır, aradaki tarihler tabloda hiç yer almaz. |
+| 5860 | "YYYY-MM-DD" formatındaki bir tarih anahtarını N gün kaydırıp yeni anahtarı döndürür. |
+| 5868 | Bitiş KM - Başlangıç KM farkını verir. Değerlerden biri boş/geçersizse null döner. |
+| 5877 | Bir günün kaydını, otomatik kurallara göre yeniden hesaplar: |
+| 5878 | 1) Başlangıç KM boşsa, bir önceki günün Bitiş KM'si otomatik yazılır. |
+| 5879 | 2) Bitiş KM - Başlangıç KM farkı, o gün için seçili kategoriye (İş/Özel) |
+| 5880 | göre ilgili alana otomatik yazılır, diğer alan temizlenir. |
+| 5898 | Bir günün Bitiş KM'si girildiğinde/değiştiğinde, bir SONRAKİ günün Başlangıç |
+| 5899 | KM'sini otomatik olarak bu değere eşitler (araç kilometresi fiziksel olarak |
+| 5900 | süreklidir: bugünün bitişi = yarının başlangıcı). |
+| 5917 | YENİ MANTIKTA ARTIK GEREKSİZ: her gün kendi fotoğrafıyla kendi başlangıcını taşıyor, |
+| 5918 | önceki bir kayda bağımlı değil. Fonksiyon geriye dönük uyumluluk için duruyor ama hep false döner. |
+| 5959 | Kayıt henüz oluşturulmamışsa: Pazartesi-Cuma (hafta içi) "Normal İş Günü", |
+| 5960 | Cumartesi/Pazar "Hafta Sonu Tatil" olarak otomatik seçilir. |
+| 5972 | TARİH kutusu artık sistem tarihini değil, "Tarih ve Saat Gir" ile ÇEKİLEN |
+| 5973 | fotoğraftan okunan tarihi gösterir. Henüz fotoğraf çekilmediyse boş kalır. |
+| 5994 | Tarih navigasyonunun altında, görüntülenen günden BİR ÖNCEKİ günün |
+| 5995 | başlangıç/bitiş/toplam km özetini gösterir. |
+| 6027 | Gün zaten kaydedilmiş olsa bile (kilitli görünüm), Gün Tipi değişikliği |
+| 6028 | anında sessizce kaydedilir — kullanıcı tekrar "Günü Kaydet"e basmak zorunda kalmaz. |
+| 6045 | Artık alanlar arasında zorla sıralama YOK — kullanıcı istediği alana |
+| 6046 | istediği sırayla girebilir. Bu fonksiyon sadece görsel/erişilebilirlik |
+| 6047 | için tüm alanların açık kaldığından emin olur (geçmiş sürümle uyum için |
+| 6048 | tutuluyor, çağıran yerler dokunulmadan bırakıldı). |
+| 6063 | Kaydet sırasında eksik çıkan alanları kırmızı çerçeveyle işaretler ve |
+| 6064 | ilk eksik alana ekranı kaydırır. Kullanıcı o alana bir şey yazdığı an |
+| 6065 | kırmızı çerçeve otomatik kalkar. |
+| 6095 | NOT: "kmGunTipiSelect" (Gün Tipi) ve "kmKategoriSelect" (İş/Özel KM) BİLİNÇLİ |
+| 6096 | olarak bu kilit listesinde YOK — gün kaydedilse bile bu iki seçim kutusu her |
+| 6097 | zaman açık/değiştirilebilir kalır (aşağıdaki onchange'ler değişikliği anında |
+| 6098 | sessizce kaydeder, "Günü Kaydet"e tekrar basmaya gerek kalmaz). |
+| 6112 | Bugünün kaydı zaten yapılmışsa TÜM alanlar kilitlenir (yanlışlıkla |
+| 6113 | bozulmasın diye). Tek bir "Düzenle" tuşu YOK — her alan kendi başına, |
+| 6114 | üzerine 5 saniye BASILI TUTULARAK açılır; sadece o hücre aktif olur ve |
+| 6115 | elle giriş yapılabilir. Bu kilit, ertesi günün sabah ilk KM girişine |
+| 6116 | kadar (yani gün değişip yeni bir kayıt başlayana kadar) geçerlidir. |
+| 6132 | Her kilitli alana bir kere bağlanır (sayfa açılışında). Alan disabled |
+| 6133 | iken 5 saniye basılı tutulursa sadece o alanın kilidi açılır. |
+| 6169 | BAŞLANGIÇ KM artık BUGÜNÜN KENDİ okunan değeri (KM Gir ile girilen/fotoğraflanan) |
+| 6174 | BİTİŞ KM artık SONRAKİ günün okunan değeri — henüz o gün gelmediyse "—" |
+| 6181 | En son KM kaydı girilmiş günden bir sonraki (boş) günü bulur. Hiç kayıt |
+| 6182 | yoksa bugünü döner. Bulunan gün bugünden ileriyse (gelecek), bugüne sabitlenir. |
+| 6183 | NOT: Eskiden burada "kmSonrakiBosGunuBul()" adlı bir fonksiyon vardı; okunan KM'yi |
+| 6184 | "son kayıtlı günden sonraki ilk BOŞ güne" yerleştiriyordu. Bu YANLIŞTI — fotoğrafsız |
+| 6185 | (es geçilen) günleri geçmişe dönük doldurmaya çalışıyor, bugünün okumasını yanlış bir |
+| 6186 | güne yazabiliyordu. Artık kmFotoSecildi() doğrudan cihazın GERÇEK bugünkü tarihini |
+| 6187 | kullanıyor, bu fonksiyona gerek kalmadı. |
+| 6189 | KM/Tarih-Saat fotoğrafından okuma (kartFotoGonder ile aynı Cloud Function, "kmOku" hedefi) |
+| 6198 | ÖNEMLİ: Fotoğraf hangi gün çekiliyorsa, okuma HER ZAMAN o günün |
+| 6199 | (cihazın GERÇEK bugünkü tarihinin) kaydı olur — "son kayıtlı günden |
+| 6200 | sonraki boş gün" gibi bir arayışla GEÇMİŞTEKİ bir güne asla yazılmaz. |
+| 6201 | Fotoğrafsız günler otomatik olarak es geçilir (o gün km yapılmamış |
+| 6202 | sayılır) — aradaki boşluk hiçbir zaman doldurulmaya çalışılmaz. |
+| 6212 | KM okunur okunmaz, diğer alanlar (güzergah, ziyaret vb.) boş kalsa bile |
+| 6213 | sessizce kaydet — böylece Aylık Rapor'a KM hemen yansır, geri kalanı |
+| 6214 | gün içinde doldurulup normal "KM Kaydet" ile tamamlanabilir. |
+| 6231 | KM fotoğrafı çekilip okunduğu ANDAKİ cihaz tarih/saatini TARİH ve SAAT |
+| 6232 | kutularına otomatik yazar — bu, km okuma anının kaydıdır. |
+| 6247 | KM okuma tuşunu "KM Gir" (fotoğraf çek) durumundan "KM Kaydet" durumuna |
+| 6248 | çevirir — km başarıyla okunup alana yazıldıktan sonra çağrılır. |
+| 6257 | KM okuma tuşunu tekrar "KM Gir" (fotoğraf çek) durumuna döndürür — |
+| 6258 | yeni bir güne geçildiğinde veya kayıt henüz yapılmamışken çağrılır. |
+| 6312 | Boş bir gün ise (hiçbir şey girilmemiş, normal tipte) kaydı sil |
+| 6334 | Aylık tablo artık Excel çıktısıyla BİREBİR AYNI 8 sütun: Tarih \| Başlangıç-Bitiş |
+| 6335 | Saati \| Seyir Güzergahı \| Ziyaret Yerleri \| Başlangıç KM \| Bitiş KM \| İş KM \| Özel KM. |
+| 6336 | Gün Tipi seçimi Tarih hücresinin altına küçük bir kutu olarak gömülüdür (ayrı |
+| 6337 | sütun DEĞİL). Kategori (İş/Özel) seçimi de İş KM / Özel KM hücresine dokunularak |
+| 6338 | yapılır — ayrı bir Kategori sütunu yoktur. Böylece görünen sütunlar Excel ile |
+| 6339 | tıpatıp aynıdır; ekstra alanlar sadece hücre içi küçük kontrollerdir. |
+| 6359 | Sistem SADECE fotoğrafın çekildiği (kaydın gerçekten girildiği) günleri baz |
+| 6360 | alır — takvimde ardışık gitmek zorunda değil. Fotoğraf/kayıt olmayan bir gün |
+| 6361 | (bugün dahil) tabloda hiç görünmez, aradaki tarihler tamamen atlanır. |
+| 6368 | Excel/tablo görünümüyle birebir: hücreler düz görünür (görünmez kenarlıklı, |
+| 6369 | saydam zeminli input), sadece odaklanınca hafif çerçeve belirir. |
+| 6393 | OTOMATİK KURALLAR: |
+| 6394 | 1) Bir günün Başlangıç KM'si boşsa, bir önceki günün Bitiş KM'si otomatik |
+| 6395 | olarak o kutuya yazılır (araç kilometresi süreklidir). |
+| 6396 | 2) Bitiş KM - Başlangıç KM farkı, o gün için seçili kategoriye (İş/Özel |
+| 6397 | KM hücresine dokunarak seçilir) göre otomatik olarak ilgili hücreye |
+| 6398 | yazılır. Kullanıcı isterse üzerine yazıp elle değiştirebilir. |
+| 6415 | Elle Bitiş KM girilmemişse: Günlük Kayıt'tan gelen bir sonraki günün |
+| 6416 | KENDİ KM okuması otomatik olarak bu günün Bitiş KM'si sayılır |
+| 6417 | (araç kilometresi süreklidir — bugünün bitişi = yarının okuması). |
+| 6457 | Herhangi bir satıra BASILI TUTULURSA (500ms), o günün tüm bilgilerini tek |
+| 6458 | popup'ta düzenleyebileceğimiz ekranı açar. Var olan hücre-içi düzenleme |
+| 6459 | (input'a dokunup yazma) de aynen çalışmaya devam eder. |
+| 6461 | ÖNEMLİ DÜZELTME: Eskiden dokunma anında tarayıcı hücreyi HEMEN odaklayıp |
+| 6462 | klavyeyi açıyordu (native davranış), biz 500ms sonra popup'ı bunun ÜSTÜNE |
+| 6463 | açıyorduk — bu da "popup, kutunun içine giriyor ve yanlış yazıma neden |
+| 6464 | oluyor" şikayetine yol açıyordu. Artık dokunma anında native odaklanmayı |
+| 6465 | BİZ engelliyoruz (preventDefault); basılı tutma tamamlanmadan parmak |
+| 6466 | kalkarsa (kısa/normal dokunuş) hücreyi KENDİMİZ odaklıyoruz — yani tek |
+| 6467 | dokunuşla düzenleme aynen çalışır ama klavye popup'la asla çakışmaz. |
+| 6468 | Sürükleme/scroll varsa basılı tutma iptal edilir. |
+| 6488 | Kısa dokunuş — popup açılmadı, normal düzenleme odaklanmasını biz tetikliyoruz. |
+| 6499 | Parmağın en ufak titremesinde (gerçek kaydırma olmadan) basılı tutma iptal |
+| 6500 | OLMASIN diye 12px'lik bir eşik mesafe var — sadece bu eşiği aşan gerçek |
+| 6501 | bir sürükleme/scroll hareketinde basılı tutma iptal edilir. |
+| 6512 | Masaüstü/mouse ile test için: burada native odaklanma zaten sorun |
+| 6513 | yaratmadığından preventDefault gerekmez, davranış olduğu gibi bırakıldı. |
+| 6522 | Düzenleme sırasında odak kaybolmasın diye, aynı hücreye tekrar odaklan |
+| 6529 | İş KM / Özel KM hücresine dokunularak o günün kategorisini seçme (ayrı bir |
+| 6530 | Kategori sütunu olmadan, Excel'deki 8 sütun görünümünü bozmadan). |
+| 6548 | Tablodaki herhangi bir hücre değiştirildiğinde çağrılır: ilgili günün |
+| 6549 | kaydını (yoksa oluşturarak) günceller, yerelde ve Firebase'de saklar, |
+| 6550 | başlangıç/bitiş KM zincirinin doğru görünmesi için tabloyu yeniden çizer. |
+| 6551 | "+ Gün Ekle" kutusu: tablo artık sadece kayıtlı günleri gösterdiği için, izin/tatil |
+| 6552 | gibi Günlük Kayıt'tan geçmeyen bir günü elle eklemek istediğinde bu kullanılır. |
+| 6553 | Seçilen tarih için (henüz kaydı yoksa) boş bir kayıt oluşturur, gerekiyorsa o ayı |
+| 6554 | gösterir ve tabloyu yeniden çizip o günün Başlangıç KM alanına odaklanır. |
+| 6607 | Başlangıç/Bitiş KM değiştiyse, o günün İş/Özel KM farkını seçili |
+| 6608 | kategoriye göre otomatik yeniden hesapla. |
+| 6612 | Bugünün Bitiş KM'si, yarının Başlangıç KM'sine otomatik aktarılır. |
+| 6622 | Aynı anda açık olan Günlük Kayıt ekranı bu güne bakıyorsa, orayı da tazele. |
+| 6630 | Bu genel kaydetme birden çok yerden (hücre düzenleme, gün ekleme/silme, |
+| 6631 | zincirleme bitiş-KM aktarımı) çağrılıyor — hangi günlerin değiştiğini |
+| 6632 | kmBekleyenDegisiklikler kuyruğu tutuyor. Kuyrukta bir şey varsa SADECE o |
+| 6633 | günleri güvenli birleştirerek yazıyoruz (tüm ayı ham üzerine yazmıyoruz). |
+| 6634 | Kuyruk boşsa (bilinmeyen bir çağrı yolu), son çare olarak eski davranışa |
+| 6635 | (ham üzerine yazma) düşüyoruz — ama bu artık istisna, kural değil. |
+| 6646 | Bir güne BASILI TUTULUNCA açılan tam-detay düzenleme popup'ı — o günün TÜM |
+| 6647 | alanlarını (gün tipi, saat, güzergah, ziyaret yerleri, başlangıç/bitiş KM, |
+| 6648 | iş/özel KM, kategori) tek ekranda gösterir ve hepsini birden değiştirmeyi |
+| 6649 | sağlar. Geçmişe dönük herhangi bir günü (bugün olmasa bile) düzenlemek için. |
+| 6704 | "🗑 Bu Günü Tamamen Sil" — önce net bir onay ister (kalıcı silme, geri |
+| 6705 | alınamaz), onaylanırsa kaydı tamamen kaldırır ve tabloyu yeniden çizer. |
+| 6720 | Ana Sayfa'dan doğrudan Aylık (düzenlenebilir) tabloya geçiş |
+| 6806 | Kolon başlıkları satırı (3. satır, 0-index BAS_SATIR-1): açık mavi zemin, kalın, ortalı. |
+| 6818 | Veri satırları: tek satır, kenarlıklı, Tarih sola / diğerleri ortaya hizalı. |
+| 6838 | ============ ZİYARET TAKVİMİ ============ |
+| 6866 | Diğer panelleri (Aylık Özet, Ajanda) kapat |
+| 6883 | ============ GÜNLÜK AJANDA ============ |
+| 6897 | Diğer panelleri (Aylık Özet, Ziyaret Takvimi) kapat |
+| 7002 | Tüm müşterilerin ziyaretGecmisi'ni tek düz listeye toplar: {musteri, sehir, ts, not} |
+| 7022 | Pazartesi=0 olacak şekilde haftanın gününü ayarla |
+| 7058 | Özet tablo: bu ay toplamı + bu hafta (son 7 gün, tüm ziyaretler üzerinden gerçek zamana göre) |
+| 7070 | 15+ gündür ziyaret edilmeyenler (tüm müşteriler üzerinden, ay'dan bağımsız gerçek zaman) |
+| 7287 | ❌ Kaçan Siparişler özeti: bu ayki sayı/tutar, kaybedilme sebebi dağılımı, |
+| 7288 | rakip firma dağılımı ve Teklif→Sipariş dönüşüm oranı. |
+| 7327 | "KAÇAN İŞLEM" kutusuna dokununca — bu ayki kaçan kayıtların listesi (sebep, |
+| 7328 | rakip firma, tutar dahil) ayrı bir popup'ta açılır. |
+| 7354 | KAYIT DÜZENLEME — geçmişte yanlış kaydedilmiş bir işlemi manuel düzeltmek için |
+| 7384 | Bu modalı tetikleyebilecek tüm üst popup'lar kapatılır — aksi halde |
+| 7385 | Revize tuşuna basınca bu modal arkada açılır, görünmez kalır. |
+| 7547 | Tip veya tarih değiştiyse belge kodu da (SIP/TEK/PRO/NUM + tarih + sıra) |
+| 7548 | yeni duruma göre tazelenir, aksi halde eski koddaki tarih/tip yanıltıcı kalır. |
+| 7760 | Firebase'e artık TÜM sayaçlar nesnesi komple üzerine yazılmıyor — sadece bu |
+| 7761 | tipin sayacı, sunucuda ATOMİK olarak (transaction) en az bu değere yükseltiliyor. |
+| 7762 | Böylece iki cihaz aynı anda kod üretse bile birbirinin artışını silmiyor |
+| 7763 | (eskiden fbSet ile komple nesne yazıldığında diğer cihazın az önce yaptığı |
+| 7764 | artış sessizce kaybolabiliyordu). |
+| 7811 | Aynı gün + aynı müşteri + aynı işlem türü + BİREBİR AYNI ürün seti (Berta/Abas |
+| 7812 | kodlarına göre — sadece adet/iskonto/fiyat farkı olabilir, ürün eklenip/çıkarılmamış |
+| 7813 | olmalı) bulunursa ikinci bir evrak açmak yerine mevcut kaydı güncelleyip REVİZE damgası |
+| 7814 | basıyoruz. Böylece unutularak art arda gönderilen aynı sipariş, mükerrer kayıt olmuyor. |
+| 7833 | REVİZE GEÇMİŞİ: üzerine yazmadan önce eski hâli (fiyat/ürün seti + zaman) |
+| 7834 | revizeGecmisi dizisine ekleniyor — böylece bir teklif/sipariş birden |
+| 7835 | fazla kez revize edilse bile önceki fiyatların tamamı kayboluyor değil, |
+| 7836 | "v1 → 1.250€, v2 → 1.180€" gibi bir tarihçe olarak saklanıyor. |
+| 7864 | "İlerlet" ile (Numune→Teklif→Proforma→Sipariş) hazırlanan bir belgeyse, eski aşamanın |
+| 7865 | kaydını arşivden SİL — artık iki ayrı kayıt değil, tek kayıt yeni türe dönüşmüş olur. |
+| 7892 | Arşive gitme - sadece bildir |
+| 7958 | ============================================================ |
+| 7961 | Bir teklif/numune/proforma kaydını "düzenlenebilir" (bekleyen) halde Sepet'e taşır, |
+| 7962 | ürünlere dokunup gramaj/ürün değiştirilebilir, hesaplandıktan sonra hedef SİPARİŞ olarak gönderilir. |
+| 7963 | ============================================================ |
+| 7964 | HAREKET SEÇ — Müşteri kartı / İşlem Geçmişi / İstatistikler'den ulaşılan |
+| 7965 | TEK ORTAK akış: bir kaydın (teklif/numune/proforma/sipariş) ürünlerini, |
+| 7966 | MEVCUT fiyat/iskonto/adediyle DOĞRUDAN hesaplanmış olarak Sepet'e yükler. |
+| 7967 | Hiçbir ürünü yeniden hesaplamaya zorlamaz — değişecek ürün varsa |
+| 7968 | kullanıcı sadece o ürüne dokunup düzenler, diğerleri olduğu gibi kalır. |
+| 7969 | ============================================================ |
+| 8000 | Ürünleri mevcut fiyat/iskonto/adediyle DOĞRUDAN HESAPLANMIŞ (yeşil) olarak yükle. |
+| 8050 | Ürünleri HESAPLANMIŞ olarak değil, BEKLEYEN (sarı) olarak sepete koy — |
+| 8051 | böylece her ürüne dokunup "✏️ Düzenle" ile farklı bir ürün/gramaj seçilebilir. |
+| 8066 | Hedef işlem türünü SİPARİŞ olarak ayarla (teklif/numune/proforma -> sipariş dönüşümü) |
+| 8090 | Müşteriyi bul (kayıtlı müşteri listesinde varsa tam profiliyle, yoksa kayıttaki bilgilerle) |
+| 8099 | Ürünleri hareket listesine yükle (tarih, gönderim anında otomatik bugünün tarihi olacak) |
+| 8104 | İşlem türünü kayıttaki türle eşle |
+| 8109 | Vade/Fatura/Kargo/Yetkili'yi kaydın kendi değerleriyle güncelle (müşteri profilindeki genel değerler yerine) |
 
 ## Function index
 
@@ -706,220 +699,210 @@ Generated from the largest remaining inline application script on `project-conte
 | 3902 | `kaydetOnayPopupAc` |
 | 3912 | `kaydetOnayModalKapat` |
 | 3915 | `kaydetOnayla` |
-| 3925 | `hareketAnomaliKontrolEt` |
-| 3969 | `anomaliUyariPopupGoster` |
-| 3981 | `anomaliUyariGormezdenGel` |
-| 3991 | `anomaliUyariGeriDon` |
-| 3995 | `anomaliUyariKapat` |
-| 4005 | `anomaliDerinAnalizIste` |
-| 4048 | `hesaplaPopupAc` |
-| 4063 | `hesaplamaTemizle` |
-| 4078 | `listeyeEkleButonGuncelle` |
-| 4086 | `satisMenusuAc` |
-| 4089 | `satisMenusuKapatVeGit` |
-| 4094 | `hizliHesaplaAc` |
-| 4113 | `hizliHesaplaUrunAramaAc` |
-| 4120 | `hizliHesaplaFiltrele` |
-| 4169 | `hizliHesaplaUrunSec` |
-| 4188 | `hesaplaPopupKapat` |
-| 4198 | `sepetBekleyenModalAc` |
-| 4228 | `sepettenSil` |
-| 4246 | `sepettenHesaplaAktar` |
-| 4269 | `aktarilanUrununSil` |
-| 4279 | `fmt` |
-| 4281 | `listeFiyatGuncelle` |
-| 4293 | `musteriUrunFiyatGecmisiBul` |
-| 4316 | `fiyatGecmisiKontrolEt` |
-| 4326 | `hesapla` |
-| 4375 | `oncekiSatisKaydinaGit` |
-| 4387 | `listeyeEkleTikla` |
-| 4403 | `fiyatDusuklukOnayKapat` |
-| 4408 | `fiyatDusuklukOnayDevamEt` |
-| 4414 | `hareketeSaklar` |
-| 4451 | `islemTuruModalAc` |
-| 4454 | `islemTuruModalKapat` |
-| 4458 | `islemTuruRenkGuncelle` |
-| 4471 | `modSec` |
-| 4488 | `hareketDuzenle` |
-| 4509 | `harekettenSil` |
-| 4527 | `hareketUrunModalAc` |
-| 4554 | `faturaOnizlemeHtmlOlustur` |
-| 4727 | `faturaOnizlemePopupGoster` |
-| 4752 | `kacanIsaretlePopupAc` |
-| 4765 | `kacanIsaretleModalKapat` |
-| 4768 | `kacanIsaretleKaydet` |
-| 4791 | `kacanIsaretiKaldir` |
-| 4813 | `faturaOnizlemedenDurumIsaretle` |
-| 4833 | `faturaOnizlemedenSil` |
-| 4841 | `faturaOnizlemeAc` |
-| 4851 | `faturaOnizlemeKapat` |
-| 4861 | `acikSurecKayitOnizlemeAc` |
-| 4882 | `faturaOnizlemeIlerletModuAc` |
-| 4891 | `faturaOnizlemeIlerletModuKapat` |
-| 4900 | `faturaOnizlemedenIlerlet` |
-| 4908 | `getDynamicCustomerName` |
-| 4909 | `getDynamicCustomerSehir` |
-| 4910 | `getDynamicCustomerNameSehirli` |
-| 4911 | `getDynamicCustomerVade` |
-| 4912 | `getDynamicCustomerFatura` |
-| 4914 | `getModLabel` |
-| 4921 | `getDynamicCustomerYetkili` |
-| 4925 | `getDynamicCustomerYetkiliIletisim` |
-| 4931 | `getDynamicCustomerKargo` |
-| 4932 | `getDynamicCustomerTeslimatAdresi` |
-| 4938 | `custTeslimatToggle` |
-| 4951 | `mesajSablonlariniYukle` |
-| 4955 | `mesajSablonuUygula` |
-| 4961 | `mesajSablonlariAc` |
-| 4967 | `mesajSablonlariKaydet` |
-| 4977 | `mesajSablonlariVarsayilanaDondur` |
-| 4991 | `buildEmailBody` |
-| 5011 | `buildWhatsAppBody` |
-| 5029 | `hareketBosUyariGoster` |
-| 5037 | `generateCommunicationData` |
-| 5058 | `cihazMobilMi` |
-| 5062 | `sendWhatsAppMessage` |
-| 5067 | `copyEmailText` |
-| 5073 | `mailOnizlemePopupAc` |
-| 5099 | `mailOnizlemeKapat` |
-| 5107 | `siparisResmiHtmlOlustur` |
-| 5267 | `siparisResmiCanvasOlustur` |
-| 5300 | `resimVeEpostaGonder` |
-| 5301 | `resimVeWhatsappGonder` |
-| 5309 | `tabloKopyalaIndirBaslat` |
-| 5339 | `tabloOnizlemeKapat` |
-| 5344 | `tabloResmiKopyala` |
-| 5360 | `tabloResmiIndir` |
-| 5378 | `_resimGonderOrtak` |
-| 5407 | `_resimGonderDevamEt` |
-| 5468 | `sehirFormatla` |
-| 5499 | `arsivGuvenliKaydet` |
-| 5545 | `arsivAra` |
-| 5613 | `arsivAramaSifirla` |
-| 5620 | `arsivSekmeAc` |
-| 5642 | `istatistikFiltreButonGuncelle` |
-| 5658 | `istatistikFiltreSec` |
-| 5665 | `buAyinSiparisVerisi` |
-| 5699 | `buGununIsGunuTarihi` |
-| 5709 | `buGuneAitSiparisVerisi` |
-| 5735 | `anaSayfaRenderEt` |
-| 5757 | `anaSayfaSatisDetay` |
-| 5761 | `anaSayfaPrimDetay` |
-| 5767 | `aylikOzetiAcKapa` |
-| 5802 | `kmDegisiklikKaydet` |
-| 5814 | `kmGuvenliKaydet` |
-| 5849 | `kmFmt` |
-| 5850 | `kmTarihAnahtari` |
-| 5859 | `kmBugunKayitliMi` |
-| 5867 | `kmErtelemeAktifMi` |
-| 5871 | `kmKapiAcikMi` |
-| 5874 | `kmErtele` |
-| 5880 | `kmErtelemeButonuGuncelle` |
-| 5899 | `kmTakipSayfasiAc` |
-| 5900 | `devamEt` |
-| 5913 | `biriTamamlandi` |
-| 5924 | `kmAyarlarKaydet` |
-| 5933 | `kmTakipGorunumDegistir` |
-| 5953 | `kmOncekiKmBul` |
-| 5968 | `kmSonrakiKmBul` |
-| 5985 | `kmAnahtarKaydir` |
-| 5993 | `kmFarkHesapla` |
-| 6005 | `kmAylikGunYenidenHesapla` |
-| 6025 | `kmAylikBitisKmSonrakiGuneAktar` |
-| 6043 | `kmBaslangicGerekliMi` |
-| 6047 | `kmAyBasiKontrolEt` |
-| 6057 | `kmAyBasiKaydet` |
-| 6085 | `kmVarsayilanGunTipi` |
-| 6090 | `kmGunKayitYukle` |
-| 6120 | `kmOncekiGunOzetiGoster` |
-| 6148 | `kmTakipGunTipiDegisti` |
-| 6158 | `kmTakipKategoriDegisti` |
-| 6164 | `kmKategoriSec` |
-| 6173 | `kmAlanKilitleriUygula` |
-| 6179 | `kmAlanAyarla` |
-| 6197 | `kmEksikAlanlariIsaretle` |
-| 6241 | `kmFormKilitleGoster` |
-| 6258 | `kmUzunBasinaKilitAcKur` |
-| 6290 | `kmTakipHesapla` |
-| 6314 | `kmFotoSecildi` |
-| 6357 | `kmSuAnTarihSaatDoldur` |
-| 6373 | `kmKmFotoBtnKaydetModunaGecir` |
-| 6383 | `kmKmFotoBtnOkumaModunaGecir` |
-| 6391 | `kmTakipGunDegistir` |
-| 6396 | `kmTakipBugun` |
-| 6402 | `kmTakipKaydet` |
-| 6451 | `kmTakipAyDegistir` |
-| 6464 | `kmTakipAylikTabloRenderEt` |
-| 6491 | `esc` |
-| 6495 | `metinKutu` |
-| 6498 | `kmKutu` |
-| 6655 | `kmAylikKategoriSec` |
-| 6679 | `kmAylikGunEkle` |
-| 6704 | `kmAylikHucreDegisti` |
-| 6775 | `kmGunDuzenlePopupAc` |
-| 6794 | `kmGunDuzenleKapat` |
-| 6799 | `kmGunDuzenleKaydet` |
-| 6830 | `kmGunDuzenleSilOnay` |
-| 6845 | `anaSayfadanAylikKmAc` |
-| 6851 | `kmTakipGunTikla` |
-| 6858 | `kmTakipExcelIndir` |
-| 6967 | `anaSayfadanZiyaretTakvimiAc` |
-| 6979 | `ziyaretTakvimiAcKapa` |
-| 7010 | `ajandaAcKapa` |
-| 7038 | `ajandaGunDegistir` |
-| 7045 | `ajandaBugune` |
-| 7050 | `ajandaOlustur` |
-| 7112 | `musteriKartVeZiyaretGecmisiniAc` |
-| 7119 | `ziyaretTakvimAyDegistir` |
-| 7127 | `tumZiyaretleriTopla` |
-| 7139 | `ziyaretTakvimiOlustur` |
-| 7213 | `ziyaretNotGosterGizle` |
-| 7219 | `ziyaretGunPopupAc` |
-| 7254 | `ziyaretGunKaydiSilHizli` |
-| 7259 | `guncellemeyiUygula` |
-| 7285 | `musteriKartAcAdIle` |
-| 7294 | `ayBazliMudurPrimiGuncelle` |
-| 7353 | `tarihIkiSatirFormat` |
-| 7367 | `aySiparisleriAc` |
-| 7399 | `istatistikHesapla` |
-| 7400 | `hesapla` |
-| 7413 | `kacanOzetRenderEt` |
-| 7453 | `kacanDetayAc` |
-| 7481 | `tsToDatetimeLocal` |
-| 7487 | `kayitDuzenleAc` |
-| 7516 | `kdUrunListesiRenderEt` |
-| 7539 | `kdAlanGuncelle` |
-| 7549 | `kdUrunSil` |
-| 7554 | `kdUrunEkleAramaAcKapat` |
-| 7565 | `kdUrunEkleFiltrele` |
-| 7614 | `kdUrunEkle` |
-| 7626 | `kayitDuzenleKaydetOrtak` |
-| 7720 | `kayitDuzenleKaydet` |
-| 7725 | `kayitDuzenleKaydetVeGonder` |
-| 7732 | `istatistikKayitSil` |
-| 7753 | `arsivKayitGeriYukle` |
-| 7768 | `arsivGeriDon` |
-| 7776 | `arsivSayaclariGuncelle` |
-| 7789 | `arsivKategoriAc` |
-| 7799 | `arsiveKaydet` |
-| 7804 | `arsiveKaydetIletisimden` |
-| 7809 | `benzersizKodUretTarihli` |
-| 7820 | `eskiKayitlaraKodAta` |
-| 7823 | `isle` |
-| 7877 | `benzersizKodUret` |
-| 7902 | `kodHtmlOlustur` |
-| 7914 | `urunSetiImzaOlustur` |
-| 7918 | `_arsiveKaydetIslem` |
-| 8019 | `arsiveKaydetSonrasiSifirla` |
-| 8045 | `arsivKayitSil` |
-| 8056 | `renderArsiv` |
-| 8096 | `hareketSecPopupAc` |
-| 8101 | `hareketSecKapat` |
-| 8105 | `hareketSecTuruSecildi` |
-| 8160 | `islemiDuzenleVeIlerle` |
-| 8208 | `islemiTekrarla` |
-| 8246 | `arsivDetayAc` |
-| 8254 | `arsivDetayKapat` |
+| 3925 | `anomaliDerinAnalizIste` |
+| 3968 | `hesaplaPopupAc` |
+| 3983 | `hesaplamaTemizle` |
+| 3998 | `listeyeEkleButonGuncelle` |
+| 4006 | `satisMenusuAc` |
+| 4009 | `satisMenusuKapatVeGit` |
+| 4014 | `hizliHesaplaAc` |
+| 4033 | `hizliHesaplaUrunAramaAc` |
+| 4040 | `hizliHesaplaFiltrele` |
+| 4089 | `hizliHesaplaUrunSec` |
+| 4108 | `hesaplaPopupKapat` |
+| 4118 | `sepetBekleyenModalAc` |
+| 4148 | `sepettenSil` |
+| 4166 | `sepettenHesaplaAktar` |
+| 4189 | `aktarilanUrununSil` |
+| 4199 | `fmt` |
+| 4201 | `listeFiyatGuncelle` |
+| 4213 | `musteriUrunFiyatGecmisiBul` |
+| 4236 | `fiyatGecmisiKontrolEt` |
+| 4246 | `hesapla` |
+| 4295 | `oncekiSatisKaydinaGit` |
+| 4307 | `listeyeEkleTikla` |
+| 4323 | `fiyatDusuklukOnayKapat` |
+| 4328 | `fiyatDusuklukOnayDevamEt` |
+| 4334 | `hareketeSaklar` |
+| 4371 | `islemTuruModalAc` |
+| 4374 | `islemTuruModalKapat` |
+| 4378 | `islemTuruRenkGuncelle` |
+| 4391 | `modSec` |
+| 4408 | `hareketDuzenle` |
+| 4429 | `harekettenSil` |
+| 4447 | `hareketUrunModalAc` |
+| 4474 | `faturaOnizlemeHtmlOlustur` |
+| 4647 | `faturaOnizlemePopupGoster` |
+| 4672 | `kacanIsaretlePopupAc` |
+| 4685 | `kacanIsaretleModalKapat` |
+| 4688 | `kacanIsaretleKaydet` |
+| 4711 | `kacanIsaretiKaldir` |
+| 4733 | `faturaOnizlemedenDurumIsaretle` |
+| 4753 | `faturaOnizlemedenSil` |
+| 4761 | `faturaOnizlemeAc` |
+| 4771 | `faturaOnizlemeKapat` |
+| 4781 | `acikSurecKayitOnizlemeAc` |
+| 4802 | `faturaOnizlemeIlerletModuAc` |
+| 4811 | `faturaOnizlemeIlerletModuKapat` |
+| 4820 | `faturaOnizlemedenIlerlet` |
+| 4828 | `getDynamicCustomerName` |
+| 4829 | `getDynamicCustomerSehir` |
+| 4830 | `getDynamicCustomerNameSehirli` |
+| 4831 | `getDynamicCustomerVade` |
+| 4832 | `getDynamicCustomerFatura` |
+| 4834 | `getModLabel` |
+| 4841 | `getDynamicCustomerYetkili` |
+| 4845 | `getDynamicCustomerYetkiliIletisim` |
+| 4851 | `getDynamicCustomerKargo` |
+| 4852 | `getDynamicCustomerTeslimatAdresi` |
+| 4858 | `custTeslimatToggle` |
+| 4867 | `buildEmailBody` |
+| 4887 | `buildWhatsAppBody` |
+| 4905 | `hareketBosUyariGoster` |
+| 4913 | `generateCommunicationData` |
+| 4934 | `cihazMobilMi` |
+| 4938 | `sendWhatsAppMessage` |
+| 4943 | `copyEmailText` |
+| 4949 | `mailOnizlemePopupAc` |
+| 4975 | `mailOnizlemeKapat` |
+| 4983 | `siparisResmiHtmlOlustur` |
+| 5143 | `siparisResmiCanvasOlustur` |
+| 5176 | `resimVeEpostaGonder` |
+| 5177 | `resimVeWhatsappGonder` |
+| 5185 | `tabloKopyalaIndirBaslat` |
+| 5215 | `tabloOnizlemeKapat` |
+| 5220 | `tabloResmiKopyala` |
+| 5236 | `tabloResmiIndir` |
+| 5254 | `_resimGonderOrtak` |
+| 5283 | `_resimGonderDevamEt` |
+| 5344 | `sehirFormatla` |
+| 5375 | `arsivGuvenliKaydet` |
+| 5421 | `arsivAra` |
+| 5489 | `arsivAramaSifirla` |
+| 5496 | `arsivSekmeAc` |
+| 5518 | `istatistikFiltreButonGuncelle` |
+| 5534 | `istatistikFiltreSec` |
+| 5541 | `buAyinSiparisVerisi` |
+| 5575 | `buGununIsGunuTarihi` |
+| 5585 | `buGuneAitSiparisVerisi` |
+| 5611 | `anaSayfaRenderEt` |
+| 5633 | `anaSayfaSatisDetay` |
+| 5637 | `anaSayfaPrimDetay` |
+| 5643 | `aylikOzetiAcKapa` |
+| 5678 | `kmDegisiklikKaydet` |
+| 5690 | `kmGuvenliKaydet` |
+| 5725 | `kmFmt` |
+| 5726 | `kmTarihAnahtari` |
+| 5735 | `kmBugunKayitliMi` |
+| 5743 | `kmErtelemeAktifMi` |
+| 5747 | `kmKapiAcikMi` |
+| 5750 | `kmErtele` |
+| 5756 | `kmErtelemeButonuGuncelle` |
+| 5775 | `kmTakipSayfasiAc` |
+| 5776 | `devamEt` |
+| 5789 | `biriTamamlandi` |
+| 5800 | `kmAyarlarKaydet` |
+| 5809 | `kmTakipGorunumDegistir` |
+| 5829 | `kmOncekiKmBul` |
+| 5844 | `kmSonrakiKmBul` |
+| 5861 | `kmAnahtarKaydir` |
+| 5869 | `kmFarkHesapla` |
+| 5881 | `kmAylikGunYenidenHesapla` |
+| 5901 | `kmAylikBitisKmSonrakiGuneAktar` |
+| 5919 | `kmBaslangicGerekliMi` |
+| 5923 | `kmAyBasiKontrolEt` |
+| 5933 | `kmAyBasiKaydet` |
+| 5961 | `kmVarsayilanGunTipi` |
+| 5966 | `kmGunKayitYukle` |
+| 5996 | `kmOncekiGunOzetiGoster` |
+| 6024 | `kmTakipGunTipiDegisti` |
+| 6034 | `kmTakipKategoriDegisti` |
+| 6040 | `kmKategoriSec` |
+| 6049 | `kmAlanKilitleriUygula` |
+| 6055 | `kmAlanAyarla` |
+| 6073 | `kmEksikAlanlariIsaretle` |
+| 6117 | `kmFormKilitleGoster` |
+| 6134 | `kmUzunBasinaKilitAcKur` |
+| 6166 | `kmTakipHesapla` |
+| 6190 | `kmFotoSecildi` |
+| 6233 | `kmSuAnTarihSaatDoldur` |
+| 6249 | `kmKmFotoBtnKaydetModunaGecir` |
+| 6259 | `kmKmFotoBtnOkumaModunaGecir` |
+| 6267 | `kmTakipGunDegistir` |
+| 6272 | `kmTakipBugun` |
+| 6278 | `kmTakipKaydet` |
+| 6327 | `kmTakipAyDegistir` |
+| 6340 | `kmTakipAylikTabloRenderEt` |
+| 6367 | `esc` |
+| 6371 | `metinKutu` |
+| 6374 | `kmKutu` |
+| 6531 | `kmAylikKategoriSec` |
+| 6555 | `kmAylikGunEkle` |
+| 6580 | `kmAylikHucreDegisti` |
+| 6651 | `kmGunDuzenlePopupAc` |
+| 6670 | `kmGunDuzenleKapat` |
+| 6675 | `kmGunDuzenleKaydet` |
+| 6706 | `kmGunDuzenleSilOnay` |
+| 6721 | `anaSayfadanAylikKmAc` |
+| 6727 | `kmTakipGunTikla` |
+| 6734 | `kmTakipExcelIndir` |
+| 6843 | `anaSayfadanZiyaretTakvimiAc` |
+| 6855 | `ziyaretTakvimiAcKapa` |
+| 6886 | `ajandaAcKapa` |
+| 6914 | `ajandaGunDegistir` |
+| 6921 | `ajandaBugune` |
+| 6926 | `ajandaOlustur` |
+| 6988 | `musteriKartVeZiyaretGecmisiniAc` |
+| 6995 | `ziyaretTakvimAyDegistir` |
+| 7003 | `tumZiyaretleriTopla` |
+| 7015 | `ziyaretTakvimiOlustur` |
+| 7089 | `ziyaretNotGosterGizle` |
+| 7095 | `ziyaretGunPopupAc` |
+| 7130 | `ziyaretGunKaydiSilHizli` |
+| 7135 | `guncellemeyiUygula` |
+| 7161 | `musteriKartAcAdIle` |
+| 7170 | `ayBazliMudurPrimiGuncelle` |
+| 7229 | `tarihIkiSatirFormat` |
+| 7243 | `aySiparisleriAc` |
+| 7275 | `istatistikHesapla` |
+| 7276 | `hesapla` |
+| 7289 | `kacanOzetRenderEt` |
+| 7329 | `kacanDetayAc` |
+| 7357 | `tsToDatetimeLocal` |
+| 7363 | `kayitDuzenleAc` |
+| 7392 | `kdUrunListesiRenderEt` |
+| 7415 | `kdAlanGuncelle` |
+| 7425 | `kdUrunSil` |
+| 7430 | `kdUrunEkleAramaAcKapat` |
+| 7441 | `kdUrunEkleFiltrele` |
+| 7490 | `kdUrunEkle` |
+| 7502 | `kayitDuzenleKaydetOrtak` |
+| 7596 | `kayitDuzenleKaydet` |
+| 7601 | `kayitDuzenleKaydetVeGonder` |
+| 7608 | `istatistikKayitSil` |
+| 7629 | `arsivKayitGeriYukle` |
+| 7644 | `arsivGeriDon` |
+| 7652 | `arsivSayaclariGuncelle` |
+| 7665 | `arsivKategoriAc` |
+| 7675 | `arsiveKaydet` |
+| 7680 | `arsiveKaydetIletisimden` |
+| 7685 | `benzersizKodUretTarihli` |
+| 7696 | `eskiKayitlaraKodAta` |
+| 7699 | `isle` |
+| 7753 | `benzersizKodUret` |
+| 7778 | `kodHtmlOlustur` |
+| 7790 | `urunSetiImzaOlustur` |
+| 7794 | `_arsiveKaydetIslem` |
+| 7895 | `arsiveKaydetSonrasiSifirla` |
+| 7921 | `arsivKayitSil` |
+| 7932 | `renderArsiv` |
+| 7972 | `hareketSecPopupAc` |
+| 7977 | `hareketSecKapat` |
+| 7981 | `hareketSecTuruSecildi` |
+| 8036 | `islemiDuzenleVeIlerle` |
+| 8084 | `islemiTekrarla` |
+| 8122 | `arsivDetayAc` |
+| 8130 | `arsivDetayKapat` |
 
 ## Refactor rule
 
