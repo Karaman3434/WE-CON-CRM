@@ -18,7 +18,7 @@ jobs:
           ref: project-context
           fetch-depth: 0
 
-      - name: Move all extracted script tags outside inline scripts
+      - name: Move nested extracted script tags outside inline scripts
         shell: python
         run: |
           from pathlib import Path
@@ -35,32 +35,34 @@ jobs:
               'search-history.js',
               'product-memory.js',
           ]
-          changed = 0
+          relocated = []
           for asset in tags:
+              # Determine whether this asset tag is currently nested inside an inline script.
+              inline_blocks = list(re.finditer(r'<script>(.*?)</script>', html, re.DOTALL | re.IGNORECASE))
+              nested = any('assets/' + asset in m.group(1) for m in inline_blocks)
+              if not nested:
+                  continue
+
               pattern = re.compile(
                   r'\n\s*<script\s+src="assets/' + re.escape(asset) + r'"\s*>\s*</script>\s*\n',
                   re.IGNORECASE,
               )
               replacement = '\n</script>\n<script src="assets/' + asset + '"></script>\n<script>\n'
               html, n = pattern.subn(replacement, html, count=1)
-              changed += n
-
-          if changed != len(tags):
-              raise SystemExit(f'Expected to relocate {len(tags)} extracted script tags, relocated {changed}.')
+              if n != 1:
+                  raise SystemExit(f'Could not relocate nested {asset}.')
+              relocated.append(asset)
 
           path.write_text(html, encoding='utf-8')
 
+          inline_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL | re.IGNORECASE)
           for asset in tags:
               if html.count('<script src="assets/' + asset + '"></script>') != 1:
                   raise SystemExit(f'Expected exactly one external tag for {asset}.')
+              if any('assets/' + asset in block for block in inline_blocks):
+                  raise SystemExit(f'{asset} is still nested inside an inline script.')
 
-          inline_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL | re.IGNORECASE)
-          for block in inline_blocks:
-              for asset in tags:
-                  if 'assets/' + asset in block:
-                      raise SystemExit(f'{asset} is still nested inside an inline script.')
-
-          print(f'Relocated {changed} external script tags.')
+          print(f'Relocated nested assets: {relocated}')
           print(f'HTML changed: {html != original}')
 
       - name: Chrome smoke test
@@ -86,7 +88,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m 'fix: place all extracted scripts outside inline blocks [refactor-bot]'
+          git commit -m 'fix: place nested extracted scripts outside inline blocks [refactor-bot]'
           git push origin HEAD:project-context
 
       - name: Stop local server
