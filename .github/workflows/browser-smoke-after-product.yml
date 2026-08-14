@@ -1,0 +1,43 @@
+name: Browser Smoke After Product Entry
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+      - name: Start local server
+        shell: bash
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/weicon-http.log 2>&1 &
+          echo $! > /tmp/weicon-http.pid
+          for i in {1..20}; do curl -fsS http://127.0.0.1:8080/index.html > /dev/null && exit 0; sleep 1; done
+          cat /tmp/weicon-http.log
+          exit 1
+      - name: Chrome smoke test
+        shell: bash
+        run: |
+          timeout 30s google-chrome --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=3000 --dump-dom http://127.0.0.1:8080/index.html > /tmp/weicon-dom.html
+          test -s /tmp/weicon-dom.html
+          grep -q 'WEICON ASIST' /tmp/weicon-dom.html
+          grep -q 'Giriş Yap' /tmp/weicon-dom.html
+          grep -q 'assets/styles.css' /tmp/weicon-dom.html
+          grep -q 'assets/core-utils.js' /tmp/weicon-dom.html
+          grep -q 'assets/ui-helpers.js' /tmp/weicon-dom.html
+          grep -q 'assets/product-entry.js' /tmp/weicon-dom.html
+          ! grep -q '<style>' /tmp/weicon-dom.html
+          echo 'Chrome smoke test passed after product-entry extraction.'
+      - name: Stop local server
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/weicon-http.pid ]; then kill "$(cat /tmp/weicon-http.pid)" || true; fi
