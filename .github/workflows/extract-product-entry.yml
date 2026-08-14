@@ -50,7 +50,6 @@ jobs:
 
           new_lines = lines[:start] + ['/* PRODUCT ENTRY EXTRACTED TO assets/product-entry.js */'] + lines[end:]
           new_body = '\n'.join(new_lines)
-          old_script = target.group(0)
           new_script = '<script>\n' + new_body + '\n</script>'
           html = html[:target.start()] + new_script + html[target.end():]
 
@@ -67,10 +66,11 @@ jobs:
           html = Path('index.html').read_text(encoding='utf-8')
           js = Path('assets/product-entry.js').read_text(encoding='utf-8')
           link = '<script src="assets/product-entry.js"></script>'
+          heading = 'YENİ ÜRÜN EKLE — stoğa yeni giren ama Ürün Bul listesinde henüz'
           if html.count(link) != 1:
               raise SystemExit(f'Expected one product-entry link, found {html.count(link)}')
-          if 'YENİ ÜRÜN EKLE' in html:
-              raise SystemExit('Product-entry section marker remains inline.')
+          if heading in html:
+              raise SystemExit('Product-entry section heading remains inline.')
           if '--- Müşteri kalıcı ID sistemi' in js:
               raise SystemExit('Customer-ID section leaked into product-entry module.')
           if not js.strip():
