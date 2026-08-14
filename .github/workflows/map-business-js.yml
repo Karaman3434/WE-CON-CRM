@@ -1,0 +1,83 @@
+name: Map Business JavaScript
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  map-business:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Build business script map
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          pattern = re.compile(r'<script>(.*?)</script>', re.DOTALL | re.IGNORECASE)
+          blocks = [m.group(1) for m in pattern.finditer(html)]
+          if not blocks:
+              raise SystemExit('No inline script blocks found')
+
+          target = max(blocks, key=len)
+          lines = target.splitlines()
+          out = ['# WE-CON-CRM Business JavaScript Map', '', 'Generated from the largest remaining inline application script on `project-context`.', '']
+
+          # Capture comment headings and nearby function declarations.
+          headings = []
+          for i, line in enumerate(lines, 1):
+              s = line.strip()
+              if s.startswith('//') or s.startswith('/*'):
+                  text = re.sub(r'^/\*+|\*/$|^//+', '', s).strip()
+                  if text and (len(text) < 180 or text.startswith(('R','===','---','MÜŞTERİ','ÜRÜN','FİYAT','RAPOR','ZİYARET','YEDEK','FIREBASE'))):
+                      headings.append((i, text[:180]))
+
+          funcs = []
+          for m in re.finditer(r'\bfunction\s+([A-Za-z_$][\w$]*)\s*\(', target):
+              line_no = target.count('\n', 0, m.start()) + 1
+              funcs.append((line_no, m.group(1)))
+
+          out.append(f'- Script size: **{len(target.encode("utf-8")):,} bytes**')
+          out.append(f'- Function declarations found: **{len(funcs)}**')
+          out.append('')
+          out.append('## Comment/section markers')
+          out.append('')
+          out.append('| Line | Section marker |')
+          out.append('|---:|---|')
+          for line_no, text in headings:
+              out.append(f'| {line_no} | {text.replace("|", "\\|")} |')
+
+          out.append('')
+          out.append('## Function index')
+          out.append('')
+          out.append('| Line | Function |')
+          out.append('|---:|---|')
+          for line_no, name in funcs:
+              out.append(f'| {line_no} | `{name}` |')
+
+          out.append('')
+          out.append('## Refactor rule')
+          out.append('')
+          out.append('Use this map to identify cohesive modules. Do not extract a function solely because it is nearby another function; inspect its callers, shared globals, Firebase/localStorage usage, and DOM dependencies first.')
+          Path('docs/BUSINESS_JS_MAP.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+
+      - name: Commit map
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/BUSINESS_JS_MAP.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'docs: map remaining business JavaScript [refactor-bot]'
+          git push origin HEAD:project-context
