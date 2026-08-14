@@ -8,14 +8,13 @@
 - Current application entry point: `index.html`.
 
 ## 2. Verified repository state
-- `main` remains the protected working baseline for the live application.
-- On `project-context`, `index.html` is still approximately 764 KB (764,258 bytes in the verified branch state).
+- `main` remains the working baseline for the live application.
+- On `project-context`, the monolithic `index.html` remains the application entry point; its JavaScript and markup have not yet been modularized.
 - Root application files include `index.html`, `manifest.json`, `sw.js`, icon files, `.nojekyll`, and `README.md`.
-- `assets/styles.css` exists on `project-context` as a preparation/analysis artifact.
-- The external stylesheet has NOT been wired into `index.html` yet.
-- The existing inline CSS in `index.html` remains the active CSS source.
-- `sw.js` has NOT been changed as part of the current refactor state; it remains the existing cache-first/fetch-fallback implementation with cache name `weicon-asist-cache-v1`.
-- Therefore the current `project-context` branch does not intentionally change the runtime behavior of the application compared with `main`.
+- `assets/styles.css` is now the external stylesheet on `project-context` and contains the previously inline CSS blocks in their original order.
+- `index.html` now contains one reference to `assets/styles.css` and no static inline `<style>` blocks.
+- `sw.js` has NOT been changed as part of the current CSS extraction; it remains the existing cache-first/fetch-fallback implementation with cache name `weicon-asist-cache-v1`.
+- Therefore the CSS extraction is isolated to `project-context`; `main` remains untouched.
 
 ## 3. Development safety rules
 1. Keep the currently working application usable throughout development.
@@ -32,7 +31,7 @@
 The long-term goal is to reduce the responsibilities of `index.html` by separating concerns into maintainable files/modules while preserving the current UI and behavior.
 
 Areas to investigate and separate incrementally:
-- CSS/styles
+- CSS/styles — extracted to `assets/styles.css` on `project-context`.
 - customer management
 - customer contacts
 - products/catalog
@@ -53,7 +52,7 @@ A module is not to be extracted until its dependencies and runtime behavior have
 - Repository structure review: completed.
 - Initial architecture/refactor planning: completed.
 - Project context document: created and maintained on `project-context`.
-- CSS preparation: an external `assets/styles.css` file has been created from the currently observed stylesheet structure, but it is intentionally NOT connected to the application yet.
+- CSS extraction: completed on `project-context`; validation passed in GitHub Actions.
 - JavaScript modularization: not started.
 - `main`: untouched by this refactor work.
 
@@ -98,7 +97,7 @@ For every development request:
 ## 9. Current objective
 Convert the large monolithic `index.html` into a maintainable modular application without breaking the CRM that Abdullah currently uses for daily work.
 
-The immediate technical task is to complete source-level mapping of JavaScript responsibilities and dependencies before extracting the first JS module. CSS extraction remains a separate controlled step and must not be activated until the complete stylesheet replacement is verified.
+The immediate technical task is to browser-verify the CSS-extracted branch, then complete source-level mapping of JavaScript responsibilities and dependencies before extracting the first JS module.
 
 ## 10. Non-negotiable principle
 The live/working CRM is more important than refactoring speed. If a proposed change cannot be verified safely, preserve the existing working code and investigate further rather than guessing.
