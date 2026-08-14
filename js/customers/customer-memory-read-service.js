@@ -1,5 +1,6 @@
 /* WE-CON-CRM Customer Memory Read Service
  * Builds a read-only customer intelligence snapshot from the modular repositories.
+ * Activity history is normalized from the legacy customer record through the activity adapter.
  * No Firebase/localStorage writes are performed here.
  */
 (function (global) {
@@ -14,7 +15,18 @@
     const customer = customers.find(item => String(item.id) === String(customerId)) || null;
     if (!customer) return null;
 
-    return global.WEICONCustomerMemory.summarize(customer, [], []);
+    const activities = global.WEICONCustomerActivityAdapter
+      ? global.WEICONCustomerActivityAdapter.fromCustomer(customer)
+      : [];
+
+    const orders = [
+      customer.orders,
+      customer.siparisler,
+      customer.siparisGecmisi,
+      customer.orderHistory
+    ].find(Array.isArray) || [];
+
+    return global.WEICONCustomerMemory.summarize(customer, activities, orders);
   }
 
   global.WEICONCustomerMemoryReadService = Object.freeze({
