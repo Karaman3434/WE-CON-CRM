@@ -20,9 +20,12 @@
 - The 64-line `YENİ ÜRÜN EKLE` product-entry section was extracted in place into `assets/product-entry.js`.
 - The `SON KULLANILAN ÜRÜNLER` product-memory section was extracted in place into `assets/product-memory.js`.
 - The search-history block was extracted into `assets/search-history.js`.
+- The commercial anomaly-control section was extracted into `assets/anomaly-controls.js` and passed structural extraction validation.
+- The user-editable mail/WhatsApp message-template section was extracted into `assets/message-templates.js` and passed structural extraction validation.
 - Extracted modules remain classic external scripts so existing global functions, catalog state, basket state, localStorage helpers and Firebase hooks retain their original execution model.
 - A follow-up structural repair verified that all extracted script tags are external, unique and not nested inside inline scripts. This repair passed Chrome headless smoke testing and was then removed as a one-time workflow.
 - Product-memory extraction and its smoke validation passed. Search-history extraction was validated through its extraction workflow before the workflow was removed.
+- The business-JavaScript mapping workflow was hardened against concurrent refactor pushes; its latest run completed successfully.
 
 ## Current architecture map
 - Firebase/authentication remains high risk and inline.
@@ -36,7 +39,7 @@ The refactor branch is being reduced incrementally while preserving classic-scri
 1. Continue source-level dependency mapping inside the remaining application block.
 2. Select the next cohesive low-risk section rather than splitting high-risk data synchronization code.
 3. Extract one module at a time in its original execution position.
-4. Run structural validation and Chrome smoke testing after every extraction.
+4. Run structural validation and Chrome smoke testing after every extraction where the test workflow is available.
 5. Keep Firebase/PIN/offline-sync/customer-data boundaries untouched until verified.
 6. Verify the complete refactor branch before considering a merge into `main`.
 
