@@ -17,6 +17,7 @@
     'js/customers/customer-service.js',
     'js/customers/customer-memory.js',
     'js/customers/customer-read-bridge.js',
+    'js/customers/customer-memory-read-service.js',
     'js/visits/activity-model.js',
     'js/visits/activity-repository.js',
     'js/products/product-model.js',
@@ -56,15 +57,18 @@
     state.status = state.failed.length ? 'degraded' : 'ready';
     state.finishedAt = Date.now();
 
-    if (global.WEICONModuleRegistry && typeof global.WEICONModuleRegistry.register === 'function') {
-      global.WEICONModuleRegistry.register('modular-runtime', {
+    const registry = global.WEICONCRM && global.WEICONCRM.modules;
+    if (registry && typeof registry.register === 'function' && !registry.has('modular-runtime')) {
+      registry.register('modular-runtime', {
         status: state.status,
         loaded: state.loaded.length,
         failed: state.failed.length
       });
     }
 
-    global.dispatchEvent(new CustomEvent('weicon:modular-ready', { detail: state }));
+    if (typeof global.CustomEvent === 'function') {
+      global.dispatchEvent(new CustomEvent('weicon:modular-ready', { detail: state }));
+    }
     console.info('[WE-CON-CRM] Modular runtime:', state.status, state.loaded.length + '/' + MODULES.length);
   }
 
