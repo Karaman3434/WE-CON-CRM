@@ -19,7 +19,7 @@
       : String(customer || '');
     if (!id || typeof global.CustomEvent !== 'function') return false;
 
-    global.dispatchEvent(new CustomEvent('weicon:customer-selected', {
+    global.dispatchEvent(new global.CustomEvent('weicon:customer-selected', {
       detail: { customerId: String(id), customer: customer, target: target || null }
     }));
     return true;
