@@ -18,13 +18,14 @@
 - Four previously inline, explicitly marked low-risk utility blocks (`R003.1`, `R003.4`, `R003.5`, `R003.6`) were extracted into `assets/core-utils.js`.
 - Two small UI helper blocks (`updateHTML` and the upper-panel-height measurement logic) were extracted in place into `assets/ui-helpers.js`.
 - The 64-line `YENİ ÜRÜN EKLE` product-entry section was extracted in place into `assets/product-entry.js`.
-- `product-entry.js` was source-verified after extraction: it uses the existing global catalog, localStorage key, filtering, Firebase update hook, toast function and tab navigation rather than introducing a new data layer.
-- All three JavaScript extraction stages passed structural validation and Chrome headless smoke testing.
+- The `SON KULLANILAN ÜRÜNLER` product-memory section was extracted in place into `assets/product-memory.js`.
+- `product-entry.js` and `product-memory.js` remain classic external scripts so existing global functions, catalog state, basket state, localStorage helpers and Firebase hooks retain their original execution model.
+- The product-memory extraction passed structural validation and a Chrome headless smoke test. The smoke test verified application startup, login markup, external module loading and removal of the extracted inline marker.
 - One-time extraction/smoke workflows were removed after successful validation.
 
 ## Current architecture map
 - Remaining major inline JavaScript: Firebase/authentication (~21.6 KB) and the large business/application block (~465.6 KB).
-- The large business/application block contains 466 function declarations and includes backup, customer, product, pricing, synchronization, reporting and UI responsibilities.
+- The large business/application block contains hundreds of functions and includes backup, customer, product, pricing, synchronization, reporting and UI responsibilities.
 - `docs/JS_MAP.md` and `docs/BUSINESS_JS_MAP.md` record the current script/function architecture.
 - The Firebase/authentication block remains high risk and inline.
 
@@ -32,7 +33,7 @@
 The refactor branch is being reduced incrementally while preserving classic-script execution order and existing globals. It is not a candidate for `main` until broader functional review/testing is complete. No merge is performed automatically.
 
 ## Next safe phase
-1. Continue source-level dependency mapping inside the 465 KB application block.
+1. Continue source-level dependency mapping inside the remaining application block.
 2. Select the next cohesive low-risk section rather than splitting high-risk data synchronization code.
 3. Extract one module at a time in its original execution position.
 4. Run structural validation and Chrome smoke testing after every extraction.
