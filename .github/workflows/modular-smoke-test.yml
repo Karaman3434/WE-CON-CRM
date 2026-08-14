@@ -20,3 +20,5 @@ jobs:
           node-version: 20
       - name: Run modular smoke test
         run: node tests/modular-smoke-test.js
+      - name: Run modular static integration test
+        run: node tests/modular-integration-static-test.js
