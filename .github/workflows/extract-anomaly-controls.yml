@@ -1,0 +1,86 @@
+name: Extract Anomaly Controls
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract-anomaly-controls:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract anomaly controls
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="assets/anomaly-controls.js"></script>'
+
+          if tag in html:
+              print('Anomaly controls already externalized.')
+          else:
+              start = html.find('var anomaliUyariKaynagi = null;')
+              marker = '// ============================================================\n// DERİN AI ANALİZİ'
+              end = html.find(marker, start)
+              if start < 0 or end < 0:
+                  raise SystemExit('Anomaly control boundaries were not found; refusing to modify index.html.')
+
+              block_start = html.rfind('\n', 0, start) + 1
+              block = html[block_start:end]
+              expected = [
+                  'var anomaliUyariKaynagi',
+                  'function anomaliUyariPopupGoster',
+                  'function anomaliUyariGormezdenGel',
+                  'function anomaliUyariGeriDon',
+                  'function anomaliUyariKapat',
+              ]
+              for needle in expected:
+                  if needle not in block:
+                      raise SystemExit(f'Expected function not found in extraction block: {needle}')
+
+              html = html[:block_start] + tag + '\n\n' + html[end:]
+              path.write_text(html, encoding='utf-8')
+
+      - name: Validate extraction
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          if html.count('<script src="assets/anomaly-controls.js"></script>') != 1:
+              raise SystemExit('Expected exactly one anomaly-controls.js script tag.')
+          if 'var anomaliUyariKaynagi = null;' in html:
+              raise SystemExit('Inline anomaly-control state remains in index.html.')
+          for name in ['hareketAnomaliKontrolEt','anomaliUyariPopupGoster','anomaliUyariGormezdenGel','anomaliUyariGeriDon','anomaliUyariKapat']:
+              if re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', html):
+                  raise SystemExit(f'Inline anomaly function remains: {name}')
+
+          module = Path('assets/anomaly-controls.js').read_text(encoding='utf-8')
+          for name in ['hareketAnomaliKontrolEt','anomaliUyariPopupGoster','anomaliUyariGormezdenGel','anomaliUyariGeriDon','anomaliUyariKapat']:
+              if not re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', module):
+                  raise SystemExit(f'Function missing from extracted module: {name}')
+
+          print('Anomaly controls extraction validated.')
+
+      - name: Commit extraction
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/anomaly-controls.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'refactor: extract anomaly controls [refactor-bot]'
+          git push origin HEAD:project-context
