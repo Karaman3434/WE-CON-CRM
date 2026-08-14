@@ -1,0 +1,86 @@
+name: Extract Customer Duplicate Detection
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract-customer-duplicate-detection:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract only if persistence-free
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          module_path = Path('assets/customer-duplicate-detection.js')
+          html = path.read_text(encoding='utf-8')
+
+          tag = '<script src="assets/customer-duplicate-detection.js"></script>'
+          if tag in html:
+              print('Customer duplicate detection already externalized.')
+              raise SystemExit(0)
+
+          start_re = re.compile(r'//\s*--- Mükerrer müşteri tespiti')
+          start_match = start_re.search(html)
+          if not start_match:
+              raise SystemExit('Duplicate-customer boundary not found; refusing to modify index.html.')
+
+          next_match = re.search(r'\n//\s*--- ', html[start_match.end():])
+          if not next_match:
+              raise SystemExit('Duplicate-customer end boundary not found; refusing to modify index.html.')
+          end = start_match.end() + next_match.start()
+          block = html[start_match.start():end]
+
+          if any(token in block for token in ['fbGet(', 'fbSet(', 'fbUpdate(', 'localStorage.', 'sessionStorage.']):
+              raise SystemExit('Duplicate-customer block touches persistence; refusing automatic extraction.')
+
+          functions = re.findall(r'\bfunction\s+([A-Za-z_$][\w$]*)\s*\(', block)
+          if not functions:
+              raise SystemExit('No functions found in duplicate-customer block; refusing extraction.')
+
+          module_path.write_text(block.rstrip() + '\n', encoding='utf-8')
+          html = html[:start_match.start()] + tag + '\n' + html[end:]
+          path.write_text(html, encoding='utf-8')
+          print('Extracted functions:', ', '.join(functions))
+
+      - name: Validate extraction
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          module = Path('assets/customer-duplicate-detection.js').read_text(encoding='utf-8')
+
+          if html.count('<script src="assets/customer-duplicate-detection.js"></script>') != 1:
+              raise SystemExit('Expected exactly one duplicate-detection script tag.')
+          if any(token in module for token in ['fbGet(', 'fbSet(', 'fbUpdate(', 'localStorage.', 'sessionStorage.']):
+              raise SystemExit('Persistence call found in extracted duplicate-detection module.')
+          if not re.search(r'\bfunction\s+[A-Za-z_$][\w$]*\s*\(', module):
+              raise SystemExit('No function found in extracted duplicate-detection module.')
+          if html.count('<script>') != html.count('</script>'):
+              raise SystemExit('Unbalanced inline script tags detected.')
+          print('Customer duplicate detection extraction validated.')
+
+      - name: Commit extraction
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/customer-duplicate-detection.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'refactor: extract customer duplicate detection [refactor-bot]'
+          git push origin HEAD:project-context
