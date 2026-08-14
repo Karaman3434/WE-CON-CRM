@@ -1,0 +1,25 @@
+name: Audit customer merge dependencies
+
+on:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit customer merge boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path('index.html').read_text(encoding='utf-8')
+          start = s.find('function musteriBirlestirOnayla')
+          end = s.find('// ---', start + 10) if start >= 0 else -1
+          assert start >= 0, 'musteriBirlestirOnayla bulunamadı'
+          print('customer merge function located:', start)
+          for name in ['musteriListesi','firebase','localStorage','temas','gorev','arsiv']:
+              print(name, s.find(name, start, end if end > start else len(s)))
+          PY
