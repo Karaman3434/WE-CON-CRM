@@ -1,4 +1,34 @@
-const CACHE_ADI = "weicon-asist-cache-v1";
+const CACHE_ADI = "weicon-asist-cache-v2";
+const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js"></script>';
+
+function modularHtmlResponse(response) {
+  if (!response || !response.ok) return response;
+  var contentType = response.headers.get("content-type") || "";
+  if (contentType.indexOf("text/html") === -1) return response;
+
+  return response.text().then(function (html) {
+    if (html.indexOf("js/modular-runtime.js") !== -1) return new Response(html, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers
+    });
+
+    var marker = "</body>";
+    var index = html.toLowerCase().lastIndexOf(marker);
+    if (index === -1) return new Response(html, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers
+    });
+
+    var updated = html.slice(0, index) + MODULAR_RUNTIME_SRC + "\n" + html.slice(index);
+    return new Response(updated, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers
+    });
+  });
+}
 
 self.addEventListener("install", function (event) {
   self.skipWaiting();
@@ -12,9 +42,10 @@ self.addEventListener("activate", function (event) {
           .filter(function (isim) { return isim !== CACHE_ADI; })
           .map(function (isim) { return caches.delete(isim); })
       );
+    }).then(function () {
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", function (event) {
@@ -24,11 +55,13 @@ self.addEventListener("fetch", function (event) {
         var kopya = yanit.clone();
         caches.open(CACHE_ADI).then(function (cache) {
           cache.put(event.request, kopya);
-        });
-        return yanit;
+        }).catch(function () {});
+        return modularHtmlResponse(yanit);
       })
       .catch(function () {
-        return caches.match(event.request);
+        return caches.match(event.request).then(function (cached) {
+          return modularHtmlResponse(cached);
+        });
       })
   );
 });
