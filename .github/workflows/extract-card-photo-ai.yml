@@ -30,7 +30,7 @@ jobs:
           if tag in html:
               print('Card-photo AI block already externalized.')
           else:
-              start_re = re.compile(r'//\s*=+\s*KARTTAN/TABELADAN DOLDUR\s*=+')
+              start_re = re.compile(r'//\s*KARTTAN/TABELADAN DOLDUR\b[^\n]*')
               end_re = re.compile(r'\n//\s*=+\s*\n</script>\s*\n<script src="assets/product-entry\.js"></script>')
               start_match = start_re.search(html)
               end_match = end_re.search(html, start_match.end() if start_match else 0)
