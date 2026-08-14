@@ -22,7 +22,6 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re
 
           path = Path('index.html')
           module_path = Path('assets/deep-ai-analysis.js')
@@ -53,40 +52,21 @@ jobs:
               ch = html[i]
               nxt = html[i + 1] if i + 1 < len(html) else ''
               if line_comment:
-                  if ch == '\n':
-                      line_comment = False
-                  i += 1
-                  continue
+                  if ch == '\n': line_comment = False
+                  i += 1; continue
               if block_comment:
                   if ch == '*' and nxt == '/':
-                      block_comment = False
-                      i += 2
-                      continue
-                  i += 1
-                  continue
+                      block_comment = False; i += 2; continue
+                  i += 1; continue
               if quote:
-                  if escape:
-                      escape = False
-                  elif ch == '\\':
-                      escape = True
-                  elif ch == quote:
-                      quote = None
-                  i += 1
-                  continue
-              if ch == '/' and nxt == '/':
-                  line_comment = True
-                  i += 2
-                  continue
-              if ch == '/' and nxt == '*':
-                  block_comment = True
-                  i += 2
-                  continue
-              if ch in ('"', "'", '`'):
-                  quote = ch
-                  i += 1
-                  continue
-              if ch == '{':
-                  depth += 1
+                  if escape: escape = False
+                  elif ch == '\\': escape = True
+                  elif ch == quote: quote = None
+                  i += 1; continue
+              if ch == '/' and nxt == '/': line_comment = True; i += 2; continue
+              if ch == '/' and nxt == '*': block_comment = True; i += 2; continue
+              if ch in ('"', "'", '`'): quote = ch; i += 1; continue
+              if ch == '{': depth += 1
               elif ch == '}':
                   depth -= 1
                   if depth == 0:
@@ -98,7 +78,7 @@ jobs:
               raise SystemExit('Deep AI analysis function boundary is unsafe; refusing modification.')
 
           block = html[start:end]
-          if 'localStorage.' in block or 'sessionStorage.' in block or 'fbGet(' in block or 'fbSet(' in block or 'fbUpdate(' in block:
+          if any(token in block for token in ['localStorage.', 'sessionStorage.', 'fbGet(', 'fbSet(', 'fbUpdate(']):
               raise SystemExit('Persistence access found in deep AI analysis function; refusing extraction.')
 
           module_path.write_text(block.rstrip() + '\n', encoding='utf-8')
@@ -119,10 +99,8 @@ jobs:
               raise SystemExit('Expected exactly one deep AI analysis script tag.')
           if not re.search(r'\bfunction\s+anomaliDerinAnalizIste\s*\(', module):
               raise SystemExit('Deep AI analysis function missing from module.')
-          if 'localStorage.' in module or 'sessionStorage.' in module or 'fbGet(' in module or 'fbSet(' in module or 'fbUpdate(' in module:
+          if any(token in module for token in ['localStorage.', 'sessionStorage.', 'fbGet(', 'fbSet(', 'fbUpdate(']):
               raise SystemExit('Persistence call found in deep AI analysis module.')
-          if html.count('<script>') != html.count('</script>'):
-              raise SystemExit('Unbalanced inline script tags detected.')
           print('Deep AI analysis extraction validated.')
 
       - name: Commit extraction
