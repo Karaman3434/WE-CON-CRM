@@ -19,6 +19,7 @@
     'js/customers/customer-read-bridge.js',
     'js/customers/customer-memory-read-service.js',
     'js/customers/customer-memory-ui-bridge.js',
+    'js/customers/customer-memory-ui-controller.js',
     'js/visits/activity-model.js',
     'js/visits/activity-repository.js',
     'js/visits/customer-activity-adapter.js',
