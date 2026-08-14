@@ -18,7 +18,7 @@ jobs:
           ref: project-context
           fetch-depth: 0
 
-      - name: Move extracted script tags outside inline script
+      - name: Move all extracted script tags outside inline scripts
         shell: python
         run: |
           from pathlib import Path
@@ -29,6 +29,9 @@ jobs:
           original = html
 
           tags = [
+              'core-utils.js',
+              'ui-helpers.js',
+              'product-entry.js',
               'search-history.js',
               'product-memory.js',
           ]
@@ -47,7 +50,6 @@ jobs:
 
           path.write_text(html, encoding='utf-8')
 
-          # Structural checks: each external tag must be outside every inline script block.
           for asset in tags:
               if html.count('<script src="assets/' + asset + '"></script>') != 1:
                   raise SystemExit(f'Expected exactly one external tag for {asset}.')
@@ -70,8 +72,7 @@ jobs:
           timeout 30s google-chrome --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --enable-logging=stderr --log-level=0 --virtual-time-budget=4000 --dump-dom http://127.0.0.1:8080/index.html > /tmp/weicon-dom.html 2> /tmp/weicon-chrome.log
           test -s /tmp/weicon-dom.html
           grep -q 'WEICON ASIST' /tmp/weicon-dom.html
-          grep -q 'assets/search-history.js' /tmp/weicon-dom.html
-          grep -q 'assets/product-memory.js' /tmp/weicon-dom.html
+          for asset in core-utils.js ui-helpers.js product-entry.js search-history.js product-memory.js; do grep -q "assets/$asset" /tmp/weicon-dom.html; done
           if grep -Eiq 'Uncaught SyntaxError|Uncaught ReferenceError|Failed to load resource' /tmp/weicon-chrome.log; then
             cat /tmp/weicon-chrome.log
             exit 1
@@ -85,7 +86,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m 'fix: place extracted scripts outside inline block [refactor-bot]'
+          git commit -m 'fix: place all extracted scripts outside inline blocks [refactor-bot]'
           git push origin HEAD:project-context
 
       - name: Stop local server
