@@ -32,15 +32,16 @@ jobs:
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          tag = '<script src="./js/customers/customer-memory-card.js?v=2"></script>'
-          if tag not in s:
-              marker = '</body>'
-              if marker in s:
-                  s = s.replace(marker, tag + '\n' + marker, 1)
-              else:
-                  s += '\n' + tag + '\n'
-              p.write_text(s, encoding='utf-8')
-          print('Customer memory integration injected into deployed index.html')
+          import re
+          tag = '<script src="./js/customers/customer-memory-card.js?v=3"></script>'
+          s = re.sub(r'<script src="\./js/customers/customer-memory-card\.js\?v=[^\"]+"></script>\s*', '', s)
+          marker = '</body>'
+          if marker in s:
+              s = s.replace(marker, tag + '\n' + marker, 1)
+          else:
+              s += '\n' + tag + '\n'
+          p.write_text(s, encoding='utf-8')
+          print('Customer memory integration v3 injected into deployed index.html')
           PY
 
       - name: Configure GitHub Pages
