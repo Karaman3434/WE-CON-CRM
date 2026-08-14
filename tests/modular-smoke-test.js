@@ -20,6 +20,7 @@ const files = [
   'js/customers/customer-repository.js',
   'js/customers/customer-service.js',
   'js/customers/customer-memory.js',
+  'js/customers/customer-memory-read-service.js',
   'js/visits/activity-model.js',
   'js/visits/activity-repository.js',
   'js/products/product-model.js',
@@ -61,6 +62,9 @@ context.WEICONCustomerRepository.configure({
     [{ id: 'o', date: '2026-08-13' }]
   );
   assert(memory.activityCount === 1 && memory.orderCount === 1, 'customer memory');
+
+  const snapshot = await context.WEICONCustomerMemoryReadService.getCustomerSnapshot('1');
+  assert(snapshot && snapshot.customerId === '1' && snapshot.activityCount === 0, 'customer memory read service');
 
   const report = context.WEICONReportModel.summarize(customers, [{ type: 'ziyaret' }, { type: 'mail' }]);
   assert(report.customerCount === 1 && report.activityCount === 2, 'report model');
