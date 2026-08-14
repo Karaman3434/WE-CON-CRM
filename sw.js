@@ -1,6 +1,7 @@
-const CACHE_ADI = "weicon-asist-cache-v3";
-const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js"></script>';
-const CUSTOMER_MEMORY_CARD_SRC = '<script src="js/customers/customer-memory-card.js"></script>';
+const CACHE_ADI = "weicon-asist-cache-v4";
+const BUILD = "20260815-02";
+const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js?v=' + BUILD + '"></script>';
+const CUSTOMER_MEMORY_CARD_SRC = '<script src="js/customers/customer-memory-card.js?v=' + BUILD + '"></script>';
 
 function modularHtmlResponse(response) {
   if (!response || !response.ok) return response;
@@ -10,25 +11,24 @@ function modularHtmlResponse(response) {
   return response.text().then(function (html) {
     var hasRuntime = html.indexOf("js/modular-runtime.js") !== -1;
     var hasMemoryCard = html.indexOf("js/customers/customer-memory-card.js") !== -1;
-    if (hasRuntime && hasMemoryCard) return new Response(html, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers
-    });
 
-    var marker = "</body>";
-    var index = html.toLowerCase().lastIndexOf(marker);
-    if (index === -1) return new Response(html, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers
-    });
+    if (hasRuntime) {
+      html = html.replace(/js\/modular-runtime\.js(?:\?[^\"']*)?/g, "js/modular-runtime.js?v=" + BUILD);
+    } else {
+      html = html.replace(/<\/body>/i, MODULAR_RUNTIME_SRC + "\n</body>");
+    }
 
-    var injection = "";
-    if (!hasRuntime) injection += MODULAR_RUNTIME_SRC + "\n";
-    if (!hasMemoryCard) injection += CUSTOMER_MEMORY_CARD_SRC + "\n";
-    var updated = html.slice(0, index) + injection + html.slice(index);
-    return new Response(updated, {
+    if (hasMemoryCard) {
+      html = html.replace(/js\/customers\/customer-memory-card\.js(?:\?[^\"']*)?/g, "js/customers/customer-memory-card.js?v=" + BUILD);
+    } else {
+      html = html.replace(/<\/body>/i, CUSTOMER_MEMORY_CARD_SRC + "\n</body>");
+    }
+
+    // Visible build marker: this lets us immediately verify that the new
+    // service-worker-transformed HTML is actually reaching the device.
+    html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._-]+/g, "WEİCON ASİST V" + BUILD);
+
+    return new Response(html, {
       status: response.status,
       statusText: response.statusText,
       headers: response.headers
