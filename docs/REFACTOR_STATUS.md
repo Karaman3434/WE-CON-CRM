@@ -7,7 +7,7 @@
 
 ## Verified CSS state
 - The original inline stylesheet blocks were extracted from `index.html` into `assets/styles.css` on `project-context`.
-- `index.html` now references `assets/styles.css` as its external stylesheet.
+- `index.html` references `assets/styles.css` as its external stylesheet.
 - The extraction passed structural validation in GitHub Actions.
 - A Chrome headless smoke test passed after CSS extraction.
 - The one-time extraction workflow was removed after the successful run.
@@ -19,15 +19,15 @@
 - Two small UI helper blocks (`updateHTML` and the upper-panel-height measurement logic) were extracted in place into `assets/ui-helpers.js`.
 - The 64-line `YENİ ÜRÜN EKLE` product-entry section was extracted in place into `assets/product-entry.js`.
 - The `SON KULLANILAN ÜRÜNLER` product-memory section was extracted in place into `assets/product-memory.js`.
-- `product-entry.js` and `product-memory.js` remain classic external scripts so existing global functions, catalog state, basket state, localStorage helpers and Firebase hooks retain their original execution model.
-- The product-memory extraction passed structural validation and a Chrome headless smoke test. The smoke test verified application startup, login markup, external module loading and removal of the extracted inline marker.
-- One-time extraction/smoke workflows were removed after successful validation.
+- The search-history block was extracted into `assets/search-history.js`.
+- Extracted modules remain classic external scripts so existing global functions, catalog state, basket state, localStorage helpers and Firebase hooks retain their original execution model.
+- A follow-up structural repair verified that all extracted script tags are external, unique and not nested inside inline scripts. This repair passed Chrome headless smoke testing and was then removed as a one-time workflow.
+- Product-memory extraction and its smoke validation passed. Search-history extraction was validated through its extraction workflow before the workflow was removed.
 
 ## Current architecture map
-- Remaining major inline JavaScript: Firebase/authentication (~21.6 KB) and the large business/application block (~465.6 KB).
-- The large business/application block contains hundreds of functions and includes backup, customer, product, pricing, synchronization, reporting and UI responsibilities.
+- Firebase/authentication remains high risk and inline.
+- The remaining large business/application JavaScript block contains backup, customer, product, pricing, synchronization, reporting and UI responsibilities.
 - `docs/JS_MAP.md` and `docs/BUSINESS_JS_MAP.md` record the current script/function architecture.
-- The Firebase/authentication block remains high risk and inline.
 
 ## Refactor rule
 The refactor branch is being reduced incrementally while preserving classic-script execution order and existing globals. It is not a candidate for `main` until broader functional review/testing is complete. No merge is performed automatically.
