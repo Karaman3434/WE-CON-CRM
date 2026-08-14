@@ -1,0 +1,113 @@
+name: Extract Message Templates
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract-message-templates:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract message templates
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="assets/message-templates.js"></script>'
+
+          if tag not in html:
+              start_marker = '// --- Mesaj Şablonları (kullanıcı özelleştirebilir)'
+              end_marker = 'function buildEmailBody(){'
+              start = html.find(start_marker)
+              end = html.find(end_marker, start)
+              if start < 0 or end < 0 or end <= start:
+                  raise SystemExit('Message template boundaries were not found; refusing to modify index.html.')
+
+              block = html[start:end]
+              expected = [
+                  'var VARSAYILAN_MAIL_SABLON',
+                  'function mesajSablonlariniYukle',
+                  'function mesajSablonuUygula',
+                  'function mesajSablonlariAc',
+                  'function mesajSablonlariKaydet',
+                  'function mesajSablonlariVarsayilanaDondur',
+              ]
+              for needle in expected:
+                  if needle not in block:
+                      raise SystemExit(f'Expected message-template element not found: {needle}')
+
+              html = html[:start] + html[end:]
+              # The extracted block lives in the same large inline script. Find
+              # its closing tag after the next stable function marker and load
+              # the classic external script immediately after that script.
+              marker_after = html.find(end_marker)
+              close_pos = html.find('</script>', marker_after)
+              if marker_after < 0 or close_pos < 0:
+                  raise SystemExit('Containing inline script closing tag was not found.')
+              close_end = close_pos + len('</script>')
+              html = html[:close_end] + '\n' + tag + html[close_end:]
+              path.write_text(html, encoding='utf-8')
+
+          Path('assets/message-templates.js').write_text(block if tag in html and 'block' in locals() else '', encoding='utf-8') if not Path('assets/message-templates.js').exists() else None
+
+      - name: Rebuild extracted module when necessary
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          module = Path('assets/message-templates.js')
+          if module.stat().st_size == 0:
+              raise SystemExit('message-templates.js was not populated.')
+
+          text = module.read_text(encoding='utf-8')
+          required = [
+              'var VARSAYILAN_MAIL_SABLON',
+              'var VARSAYILAN_WHATSAPP_SABLON',
+              'function mesajSablonlariniYukle',
+              'function mesajSablonuUygula',
+              'function mesajSablonlariAc',
+              'function mesajSablonlariKaydet',
+              'function mesajSablonlariVarsayilanaDondur',
+          ]
+          for needle in required:
+              if needle not in text:
+                  raise SystemExit(f'Missing extracted message-template element: {needle}')
+
+          tag = '<script src="assets/message-templates.js"></script>'
+          if html.count(tag) != 1:
+              raise SystemExit('Expected exactly one message-templates.js script tag.')
+
+          if re.search(r'\bfunction\s+(mesajSablonlariniYukle|mesajSablonuUygula|mesajSablonlariAc|mesajSablonlariKaydet|mesajSablonlariVarsayilanaDondur)\s*\(', html):
+              raise SystemExit('Inline message-template functions remain in index.html.')
+
+          inline_script_re = re.compile(r'<script\b(?![^>]*\bsrc\s*=)[^>]*>(.*?)</script>', re.DOTALL | re.IGNORECASE)
+          for m in inline_script_re.finditer(html):
+              if tag in m.group(0):
+                  raise SystemExit('External message template script is nested inside an inline script.')
+
+          print('Message template extraction validated.')
+
+      - name: Commit extraction
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/message-templates.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'refactor: extract message templates [refactor-bot]'
+          git push origin HEAD:project-context
