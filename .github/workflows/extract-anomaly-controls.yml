@@ -32,10 +32,14 @@ jobs:
               print('Anomaly controls already externalized.')
           else:
               start = html.find('var anomaliUyariKaynagi = null;')
-              marker = '// ============================================================\n// DERİN AI ANALİZİ'
-              end = html.find(marker, start)
-              if start < 0 or end < 0:
+              marker_pos = html.find('// DERİN AI ANALİZİ', start)
+              if start < 0 or marker_pos < 0:
                   raise SystemExit('Anomaly control boundaries were not found; refusing to modify index.html.')
+
+              # Keep the complete separator immediately before the next section.
+              end = html.rfind('// ============================================================', start, marker_pos)
+              if end < 0:
+                  raise SystemExit('Anomaly section separator was not found; refusing to modify index.html.')
 
               block_start = html.rfind('\n', 0, start) + 1
               block = html[block_start:end]
