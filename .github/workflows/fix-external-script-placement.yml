@@ -18,7 +18,7 @@ jobs:
           ref: project-context
           fetch-depth: 0
 
-      - name: Move nested extracted script tags outside inline scripts
+      - name: Repair extracted script placement
         shell: python
         run: |
           from pathlib import Path
@@ -26,44 +26,53 @@ jobs:
 
           path = Path('index.html')
           html = path.read_text(encoding='utf-8')
-          original = html
 
-          tags = [
-              'core-utils.js',
-              'ui-helpers.js',
-              'product-entry.js',
-              'search-history.js',
-              'product-memory.js',
-          ]
-          relocated = []
-          for asset in tags:
-              # Determine whether this asset tag is currently nested inside an inline script.
-              inline_blocks = list(re.finditer(r'<script>(.*?)</script>', html, re.DOTALL | re.IGNORECASE))
-              nested = any('assets/' + asset in m.group(1) for m in inline_blocks)
-              if not nested:
-                  continue
+          # ui-helpers is duplicated: keep the body copy only, because this
+          # helper measures DOM elements and should execute after the body exists.
+          ui_tag = '<script src="assets/ui-helpers.js"></script>'
+          head_match = re.search(r'<head>(.*?)</head>', html, re.DOTALL | re.IGNORECASE)
+          if not head_match:
+              raise SystemExit('Could not locate <head>.')
+          head = head_match.group(1)
+          if head.count(ui_tag) != 1:
+              raise SystemExit(f'Expected one ui-helpers tag in head, found {head.count(ui_tag)}.')
+          head = head.replace(ui_tag, '', 1)
+          html = html[:head_match.start(1)] + head + html[head_match.end(1):]
 
+          # These modules were accidentally inserted inside the large inline
+          # script. Move each tag out while preserving its original position.
+          for asset in ['product-entry.js', 'search-history.js', 'product-memory.js']:
               pattern = re.compile(
-                  r'\n\s*<script\s+src="assets/' + re.escape(asset) + r'"\s*>\s*</script>\s*\n',
+                  r'<script\s+src="assets/' + re.escape(asset) + r'"\s*>\s*</script>',
                   re.IGNORECASE,
               )
-              replacement = '\n</script>\n<script src="assets/' + asset + '"></script>\n<script>\n'
-              html, n = pattern.subn(replacement, html, count=1)
-              if n != 1:
-                  raise SystemExit(f'Could not relocate nested {asset}.')
-              relocated.append(asset)
+              matches = list(pattern.finditer(html))
+              if len(matches) != 1:
+                  raise SystemExit(f'Expected exactly one misplaced tag for {asset}, found {len(matches)}.')
+              html = pattern.sub(
+                  '</script>\n<script src="assets/' + asset + '"></script>\n<script>',
+                  html,
+                  count=1,
+              )
 
           path.write_text(html, encoding='utf-8')
 
-          inline_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL | re.IGNORECASE)
-          for asset in tags:
-              if html.count('<script src="assets/' + asset + '"></script>') != 1:
-                  raise SystemExit(f'Expected exactly one external tag for {asset}.')
-              if any('assets/' + asset in block for block in inline_blocks):
-                  raise SystemExit(f'{asset} is still nested inside an inline script.')
+          # Validate all extracted script tags are external and unique.
+          assets = ['core-utils.js', 'ui-helpers.js', 'product-entry.js', 'search-history.js', 'product-memory.js']
+          for asset in assets:
+              tag = '<script src="assets/' + asset + '"></script>'
+              if html.count(tag) != 1:
+                  raise SystemExit(f'Expected exactly one external tag for {asset}, found {html.count(tag)}.')
 
-          print(f'Relocated nested assets: {relocated}')
-          print(f'HTML changed: {html != original}')
+          # After repair, normal <script>...</script> blocks must not contain
+          # any extracted asset reference.
+          inline_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL | re.IGNORECASE)
+          for block in inline_blocks:
+              for asset in assets:
+                  if 'assets/' + asset in block:
+                      raise SystemExit(f'{asset} remains inside an inline script.')
+
+          print('Extracted script placement validation passed.')
 
       - name: Chrome smoke test
         shell: bash
@@ -88,7 +97,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m 'fix: place nested extracted scripts outside inline blocks [refactor-bot]'
+          git commit -m 'fix: repair extracted script placement [refactor-bot]'
           git push origin HEAD:project-context
 
       - name: Stop local server
