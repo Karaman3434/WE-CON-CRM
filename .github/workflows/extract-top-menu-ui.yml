@@ -33,8 +33,7 @@ jobs:
               block = h[start:end]
               if 'fbSet' in block or 'fbGet' in block or 'localStorage' in block or 'sessionStorage' in block:
                   raise SystemExit('Top menu block has persistence dependency; refusing extraction.')
-              required = ['ustMenuAcKapat', 'ustMenuAyarlaraGit']
-              for name in required:
+              for name in ['ustMenuAcKapat', 'ustMenuAyarlaraGit']:
                   if f'function {name}(' not in block:
                       raise SystemExit(f'Missing {name}')
               Path('assets/top-menu-ui.js').write_text(
@@ -55,9 +54,9 @@ jobs:
           if h.count(tag) != 1:
               raise SystemExit('Expected exactly one top-menu-ui script tag.')
           for name in ['ustMenuAcKapat', 'ustMenuAyarlaraGit']:
-              if re.search(r'\\bfunction\\s+' + re.escape(name) + r'\\s*\\(', h):
+              if re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', h):
                   raise SystemExit(f'Inline function remains: {name}')
-              if not re.search(r'\\bfunction\\s+' + re.escape(name) + r'\\s*\\(', m):
+              if not re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', m):
                   raise SystemExit(f'Missing module function: {name}')
           if any(x in m for x in ['fbGet', 'fbSet', 'localStorage', 'sessionStorage']):
               raise SystemExit('Persistence dependency leaked into top-menu module.')
