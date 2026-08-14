@@ -1,0 +1,64 @@
+name: Build JavaScript Architecture Map
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  map-js:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Build JavaScript map
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          pattern = re.compile(r'<script(?:\s[^>]*)?>(.*?)</script>', re.DOTALL | re.IGNORECASE)
+          blocks = list(pattern.finditer(html))
+
+          out = ['# WE-CON-CRM JavaScript Architecture Map', '', 'Generated from the current `index.html` source on `project-context`.', '']
+          out.append('| # | Approx. bytes | External/Inline | Markers / first code | Function names (sample) |')
+          out.append('|---:|---:|---|---|---|')
+
+          for i, m in enumerate(blocks, 1):
+              body = m.group(1)
+              opening = html[max(0, m.start()-100):m.start()]
+              external = 'external' if re.search(r'<script[^>]+src=', html[m.start():m.end()].split('>',1)[0], re.I) else 'inline'
+              cleaned = [re.sub(r'\s+', ' ', x.strip()) for x in body.splitlines() if x.strip()]
+              markers = []
+              for line in cleaned:
+                  if line.startswith('/*') or line.startswith('//') or line.startswith('const ') or line.startswith('function '):
+                      markers.append(line[:110])
+                  if len(markers) >= 3:
+                      break
+              funcs = re.findall(r'\bfunction\s+([A-Za-z_$][\w$]*)\s*\(', body)
+              funcs += re.findall(r'\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:function|\([^)]*\)\s*=>)', body)
+              funcs = list(dict.fromkeys(funcs))[:10]
+              marker_text = '<br>'.join(x.replace('|','\\|') for x in markers) or '-'
+              func_text = ', '.join(funcs) or '-'
+              out.append(f'| {i} | {len(body.encode("utf-8")):,} | {external} | {marker_text} | {func_text} |')
+
+          out += ['', '## Safety note', '', 'This map is documentation only. It does not change application behavior. High-risk Firebase/authentication/offline synchronization blocks must be reviewed from source before extraction.']
+          Path('docs/JS_MAP.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+
+      - name: Commit map
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/JS_MAP.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'docs: update JavaScript architecture map [refactor-bot]'
+          git push origin HEAD:project-context
