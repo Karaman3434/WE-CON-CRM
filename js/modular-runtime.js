@@ -1,6 +1,6 @@
 /* WE-CON-CRM Modular Runtime
  * Loads the new architecture after the legacy page has initialized.
- * No legacy function is replaced here; this is the first runtime integration step.
+ * No legacy function is replaced here; migration stays incremental and reversible.
  */
 (function (global) {
   'use strict';
@@ -11,10 +11,12 @@
     'js/core/module-registry.js',
     'js/firebase/firebase-gateway.js',
     'js/firebase/storage-policy.js',
+    'js/firebase/legacy-read-adapter.js',
     'js/customers/customer-model.js',
     'js/customers/customer-repository.js',
     'js/customers/customer-service.js',
     'js/customers/customer-memory.js',
+    'js/customers/customer-read-bridge.js',
     'js/visits/activity-model.js',
     'js/visits/activity-repository.js',
     'js/products/product-model.js',
