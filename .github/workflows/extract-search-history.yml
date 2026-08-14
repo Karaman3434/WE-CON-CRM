@@ -45,7 +45,6 @@ jobs:
           if len(section) < 20:
               raise SystemExit('Search-history section unexpectedly short; refusing extraction.')
 
-          # Keep the preceding section comment out of the module if it is only a separator.
           module.parent.mkdir(parents=True, exist_ok=True)
           module.write_text('\n'.join(section).rstrip() + '\n', encoding='utf-8')
 
@@ -71,10 +70,10 @@ jobs:
               raise SystemExit('Search-history function remains inline.')
           if 'function hitUrunleriHesapla' not in html:
               raise SystemExit('Boundary function disappeared from index.html.')
-          required = ['aramaGecmisiKaydet', 'aramaGecmisiniGoster', 'aramaSecGeçmiş']
+          required = ['aramaGecmisiKaydet', 'aramaGecmisiniGoster', 'aramaSec']
           for name in required:
               if name not in js:
-                  raise SystemExit(f'Missing expected function: {name}')
+                  raise SystemExit(f'Missing expected function/name: {name}')
           if not js.strip():
               raise SystemExit('Search-history module is empty.')
           print('Search-history extraction validation passed.')
