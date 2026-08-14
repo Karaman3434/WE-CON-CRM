@@ -71,8 +71,8 @@ jobs:
               raise SystemExit('Persistence call found in extracted duplicate-detection module.')
           if not re.search(r'\bfunction\s+[A-Za-z_$][\w$]*\s*\(', module):
               raise SystemExit('No function found in extracted duplicate-detection module.')
-          if html.count('<script>') != html.count('</script>'):
-              raise SystemExit('Unbalanced inline script tags detected.')
+          if len(re.findall(r'<script(?:\s[^>]*)?>', html, flags=re.IGNORECASE)) != len(re.findall(r'</script\s*>', html, flags=re.IGNORECASE)):
+              raise SystemExit('Unbalanced script tags detected.')
           print('Customer duplicate detection extraction validated.')
 
       - name: Commit extraction
