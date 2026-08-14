@@ -1,0 +1,22 @@
+name: Modular CRM Smoke Test
+
+on:
+  push:
+    branches:
+      - refactor/modular-crm
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run modular smoke test
+        run: node tests/modular-smoke-test.js
