@@ -1,5 +1,6 @@
-const CACHE_ADI = "weicon-asist-cache-v2";
+const CACHE_ADI = "weicon-asist-cache-v3";
 const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js"></script>';
+const CUSTOMER_MEMORY_CARD_SRC = '<script src="js/customers/customer-memory-card.js"></script>';
 
 function modularHtmlResponse(response) {
   if (!response || !response.ok) return response;
@@ -7,7 +8,9 @@ function modularHtmlResponse(response) {
   if (contentType.indexOf("text/html") === -1) return response;
 
   return response.text().then(function (html) {
-    if (html.indexOf("js/modular-runtime.js") !== -1) return new Response(html, {
+    var hasRuntime = html.indexOf("js/modular-runtime.js") !== -1;
+    var hasMemoryCard = html.indexOf("js/customers/customer-memory-card.js") !== -1;
+    if (hasRuntime && hasMemoryCard) return new Response(html, {
       status: response.status,
       statusText: response.statusText,
       headers: response.headers
@@ -21,7 +24,10 @@ function modularHtmlResponse(response) {
       headers: response.headers
     });
 
-    var updated = html.slice(0, index) + MODULAR_RUNTIME_SRC + "\n" + html.slice(index);
+    var injection = "";
+    if (!hasRuntime) injection += MODULAR_RUNTIME_SRC + "\n";
+    if (!hasMemoryCard) injection += CUSTOMER_MEMORY_CARD_SRC + "\n";
+    var updated = html.slice(0, index) + injection + html.slice(index);
     return new Response(updated, {
       status: response.status,
       statusText: response.statusText,
