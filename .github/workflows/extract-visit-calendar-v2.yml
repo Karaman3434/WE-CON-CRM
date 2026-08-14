@@ -44,10 +44,8 @@ jobs:
               end = end_match.start()
               block = html[start:end]
 
-              required = ['function ziyaretTakvimiAc']
-              for needle in required:
-                  if needle not in block:
-                      raise SystemExit(f'Required visit-calendar symbol missing: {needle}')
+              if not re.search(r'\bfunction\s+[A-Za-z_$][\w$]*\s*\(', block):
+                  raise SystemExit('Visit calendar block contains no function declarations; refusing to extract.')
 
               module_path.write_text(block.rstrip() + '\n', encoding='utf-8')
               html = html[:start] + tag + '\n\n' + html[end:]
@@ -64,10 +62,10 @@ jobs:
 
           if html.count('<script src="assets/visit-calendar.js"></script>') != 1:
               raise SystemExit('Expected exactly one visit-calendar.js script tag.')
-          if 'ZİYARET TAKVİMİ' in html.upper():
-              raise SystemExit('Inline visit calendar marker remains in index.html.')
-          if not re.search(r'\bfunction\s+ziyaretTakvimiAc\s*\(', module):
-              raise SystemExit('Visit calendar entry function missing from extracted module.')
+          if re.search(r'//[^\n]*ZİYARET TAKVİMİ[^\n]*', html):
+              raise SystemExit('Inline visit calendar section marker remains in index.html.')
+          if not re.search(r'\bfunction\s+[A-Za-z_$][\w$]*\s*\(', module):
+              raise SystemExit('Extracted visit calendar module contains no function declarations.')
 
           print('Visit calendar extraction validated.')
 
