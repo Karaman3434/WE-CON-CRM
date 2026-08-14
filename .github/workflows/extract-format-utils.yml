@@ -1,0 +1,122 @@
+name: Extract Format Utilities
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract-format-utils:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract pure fmt utility
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          module_path = Path('assets/format-utils.js')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="assets/format-utils.js"></script>'
+
+          if tag in html:
+              raise SystemExit('Format utility already externalized.')
+
+          marker = 'function fmt(n)'
+          starts = [m.start() for m in re.finditer(re.escape(marker), html)]
+          if len(starts) != 1:
+              raise SystemExit(f'Expected exactly one fmt function, found {len(starts)}.')
+          start = starts[0]
+
+          brace = html.find('{', start)
+          if brace < 0:
+              raise SystemExit('fmt opening brace not found; refusing modification.')
+
+          depth = 0
+          quote = None
+          escape = False
+          line_comment = False
+          block_comment = False
+          i = brace
+          end = None
+          while i < len(html):
+              ch = html[i]
+              nxt = html[i + 1] if i + 1 < len(html) else ''
+              if line_comment:
+                  if ch == '\n': line_comment = False
+                  i += 1; continue
+              if block_comment:
+                  if ch == '*' and nxt == '/':
+                      block_comment = False; i += 2; continue
+                  i += 1; continue
+              if quote:
+                  if escape: escape = False
+                  elif ch == '\\': escape = True
+                  elif ch == quote: quote = None
+                  i += 1; continue
+              if ch == '/' and nxt == '/':
+                  line_comment = True; i += 2; continue
+              if ch == '/' and nxt == '*':
+                  block_comment = True; i += 2; continue
+              if ch in ('"', "'", '`'):
+                  quote = ch; i += 1; continue
+              if ch == '{': depth += 1
+              elif ch == '}':
+                  depth -= 1
+                  if depth == 0:
+                      end = i + 1
+                      break
+              i += 1
+
+          if end is None:
+              raise SystemExit('fmt function boundary is unsafe; refusing modification.')
+
+          block = html[start:end]
+          if any(token in block for token in ('localStorage', 'sessionStorage', 'firebase', 'fbGet(', 'fbSet(', 'fbUpdate(', 'fetch(')):
+              raise SystemExit('Persistence/network access found in fmt; refusing extraction.')
+
+          module_path.write_text(block.rstrip() + '\n', encoding='utf-8')
+          html = html[:start] + tag + html[end:]
+          path.write_text(html, encoding='utf-8')
+
+      - name: Validate extraction
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          module = Path('assets/format-utils.js').read_text(encoding='utf-8')
+          tag = '<script src="assets/format-utils.js"></script>'
+
+          if html.count(tag) != 1:
+              raise SystemExit('Expected exactly one format-utils script tag.')
+          if re.search(r'\bfunction\s+fmt\s*\(', html):
+              raise SystemExit('fmt function still present inline.')
+          if not re.search(r'\bfunction\s+fmt\s*\(', module):
+              raise SystemExit('fmt function missing from module.')
+          if any(token in module for token in ('localStorage', 'sessionStorage', 'firebase', 'fbGet(', 'fbSet(', 'fbUpdate(', 'fetch(')):
+              raise SystemExit('Persistence/network access found in format module.')
+          if html.count('<script>') != html.count('</script>'):
+              raise SystemExit('Unbalanced inline script tags detected.')
+
+      - name: Commit extraction and remove one-time workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm -f .github/workflows/extract-format-utils.yml
+          git add index.html assets/format-utils.js .github/workflows/extract-format-utils.yml
+          git diff --cached --quiet && exit 0
+          git commit -m 'refactor: extract pure format utility [refactor-bot]'
+          git push origin HEAD:project-context
