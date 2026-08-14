@@ -514,14 +514,7 @@
 
 
 
-<script>
-function updateHTML(el,html){
-  if(!el) return;
-  if(el.__lastHTML===html) return;
-  el.__lastHTML=html;
-  el.innerHTML=html;
-}
-</script>
+<script src="assets/ui-helpers.js"></script>
 
 
 
@@ -1089,28 +1082,7 @@ tyle="visibility:hidden;">
   </button>
 </div>
 
-<script>
-// Tüm popup overlay'leri artık tam ekranı değil, üst panelin (WEICON logosu +
-// tarih + Geri/Ana Sayfa/Menü satırı) ALTINI kaplıyor — böylece bir popup
-// açıkken bile üst panel her zaman görünür ve tıklanabilir kalıyor. Üst
-// panelin gerçek yüksekliği cihaza/yazı boyutuna göre değişebileceği için
-// sabit bir piksel yazmak yerine, panel her yüklendiğinde/boyut değiştiğinde
-// gerçek yüksekliği ölçülüp --ust-panel-h CSS değişkenine yazılıyor.
-(function(){
-  function ustPanelYuksekligiOlc(){
-    var panel = document.getElementById("ustNavGrid");
-    if(!panel) return;
-    var yukseklik = Math.ceil(panel.getBoundingClientRect().bottom);
-    if(yukseklik > 0){
-      document.documentElement.style.setProperty("--ust-panel-h", yukseklik+"px");
-    }
-  }
-  ustPanelYuksekligiOlc();
-  window.addEventListener("load", ustPanelYuksekligiOlc);
-  window.addEventListener("resize", ustPanelYuksekligiOlc);
-  window.addEventListener("orientationchange", function(){ setTimeout(ustPanelYuksekligiOlc, 200); });
-})();
-</script>
+<script src="assets/ui-helpers.js"></script>
 
 <!-- ÜST SAĞ AÇILIR MENÜ: Veri / PIN Değiştir / Yedekle / Ayarlar / Çıkış Yap -->
 <div id="ustMenuPopup" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;z-index:20000;background:rgba(0,0,0,0.15);" onclick="if(event.target===this)ustMenuAcKapat();">
