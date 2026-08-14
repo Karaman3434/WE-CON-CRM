@@ -19,7 +19,7 @@ jobs:
           ref: project-context
           fetch-depth: 0
 
-      - name: Extract the existing inline styles
+      - name: Extract and normalize CSS
         shell: python
         run: |
           from pathlib import Path
@@ -31,27 +31,35 @@ jobs:
 
           pattern = re.compile(r'<style>(.*?)</style>', re.DOTALL | re.IGNORECASE)
           matches = list(pattern.finditer(text))
-          if not matches:
-              raise SystemExit('No complete plain <style>...</style> blocks found; nothing changed.')
 
-          stylesheet_parts = []
-          for i, match in enumerate(matches, 1):
-              part = match.group(1)
-              if not part.strip():
-                  raise SystemExit(f'Style block {i} is empty; refusing automatic extraction.')
-              stylesheet_parts.append(f'/* Original inline style block {i} */\n{part.strip()}\n')
+          if matches:
+              parts = []
+              for i, match in enumerate(matches, 1):
+                  part = match.group(1)
+                  if not part.strip():
+                      raise SystemExit(f'Style block {i} is empty; refusing automatic extraction.')
+                  parts.append(f'/* Original inline style block {i} */\n{part.strip()}\n')
+              css.parent.mkdir(parents=True, exist_ok=True)
+              css.write_text('\n\n'.join(parts) + '\n', encoding='utf-8')
+              text = pattern.sub('', text)
+              print(f'Inline style blocks extracted: {len(matches)}')
+          else:
+              print('No inline style blocks remain; validating existing external stylesheet.')
 
-          css.parent.mkdir(parents=True, exist_ok=True)
-          css.write_text('\n\n'.join(stylesheet_parts) + '\n', encoding='utf-8')
+          link = '<link rel="stylesheet" href="assets/styles.css">'
+          text = re.sub(r'\s*<link rel="stylesheet" href="assets/styles\.css">', '', text)
+          insertion = '\n' + link + '\n'
+          head = text.lower().find('</head>')
+          if head < 0:
+              raise SystemExit('Missing </head>; refusing normalization.')
+          text = text[:head] + insertion + text[head:]
 
-          replacement = '<link rel="stylesheet" href="assets/styles.css">'
-          updated = pattern.sub(replacement, text)
-          index.write_text(updated, encoding='utf-8')
+          if not css.exists() or not css.read_text(encoding='utf-8').strip():
+              raise SystemExit('External stylesheet is missing or empty.')
 
-          print(f'Inline style blocks extracted: {len(matches)}')
-          print(f'Extracted CSS bytes: {len(css.read_bytes())}')
+          index.write_text(text, encoding='utf-8')
 
-      - name: Validate the extracted stylesheet
+      - name: Validate CSS extraction
         shell: python
         run: |
           from pathlib import Path
@@ -59,28 +67,30 @@ jobs:
 
           html = Path('index.html').read_text(encoding='utf-8')
           css = Path('assets/styles.css').read_text(encoding='utf-8')
+          link = '<link rel="stylesheet" href="assets/styles.css">'
 
-          if '<link rel="stylesheet" href="assets/styles.css">' not in html:
-              raise SystemExit('Stylesheet link missing from index.html')
-          if not css.strip():
-              raise SystemExit('Extracted CSS is empty')
+          if html.count(link) != 1:
+              raise SystemExit(f'Expected exactly one external stylesheet link, found {html.count(link)}')
           if re.search(r'<style(?:\s|>)', html, re.IGNORECASE):
-              raise SystemExit('Inline <style> block still present after extraction')
+              raise SystemExit('Inline <style> block still present.')
           if re.search(r'</style>', html, re.IGNORECASE):
-              raise SystemExit('Closing </style> tag still present after extraction')
+              raise SystemExit('Closing </style> tag still present.')
+          if not css.strip():
+              raise SystemExit('External CSS is empty.')
 
-          print(f'Updated HTML bytes: {len(html.encode("utf-8"))}')
+          print(f'HTML bytes: {len(html.encode("utf-8"))}')
+          print(f'CSS bytes: {len(css.encode("utf-8"))}')
           print('CSS extraction validation passed.')
 
-      - name: Commit extracted stylesheet
+      - name: Commit result
         shell: bash
         run: |
           if git diff --quiet -- index.html assets/styles.css; then
-            echo 'No CSS extraction changes detected.'
+            echo 'No changes required.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html assets/styles.css
-          git commit -m 'refactor: extract inline CSS [refactor-bot]'
+          git commit -m 'refactor: normalize external CSS [refactor-bot]'
           git push origin HEAD:project-context
