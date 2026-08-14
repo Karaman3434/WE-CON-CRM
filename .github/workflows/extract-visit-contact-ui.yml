@@ -1,0 +1,69 @@
+name: Extract Visit Contact UI
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Extract visit photo/contact helpers
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="assets/visit-contact-ui.js"></script>'
+          if tag not in html:
+              start = html.find('function resimSikistir(file, callback){')
+              end = html.find('function ziyaretTurSeciciOlustur(){', start)
+              if start < 0 or end < 0:
+                  raise SystemExit('Visit/contact helper boundaries not found; refusing to modify index.html.')
+              block = html[start:end]
+              expected = ['resimSikistir','ziyaretFotoSecildi','ziyaretFotoSil','ziyaretFotoGaleriOlustur','ziyaretFotoBuyukGoster','yetkiliKisiEtiketGuncelle','yetkiliKisiTemizle','ziyaretKisiEtiketGuncelle','ziyaretKisiTemizle']
+              for name in expected:
+                  if not re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', block):
+                      raise SystemExit(f'Missing expected function: {name}')
+              html = html[:start] + tag + '\n\n' + html[end:]
+              path.write_text(html, encoding='utf-8')
+
+      - name: Validate
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          html = Path('index.html').read_text(encoding='utf-8')
+          if html.count('<script src="assets/visit-contact-ui.js"></script>') != 1:
+              raise SystemExit('Expected exactly one visit-contact-ui.js script tag.')
+          names = ['resimSikistir','ziyaretFotoSecildi','ziyaretFotoSil','ziyaretFotoGaleriOlustur','ziyaretFotoBuyukGoster','yetkiliKisiEtiketGuncelle','yetkiliKisiTemizle','ziyaretKisiEtiketGuncelle','ziyaretKisiTemizle']
+          for name in names:
+              if re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', html):
+                  raise SystemExit(f'Inline function remains: {name}')
+          module = Path('assets/visit-contact-ui.js').read_text(encoding='utf-8')
+          for name in names:
+              if not re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', module):
+                  raise SystemExit(f'Function missing from module: {name}')
+          print('Visit/contact UI extraction validated.')
+
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/visit-contact-ui.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'refactor: extract visit contact UI helpers [refactor-bot]'
+          git push origin HEAD:project-context
