@@ -1,0 +1,95 @@
+name: Fix External Script Placement
+
+on:
+  push:
+    branches:
+      - project-context
+
+permissions:
+  contents: write
+
+jobs:
+  fix-script-placement:
+    if: ${{ !contains(github.event.head_commit.message, '[refactor-bot]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: project-context
+          fetch-depth: 0
+
+      - name: Move extracted script tags outside inline script
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          original = html
+
+          tags = [
+              'search-history.js',
+              'product-memory.js',
+          ]
+          changed = 0
+          for asset in tags:
+              pattern = re.compile(
+                  r'\n\s*<script\s+src="assets/' + re.escape(asset) + r'"\s*>\s*</script>\s*\n',
+                  re.IGNORECASE,
+              )
+              replacement = '\n</script>\n<script src="assets/' + asset + '"></script>\n<script>\n'
+              html, n = pattern.subn(replacement, html, count=1)
+              changed += n
+
+          if changed != len(tags):
+              raise SystemExit(f'Expected to relocate {len(tags)} extracted script tags, relocated {changed}.')
+
+          path.write_text(html, encoding='utf-8')
+
+          # Structural checks: each external tag must be outside every inline script block.
+          for asset in tags:
+              if html.count('<script src="assets/' + asset + '"></script>') != 1:
+                  raise SystemExit(f'Expected exactly one external tag for {asset}.')
+
+          inline_blocks = re.findall(r'<script>(.*?)</script>', html, re.DOTALL | re.IGNORECASE)
+          for block in inline_blocks:
+              for asset in tags:
+                  if 'assets/' + asset in block:
+                      raise SystemExit(f'{asset} is still nested inside an inline script.')
+
+          print(f'Relocated {changed} external script tags.')
+          print(f'HTML changed: {html != original}')
+
+      - name: Chrome smoke test
+        shell: bash
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/weicon-http.log 2>&1 &
+          echo $! > /tmp/weicon-http.pid
+          for i in {1..20}; do curl -fsS http://127.0.0.1:8080/index.html > /dev/null && break; sleep 1; done
+          timeout 30s google-chrome --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --enable-logging=stderr --log-level=0 --virtual-time-budget=4000 --dump-dom http://127.0.0.1:8080/index.html > /tmp/weicon-dom.html 2> /tmp/weicon-chrome.log
+          test -s /tmp/weicon-dom.html
+          grep -q 'WEICON ASIST' /tmp/weicon-dom.html
+          grep -q 'assets/search-history.js' /tmp/weicon-dom.html
+          grep -q 'assets/product-memory.js' /tmp/weicon-dom.html
+          if grep -Eiq 'Uncaught SyntaxError|Uncaught ReferenceError|Failed to load resource' /tmp/weicon-chrome.log; then
+            cat /tmp/weicon-chrome.log
+            exit 1
+          fi
+          echo 'External script placement Chrome smoke test passed.'
+
+      - name: Commit fix
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: place extracted scripts outside inline block [refactor-bot]'
+          git push origin HEAD:project-context
+
+      - name: Stop local server
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/weicon-http.pid ]; then kill "$(cat /tmp/weicon-http.pid)" || true; fi
