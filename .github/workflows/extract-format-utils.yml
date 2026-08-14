@@ -107,8 +107,8 @@ jobs:
               raise SystemExit('fmt function missing from module.')
           if any(token in module for token in ('localStorage', 'sessionStorage', 'firebase', 'fbGet(', 'fbSet(', 'fbUpdate(', 'fetch(')):
               raise SystemExit('Persistence/network access found in format module.')
-          if html.count('<script>') != html.count('</script>'):
-              raise SystemExit('Unbalanced inline script tags detected.')
+          if html.count('<script') != html.count('</script'):
+              raise SystemExit('Unbalanced script tags detected.')
 
       - name: Commit extraction and remove one-time workflow
         shell: bash
