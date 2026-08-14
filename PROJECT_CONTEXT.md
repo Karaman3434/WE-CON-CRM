@@ -5,32 +5,36 @@
 - Default branch: `main`
 - Application description in GitHub: `WEİCON ASİST`
 - The repository is a GitHub Pages web application.
-- Current root application entry point: `index.html`
+- Current application entry point: `index.html`.
 
-## 2. Current verified state
-- `index.html` is currently approximately 764 KB (764,258 bytes in the verified repository state).
-- The current application is largely concentrated in `index.html`.
-- Existing root files include `index.html`, `manifest.json`, `sw.js`, `icon-192.png`, `icon-512.png`, `.nojekyll`, and `README.md`.
-- `assets/styles.css` now exists on the `project-context` branch.
-- `main` has NOT been changed by the refactor work.
-- `sw.js` on `project-context` is now versioned as `weicon-asist-cache-v2` and provides a temporary delivery bridge that serves `assets/styles.css` while stripping the duplicated inline `<style>` blocks from the delivered HTML.
+## 2. Verified repository state
+- `main` remains the protected working baseline for the live application.
+- On `project-context`, `index.html` is still approximately 764 KB (764,258 bytes in the verified branch state).
+- Root application files include `index.html`, `manifest.json`, `sw.js`, icon files, `.nojekyll`, and `README.md`.
+- `assets/styles.css` exists on `project-context` as a preparation/analysis artifact.
+- The external stylesheet has NOT been wired into `index.html` yet.
+- The existing inline CSS in `index.html` remains the active CSS source.
+- `sw.js` has NOT been changed as part of the current refactor state; it remains the existing cache-first/fetch-fallback implementation with cache name `weicon-asist-cache-v1`.
+- Therefore the current `project-context` branch does not intentionally change the runtime behavior of the application compared with `main`.
 
 ## 3. Development safety rules
-1. The currently working application must remain usable during development.
-2. Do not make broad changes to `main` without review.
-3. Prefer isolated branches for refactoring work.
-4. Refactor incrementally: one logical area at a time.
-5. After each refactor, verify that existing behavior is preserved before moving to the next area.
-6. Do not change Firebase, localStorage, PWA/service-worker behavior, or data structures unless the task explicitly requires it and the impact has been analyzed first.
+1. Keep the currently working application usable throughout development.
+2. Do not make broad changes directly on `main`.
+3. Use isolated branches for refactoring.
+4. Refactor incrementally, one logical area at a time.
+5. Verify each change before moving to the next area.
+6. Do not alter Firebase, localStorage, PWA/service-worker behavior, or data structures unless the impact has first been inspected.
 7. Do not remove existing functionality merely to simplify code.
-8. When uncertain, inspect the current repository/code before making assumptions.
+8. Never assume a function, data structure, Firebase path, or dependency when it has not been verified from the repository.
+9. When a refactor cannot be safely verified, stop that refactor rather than guessing.
 
 ## 4. Planned modularization
 The long-term goal is to reduce the responsibilities of `index.html` by separating concerns into maintainable files/modules while preserving the current UI and behavior.
 
-Planned areas to investigate and separate incrementally:
+Areas to investigate and separate incrementally:
 - CSS/styles
 - customer management
+- customer contacts
 - products/catalog
 - price list/pricing logic
 - visits/agenda
@@ -41,38 +45,47 @@ Planned areas to investigate and separate incrementally:
 - backup/archive
 - PIN/authentication-related UI/logic
 - settings
-- other shared utilities discovered during code analysis
+- shared utilities
 
-No module should be separated until its dependencies and runtime behavior have been inspected.
+A module is not to be extracted until its dependencies and runtime behavior have been inspected.
 
 ## 5. Current refactor stage
-- Repository analysis: completed.
-- Architecture/refactor planning: completed at planning level.
-- CSS extraction: Phase 1 completed on `project-context`.
-- `assets/styles.css`: created from the verified core stylesheet in `index.html`.
-- PWA delivery bridge: added to `sw.js` so the running delivered page can use the external stylesheet without requiring a large direct rewrite of the 764 KB `index.html` in this stage.
-- `main`: untouched.
+- Repository structure review: completed.
+- Initial architecture/refactor planning: completed.
+- Project context document: created and maintained on `project-context`.
+- CSS preparation: an external `assets/styles.css` file has been created from the currently observed stylesheet structure, but it is intentionally NOT connected to the application yet.
+- JavaScript modularization: not started.
+- `main`: untouched by this refactor work.
 
-## 6. Critical architecture findings
-- Firebase is the shared data backbone and must remain intact during modularization.
-- localStorage is used as a local cache/state layer.
-- There are both general pending-sync and operation-level offline queues.
-- Customer records use safe merge logic intended to reduce multi-device overwrite risk.
-- Firebase realtime listeners synchronize customers, archive, vehicle KM, exchange rate and other shared state.
-- Authentication includes Firebase email/password plus a hashed PIN short-lock mechanism.
-- The PWA service worker is part of the application's runtime behavior and must be treated as a controlled dependency during refactoring.
-- Customer contact/person management is already a distinct logical subsystem and is a strong candidate for a later JS module extraction.
+## 6. Critical architecture areas to preserve
+Based on the verified project analysis so far, the following areas require special care during modularization:
+- Firebase/shared data synchronization.
+- localStorage/local state and cache behavior.
+- Offline/pending synchronization logic.
+- Customer data and customer-contact relationships.
+- Customer merge/synchronization behavior across devices.
+- Authentication/PIN-related behavior.
+- PWA manifest and service worker behavior.
+- Product, price and calculation logic.
+- Son Hareket/visit records and their relationship to customer data.
 
-## 7. Working principle for future AI-assisted development
-When a development request is received:
-1. Read the current repository state.
+Detailed Firebase paths and exact function names must be added only after they are directly verified from the source.
+
+## 7. Working method for AI-assisted development
+For every development request:
+1. Read the current repository state before proposing code changes.
 2. Identify the exact files/functions/components involved.
-3. Check dependencies and possible side effects.
-4. For technical/product facts, prefer authoritative documentation over assumptions.
+3. Inspect dependencies and side effects.
+4. Use authoritative documentation for external technical/product facts instead of assumptions.
 5. Make the smallest safe change that satisfies the request.
-6. Test or verify the result where possible.
-7. Keep the project context/documentation current when architecture or important behavior changes.
-8. Prefer continuing autonomously through low-risk implementation steps rather than repeatedly asking the user to confirm obvious next actions.
+6. Verify the result where tooling permits.
+7. Update this context file when architecture or important behavior changes.
+8. Continue autonomously through low-risk steps; only ask Abdullah when a decision is genuinely consequential or ambiguous.
 
-## 8. Important note
-This document is intentionally conservative. It records only facts verified from the repository or decisions explicitly made during the project. Detailed module/function maps should be added after the relevant sections of `index.html` are systematically inspected; do not invent function names, data structures, or Firebase schema details.
+## 8. Current objective
+Convert the large monolithic `index.html` into a maintainable modular application without breaking the CRM that Abdullah currently uses for daily work.
+
+The immediate next task is to map the JavaScript responsibilities and dependencies in the real source before extracting the first JS module. CSS extraction remains a separate controlled step and must not be activated until the stylesheet replacement is verified.
+
+## 9. Non-negotiable principle
+The live/working CRM is more important than refactoring speed. If a proposed change cannot be verified safely, preserve the existing working code and investigate further rather than guessing.
