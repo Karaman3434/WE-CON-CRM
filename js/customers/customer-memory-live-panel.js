@@ -1,13 +1,14 @@
 /* WE-CON-CRM Customer Memory Live Panel
- * Visible, non-invasive panel for the legacy CRM. No Firebase writes.
- * The panel is attached to the real customer-card modal when it exists.
+ * Reliable DOM-first version for the legacy customer card.
+ * No dependency on Firebase or a separate bridge is required for visibility.
  */
 (function (global) {
   'use strict';
 
   const PANEL_ID = 'weicon-customer-memory-live-panel';
-  const CUSTOMER_MODAL_ID = 'musteriKartModal';
-  let lastCustomerId = null;
+  const MODAL_ID = 'musteriKartModal';
+  let timer = null;
+  let observer = null;
 
   function ensureStyles() {
     if (document.getElementById('weicon-customer-memory-live-style')) return;
@@ -27,98 +28,93 @@
     document.head.appendChild(style);
   }
 
-  function getPanel() {
-    let panel = document.getElementById(PANEL_ID);
-    if (panel) return panel;
+  function makePanel() {
     ensureStyles();
-    panel = document.createElement('section');
+    const panel = document.createElement('section');
     panel.id = PANEL_ID;
     panel.setAttribute('aria-label', 'Müşteri Hafızası');
-    panel.innerHTML = '<div class="wm-head"><span>🧠 Müşteri Hafızası</span><button class="wm-close" type="button" aria-label="Kapat">×</button></div><div class="wm-body"><div class="wm-row"><span class="wm-label">Müşteri</span><span class="wm-value" data-wm="customer">—</span></div><div class="wm-row"><span class="wm-label">Son Hareket</span><span class="wm-value" data-wm="activity">—</span></div><div class="wm-row"><span class="wm-label">Son Sipariş</span><span class="wm-value" data-wm="order">—</span></div><div class="wm-row"><span class="wm-label">Toplam Hareket</span><span class="wm-value" data-wm="count">0</span></div></div>';
-    panel.querySelector('.wm-close').addEventListener('click', function () { panel.classList.add('wm-hidden'); });
+    panel.innerHTML = `
+      <div class="wm-head">
+        <span>🧠 Müşteri Hafızası</span>
+        <button class="wm-close" type="button" aria-label="Kapat">×</button>
+      </div>
+      <div class="wm-body">
+        <div class="wm-row"><span class="wm-label">Müşteri</span><span class="wm-value" data-wm="customer">—</span></div>
+        <div class="wm-row"><span class="wm-label">Son Temas</span><span class="wm-value" data-wm="activity">Kayıtlı temas yok</span></div>
+        <div class="wm-row"><span class="wm-label">Toplam İşlem</span><span class="wm-value" data-wm="count">0</span></div>
+        <div class="wm-row"><span class="wm-label">Toplam Tutar</span><span class="wm-value" data-wm="total">—</span></div>
+      </div>`;
+    panel.querySelector('.wm-close').addEventListener('click', function () {
+      panel.classList.add('wm-hidden');
+    });
     return panel;
   }
 
-  function text(value, fallback) { return value == null || value === '' ? (fallback || '—') : String(value); }
-
-  function getCustomerFromLegacyCard() {
-    const list = global.musteriListesi;
-    const idx = global.musteriKartIdx;
-    if (!Array.isArray(list) || idx == null || !list[idx]) return null;
-    return list[idx];
+  function modalIsOpen(modal) {
+    if (!modal) return false;
+    const style = global.getComputedStyle ? global.getComputedStyle(modal) : null;
+    return (style ? style.display : modal.style.display) !== 'none';
   }
 
-  function isCustomerModalOpen() {
-    const modal = document.getElementById(CUSTOMER_MODAL_ID);
-    if (!modal) return false;
-    const display = global.getComputedStyle ? global.getComputedStyle(modal).display : modal.style.display;
-    return display !== 'none';
+  function findCloseButton(modal) {
+    return modal.querySelector('button[onclick="musteriKartKapat()"]');
   }
 
-  function mountIntoCustomerCard(panel) {
-    const modal = document.getElementById(CUSTOMER_MODAL_ID);
-    if (!modal) return false;
-    const content = modal.querySelector(':scope > div');
+  function mount(panel, modal) {
+    if (!modal || !modalIsOpen(modal)) return false;
+    const content = modal.firstElementChild;
     if (!content) return false;
-    const closeButton = content.querySelector('button[onclick="musteriKartKapat()"]');
-    if (closeButton && closeButton.parentElement) {
-      closeButton.parentElement.parentElement.insertBefore(panel, closeButton.parentElement);
-    } else {
-      content.appendChild(panel);
+    if (panel.parentElement !== content) {
+      const closeButton = findCloseButton(modal);
+      if (closeButton && closeButton.parentElement === content.querySelector(':scope > div:last-child')) {
+        content.insertBefore(panel, closeButton.parentElement);
+      } else {
+        content.appendChild(panel);
+      }
     }
     return true;
   }
 
-  async function show(customer, customerId) {
-    const bridge = global.WEICONCustomerMemoryUIBridge;
-    if (!bridge) return;
-    const id = bridge.getCustomerId(customer || customerId);
-    if (!id) return;
-    const panel = getPanel();
-    mountIntoCustomerCard(panel);
-    if (!panel.parentElement) document.body.appendChild(panel);
-    panel.classList.remove('wm-hidden');
-    const snapshot = await bridge.getSnapshot(id);
-    if (!snapshot) return;
-    lastCustomerId = id;
-    panel.querySelector('[data-wm="customer"]').textContent = customer && customer.ad ? customer.ad : id;
-    const activity = snapshot.lastActivity;
-    const order = snapshot.lastOrder;
-    panel.querySelector('[data-wm="activity"]').textContent = activity ? text(activity.type, 'Hareket') + ' · ' + text(activity.date) : 'Kayıt yok';
-    panel.querySelector('[data-wm="order"]').textContent = order ? text(order.date || order.tarih) : 'Kayıt yok';
-    panel.querySelector('[data-wm="count"]').textContent = String(snapshot.activityCount || 0);
+  function clean(value) {
+    return (value || '').replace(/\\s+/g, ' ').trim();
   }
 
-  function syncLegacyCustomerCard() {
-    if (!isCustomerModalOpen()) return;
-    const customer = getCustomerFromLegacyCard();
-    if (!customer) return;
-    const bridge = global.WEICONCustomerMemoryUIBridge;
-    if (!bridge) return;
-    const id = bridge.getCustomerId(customer);
-    const panel = document.getElementById(PANEL_ID);
-    if (!id) return;
-    if (id !== lastCustomerId || !panel || panel.classList.contains('wm-hidden')) {
-      show(customer, id).catch(function (error) {
-        console.warn('[WE-CON-CRM] Customer memory panel skipped:', error.message);
-      });
-    } else {
-      mountIntoCustomerCard(panel);
-    }
+  function sync() {
+    const modal = document.getElementById(MODAL_ID);
+    if (!modal || !modalIsOpen(modal)) return;
+
+    let panel = document.getElementById(PANEL_ID);
+    if (!panel) panel = makePanel();
+    if (!mount(panel, modal)) return;
+    panel.classList.remove('wm-hidden');
+
+    const customer = clean(document.getElementById('musteriKartAd')?.textContent);
+    const visit = clean(document.getElementById('musteriKartZiyaretBilgi')?.textContent);
+    const lastContact = clean(document.getElementById('cariKartSonTemas')?.textContent);
+
+    const infoText = clean(document.getElementById('musteriKartBilgi')?.textContent);
+    const summaryText = clean(modal.textContent);
+
+    panel.querySelector('[data-wm="customer"]').textContent = customer || '—';
+    panel.querySelector('[data-wm="activity"]').textContent = visit || (lastContact && lastContact !== '-' ? lastContact : 'Kayıtlı temas yok');
+
+    const countMatch = summaryText.match(/(?:TOPLAM İŞLEM|Toplam İşlem)\\s*([0-9]+)/i);
+    const totalMatch = summaryText.match(/(?:TOPLAM TUTAR|Toplam Tutar)\\s*([0-9.,]+\\s*€)/i);
+    panel.querySelector('[data-wm="count"]').textContent = countMatch ? countMatch[1] : (infoText ? '1' : '0');
+    panel.querySelector('[data-wm="total"]').textContent = totalMatch ? totalMatch[1] : '—';
   }
 
   function boot() {
-    global.addEventListener('weicon:customer-selected', function (event) {
-      const detail = event && event.detail ? event.detail : {};
-      show(detail.customer, detail.customerId || detail.id).catch(function (error) {
-        console.warn('[WE-CON-CRM] Live memory panel skipped:', error.message);
-      });
-    });
-    global.setInterval(syncLegacyCustomerCard, 350);
-    syncLegacyCustomerCard();
+    if (timer) global.clearInterval(timer);
+    timer = global.setInterval(sync, 250);
+    sync();
+
+    if (observer) observer.disconnect();
+    observer = new MutationObserver(function () { sync(); });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
-  global.WEICONCustomerMemoryLivePanel = Object.freeze({ show });
+  global.WEICONCustomerMemoryLivePanel = Object.freeze({ show: sync });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
 })(window);
