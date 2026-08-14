@@ -24,6 +24,8 @@ jobs:
         run: node tests/modular-integration-static-test.js
       - name: Run customer activity adapter test
         run: node tests/customer-activity-adapter-test.js
+      - name: Run customer selection UI integration test
+        run: node tests/customer-selection-ui-integration-test.js
       - name: Run Firebase path audit
         run: node tests/firebase-path-audit.js > firebase-path-audit.txt
       - name: Upload Firebase path audit
