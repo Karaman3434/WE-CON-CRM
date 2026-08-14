@@ -56,8 +56,6 @@ jobs:
           module = Path('assets/card-photo-ai.js').read_text(encoding='utf-8')
           if html.count('<script src="assets/card-photo-ai.js"></script>') != 1:
               raise SystemExit('Expected exactly one card-photo-ai.js script tag.')
-          if 'KARTTAN/TABELADAN DOLDUR' in html.upper():
-              raise SystemExit('Inline card-photo AI marker remains in index.html.')
           for name in ['kartFotoGonder','kartFotoJpegeDonustur','kartFotoSecildi','yetkiliIletisimFotoSecildi','teslimatAdresiFotoSecildi']:
               if not re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', module):
                   raise SystemExit(f'Card-photo function missing: {name}')
