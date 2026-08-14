@@ -20,6 +20,7 @@
     'js/customers/customer-memory-read-service.js',
     'js/visits/activity-model.js',
     'js/visits/activity-repository.js',
+    'js/visits/customer-activity-adapter.js',
     'js/products/product-model.js',
     'js/products/product-repository.js',
     'js/pricelist/price-service.js',
