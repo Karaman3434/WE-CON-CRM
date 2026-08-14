@@ -6969,7 +6969,7 @@ function aktarilanUrununSil(){
   for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).textContent="-";
 }
 
-function fmt(n){ return n.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+<script src="assets/format-utils.js"></script>
 
 function listeFiyatGuncelle(){
   var liste = parseFloat(document.getElementById("listeFiyat").value)||0;
