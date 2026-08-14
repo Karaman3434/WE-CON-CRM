@@ -26,7 +26,6 @@ jobs:
           html = Path('index.html').read_text(encoding='utf-8')
           module = Path('assets/customer-id-core.js').read_text(encoding='utf-8')
 
-          # Customer ID helpers are intentionally externalized.
           for needle in [
               'function musteriSonrakiKoduBul',
               'function musteriIdUret',
@@ -35,7 +34,6 @@ jobs:
               if needle not in module:
                   raise SystemExit(f'Missing customer ID module symbol: {needle}')
 
-          # Remaining customer operations stay in the main application.
           for needle in [
               'function musteriKaydetGercek',
               'function musteriBirlestirOnayla',
@@ -57,12 +55,10 @@ jobs:
       - name: Validate customer module syntax markers
         shell: python
         run: |
-          python - <<'PY'
           from pathlib import Path
           html = Path('index.html').read_text(encoding='utf-8')
           if html.count('<script>') != html.count('</script>'):
               raise SystemExit('Unbalanced inline script tags detected.')
           print('Script tag balance validated.')
-          PY
 
 # Validation is isolated to project-context.
