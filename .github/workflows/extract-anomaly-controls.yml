@@ -52,8 +52,6 @@ jobs:
                   if needle not in block:
                       raise SystemExit(f'Expected function not found in extraction block: {needle}')
 
-              # Remove the inline block first, then find the containing script's
-              # closing tag using a marker that remains after the removal.
               html = html[:start] + html[end:]
               marker_after = html.find('// DERİN AI ANALİZİ')
               close_pos = html.find('</script>', marker_after)
@@ -80,7 +78,11 @@ jobs:
               if re.search(r'\bfunction\s+' + re.escape(name) + r'\s*\(', html):
                   raise SystemExit(f'Inline anomaly function remains: {name}')
 
-          for m in re.finditer(r'<script\b[^>]*>(.*?)</script>', html, re.DOTALL | re.IGNORECASE):
+          # Only inspect inline script blocks. An external <script src="...">
+          # element is intentionally not an inline block and must not trigger
+          # this validation.
+          inline_script_re = re.compile(r'<script\b(?![^>]*\bsrc\s*=)[^>]*>(.*?)</script>', re.DOTALL | re.IGNORECASE)
+          for m in inline_script_re.finditer(html):
               if tag in m.group(0):
                   raise SystemExit('External anomaly script tag is nested inside an inline script block.')
 
