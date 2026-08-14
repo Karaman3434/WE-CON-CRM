@@ -514,7 +514,7 @@
 
 
 
-<script src="assets/ui-helpers.js"></script>
+
 
 
 
@@ -2722,7 +2722,9 @@ function gizleUndoToast(){
 ============================================================ */
 var aramaGecmisi = lsGet("weicon_arama_gecmisi",[]);
 
+</script>
 <script src="assets/search-history.js"></script>
+<script>
 function hitUrunleriHesapla(){
   var arsiv = lsGet("weicon_arsiv", {});
   var siparisler = arsiv.siparis || [];
@@ -2810,8 +2812,9 @@ function enCokAranakAc(){
   document.getElementById("urunIstatistikModal").style.display = "flex";
 }
 
-<script src="assets/product-memory.js">
 </script>
+<script src="assets/product-memory.js"></script>
+<script>
 function topluIskontoUygula(){
   var oran = parseFloat(document.getElementById("topluIskontoInput").value);
   var mesaj = document.getElementById("topluIskontoMesaj");
@@ -3202,8 +3205,9 @@ function kartFotoAlanDoldurTumu(data){
 }
 
 // ============================================================
-<script src="assets/product-entry.js">
 </script>
+<script src="assets/product-entry.js"></script>
+<script>
 // --- Müşteri kalıcı ID sistemi -------------------------------------------
 // Firma adı yerine kalıcı bir ID: isim değişse/iki firma aynı adı taşısa bile
 // kayıtlar birbirine karışmaz. Eski kayıtlarda id yoksa burada otomatik
