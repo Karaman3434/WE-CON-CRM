@@ -49,6 +49,29 @@
     });
   }
 
+  // Müşteri kartı açılırken eski kod, sadece "son görüntüleme" bilgisini
+  // yazmak için bütün müşteri listesini yeniden JSON.stringify edip
+  // localStorage'a basıyordu. Büyük müşteri listelerinde bu senkron işlem
+  // ana UI thread'ini kilitleyebiliyordu. Görüntüleme zamanı kritik bir veri
+  // olmadığı için kart açılışında bu gereksiz tam liste yazımını kaldırıyoruz.
+  function fixCustomerCardFreeze() {
+    if (global.__WEICON_CUSTOMER_CARD_FREEZE_FIX__) return;
+    if (typeof global.musteriKartAc !== 'function') return;
+
+    var source = global.musteriKartAc.toString();
+    var oldCall = /\n[ \t]*musteriListesiniKaydet\(\);/;
+    if (!oldCall.test(source)) return;
+
+    var patched = source.replace(oldCall, '');
+    try {
+      global.musteriKartAc = (new Function('return (' + patched + ')'))();
+      global.__WEICON_CUSTOMER_CARD_FREEZE_FIX__ = true;
+      console.info('[WE-CON-CRM] Müşteri kartı donma düzeltmesi aktif.');
+    } catch (error) {
+      console.error('[WE-CON-CRM] Müşteri kartı düzeltmesi uygulanamadı:', error);
+    }
+  }
+
   async function boot() {
     for (const src of MODULES) {
       try {
@@ -58,6 +81,8 @@
         state.failed.push({ src: src, message: error.message });
       }
     }
+
+    fixCustomerCardFreeze();
 
     state.status = state.failed.length ? 'degraded' : 'ready';
     state.finishedAt = Date.now();
