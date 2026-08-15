@@ -751,6 +751,31 @@ function rafUpdate(fn){
 </script>
 
 <link rel="stylesheet" href="css/home-theme-2026.css">
+<style id="weicon-home-gradient-glow-2026">
+body{background:#f3f5f7!important;}
+#weiconHomeGlow2026{background:#f3f5f7!important;min-height:calc(100vh - 24px)!important;padding-bottom:1cm!important;box-sizing:border-box!important;}
+.weicon-glow-card{background:linear-gradient(145deg,#ffffff,#f7f9fb)!important;border:1px solid rgba(13,110,253,.22)!important;border-radius:18px!important;box-shadow:0 8px 22px rgba(20,35,55,.10),inset 0 1px 0 rgba(255,255,255,.9)!important;}
+.weicon-glow-card.wg-green{border-color:rgba(8,169,79,.30)!important;box-shadow:0 8px 22px rgba(8,169,79,.10)!important;}
+.weicon-glow-card.wg-orange{border-color:rgba(255,152,0,.32)!important;box-shadow:0 8px 22px rgba(255,152,0,.10)!important;}
+.weicon-glow-card.wg-purple{border-color:rgba(122,69,232,.28)!important;box-shadow:0 8px 22px rgba(122,69,232,.10)!important;}
+.weicon-glow-card.wg-red{border-color:rgba(239,68,68,.28)!important;box-shadow:0 8px 22px rgba(239,68,68,.10)!important;}
+@media(max-width:480px){#weiconHomeGlow2026{padding-bottom:1cm!important}.weicon-glow-card{border-radius:15px!important;box-shadow:0 6px 16px rgba(20,35,55,.09)!important}}
+</style><script>
+(function(){
+function norm(s){return (s||'').replace(/\s+/g,' ').trim();}
+function apply(){
+  var all=[].slice.call(document.querySelectorAll('body *'));
+  var home=all.find(function(el){var t=norm(el.innerText);return t.includes('Ürün Bul')&&t.includes('Hızlı Hesapla')&&t.includes('Araç KM')&&t.includes('BU AY');});
+  if(!home)return;
+  var root=home;
+  while(root.parentElement && root.parentElement!==document.body){var pt=norm(root.parentElement.innerText);if(pt.includes('Ürün Bul')&&pt.includes('Hızlı Hesapla')&&pt.includes('Araç KM'))root=root.parentElement;else break;}
+  root.id='weiconHomeGlow2026';
+  var els=[].slice.call(root.querySelectorAll('div,button,a,section,article'));
+  els.forEach(function(el){var t=norm(el.innerText);if(!t||t.length>80)return;if(['BU AY','BUGÜNÜN','Ürün Bul','Hızlı Hesapla','Satış','Araç KM'].some(function(x){return t.startsWith(x)||t===x;})){el.classList.add('weicon-glow-card');if(t.includes('PRİM'))el.classList.add('wg-green');if(t.includes('BUGÜNÜN SATIŞI'))el.classList.add('wg-orange');if(t.includes('BUGÜNÜN PRİMİ'))el.classList.add('wg-purple');if(t.startsWith('Satış'))el.classList.add('wg-red');}});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
+setTimeout(apply,600);setTimeout(apply,1500);
+})();</script>
 </head>
 <body style="visibility:hidden;">
 <!-- GİRİŞ / KİLİT EKRANI -->
