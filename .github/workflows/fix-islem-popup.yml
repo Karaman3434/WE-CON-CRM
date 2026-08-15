@@ -1,10 +1,12 @@
 name: Fix İşlemler popup v3
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
 permissions:
   contents: write
 jobs:
   fix:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,9 +30,8 @@ jobs:
           git push
       - name: Remove temporary workflow
         run: |
-          rm -f .github/workflows/fix-islem-popup.yml
+          git rm .github/workflows/fix-islem-popup.yml
           git config user.name 'WE-CON-CRM Bot'
           git config user.email 'actions@github.com'
-          git add -u .github/workflows/fix-islem-popup.yml
           git commit -m 'Remove temporary popup fix workflow'
           git push
