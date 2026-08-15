@@ -1,8 +1,8 @@
 /* WEICON ASIST — Müşteri Hafızası / İşlem Geçmişi entegrasyonu */
 (function(global){
   'use strict';
-  if(global.__WEICON_MEMORY_V6__) return;
-  global.__WEICON_MEMORY_V6__ = true;
+  if(global.__WEICON_MEMORY_V7__) return;
+  global.__WEICON_MEMORY_V7__ = true;
 
   var PANEL_ID='weicon-customer-memory-card';
   var TYPES=['numune','teklif','proforma','siparis'];
@@ -18,7 +18,6 @@
   function allRecords(m){var a=archive(),out=[];TYPES.forEach(function(type){(a[type]||[]).forEach(function(k,idx){if(same(k,m))out.push({type:type,idx:idx,kayit:k,ts:ts(k)});});});return out.sort(function(a,b){return b.ts-a.ts;});}
   function orderAmount(r){if(!r)return 0;var total=0;(r.kayit.urunler||[]).forEach(function(u){total+=num(u.toplamEuro!=null?u.toplamEuro:num(u.iskBirim)*num(u.adet));});return total;}
   function productCount(all){var set={};all.forEach(function(r){(r.kayit.urunler||[]).forEach(function(u){var n=String(u.name||'').trim();if(n)set[n]=true;});});return Object.keys(set).length;}
-  function allAmount(all){var t=0;all.forEach(function(r){t+=orderAmount(r);});return t;}
   function formatDate(v){if(!v)return '-';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});}
 
   function styles(){
@@ -29,49 +28,57 @@
   }
 
   function render(){
-    var modal=document.getElementById('musteriGecmisIslemlerModal');
-    if(!modal)return;
-    var visible=global.getComputedStyle?global.getComputedStyle(modal).display!=='none':modal.style.display!=='none';
-    if(!visible)return;
-    var m=customer();if(!m)return;
-    styles();
-    var panel=document.getElementById(PANEL_ID);
-    if(!panel){
-      panel=document.createElement('section');panel.id=PANEL_ID;panel.setAttribute('aria-label','Müşteri Hafızası');
-      var anchor=document.getElementById('surecListesiDiv');
-      var list=document.getElementById('gecmisIslemlerListesi');
-      if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(panel,anchor);
-      else if(list&&list.parentNode)list.parentNode.insertBefore(panel,list);
-      else modal.querySelector('div')&&modal.querySelector('div').appendChild(panel);
-    }
-    var all=allRecords(m),last=all[0]||null,order=null;
-    for(var i=0;i<all.length;i++){if(all[i].type==='siparis'){order=all[i];break;}}
-    var lk=last&&last.kayit, ok=order&&order.kayit;
-    var lu=lk&&lk.urunler&&lk.urunler[0], ou=ok&&ok.urunler&&ok.urunler[0];
-    var total=0;all.forEach(function(r){total+=orderAmount(r);});
-    panel.innerHTML='<div class="wm-head">🧠 MÜŞTERİ HAFIZASI</div><div class="wm-body">'+
-      '<div class="wm-sub">SON HAREKET</div><div class="wm-last">'+esc(lk&&lk.tarih||'-')+' · '+esc(last?LABELS[last.type]||last.type.toUpperCase():'-')+'</div>'+ 
-      '<div class="wm-grid">'+
-      '<div class="wm-item"><div class="wm-label">SON ÜRÜN</div><div class="wm-value">'+esc(lu&&lu.name||'Kayıt yok')+'</div></div>'+ 
-      '<div class="wm-item"><div class="wm-label">SON FİYAT</div><div class="wm-value">'+esc(lu?money(lu.iskBirim!=null?lu.iskBirim:lu.listeFiyat):'-')+'</div></div>'+ 
-      '<div class="wm-item"><div class="wm-label">İSKONTO</div><div class="wm-value">'+esc(lu?('%'+(lu.iskonto!=null?lu.iskonto:0)):'-')+'</div></div>'+ 
-      '<div class="wm-item"><div class="wm-label">ADET · SON HAREKET</div><div class="wm-value">'+esc(lu&&lu.adet!=null?lu.adet:'-')+' · '+esc(lu?money(lu.toplamEuro!=null?lu.toplamEuro:num(lu.iskBirim)*num(lu.adet)):'-')+'</div></div>'+ 
-      '<div class="wm-item"><div class="wm-label">SON SİPARİŞ</div><div class="wm-value">'+esc(ok&&ok.tarih?formatDate(ok.tarih):'-')+' · '+esc(ou&&ou.name||'Kayıt yok')+'</div></div>'+ 
-      '<div class="wm-item"><div class="wm-label">SON SİPARİŞ TUTARI</div><div class="wm-value">'+esc(order?money(orderAmount(order)):'-')+'</div></div>'+ 
-      '</div><div class="wm-foot">'+esc(all.length)+' işlem · '+esc(productCount(all))+' farklı ürün · Toplam işlem tutarı '+esc(money(total))+'</div></div>';
+    try{
+      var modal=document.getElementById('musteriGecmisIslemlerModal');
+      if(!modal)return;
+      var visible=global.getComputedStyle?global.getComputedStyle(modal).display!=='none':modal.style.display!=='none';
+      if(!visible)return;
+      var m=customer();if(!m)return;
+      styles();
+      var panel=document.getElementById(PANEL_ID);
+      if(!panel){
+        panel=document.createElement('section');panel.id=PANEL_ID;panel.setAttribute('aria-label','Müşteri Hafızası');
+        var anchor=document.getElementById('surecListesiDiv');
+        var list=document.getElementById('gecmisIslemlerListesi');
+        if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(panel,anchor);
+        else if(list&&list.parentNode)list.parentNode.insertBefore(panel,list);
+        else return;
+      }
+      var all=allRecords(m),last=all[0]||null,order=null;
+      for(var i=0;i<all.length;i++){if(all[i].type==='siparis'){order=all[i];break;}}
+      var lk=last&&last.kayit, ok=order&&order.kayit;
+      var lu=lk&&lk.urunler&&lk.urunler[0], ou=ok&&ok.urunler&&ok.urunler[0];
+      var total=0;all.forEach(function(r){total+=orderAmount(r);});
+      panel.innerHTML='<div class="wm-head">🧠 MÜŞTERİ HAFIZASI</div><div class="wm-body">'+
+        '<div class="wm-sub">SON HAREKET</div><div class="wm-last">'+esc(lk&&lk.tarih||'-')+' · '+esc(last?LABELS[last.type]||last.type.toUpperCase():'-')+'</div>'+ 
+        '<div class="wm-grid">'+
+        '<div class="wm-item"><div class="wm-label">SON ÜRÜN</div><div class="wm-value">'+esc(lu&&lu.name||'Kayıt yok')+'</div></div>'+ 
+        '<div class="wm-item"><div class="wm-label">SON FİYAT</div><div class="wm-value">'+esc(lu?money(lu.iskBirim!=null?lu.iskBirim:lu.listeFiyat):'-')+'</div></div>'+ 
+        '<div class="wm-item"><div class="wm-label">İSKONTO</div><div class="wm-value">'+esc(lu?('%'+(lu.iskonto!=null?lu.iskonto:0)):'-')+'</div></div>'+ 
+        '<div class="wm-item"><div class="wm-label">ADET · SON HAREKET</div><div class="wm-value">'+esc(lu&&lu.adet!=null?lu.adet:'-')+' · '+esc(lu?money(lu.toplamEuro!=null?lu.toplamEuro:num(lu.iskBirim)*num(lu.adet)):'-')+'</div></div>'+ 
+        '<div class="wm-item"><div class="wm-label">SON SİPARİŞ</div><div class="wm-value">'+esc(ok&&ok.tarih?formatDate(ok.tarih):'-')+' · '+esc(ou&&ou.name||'Kayıt yok')+'</div></div>'+ 
+        '<div class="wm-item"><div class="wm-label">SON SİPARİŞ TUTARI</div><div class="wm-value">'+esc(order?money(orderAmount(order)):'-')+'</div></div>'+ 
+        '</div><div class="wm-foot">'+esc(all.length)+' işlem · '+esc(productCount(all))+' farklı ürün · Toplam işlem tutarı '+esc(money(total))+'</div></div>';
+    }catch(e){console.error('[WE-CON-CRM] Müşteri hafızası render hatası:',e);}
   }
 
-  function observe(){
-    var modal=document.getElementById('musteriGecmisIslemlerModal');
-    if(!modal||modal.__weiconMemoryObserved)return;
-    modal.__weiconMemoryObserved=true;
-    var observer=new MutationObserver(function(mutations){
-      var changed=false;mutations.forEach(function(m){if(m.type==='attributes'&&m.attributeName==='style')changed=true;});
-      if(changed)global.requestAnimationFrame(render);
-    });
-    observer.observe(modal,{attributes:true,attributeFilter:['style']});
+  // Sürekli polling yerine İşlem Geçmişi açıldığı anda bir kez çalışır.
+  function hook(){
+    if(global.__WEICON_MEMORY_HOOKED__)return true;
+    if(typeof global.musteriGecmisIslemleriAc!=='function')return false;
+    var original=global.musteriGecmisIslemleriAc;
+    global.musteriGecmisIslemleriAc=function(){
+      var result=original.apply(this,arguments);
+      global.requestAnimationFrame(function(){render();});
+      return result;
+    };
+    global.__WEICON_MEMORY_HOOKED__=true;
+    return true;
   }
-  function init(){observe();render();}
-  var tries=0,timer=setInterval(function(){init();if(++tries>40)clearInterval(timer);},250);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+
+  function init(){hook();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+  var tries=0;
+  var timer=setInterval(function(){if(hook()||++tries>=20)clearInterval(timer);},500);
 })(window);
