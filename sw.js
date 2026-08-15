@@ -1,15 +1,14 @@
-const CACHE_ADI = "weicon-asist-cache-v8";
-const BUILD = "CG 1508261125-010";
+const CACHE_ADI = "weicon-asist-cache-v9";
+const BUILD = "CG 1508261125-011";
 const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js?v=' + BUILD + '"></script>';
 const CUSTOMER_MEMORY_CARD_SRC = '<script src="js/customers/customer-memory-card-v7.js?v=' + BUILD + '"></script>';
-
 function modularHtmlResponse(response) {
   if (!response || !response.ok) return response;
   var contentType = response.headers.get("content-type") || "";
   if (contentType.indexOf("text/html") === -1) return response;
   return response.text().then(function (html) {
     var hasRuntime = html.indexOf("js/modular-runtime.js") !== -1;
-    var hasMemoryCard = html.indexOf("js/customers/customer-memory-card-v7.js") !== -1;
+    var hasMemoryCard = html.indexOf("customer-memory-card-v7.js") !== -1;
     if (hasRuntime) html = html.replace(/js\/modular-runtime\.js(?:\?[^\"']*)?/g, "js/modular-runtime.js?v=" + BUILD);
     else html = html.replace(/<\/body>/i, MODULAR_RUNTIME_SRC + "\n</body>");
     if (hasMemoryCard) html = html.replace(/js\/customers\/customer-memory-card-v7\.js(?:\?[^\"']*)?/g, "js/customers/customer-memory-card-v7.js?v=" + BUILD);
