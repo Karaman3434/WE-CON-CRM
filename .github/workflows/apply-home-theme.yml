@@ -51,3 +51,4 @@ setTimeout(apply,600);setTimeout(apply,1500);
 })();</script>'''
               html = html.replace('</head>', css_js + '\n</head>', 1)
               p.write_text(html, encoding='utf-8')
+# trigger theme application
