@@ -1,0 +1,36 @@
+name: Fix İşlemler popup v3
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix action detection
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old2="function hasAction(el){var t=txt(el);for(var i=0;i<ACTIONS.length;i++)if(t===ACTIONS[i])return ACTIONS[i];return null;}\n  function allActionElements(){\n    var all=document.querySelectorAll('button,a,[role=\"button\"],div,span');"
+          new2="function hasAction(el){var t=txt(el);for(var i=0;i<ACTIONS.length;i++){if(t===ACTIONS[i]||t.indexOf(ACTIONS[i])!==-1)return ACTIONS[i];}return null;}\n  function allActionElements(){\n    var all=document.querySelectorAll('button,a,[role=\"button\"]');"
+          if old2 not in s:
+              raise SystemExit('target popup code not found')
+          s=s.replace(old2,new2,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'WE-CON-CRM Bot'
+          git config user.email 'actions@github.com'
+          git add index.html
+          git commit -m 'Fix İşlemler popup action detection'
+          git push
+      - name: Remove temporary workflow
+        run: |
+          rm -f .github/workflows/fix-islem-popup.yml
+          git config user.name 'WE-CON-CRM Bot'
+          git config user.email 'actions@github.com'
+          git add -u .github/workflows/fix-islem-popup.yml
+          git commit -m 'Remove temporary popup fix workflow'
+          git push
