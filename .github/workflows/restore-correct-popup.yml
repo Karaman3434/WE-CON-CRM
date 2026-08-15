@@ -1,67 +1,39 @@
 name: Restore correct customer popup and enlarge operations popup
-
 on:
   push:
     paths:
       - '.github/workflows/restore-correct-popup.yml'
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   fix:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Restore correct popup layers
-        shell: python
+      - name: Restore correct popup files
+        shell: bash
         run: |
+          python - <<'PY'
           from pathlib import Path
           import re
-
-          p = Path('index.html')
-          html = p.read_text(encoding='utf-8')
-          html, n = re.subn(r'\s*<script id="weicon-islem-popup-v3">.*?</script>\s*', '\n', html, flags=re.S)
-          print('Removed incorrect v3 override:', n)
-          p.write_text(html, encoding='utf-8')
-
-          sw = Path('sw.js')
-          sw.write_text('''const CACHE_ADI = "weicon-asist-cache-v14";
-const BUILD = "CG 1508261515-017";
-const SALES_V3_SRC = '<script src="js/sales/sales-v3.js?v=' + BUILD + '"></script>';
-function modularHtmlResponse(response) {
-  if (!response || !response.ok) return response;
-  var contentType = response.headers.get("content-type") || "";
-  if (contentType.indexOf("text/html") === -1) return response;
-  return response.text().then(function (html) {
-    var hasSalesV3 = html.indexOf("js/sales/sales-v3.js") !== -1;
-    if (hasSalesV3) html = html.replace(/js\\/sales\\/sales-v3\\.js(?:\\?[^\\\"']*)?/g, "js/sales/sales-v3.js?v=" + BUILD);
-    else html = html.replace(/<\\/body>/i, SALES_V3_SRC + "\\n</body>");
-    html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._ -]+/g, "WEİCON ASİST " + BUILD);
-    return new Response(html, {status: response.status, statusText: response.statusText, headers: response.headers});
-  });
-}
-self.addEventListener("install", function(event){event.waitUntil(self.skipWaiting());});
-self.addEventListener("activate", function(event){event.waitUntil(caches.keys().then(function(names){return Promise.all(names.filter(function(n){return n!==CACHE_ADI;}).map(function(n){return caches.delete(n);}));}).then(function(){return self.clients.claim();}));});
-self.addEventListener("fetch", function(event){event.respondWith(fetch(event.request).then(function(response){var copy=response.clone();caches.open(CACHE_ADI).then(function(cache){cache.put(event.request,copy);}).catch(function(){});return modularHtmlResponse(response);}).catch(function(){return caches.match(event.request).then(function(cached){return modularHtmlResponse(cached);});}));});
-''', encoding='utf-8')
-          print('Restored sw.js to v14 behavior.')
-
-      - name: Remove incorrect popup CSS
-        shell: bash
-        run: rm -f css/approved-main-popup.css
-
-      - name: Commit corrected state and remove temporary workflow
+          p=Path('index.html')
+          html=p.read_text(encoding='utf-8')
+          html,n=re.subn(r'\s*<script id="weicon-islem-popup-v3">.*?</script>\s*','\n',html,flags=re.S)
+          print('Removed incorrect v3 override:',n)
+          p.write_text(html,encoding='utf-8')
+          PY
+          curl -fsSL 'https://raw.githubusercontent.com/Karaman3434/WE-CON-CRM/58d5d9abdad7393b3a249ed93826a7d78fe8fdec/sw.js' -o sw.js
+          rm -f css/approved-main-popup.css
+      - name: Commit and remove repair workflow
         shell: bash
         run: |
-          git config user.name "WEICON CRM Bot"
-          git config user.email "actions@users.noreply.github.com"
+          git config user.name 'WEICON CRM Bot'
+          git config user.email 'actions@users.noreply.github.com'
           git add index.html sw.js css/approved-main-popup.css
-          git commit -m "Restore customer popup and correct operations popup structure [skip ci]"
+          git commit -m 'Restore customer popup and correct operations popup structure [skip ci]'
           git push
           git rm .github/workflows/restore-correct-popup.yml
-          git commit -m "Remove temporary popup repair workflow [skip ci]"
+          git commit -m 'Remove temporary popup repair workflow [skip ci]'
           git push
