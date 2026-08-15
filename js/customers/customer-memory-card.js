@@ -1,8 +1,8 @@
 /* WEICON ASIST — Müşteri Hafızası / İşlem Geçmişi entegrasyonu */
 (function(global){
   'use strict';
-  if(global.__WEICON_MEMORY_V4__) return;
-  global.__WEICON_MEMORY_V4__ = true;
+  if(global.__WEICON_MEMORY_V5__) return;
+  global.__WEICON_MEMORY_V5__ = true;
 
   var PANEL_ID='weicon-customer-memory-card';
   var TYPES=['numune','teklif','proforma','siparis'];
@@ -17,10 +17,10 @@
   function ts(k){var n=Number(k&&k.ts)||0;if(n)return n;var d=Date.parse(k&&k.tarih||'');return isNaN(d)?0:d;}
   function records(m,type){var a=archive(),out=[];(a[type]||[]).forEach(function(k,idx){if(same(k,m))out.push({type:type,idx:idx,kayit:k,ts:ts(k)});});return out;}
   function allRecords(m){var out=[];TYPES.forEach(function(type){out=out.concat(records(m,type));});return out.sort(function(a,b){return b.ts-a.ts;});}
-  function latest(m){return allRecords(m)[0]||null;}
-  function latestOrder(m){var r=records(m,'siparis').sort(function(a,b){return b.ts-a.ts;});return r[0]||null;}
-  function allAmount(m){var total=0;allRecords(m).forEach(function(r){(r.kayit.urunler||[]).forEach(function(u){total+=num(u.toplamEuro!=null?u.toplamEuro:num(u.iskBirim)*num(u.adet));});});return total;}
-  function productCount(m){var set={};allRecords(m).forEach(function(r){(r.kayit.urunler||[]).forEach(function(u){var n=String(u.name||'').trim();if(n)set[n]=true;});});return Object.keys(set).length;}
+  function latest(m,all){return all[0]||null;}
+  function latestOrder(m,all){for(var i=0;i<all.length;i++)if(all[i].type==='siparis')return all[i];return null;}
+  function allAmount(all){var total=0;all.forEach(function(r){(r.kayit.urunler||[]).forEach(function(u){total+=num(u.toplamEuro!=null?u.toplamEuro:num(u.iskBirim)*num(u.adet));});});return total;}
+  function productCount(all){var set={};all.forEach(function(r){(r.kayit.urunler||[]).forEach(function(u){var n=String(u.name||'').trim();if(n)set[n]=true;});});return Object.keys(set).length;}
   function orderAmount(r){if(!r)return 0;var total=0;(r.kayit.urunler||[]).forEach(function(u){total+=num(u.toplamEuro!=null?u.toplamEuro:num(u.iskBirim)*num(u.adet));});return total;}
   function firstProduct(r){var u=r&&r.kayit&&r.kayit.urunler&&r.kayit.urunler.length?r.kayit.urunler[0]:null;return u||null;}
   function formatDate(v){if(!v)return '-';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});}
@@ -33,10 +33,7 @@
     document.head.appendChild(s);
   }
 
-  function removeFromCustomerCard(){
-    var old=document.getElementById(PANEL_ID);
-    if(old) old.remove();
-  }
+  function removeFromCustomerCard(){var old=document.getElementById(PANEL_ID);if(old)old.remove();}
 
   function render(){
     var modal=document.getElementById('musteriGecmisIslemlerModal');
@@ -45,7 +42,6 @@
     if(display==='none')return;
     var m=customer();if(!m)return;
     styles();
-
     var panel=document.getElementById(PANEL_ID);
     if(!panel){
       panel=document.createElement('section');panel.id=PANEL_ID;panel.setAttribute('aria-label','Müşteri Hafızası');
@@ -54,14 +50,17 @@
       else{var list=document.getElementById('gecmisIslemlerListesi');if(list&&list.parentNode)list.parentNode.insertBefore(panel,list);}
     }
 
-    var last=latest(m), order=latestOrder(m), k=last&&last.kayit, u=firstProduct(last), ou=firstProduct(order);
+    // Tek taramada tüm geçmişi çıkarıyoruz. Önceki sürüm aynı arşivi
+    // latest/latestOrder/allAmount/productCount için tekrar tekrar tarıyordu.
+    var all=allRecords(m);
+    var last=latest(m,all), order=latestOrder(m,all), k=last&&last.kayit, u=firstProduct(last), ou=firstProduct(order);
     var product=u?(u.name||'-'):'Kayıt yok';
     var price=u?money(u.iskBirim!=null?u.iskBirim:u.listeFiyat):'-';
     var discount=u?('%'+(u.iskonto!=null?u.iskonto:0)):'-';
     var qty=u?(u.adet!=null?u.adet:'-'):'-';
     var total=u?money(u.toplamEuro!=null?u.toplamEuro:num(u.iskBirim)*num(u.adet)):'-';
-    var totalAmount=allAmount(m);
-    var count=allRecords(m).length;
+    var totalAmount=allAmount(all);
+    var count=all.length;
     var orderDate=order?formatDate(order.kayit.tarih):'-';
     var orderProduct=ou?(ou.name||'-'):'Kayıt yok';
     var orderTotal=order?money(orderAmount(order)):'-';
@@ -76,19 +75,30 @@
       '<div class="wm-item"><div class="wm-label">ADET · SON HAREKET</div><div class="wm-value">'+esc(qty)+' · '+esc(total)+'</div></div>'+ 
       '<div class="wm-item"><div class="wm-label">SON SİPARİŞ</div><div class="wm-value">'+esc(orderDate)+' · '+esc(orderProduct)+'</div></div>'+ 
       '<div class="wm-item"><div class="wm-label">SON SİPARİŞ TUTARI</div><div class="wm-value">'+esc(orderTotal)+'</div></div>'+ 
-      '</div><div class="wm-foot">'+esc(count)+' işlem · '+esc(productCount(m))+' farklı ürün · Toplam işlem tutarı '+esc(money(totalAmount))+' · Son hareket '+esc(days)+'</div></div>';
+      '</div><div class="wm-foot">'+esc(count)+' işlem · '+esc(productCount(all))+' farklı ürün · Toplam işlem tutarı '+esc(money(totalAmount))+' · Son hareket '+esc(days)+'</div></div>';
   }
 
-  function hook(){
+  function observeModal(){
+    var modal=document.getElementById('musteriGecmisIslemlerModal');
+    if(!modal||modal.__weiconMemoryObserved)return;
+    modal.__weiconMemoryObserved=true;
+    var observer=new MutationObserver(function(mutations){
+      var visible=global.getComputedStyle?global.getComputedStyle(modal).display!=='none':modal.style.display!=='none';
+      if(!visible)return;
+      var relevant=false;
+      mutations.forEach(function(m){if(m.type==='attributes'&&m.attributeName==='style')relevant=true;});
+      if(relevant)global.requestAnimationFrame(function(){render();});
+    });
+    observer.observe(modal,{attributes:true,attributeFilter:['style']});
+    modal.__weiconMemoryObserver=observer;
+  }
+
+  function init(){
     removeFromCustomerCard();
-    if(typeof global.musteriGecmisIslemleriAc!=='function')return false;
-    if(global.musteriGecmisIslemleriAc.__weiconMemoryWrapped)return true;
-    var original=global.musteriGecmisIslemleriAc;
-    function wrapped(){var r=original.apply(this,arguments);setTimeout(render,0);setTimeout(render,100);return r;}
-    wrapped.__weiconMemoryWrapped=true;global.musteriGecmisIslemleriAc=wrapped;return true;
+    observeModal();
   }
 
   var tries=0;
-  var timer=setInterval(function(){hook();render();if(++tries>40)clearInterval(timer);},250);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){hook();render();},{once:true});else setTimeout(function(){hook();render();},0);
+  var timer=setInterval(function(){init();if(++tries>20)clearInterval(timer);},250);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(window);
