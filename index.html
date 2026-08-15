@@ -11936,9 +11936,9 @@ window.addEventListener("touchstart", function(){}, {passive:true});
     'Görev Gir':'#ed7b16','Görevlerim':'#1264e8','Sil':'#d92d20','Kapat':'#111827'
   };
   function txt(el){return ((el&&el.innerText)||'').replace(/\s+/g,' ').trim();}
-  function hasAction(el){var t=txt(el);for(var i=0;i<ACTIONS.length;i++)if(t===ACTIONS[i])return ACTIONS[i];return null;}
+  function hasAction(el){var t=txt(el);for(var i=0;i<ACTIONS.length;i++){if(t===ACTIONS[i]||t.indexOf(ACTIONS[i])!==-1)return ACTIONS[i];}return null;}
   function allActionElements(){
-    var all=document.querySelectorAll('button,a,[role="button"],div,span');
+    var all=document.querySelectorAll('button,a,[role="button"]');
     var out=[];
     for(var i=0;i<all.length;i++){var a=hasAction(all[i]);if(a)out.push({el:all[i],name:a});}
     return out;
