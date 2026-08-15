@@ -1,0 +1,53 @@
+name: Apply WEICON Home Card Theme
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-home-theme.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply home screen theme
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+          marker = 'weicon-home-gradient-glow-2026'
+          if marker not in html:
+              css_js = r'''<style id="weicon-home-gradient-glow-2026">
+:root{--wg-blue:#0d6efd;--wg-green:#08a94f;--wg-orange:#ff9800;--wg-purple:#7a45e8;--wg-red:#ef4444;--wg-bg:#f3f5f7;--wg-ink:#172033;}
+body{background:#f3f5f7!important;}
+#weiconHomeGlow2026{background:#f3f5f7!important;min-height:calc(100vh - 24px)!important;padding-bottom:1cm!important;box-sizing:border-box!important;}
+.weicon-glow-card{background:linear-gradient(145deg,#ffffff,#f7f9fb)!important;border:1px solid rgba(13,110,253,.22)!important;border-radius:18px!important;box-shadow:0 8px 22px rgba(20,35,55,.10),inset 0 1px 0 rgba(255,255,255,.9)!important;}
+.weicon-glow-card:hover{box-shadow:0 10px 26px rgba(20,35,55,.14)!important;transform:translateY(-1px);}
+.weicon-glow-card.wg-green{border-color:rgba(8,169,79,.30)!important;box-shadow:0 8px 22px rgba(8,169,79,.10)!important;}
+.weicon-glow-card.wg-orange{border-color:rgba(255,152,0,.32)!important;box-shadow:0 8px 22px rgba(255,152,0,.10)!important;}
+.weicon-glow-card.wg-purple{border-color:rgba(122,69,232,.28)!important;box-shadow:0 8px 22px rgba(122,69,232,.10)!important;}
+.weicon-glow-card.wg-red{border-color:rgba(239,68,68,.28)!important;box-shadow:0 8px 22px rgba(239,68,68,.10)!important;}
+@media(max-width:480px){#weiconHomeGlow2026{padding-bottom:1cm!important}.weicon-glow-card{border-radius:15px!important;box-shadow:0 6px 16px rgba(20,35,55,.09)!important}}
+</style><script>
+(function(){
+function norm(s){return (s||'').replace(/\s+/g,' ').trim();}
+function apply(){
+  var all=[].slice.call(document.querySelectorAll('body *'));
+  var home=all.find(function(el){var t=norm(el.innerText);return t.includes('Ürün Bul')&&t.includes('Hızlı Hesapla')&&t.includes('Satış')&&t.includes('Araç KM')&&t.includes('BU AY');});
+  if(!home)return;
+  var root=home;
+  while(root.parentElement && root.parentElement!==document.body){var pt=norm(root.parentElement.innerText);if(pt.includes('Ürün Bul')&&pt.includes('Hızlı Hesapla')&&pt.includes('Araç KM')) root=root.parentElement; else break;}
+  root.id='weiconHomeGlow2026';
+  var labels=['BU AY','BUGÜNÜN','Ürün Bul','Hızlı Hesapla','Satış','Araç KM'];
+  all.filter(function(el){if(!root.contains(el))return false;var t=norm(el.innerText);return t && labels.some(function(x){return t.startsWith(x) || t===x;}) && el.children.length<8;}).forEach(function(el){el.classList.add('weicon-glow-card');var t=norm(el.innerText);if(t.includes('PRİM'))el.classList.add('wg-green');if(t.includes('BUGÜNÜN SATIŞI'))el.classList.add('wg-orange');if(t.includes('BUGÜNÜN PRİMİ'))el.classList.add('wg-purple');if(t==='Satış' || t.startsWith('Satış\n'))el.classList.add('wg-red');});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
+setTimeout(apply,600);setTimeout(apply,1500);
+})();</script>'''
+              html = html.replace('</head>', css_js + '\n</head>', 1)
+              p.write_text(html, encoding='utf-8')
