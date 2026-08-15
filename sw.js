@@ -1,7 +1,6 @@
-const CACHE_ADI = "weicon-asist-cache-v5";
-const BUILD = "CG 1508262345-007";
+const CACHE_ADI = "weicon-asist-cache-v6";
+const BUILD = "CG 1508261125-008";
 const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js?v=' + BUILD + '"></script>';
-const CUSTOMER_MEMORY_CARD_SRC = '<script src="js/customers/customer-memory-card.js?v=' + BUILD + '"></script>';
 
 function modularHtmlResponse(response) {
   if (!response || !response.ok) return response;
@@ -10,18 +9,11 @@ function modularHtmlResponse(response) {
 
   return response.text().then(function (html) {
     var hasRuntime = html.indexOf("js/modular-runtime.js") !== -1;
-    var hasMemoryCard = html.indexOf("js/customers/customer-memory-card.js") !== -1;
 
     if (hasRuntime) {
       html = html.replace(/js\/modular-runtime\.js(?:\?[^\"']*)?/g, "js/modular-runtime.js?v=" + BUILD);
     } else {
       html = html.replace(/<\/body>/i, MODULAR_RUNTIME_SRC + "\n</body>");
-    }
-
-    if (hasMemoryCard) {
-      html = html.replace(/js\/customers\/customer-memory-card\.js(?:\?[^\"']*)?/g, "js/customers/customer-memory-card.js?v=" + BUILD);
-    } else {
-      html = html.replace(/<\/body>/i, CUSTOMER_MEMORY_CARD_SRC + "\n</body>");
     }
 
     html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._ -]+/g, "WEİCON ASİST " + BUILD);
