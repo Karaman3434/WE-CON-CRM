@@ -1,6 +1,7 @@
-const CACHE_ADI = "weicon-asist-cache-v14";
-const BUILD = "CG 1508261515-017";
+const CACHE_ADI = "weicon-asist-cache-v15";
+const BUILD = "CG 1508261515-018";
 const SALES_V3_SRC = '<script src="js/sales/sales-v3.js?v=' + BUILD + '"></script>';
+const APPROVED_POPUP_CSS_SRC = '<link rel="stylesheet" href="css/approved-main-popup.css?v=' + BUILD + '">';
 function modularHtmlResponse(response) {
   if (!response || !response.ok) return response;
   var contentType = response.headers.get("content-type") || "";
@@ -9,6 +10,8 @@ function modularHtmlResponse(response) {
     var hasSalesV3 = html.indexOf("js/sales/sales-v3.js") !== -1;
     if (hasSalesV3) html = html.replace(/js\/sales\/sales-v3\.js(?:\?[^\"']*)?/g, "js/sales/sales-v3.js?v=" + BUILD);
     else html = html.replace(/<\/body>/i, SALES_V3_SRC + "\n</body>");
+    if (html.indexOf("css/approved-main-popup.css") === -1) html = html.replace(/<\/head>/i, APPROVED_POPUP_CSS_SRC + "\n</head>");
+    else html = html.replace(/css\/approved-main-popup\.css(?:\?[^\"']*)?/g, "css/approved-main-popup.css?v=" + BUILD);
     html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._ -]+/g, "WEİCON ASİST " + BUILD);
     return new Response(html, {status: response.status, statusText: response.statusText, headers: response.headers});
   });
