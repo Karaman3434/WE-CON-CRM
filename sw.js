@@ -1,5 +1,5 @@
-const CACHE_ADI = "weicon-asist-cache-v11";
-const BUILD = "CG 1508261125-013";
+const CACHE_ADI = "weicon-asist-cache-v12";
+const BUILD = "CG 1508261125-014";
 const MODULAR_RUNTIME_SRC = '<script src="js/modular-runtime.js?v=' + BUILD + '"></script>';
 const CUSTOMER_MEMORY_CARD_SRC = '<script src="js/customers/customer-memory-card-v7.js?v=' + BUILD + '"></script>';
 const HISTORY_SAFE_SRC = '<script src="js/history-safe-v2.js?v=' + BUILD + '"></script>';
