@@ -11973,7 +11973,7 @@ window.addEventListener("touchstart", function(){}, {passive:true});
     panel.classList.add('weicon-islem-popup-v3-done');
     setp(panel,'background','#ffffff');setp(panel,'color','#111827');setp(panel,'border','1px solid #d9dee8');setp(panel,'border-radius','20px');
     setp(panel,'box-shadow','0 20px 60px rgba(15,23,42,.28)');setp(panel,'padding','16px');setp(panel,'box-sizing','border-box');
-    setp(panel,'max-width','520px');setp(panel,'width','calc(100vw - 32px)');setp(panel,'overflow','hidden');
+    setp(panel,'max-width','calc(100vw - 32px)');setp(panel,'width','calc(100vw - 32px)');setp(panel,'overflow','hidden');
     var items=allActionElements().filter(function(x){return visible(x.el)&&panel.contains(x.el)});items.forEach(styleButton);
     var byName={};items.forEach(function(x){byName[x.name]=x.el});
     var normal=['Yetkilileri Gör','Ürün Bul','Temas','İşlem Geçmişi','Görev Gir','Görevlerim'],normalEls=normal.map(function(n){return byName[n]}).filter(Boolean);
