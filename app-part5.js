@@ -1008,9 +1008,9 @@ function ayBazliMudurPrimiGuncelle(arsiv){
     genelToplam+=ay.toplam; genelPrim+=ay.prim; genelPrimTl+=primTl;
     satirlar += "<tr onclick=\"aySiparisleriAc("+m+")\" style='cursor:pointer;"+(m===0?"background:#cfe2f3;border-left:4px solid #3569b8;":"")+"'>"
       +"<td style='padding:6px;border:1px solid #3569b8;font-weight:bold;color:#003a70;font-size:32px;text-align:center;'>"+ay.ayAd+" "+ay.yil+"</td>"
-      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-size:44px;'>"+fmt(ay.toplam)+" €</td>"
-      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-weight:bold;color:#16a085;font-size:44px;'>"+fmt(ay.prim)+" €</td>"
-      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-weight:bold;color:#a8790a;font-size:44px;'>"+fmt(primTl)+" ₺</td>"
+      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-size:32px;'>"+fmt(ay.toplam)+" €</td>"
+      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-weight:bold;color:#16a085;font-size:32px;'>"+fmt(ay.prim)+" €</td>"
+      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-weight:bold;color:#a8790a;font-size:32px;'>"+fmt(primTl)+" ₺</td>"
       +"</tr>";
   }
   var html = "<table style='width:100%;table-layout:fixed;border-collapse:collapse;font-size:32px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);'>"
@@ -1022,9 +1022,9 @@ function ayBazliMudurPrimiGuncelle(arsiv){
     +"</tr></thead><tbody>"+satirlar+"</tbody>"
     +"<tfoot><tr style='background:#cfe2f3;font-weight:900;border-top:2px solid #16a085;'>"
     +"<td style='padding:7px;border:1px solid #3569b8;font-size:26px;text-align:center;'>TOPLAM (12 Ay)</td>"
-    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:38px;'>"+fmt(genelToplam)+" €</td>"
-    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;color:#16a085;font-size:38px;'>"+fmt(genelPrim)+" €</td>"
-    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;color:#a8790a;font-size:38px;'>"+fmt(genelPrimTl)+" ₺</td>"
+    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:26px;'>"+fmt(genelToplam)+" €</td>"
+    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;color:#16a085;font-size:26px;'>"+fmt(genelPrim)+" €</td>"
+    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;color:#a8790a;font-size:26px;'>"+fmt(genelPrimTl)+" ₺</td>"
     +"</tr></tfoot></table>"
     +(guncelKur ? "<div style='text-align:center;font-size:18px;color:#8a97a6;font-weight:700;margin-top:6px;'>Kur: 1 € = "+fmt(guncelKur)+" ₺ üzerinden hesaplandı</div>" : "<div style='text-align:center;font-size:18px;color:#c0392b;font-weight:800;margin-top:6px;'>⚠️ Güncel kur bulunamadı, TL Prim hesaplanamadı</div>");
   el.innerHTML = html;
