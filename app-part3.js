@@ -511,7 +511,39 @@ function sonIslemleriRenderEt(){
   }
 
   var satirlar = "";
+  var birlestirilmisIdxler = {}; // zaten bir "birleşik kart" içinde gösterilmiş kayıtların son10 indeksleri — tekrar ayrı kart olarak basılmasın
+  var DONUSUM_ETIKET = {SIP:"SİPARİŞE", TEK:"TEKLİFE", PRO:"PROFORMAYA", NUM:"NUMUNEYE"};
+
+  function tekKartIcerikOlustur(item, sehirDeger){
+    var harfX = (item.kod||"").slice(0,3);
+    var gerisiX = (item.kod||"").slice(3);
+    var renkX = KOD_RENK[harfX] || "#3569b8";
+    var sorunluX = item.durum==="iptal" || item.durum==="iade" || item.durum==="kacan";
+    var kartRenkX = sorunluX ? "#c0392b" : renkX;
+    var kanalOnEkX = item.kanal==="whatsapp" ? "W-" : item.kanal==="mail" ? "M-" : "";
+    var durumEkX = "";
+    if(item.durum==="iptal") durumEkX = " — 🚫 İPTAL";
+    else if(item.durum==="iade") durumEkX = " — ↩️ İADE";
+    else if(item.durum==="kacan") durumEkX = " — ❌ KAÇTI"+(item.kacanRakip?" → "+safeText(item.kacanRakip):"");
+    if(item.revizeZamani) durumEkX += " — 🔄 REVİZE "+revizeTarihSaatFormatla(item.revizeZamani);
+    return {kartRenkX:kartRenkX, html:
+      "<div style='display:flex;align-items:baseline;gap:9px;white-space:nowrap;overflow:hidden;margin-bottom:4px;'>"
+        +"<span style='font-size:19px;font-weight:900;padding:2px 10px;border-radius:6px;color:#fff;background:"+kartRenkX+";letter-spacing:.2px;flex-shrink:0;'>"+kanalOnEkX+harfX+"</span>"
+        +"<span style='font-size:19px;font-weight:700;color:"+kartRenkX+";font-family:monospace;opacity:.75;flex-shrink:0;'>"+gerisiX+"</span>"
+        +"<span style='font-size:19px;opacity:.35;flex-shrink:0;'>·</span>"
+        +"<span style='font-size:19px;font-weight:800;color:#556170;flex-shrink:0;'>"+tarihKisaltTekSatir(item.tarih)+"</span>"
+        +(durumEkX ? "<span style='font-size:17px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEkX+"</span>" : "")
+      +"</div>"
+      +"<div style='display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden;'>"
+        +(item.musteriId ? "<span style='font-size:20px;font-weight:800;color:"+kartRenkX+";opacity:.85;flex-shrink:0;'>"+safeText(item.musteriId)+"</span>" : "")
+        +"<span style='font-size:28px;font-weight:900;color:"+kartRenkX+";overflow:hidden;text-overflow:ellipsis;'>"+safeText(item.musteri)+"</span>"
+        +"<span style='font-size:20px;font-weight:700;color:"+kartRenkX+";opacity:.75;flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehirDeger)+"</span>"
+      +"</div>"
+    };
+  }
+
   for(var i=0;i<son10.length;i++){
+    if(birlestirilmisIdxler[i]) continue; // bu kayıt zaten bir birleşik kartın içinde gösterildi
     var it = son10[i];
     var sehir = "-";
     if(it.musteriId && musteriSehirMapById[it.musteriId]!==undefined){
@@ -532,6 +564,27 @@ function sonIslemleriRenderEt(){
     }
     var bagli = baglantiBul(i);
 
+    // BAĞLANTILI KAYIT: iki kaydı TEK bir kart içinde, "eski hâl (üzeri çizili)
+    // → geçiş şeridi → yeni hâl" şeklinde birleştirerek göster (Seçenek A).
+    // Böylece "bunlar aslında aynı işin iki durumu" tek bakışta anlaşılır.
+    if(bagli){
+      var bagliIdx = -1;
+      for(var bi=0; bi<son10.length; bi++){ if(son10[bi]===bagli){ bagliIdx=bi; break; } }
+      if(bagliIdx>=0) birlestirilmisIdxler[bagliIdx] = true;
+
+      var eskiIcerik = tekKartIcerikOlustur(bagli, sehir);
+      var yeniIcerik = tekKartIcerikOlustur(it, sehir);
+      var yeniHarf3 = (it.kod||"").slice(0,3);
+      var donusumMetni = DONUSUM_ETIKET[yeniHarf3] || "YENİ DURUMA";
+
+      satirlar += "<div style='border-radius:14px;border:3px solid "+yeniIcerik.kartRenkX+";overflow:hidden;margin-bottom:12px;box-shadow:0 3px 10px rgba(0,30,70,.12);'>"
+        +"<div onclick=\"sonIslemDetayAc('"+bagli.tipKey+"',"+bagli.tipIdx+")\" style='cursor:pointer;padding:10px 16px;background:linear-gradient(135deg,#f0fbf3,#dceedf);opacity:.7;text-decoration:line-through;text-decoration-color:"+eskiIcerik.kartRenkX+";text-decoration-thickness:2px;'>"+eskiIcerik.html+"</div>"
+        +"<div style='background:"+yeniIcerik.kartRenkX+";color:#fff;text-align:center;padding:7px;font-size:15px;font-weight:900;letter-spacing:.3px;'>⬇ "+donusumMetni+" DÖNÜŞTÜ ⬇</div>"
+        +"<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;padding:10px 16px;background:linear-gradient(135deg,#eef4fb,#dbe9f9);'>"+yeniIcerik.html+"</div>"
+        +"</div>";
+      continue;
+    }
+
     var harf = (it.kod||"").slice(0,3);
     var gerisi = (it.kod||"").slice(3);
     var renk = KOD_RENK[harf] || "#3569b8";
@@ -543,17 +596,13 @@ function sonIslemleriRenderEt(){
     var ZEMIN_ACIK = {"#003a70":"#eef4fb,#dbe9f9","#28a745":"#f0fbf3,#dceedf","#8e44ad":"#f6f0fd,#ece0fa","#b7601f":"#fff6ec,#ffe8d1","#16a085":"#f0fbf3,#dceedf","#c0392b":"#fff1f0,#fbdbd8"};
     var zeminGrad = ZEMIN_ACIK[kartRenk] || "#eef4fb,#dbe9f9";
 
-    // Satır 1'in sonuna eklenecek durum/revize/bağlantı bilgisi (varsa) — kısa
+    // Satır 1'in sonuna eklenecek durum/revize bilgisi (varsa) — kısa
     // metin, gerekirse ellipsis ile kesilir, satır sayısı asla artmaz.
     var durumEk = "";
     if(it.durum==="iptal") durumEk = " — 🚫 İPTAL";
     else if(it.durum==="iade") durumEk = " — ↩️ İADE";
     else if(it.durum==="kacan") durumEk = " — ❌ KAÇTI"+(it.kacanRakip?" → "+safeText(it.kacanRakip):"");
     if(it.revizeZamani) durumEk += " — 🔄 REVİZE "+revizeTarihSaatFormatla(it.revizeZamani);
-    if(bagli){
-      var eskiHarf = (bagli.kod||"").slice(0,3);
-      durumEk += " — ● "+eskiHarf+" ile bağlantılı";
-    }
 
     // İKİ SATIRLIK sabit düzen — punto boyutları önceki (onaylanmış) ölçülerle
     // birebir aynı, sadece yerleşim sıkıştırıldı. Her iki satır da nowrap +
