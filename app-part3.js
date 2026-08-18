@@ -1145,7 +1145,7 @@ function renderBirlesikTablo(){
     tr2.style.cursor="pointer";
     tr2.style.background="#e7f8ee";
     tr2.onclick=(function(id,name,price,berta,abas){ return function(){ sepetBekleyenModalAc(id,name,price,berta,abas); }; })(safeId,safeName,bItem.price,bItem.berta,bItem.abas);
-    tr2.innerHTML="<td style='text-align:center;padding:8px 2px;'><span class='durum-rozet durum-bekleyen' title='Hesaplanacak'>-</span></td>"
+    tr2.innerHTML="<td style='text-align:center;padding:8px 2px;'></td>"
       +"<td style='text-align:center;'><div style='font-size:20px;font-weight:900;color:#222;white-space:nowrap;'><span style=\"color:#c0392b;\">B:</span> "+(bItem.berta||"-")+" <span style=\"color:#003a70;\">- A:</span> "+(bItem.abas||"-")+"</div><div class='ht-urun-ad' style='margin-top:4px;text-align:center;'>"+bItem.name+"</div></td>"
       +"<td style='text-align:center;white-space:nowrap;'>1</td>"
       +"<td style='text-align:center;white-space:nowrap;' class='ht-birim'>"+fmt(bItem.price)+" €</td>"
