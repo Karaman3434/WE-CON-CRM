@@ -522,17 +522,14 @@ function sonIslemleriRenderEt(){
     else if(item.durum==="kacan") durumEkX = " — ❌ KAÇTI"+(item.kacanRakip?" → "+safeText(item.kacanRakip):"");
     if(item.revizeZamani) durumEkX += " — 🔄 REVİZE "+revizeTarihSaatFormatla(item.revizeZamani);
     return {kartRenkX:kartRenkX, html:
-      "<div style='display:flex;align-items:baseline;gap:9px;white-space:nowrap;overflow:hidden;margin-bottom:4px;'>"
-        +"<span style='font-size:19px;font-weight:900;padding:2px 10px;border-radius:6px;color:#fff;background:"+kartRenkX+";letter-spacing:.2px;flex-shrink:0;'>"+kanalOnEkX+harfX+"</span>"
-        +"<span style='font-size:19px;font-weight:700;color:"+kartRenkX+";font-family:monospace;opacity:.75;flex-shrink:0;'>"+gerisiX+"</span>"
-        +"<span style='font-size:19px;opacity:.35;flex-shrink:0;'>·</span>"
-        +"<span style='font-size:19px;font-weight:800;color:#556170;flex-shrink:0;'>"+tarihKisaltTekSatir(item.tarih)+"</span>"
-        +(durumEkX ? "<span style='font-size:17px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEkX+"</span>" : "")
+      "<div style='display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;margin-bottom:2px;'>"
+        +"<span style='font-size:12px;font-weight:900;padding:2px 7px;border-radius:5px;color:#fff;background:"+kartRenkX+";flex-shrink:0;'>"+kanalOnEkX+harfX+"</span>"
+        +"<span style='font-size:12.5px;font-weight:700;color:#8a97a6;flex-shrink:0;'>"+tarihKisaltTekSatir(item.tarih)+"</span>"
+        +(durumEkX ? "<span style='font-size:12px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEkX+"</span>" : "")
       +"</div>"
       +"<div style='display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden;'>"
-        +(item.musteriId ? "<span style='font-size:20px;font-weight:800;color:"+kartRenkX+";opacity:.85;flex-shrink:0;'>"+safeText(item.musteriId)+"</span>" : "")
-        +"<span style='font-size:28px;font-weight:900;color:"+kartRenkX+";overflow:hidden;text-overflow:ellipsis;'>"+safeText(item.musteri)+"</span>"
-        +"<span style='font-size:20px;font-weight:700;color:"+kartRenkX+";opacity:.75;flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehirDeger)+"</span>"
+        +"<span style='font-size:18px;font-weight:800;color:"+kartRenkX+";overflow:hidden;text-overflow:ellipsis;'>"+safeText(item.musteri)+"</span>"
+        +"<span style='font-size:13px;font-weight:700;color:"+kartRenkX+";opacity:.75;flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehirDeger)+"</span>"
       +"</div>"
     };
   }
@@ -572,10 +569,10 @@ function sonIslemleriRenderEt(){
       var yeniHarf3 = (it.kod||"").slice(0,3);
       var donusumMetni = DONUSUM_ETIKET[yeniHarf3] || "YENİ DURUMA";
 
-      satirlar += "<div style='border-radius:14px;border:3px solid "+yeniIcerik.kartRenkX+";overflow:hidden;margin-bottom:12px;box-shadow:0 3px 10px rgba(0,30,70,.12);'>"
-        +"<div onclick=\"sonIslemDetayAc('"+bagli.tipKey+"',"+bagli.tipIdx+")\" style='cursor:pointer;padding:10px 16px;background:linear-gradient(135deg,#f0fbf3,#dceedf);opacity:.7;text-decoration:line-through;text-decoration-color:"+eskiIcerik.kartRenkX+";text-decoration-thickness:2px;'>"+eskiIcerik.html+"</div>"
-        +"<div style='background:"+yeniIcerik.kartRenkX+";color:#fff;text-align:center;padding:7px;font-size:15px;font-weight:900;letter-spacing:.3px;'>⬇ "+donusumMetni+" DÖNÜŞTÜ ⬇</div>"
-        +"<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;padding:10px 16px;background:linear-gradient(135deg,#eef4fb,#dbe9f9);'>"+yeniIcerik.html+"</div>"
+      satirlar += "<div style='border-radius:10px;border:2.5px solid "+yeniIcerik.kartRenkX+";overflow:hidden;margin-bottom:6px;'>"
+        +"<div onclick=\"sonIslemDetayAc('"+bagli.tipKey+"',"+bagli.tipIdx+")\" style='cursor:pointer;padding:7px 12px;background:linear-gradient(135deg,#f0fbf3,#dceedf);opacity:.7;text-decoration:line-through;text-decoration-color:"+eskiIcerik.kartRenkX+";text-decoration-thickness:2px;'>"+eskiIcerik.html+"</div>"
+        +"<div style='background:"+yeniIcerik.kartRenkX+";color:#fff;text-align:center;padding:4px;font-size:12px;font-weight:900;letter-spacing:.2px;'>⬇ "+donusumMetni+" DÖNÜŞTÜ ⬇</div>"
+        +"<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;padding:7px 12px;background:linear-gradient(135deg,#eef4fb,#dbe9f9);'>"+yeniIcerik.html+"</div>"
         +"</div>";
       continue;
     }
@@ -602,18 +599,15 @@ function sonIslemleriRenderEt(){
     // İKİ SATIRLIK sabit düzen — punto boyutları önceki (onaylanmış) ölçülerle
     // birebir aynı, sadece yerleşim sıkıştırıldı. Her iki satır da nowrap +
     // ellipsis ile korunur: içerik ne kadar uzun olursa olsun asla 2 satırı geçmez.
-    satirlar += "<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;border-radius:12px;background:linear-gradient(135deg,"+zeminGrad+");border:2.5px solid "+kartRenk+";padding:10px 16px;margin-bottom:10px;overflow:hidden;"+(sorunluMu?"opacity:.85;":"")+"'>"
-      +"<div style='display:flex;align-items:baseline;gap:9px;white-space:nowrap;overflow:hidden;margin-bottom:4px;'>"
-        +"<span style='font-size:19px;font-weight:900;padding:2px 10px;border-radius:6px;color:#fff;background:"+kartRenk+";letter-spacing:.2px;flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
-        +"<span style='font-size:19px;font-weight:700;color:"+kartRenk+";font-family:monospace;opacity:.75;flex-shrink:0;'>"+gerisi+"</span>"
-        +"<span style='font-size:19px;opacity:.35;flex-shrink:0;'>·</span>"
-        +"<span style='font-size:19px;font-weight:800;color:#556170;flex-shrink:0;'>"+tarihKisaltTekSatir(it.tarih)+"</span>"
-        +(durumEk ? "<span style='font-size:17px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEk+"</span>" : "")
+    satirlar += "<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;border-radius:10px;background:linear-gradient(135deg,"+zeminGrad+");border:2.5px solid "+kartRenk+";padding:8px 12px;margin-bottom:6px;overflow:hidden;"+(sorunluMu?"opacity:.85;":"")+"'>"
+      +"<div style='display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;margin-bottom:2px;'>"
+        +"<span style='font-size:12px;font-weight:900;padding:2px 7px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
+        +"<span style='font-size:12.5px;font-weight:700;color:#8a97a6;flex-shrink:0;'>"+tarihKisaltTekSatir(it.tarih)+"</span>"
+        +(durumEk ? "<span style='font-size:12px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEk+"</span>" : "")
       +"</div>"
       +"<div style='display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden;'>"
-        +(it.musteriId ? "<span style='font-size:20px;font-weight:800;color:"+kartRenk+";opacity:.85;flex-shrink:0;'>"+safeText(it.musteriId)+"</span>" : "")
-        +"<span style='font-size:28px;font-weight:900;color:"+kartRenk+";overflow:hidden;text-overflow:ellipsis;"+(it.durum==="iptal"||it.durum==="iade"?"text-decoration:line-through;":"")+"'>"+safeText(it.musteri)+"</span>"
-        +"<span style='font-size:20px;font-weight:700;color:"+kartRenk+";opacity:.75;flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehir)+"</span>"
+        +"<span style='font-size:18px;font-weight:800;color:"+kartRenk+";overflow:hidden;text-overflow:ellipsis;"+(it.durum==="iptal"||it.durum==="iade"?"text-decoration:line-through;":"")+"'>"+safeText(it.musteri)+"</span>"
+        +"<span style='font-size:13px;font-weight:700;color:"+kartRenk+";opacity:.75;flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehir)+"</span>"
       +"</div>"
       +"</div>";
   }
