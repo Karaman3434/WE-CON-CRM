@@ -49,7 +49,7 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
 
   // Dinamik müşteri bilgileri (Yetkili Kişi/Telefon/E-Posta/Teslimat Adresi/Vade/Fatura/Kargo) —
   // KAYITLI (arşivlenmiş) bir işlem görüntüleniyorsa aşağıdaki aktifKayit'ten okunur.
-  var vade, faturaTuru, kargo, yetkiliAd, yetkiliTel, yetkiliMail, teslimatAdr;
+  var vade, faturaTuru, kargo, yetkiliAd, yetkiliTel, yetkiliMail, teslimatAdr, faturaAdr;
   if(aktifKayit){
     vade = aktifKayit.vade || "";
     faturaTuru = aktifKayit.fatura || "";
@@ -66,7 +66,11 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
       var _esKisi = _sahibiMusteri.iletisimler.find(function(k){ return k.isim===yetkiliAd; });
       if(_esKisi){ yetkiliTel = _esKisi.telefon||""; yetkiliMail = _esKisi.eposta||""; }
     }
+    // Bu belge ilk kaydedildiğinde SEÇİLİ OLAN adresler — sonradan müşterinin
+    // adres listesi değişse/silinse bile bu geçmiş belge hep doğru göründüğü
+    // hâliyle kalır (aktifKayit.faturaAdresi/teslimatAdresi kaydet anında donuyor).
     teslimatAdr = aktifKayit.teslimatAdresi || "";
+    faturaAdr = aktifKayit.faturaAdresi || "";
   } else {
     vade = (typeof getDynamicCustomerVade==="function") ? getDynamicCustomerVade() : "";
     faturaTuru = (typeof getDynamicCustomerFatura==="function") ? getDynamicCustomerFatura() : "";
@@ -75,6 +79,7 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
     yetkiliTel = (typeof seciliYetkiliKisi!=="undefined" && seciliYetkiliKisi && seciliYetkiliKisi.telefon) || "";
     yetkiliMail = (typeof seciliYetkiliKisi!=="undefined" && seciliYetkiliKisi && seciliYetkiliKisi.eposta) || "";
     teslimatAdr = (typeof getDynamicCustomerTeslimatAdresi==="function") ? getDynamicCustomerTeslimatAdresi() : "";
+    faturaAdr = (typeof getDynamicCustomerFaturaAdresi==="function") ? getDynamicCustomerFaturaAdresi() : "";
   }
   var LACIVERT = "#3569b8";
 
@@ -112,8 +117,7 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
     +"</div>";
 
   var musteriKaydi = (typeof musteriKartIdx!=="undefined" && musteriKartIdx!==null && musteriListesi[musteriKartIdx]) ? musteriListesi[musteriKartIdx] : null;
-  var acikAdres = musteriKaydi ? (musteriKaydi.acikAdres||"") : "";
-  var adresGosterilecek = acikAdres || musteriSehir || "";
+  var adresGosterilecek = faturaAdr || (musteriKaydi && musteriKaydi.acikAdres) || musteriSehir || "";
   var digerKisiler = (musteriKaydi && musteriKaydi.iletisimler) ? musteriKaydi.iletisimler : [];
   var ikinciKisi = null;
   for(var _fk=0;_fk<digerKisiler.length;_fk++){
@@ -505,7 +509,17 @@ function getDynamicCustomerYetkiliIletisim(){
   return "";
 }
 function getDynamicCustomerKargo(){ return document.getElementById("custKargoInput").value.trim()||""; }
+// Artık Yetkili Kişi ile aynı mantık: müşteri kartından/ön-kontrolden SEÇİLEN
+// adres (seciliFaturaAdresi/seciliTeslimatAdresi) öncelikli kullanılır. Eski
+// checkbox tabanlı manuel giriş (custTeslimatKullanCheckbox), müşteri kartına
+// hiç bağlı olmayan serbest/geçici gönderimler için YEDEK olarak duruyor.
+function getDynamicCustomerFaturaAdresi(){
+  if(seciliFaturaAdresi && seciliFaturaAdresi.adres) return seciliFaturaAdresi.adres;
+  var musteriKaydiF = (typeof musteriKartIdx!=="undefined" && musteriKartIdx!==null && musteriListesi[musteriKartIdx]) ? musteriListesi[musteriKartIdx] : null;
+  return (musteriKaydiF && musteriKaydiF.acikAdres) || "";
+}
 function getDynamicCustomerTeslimatAdresi(){
+  if(seciliTeslimatAdresi && seciliTeslimatAdresi.adres) return seciliTeslimatAdresi.adres;
   var cb = document.getElementById("custTeslimatKullanCheckbox");
   if(!cb || !cb.checked) return "";
   var el = document.getElementById("custTeslimatAdresiInput");
@@ -685,7 +699,7 @@ function mailOnizlemeKapat(){
   }
 }
 
-function siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo, urunler, tarihStr, belgeTipi, yetkiliIletisim, sadeMod, kod, teslimatAdresi, netFiyatMi){
+function siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo, urunler, tarihStr, belgeTipi, yetkiliIletisim, sadeMod, kod, teslimatAdresi, netFiyatMi, faturaAdresi){
   var LACIVERT="#3569b8";
   var belgeRengi = ISLEM_TURU_RENK[secilenMod] || "#003a70";
   var esc = function(s){ return (s||"").toString().replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
@@ -784,8 +798,7 @@ function siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo
 
 
   var musteriKaydiPng = (typeof musteriKartIdx!=="undefined" && musteriKartIdx!==null && musteriListesi[musteriKartIdx]) ? musteriListesi[musteriKartIdx] : null;
-  var acikAdresPng = musteriKaydiPng ? (musteriKaydiPng.acikAdres||"") : "";
-  var adresGosterilecekPng = acikAdresPng || sehir || "";
+  var adresGosterilecekPng = faturaAdresi || (musteriKaydiPng && musteriKaydiPng.acikAdres) || sehir || "";
   var digerKisilerPng = (musteriKaydiPng && musteriKaydiPng.iletisimler) ? musteriKaydiPng.iletisimler : [];
   var ikinciKisiPng = null;
   for(var _pk=0;_pk<digerKisilerPng.length;_pk++){
@@ -869,6 +882,7 @@ function siparisResmiCanvasOlustur(callback, kanal, kod){
   var fatura = getDynamicCustomerFatura();
   var kargo = getDynamicCustomerKargo();
   var teslimatAdresi = getDynamicCustomerTeslimatAdresi();
+  var faturaAdresi = getDynamicCustomerFaturaAdresi();
   var bugun = new Date();
   var tarihStr = ("0"+bugun.getDate()).slice(-2)+"."+("0"+(bugun.getMonth()+1)).slice(-2)+"."+bugun.getFullYear();
   var gecici=document.createElement("div");
@@ -879,7 +893,7 @@ function siparisResmiCanvasOlustur(callback, kanal, kod){
   gecici.style.background="#fff";
   gecici.style.padding="10px";
   var belgeTipi = (typeof ISLEM_TURU_ADI!=="undefined" && ISLEM_TURU_ADI[secilenMod]) || "SİPARİŞ";
-  gecici.innerHTML = siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo, hareketListesi, tarihStr, belgeTipi, yetkiliIletisim, sadeMod, kod, teslimatAdresi, gonderimFiyatGorunumu==="net");
+  gecici.innerHTML = siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo, hareketListesi, tarihStr, belgeTipi, yetkiliIletisim, sadeMod, kod, teslimatAdresi, gonderimFiyatGorunumu==="net", faturaAdresi);
   document.body.appendChild(gecici);
   html2canvas(gecici, {backgroundColor:"#ffffff", scale:3}).then(function(canvas){
     document.body.removeChild(gecici);

@@ -39,12 +39,20 @@ function urunBulOnKontrolRenderEt(){
   if(musteriKartIdx===null) return;
   var m = musteriListesi[musteriKartIdx];
   if(!m) return;
-  var faturaVar = !!(m.adres && m.adres.trim());
-  var teslimatVar = !!(m.teslimatAdresi && m.teslimatAdresi.trim());
+
+  // Sadece TEK seçenek varsa ve henüz seçim yapılmamışsa otomatik seç —
+  // gereksiz bir tıklama istemiyoruz. 2+ adres varsa kullanıcı elle seçmeli.
+  var faturaListesi = musteriAdresListesiGetir(m, "fatura");
+  var teslimatListesi = musteriAdresListesiGetir(m, "teslimat");
+  if(!seciliFaturaAdresi && faturaListesi.length===1){ seciliFaturaAdresi = faturaListesi[0]; localStorage.setItem("weicon_secili_fatura", JSON.stringify(seciliFaturaAdresi)); }
+  if(!seciliTeslimatAdresi && teslimatListesi.length===1){ seciliTeslimatAdresi = teslimatListesi[0]; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(seciliTeslimatAdresi)); }
+
+  var faturaVar = !!(seciliFaturaAdresi && seciliFaturaAdresi.adres);
+  var teslimatVar = !!(seciliTeslimatAdresi && seciliTeslimatAdresi.adres);
   var yetkiliVar = !!(seciliYetkiliKisi && seciliYetkiliKisi.isim);
   var hepsiTam = faturaVar && teslimatVar && yetkiliVar;
 
-  function satirOlustur(tamamMi, baslik, altYazi, butonYazi, butonOnclick, editHtml){
+  function satirOlustur(tamamMi, baslik, altYazi, butonYazi, butonOnclick){
     var renkBg = tamamMi ? "#e3f7ef" : "#fdf1e0";
     var renkBorder = tamamMi ? "#7dcdb3" : "#f0c880";
     var renkYazi = tamamMi ? "#0e7c63" : "#9a6a10";
@@ -58,17 +66,12 @@ function urunBulOnKontrolRenderEt(){
       +"</div>"
       +"<button onclick='"+butonOnclick+"' style='background:"+(tamamMi?"#0e7c63":"#f2994a")+";color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:18px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;'>"+butonYazi+"</button>"
       +"</div>"
-      + (editHtml||"")
       +"</div>";
   }
 
   var html = "";
-  html += satirOlustur(faturaVar, "FATURA ADRESİ", faturaVar?safeText(m.adres):"Girilmemiş", faturaVar?"Değiştir":"+ Ekle", "urunBulOnKontrolAdresDuzenAc('adres')",
-    "<div id='ubkFaturaEdit' style='display:none;margin-top:10px;'><textarea id='ubkFaturaInput' rows='2' style='width:100%;padding:12px;font-size:20px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;'>"+safeText(m.adres||"")+"</textarea><button onclick=\"urunBulOnKontrolAdresKaydet('adres')\" style='width:100%;margin-top:8px;background:#0e7c63;color:#fff;border:none;padding:12px;border-radius:8px;font-size:18px;font-weight:800;cursor:pointer;'>✓ Kaydet</button></div>");
-
-  html += satirOlustur(teslimatVar, "TESLİMAT ADRESİ", teslimatVar?safeText(m.teslimatAdresi):"Girilmemiş", teslimatVar?"Değiştir":"+ Ekle", "urunBulOnKontrolAdresDuzenAc('teslimatAdresi')",
-    "<div id='ubkTeslimatEdit' style='display:none;margin-top:10px;'><textarea id='ubkTeslimatInput' rows='2' style='width:100%;padding:12px;font-size:20px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;'>"+safeText(m.teslimatAdresi||"")+"</textarea><button onclick=\"urunBulOnKontrolAdresKaydet('teslimatAdresi')\" style='width:100%;margin-top:8px;background:#0e7c63;color:#fff;border:none;padding:12px;border-radius:8px;font-size:18px;font-weight:800;cursor:pointer;'>✓ Kaydet</button></div>");
-
+  html += satirOlustur(faturaVar, "FATURA ADRESİ", faturaVar?(safeText(seciliFaturaAdresi.etiket)+" — "+safeText(seciliFaturaAdresi.adres)):"Seçilmedi", faturaVar?"Değiştir":"+ Seç", "adresYonetimAc('fatura')");
+  html += satirOlustur(teslimatVar, "TESLİMAT ADRESİ", teslimatVar?(safeText(seciliTeslimatAdresi.etiket)+" — "+safeText(seciliTeslimatAdresi.adres)):"Seçilmedi", teslimatVar?"Değiştir":"+ Seç", "adresYonetimAc('teslimat')");
   html += satirOlustur(yetkiliVar, "YETKİLİ KİŞİ", yetkiliVar?safeText(seciliYetkiliKisi.isim):"Seçilmedi", yetkiliVar?"Değiştir":"+ Seç", "musteriIletisimYetkiliSecmeyeAc()", "");
 
   document.getElementById("ubkListesi").innerHTML = html;
@@ -83,28 +86,6 @@ function urunBulOnKontrolRenderEt(){
     devamBtn.style.color = "#8a97a6";
     devamBtn.textContent = "⚠️ Eksik Bilgiyle Devam Et →";
   }
-}
-
-function urunBulOnKontrolAdresDuzenAc(alan){
-  var elId = alan==="adres" ? "ubkFaturaEdit" : "ubkTeslimatEdit";
-  var el = document.getElementById(elId);
-  if(!el) return;
-  el.style.display = (el.style.display==="none") ? "block" : "none";
-}
-
-function urunBulOnKontrolAdresKaydet(alan){
-  if(musteriKartIdx===null) return;
-  var m = musteriListesi[musteriKartIdx];
-  if(!m) return;
-  var inputId = alan==="adres" ? "ubkFaturaInput" : "ubkTeslimatInput";
-  var deger = (document.getElementById(inputId).value||"").trim();
-  m[alan] = deger;
-  musteriListesiniKaydet();
-  if(window.fbSet){
-    musteriListesiGuvenliKaydet(m).catch(function(e){ console.error("Firebase yazma hatası:", e); });
-  }
-  showToast("✓ Kaydedildi.");
-  urunBulOnKontrolRenderEt();
 }
 
 function urunBulOnKontrolDevamEt(){

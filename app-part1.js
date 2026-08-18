@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1808260917-515";
+var APP_VERSION = "V1808260936-516";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1379,6 +1379,10 @@ function musteriKartAc(idx){
   if(kartKoduEl) kartKoduEl.textContent = m.id ? ("🏷 Müşteri Kodu: "+m.id) : "";
   seciliYetkiliKisi = null;
   localStorage.removeItem("weicon_secili_yetkili");
+  seciliFaturaAdresi = null;
+  localStorage.removeItem("weicon_secili_fatura");
+  seciliTeslimatAdresi = null;
+  localStorage.removeItem("weicon_secili_teslimat");
   yetkiliKisiEtiketGuncelle();
   var bilgiParts = [];
   if(m.sehir) bilgiParts.push(sehirFormatla(m.sehir));
@@ -1460,14 +1464,8 @@ function musteriCariKartAc(){
   if(!m) return;
   document.getElementById("cariKartAd").textContent = m.ad||"";
   document.getElementById("cariKartAltBaslik").textContent = (m.id?("🏷 "+m.id):"")+(m.id&&m.sehir?" · ":"")+(sehirFormatla(m.sehir)||"");
-  document.getElementById("cariKartAdres").textContent = m.adres || sehirFormatla(m.sehir) || "-";
-  var teslimatBlok = document.getElementById("cariKartTeslimatBlok");
-  if(m.teslimatAdresi){
-    document.getElementById("cariKartTeslimatAdresi").textContent = m.teslimatAdresi;
-    teslimatBlok.style.display = "block";
-  } else {
-    teslimatBlok.style.display = "none";
-  }
+  cariKartAdresListesiniRenderEt("fatura");
+  cariKartAdresListesiniRenderEt("teslimat");
   document.getElementById("cariKartVade").textContent = m.vade || "-";
   document.getElementById("cariKartFatura").textContent = m.fatura || "-";
   document.getElementById("cariKartKargo").textContent = m.kargo || "-";
@@ -1543,10 +1541,200 @@ function cariKartYetkiliSilAc(i){
   musteriIletisimSil(i);
 }
 
+// ============================================================
+// FATURA / TESLİMAT ADRESLERİ — Yetkililer listesiyle BİREBİR aynı mantık:
+// Müşteri Kartı'nda doğrudan ekle/düzenle/sil yapılabilir; Ürün Bul ön-kontrolünden
+// veya kart üzerinden "adresSecildi" ile hangisinin kullanılacağı seçilir.
+// tip: "fatura" | "teslimat"
+// ============================================================
+var adresYonetimTipi = "fatura";
+var adresDuzenlenenIdx = null;
+
+function cariKartAdresListesiniRenderEt(tip){
+  if(musteriKartIdx===null) return;
+  var m = musteriListesi[musteriKartIdx];
+  if(!m) return;
+  var liste = musteriAdresListesiGetir(m, tip);
+  var seciliAdres = tip==="fatura" ? seciliFaturaAdresi : seciliTeslimatAdresi;
+  var baslikEl = document.getElementById(tip==="fatura" ? "cariKartFaturaBaslik" : "cariKartTeslimatBaslik");
+  var listeEl = document.getElementById(tip==="fatura" ? "cariKartFaturaListesi" : "cariKartTeslimatListesi");
+  if(!listeEl) return;
+  var ikon = tip==="fatura" ? "🧾" : "🚚";
+  var etiketBaslik = tip==="fatura" ? "FATURA ADRESLERİ" : "TESLİMAT ADRESLERİ";
+  if(baslikEl) baslikEl.textContent = ikon+" "+etiketBaslik+" ("+liste.length+")";
+  var html = "";
+  for(var i=0;i<liste.length;i++){
+    var a = liste[i];
+    var seciliMi = !!(seciliAdres && seciliAdres.adres===a.adres && seciliAdres.etiket===a.etiket);
+    html += "<div style='background:"+(seciliMi?"#eafaf3":"#f7f9fc")+";border:1.5px solid "+(seciliMi?"#0e7c63":"#d5dce6")+";border-radius:8px;padding:12px 14px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:flex-start;gap:9px;'>"
+      +"<div style='min-width:0;flex:1;'>"
+      +(seciliMi ? "<div style='font-size:12px;font-weight:900;color:#0e7c63;margin-bottom:2px;'>✓ SEÇİLİ</div>" : "")
+      +"<div style='font-size:20px;font-weight:900;color:#1a2a3a;'>"+safeText(a.etiket||"Adres")+"</div>"
+      +"<div style='font-size:18px;color:#556;margin-top:3px;line-height:1.35;'>"+safeText(a.adres)+"</div>"
+      +"</div>"
+      +"<div style='display:flex;gap:8px;flex-shrink:0;'>"
+      +"<button onclick='adresDuzenleAc(\""+tip+"\","+i+")' style='background:#eef4fb;color:#003a70;border:1px solid #003a70;padding:8px 14px;border-radius:6px;font-weight:bold;font-size:18px;cursor:pointer;white-space:nowrap;'>✏️</button>"
+      +"<button onclick='adresSilAc(\""+tip+"\","+i+")' style='background:#f8d7da;color:#e0524a;border:1px solid #e0524a;padding:8px 14px;border-radius:6px;font-weight:bold;font-size:18px;cursor:pointer;white-space:nowrap;'>🗑</button>"
+      +"</div>"
+      +"</div>";
+  }
+  html += "<button onclick=\"adresEkleAc('"+tip+"')\" style='width:100%;background:linear-gradient(135deg,#16a085,#0e8a72);color:#fff;border:none;padding:14px;font-size:20px;font-weight:900;border-radius:8px;cursor:pointer;margin-top:2px;'>+ Yeni "+(tip==="fatura"?"Fatura":"Teslimat")+" Adresi Ekle</button>";
+  listeEl.innerHTML = html;
+}
+
+// Ürün Bul ön-kontrolünden veya Müşteri Kartı'ndan "Seç/Değiştir" ile açılır —
+// hem listeleme hem seçim hem ekle/düzenle/sil TEK bu popup üzerinden yapılır.
+function adresYonetimAc(tip){
+  if(musteriKartIdx===null) return;
+  adresYonetimTipi = tip;
+  document.getElementById("adresYonetimEkleForm").style.display = "none";
+  var baslikEl = document.getElementById("adresYonetimBaslik");
+  if(baslikEl) baslikEl.textContent = (tip==="fatura" ? "🧾 Fatura Adresi Seç" : "🚚 Teslimat Adresi Seç");
+  adresYonetimListesiniRenderEt();
+  document.getElementById("adresYonetimModal").style.display = "flex";
+}
+function adresYonetimKapat(){
+  document.getElementById("adresYonetimModal").style.display = "none";
+}
+function adresYonetimListesiniRenderEt(){
+  if(musteriKartIdx===null) return;
+  var m = musteriListesi[musteriKartIdx];
+  if(!m) return;
+  var tip = adresYonetimTipi;
+  var liste = musteriAdresListesiGetir(m, tip);
+  var seciliAdres = tip==="fatura" ? seciliFaturaAdresi : seciliTeslimatAdresi;
+  var html = "";
+  for(var i=0;i<liste.length;i++){
+    var a = liste[i];
+    var seciliMi = !!(seciliAdres && seciliAdres.adres===a.adres && seciliAdres.etiket===a.etiket);
+    html += "<div onclick=\"adresSecildi('"+tip+"',"+i+")\" style='cursor:pointer;background:"+(seciliMi?"#eafaf3":"#f7f9fc")+";border:2px solid "+(seciliMi?"#0e7c63":"#d5dce6")+";border-radius:10px;padding:12px 14px;margin-bottom:9px;'>"
+      +"<div style='display:flex;justify-content:space-between;align-items:flex-start;gap:8px;'>"
+      +"<div style='min-width:0;flex:1;'>"
+      +(seciliMi ? "<div style='font-size:11px;font-weight:900;color:#0e7c63;margin-bottom:2px;'>✓ SEÇİLİ</div>" : "")
+      +"<div style='font-size:18px;font-weight:900;color:#1a2a3a;'>"+safeText(a.etiket||"Adres")+"</div>"
+      +"<div style='font-size:16px;color:#556;margin-top:2px;line-height:1.35;'>"+safeText(a.adres)+"</div>"
+      +"</div>"
+      +"<div style='display:flex;gap:6px;flex-shrink:0;' onclick='event.stopPropagation();'>"
+      +"<button onclick='adresDuzenleAc(\""+tip+"\","+i+")' style='background:#eef4fb;color:#003a70;border:1px solid #003a70;padding:7px 11px;border-radius:6px;font-weight:bold;font-size:16px;cursor:pointer;'>✏️</button>"
+      +"<button onclick='adresSilAc(\""+tip+"\","+i+")' style='background:#f8d7da;color:#e0524a;border:1px solid #e0524a;padding:7px 11px;border-radius:6px;font-weight:bold;font-size:16px;cursor:pointer;'>🗑</button>"
+      +"</div></div></div>";
+  }
+  document.getElementById("adresYonetimListesi").innerHTML = html || "<div style='text-align:center;color:#8a97a6;font-size:15px;padding:14px 0;'>Henüz adres eklenmemiş.</div>";
+}
+function adresSecildi(tip, idx){
+  if(musteriKartIdx===null) return;
+  var m = musteriListesi[musteriKartIdx];
+  if(!m) return;
+  var liste = musteriAdresListesiGetir(m, tip);
+  var secilen = liste[idx];
+  if(!secilen) return;
+  if(tip==="fatura"){ seciliFaturaAdresi = secilen; localStorage.setItem("weicon_secili_fatura", JSON.stringify(secilen)); }
+  else { seciliTeslimatAdresi = secilen; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(secilen)); }
+  adresYonetimKapat();
+  if(typeof urunBulKontrolAktif!=="undefined" && urunBulKontrolAktif && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  if(typeof musteriCariKartAc==="function" && document.getElementById("musteriCariKartModal") && document.getElementById("musteriCariKartModal").style.display==="flex"){
+    cariKartAdresListesiniRenderEt(tip);
+  }
+}
+function adresEkleAc(tip){
+  adresYonetimTipi = tip;
+  adresDuzenlenenIdx = null;
+  document.getElementById("adresYonetimEtiketInput").value = "";
+  document.getElementById("adresYonetimAdresInput").value = "";
+  var baslikEl = document.getElementById("adresYonetimBaslik");
+  if(baslikEl) baslikEl.textContent = (tip==="fatura" ? "🧾 Fatura Adresi" : "🚚 Teslimat Adresi");
+  adresYonetimListesiniRenderEt();
+  document.getElementById("adresYonetimEkleForm").style.display = "block";
+  document.getElementById("adresYonetimModal").style.display = "flex";
+}
+function adresDuzenleAc(tip, idx){
+  if(musteriKartIdx===null) return;
+  adresYonetimTipi = tip;
+  var m = musteriListesi[musteriKartIdx];
+  var liste = musteriAdresListesiGetir(m, tip);
+  var a = liste[idx];
+  if(!a) return;
+  adresDuzenlenenIdx = idx;
+  document.getElementById("adresYonetimEtiketInput").value = a.etiket||"";
+  document.getElementById("adresYonetimAdresInput").value = a.adres||"";
+  document.getElementById("adresYonetimEkleForm").style.display = "block";
+  document.getElementById("adresYonetimModal").style.display = "flex";
+}
+function adresEkleFormKapat(){
+  document.getElementById("adresYonetimEkleForm").style.display = "none";
+}
+function adresKaydet(){
+  if(musteriKartIdx===null) return;
+  var m = musteriListesi[musteriKartIdx];
+  if(!m) return;
+  var tip = adresYonetimTipi;
+  var liste = musteriAdresListesiGetir(m, tip);
+  var etiket = (document.getElementById("adresYonetimEtiketInput").value||"").trim() || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi");
+  var adres = (document.getElementById("adresYonetimAdresInput").value||"").trim();
+  if(!adres){ showToast("⚠️ Adres boş olamaz."); return; }
+  var yeniKayit = {etiket:etiket, adres:adres};
+  if(adresDuzenlenenIdx!==null && liste[adresDuzenlenenIdx]){
+    // Bu kayıt şu an seçiliyse, seçimi de güncel tut
+    var eskiKayit = liste[adresDuzenlenenIdx];
+    var seciliAdres = tip==="fatura" ? seciliFaturaAdresi : seciliTeslimatAdresi;
+    if(seciliAdres && seciliAdres.adres===eskiKayit.adres && seciliAdres.etiket===eskiKayit.etiket){
+      if(tip==="fatura"){ seciliFaturaAdresi = yeniKayit; localStorage.setItem("weicon_secili_fatura", JSON.stringify(yeniKayit)); }
+      else { seciliTeslimatAdresi = yeniKayit; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(yeniKayit)); }
+    }
+    liste[adresDuzenlenenIdx] = yeniKayit;
+  } else {
+    liste.push(yeniKayit);
+  }
+  musteriListesiniKaydet();
+  if(window.fbSet) musteriListesiGuvenliKaydet(m).catch(function(e){ console.error("Firebase yazma hatası:", e); });
+  document.getElementById("adresYonetimEkleForm").style.display = "none";
+  adresYonetimListesiniRenderEt();
+  cariKartAdresListesiniRenderEt(tip);
+  showToast("✓ Kaydedildi.");
+}
+function adresSilAc(tip, idx){
+  if(musteriKartIdx===null) return;
+  var m = musteriListesi[musteriKartIdx];
+  if(!m) return;
+  var liste = musteriAdresListesiGetir(m, tip);
+  var a = liste[idx];
+  if(!a) return;
+  if(!confirm("'"+(a.etiket||"Bu adres")+"' silinsin mi?")) return;
+  var seciliAdres = tip==="fatura" ? seciliFaturaAdresi : seciliTeslimatAdresi;
+  if(seciliAdres && seciliAdres.adres===a.adres && seciliAdres.etiket===a.etiket){
+    if(tip==="fatura"){ seciliFaturaAdresi=null; localStorage.removeItem("weicon_secili_fatura"); }
+    else { seciliTeslimatAdresi=null; localStorage.removeItem("weicon_secili_teslimat"); }
+  }
+  liste.splice(idx,1);
+  musteriListesiniKaydet();
+  if(window.fbSet) musteriListesiGuvenliKaydet(m).catch(function(e){ console.error("Firebase yazma hatası:", e); });
+  adresYonetimListesiniRenderEt();
+  cariKartAdresListesiniRenderEt(tip);
+}
+
 // İLETİŞİM KİŞİLERİ — firmanın farklı departman/kişilerini yönetme
 var iletisimSecimModu = false; // true iken bir kişi seçiliyor (temas veya yetkili amaçlı)
 var kisiSeciciAmaci = "temas"; // "temas" | "yetkili"
 var seciliYetkiliKisi = JSON.parse(localStorage.getItem("weicon_secili_yetkili")||"null");
+// Seçili Fatura/Teslimat Adresi — Yetkili Kişi ile BİREBİR aynı mantık: müşterinin
+// birden fazla kayıtlı adresi olabilir (faturaAdresleri/teslimatAdresleri dizileri),
+// gönderim/kayıt sırasında hangisinin kullanılacağı burada seçilir ve cihazda saklanır.
+var seciliFaturaAdresi = JSON.parse(localStorage.getItem("weicon_secili_fatura")||"null");
+var seciliTeslimatAdresi = JSON.parse(localStorage.getItem("weicon_secili_teslimat")||"null");
+
+// Bir müşterinin Fatura/Teslimat adres LİSTESİNİ döndürür. Eskiden her müşterinin
+// tek bir "acikAdres"/"teslimatAdresi" metni vardı — bu fonksiyon ilk çağrıldığında
+// o eski tekil değeri otomatik olarak yeni listenin ilk kaydına taşır (veri kaybı
+// olmadan), sonrasında liste doğrudan kullanılır. tip: "fatura" | "teslimat"
+function musteriAdresListesiGetir(m, tip){
+  if(!m) return [];
+  var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
+  if(!m[alan]){
+    var eskiDeger = tip==="fatura" ? m.acikAdres : m.teslimatAdresi;
+    m[alan] = (eskiDeger && eskiDeger.trim()) ? [{etiket: tip==="fatura"?"Fatura Adresi":"Teslimat Adresi", adres: eskiDeger.trim()}] : [];
+  }
+  return m[alan];
+}
 var yetkiliSecimSonrasiGonder = null; // yetkili seçilince otomatik devam edilecek gönderim türü: "mail" | "whatsapp" | "whatsappYedek"
 var onizlemeCagrildigiYer = null; // "gonder" ise, önizleme kapanınca İletişim İşlemleri popup'ına dönülür
 var urunBulKontrolAktif = false; // true iken "Ürün Bul" ön-kontrol popup'ı aktif — yetkili seçimi tamamlanınca oraya geri dönülür

@@ -944,15 +944,11 @@ function rafUpdate(fn){
       <div id="cariKartAd" style="font-size:36px;font-weight:900;color:#1a2a3a;margin-bottom:6px;"></div>
       <div id="cariKartAltBaslik" style="font-size:25px;font-weight:800;color:#7ea6d6;margin-bottom:10px;"></div>
 
-      <div style="font-size:27px;color:#3a4a5c;font-weight:700;line-height:1.3;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #d5dce6;">
-        <b style="color:#003a70;font-size:22px;display:block;margin-bottom:3px;font-weight:900;">🧾 FATURA ADRESİ</b>
-        <span id="cariKartAdres">-</span>
-      </div>
+      <div id="cariKartFaturaBaslik" style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:8px;">🧾 FATURA ADRESLERİ (0)</div>
+      <div id="cariKartFaturaListesi" style="margin-bottom:14px;"></div>
 
-      <div id="cariKartTeslimatBlok" style="display:none;font-size:27px;color:#3a4a5c;font-weight:700;line-height:1.3;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #d5dce6;">
-        <b style="color:#c0392b;font-size:22px;display:block;margin-bottom:3px;font-weight:900;">🚚 TESLİMAT ADRESİ</b>
-        <span id="cariKartTeslimatAdresi">-</span>
-      </div>
+      <div id="cariKartTeslimatBaslik" style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:8px;">🚚 TESLİMAT ADRESLERİ (0)</div>
+      <div id="cariKartTeslimatListesi" style="margin-bottom:4px;"></div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #d5dce6;">
         <div style="display:flex;align-items:center;gap:8px;min-width:0;">
@@ -1899,6 +1895,31 @@ function rafUpdate(fn){
   </div>
 </div>
 
+<!-- FATURA/TESLİMAT ADRESİ SEÇ+YÖNET — Yetkili Kişi seçim akışıyla birebir aynı
+     mantık: liste, seç, ekle/düzenle/sil hepsi bu TEK modal üzerinden, adresYonetimTipi
+     değişkeniyle "fatura" veya "teslimat" arasında geçiş yapar. Müşteri Kartı ve
+     Ürün Bul ön-kontrolünden ortak kullanılır — musteriKartModal/urunBulOnKontrolModal
+     kapanmadan, ÜSTÜNDE açılır. -->
+<div id="adresYonetimModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:10003;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;padding:20px 16px;width:96%;max-width:600px;max-height:94vh;overflow-y:auto;box-sizing:border-box;">
+    <div id="adresYonetimBaslik" style="font-size:24px;font-weight:900;color:#003a70;margin-bottom:14px;">🧾 Fatura Adresi Seç</div>
+    <div id="adresYonetimListesi"></div>
+
+    <div id="adresYonetimEkleForm" style="display:none;background:#f7f9fc;border:2px solid #d5dce6;border-radius:12px;padding:14px;margin-top:10px;">
+      <div style="font-size:15px;font-weight:800;color:#003a70;margin-bottom:6px;">Etiket (opsiyonel — örn. "Merkez Ofis")</div>
+      <input id="adresYonetimEtiketInput" type="text" style="width:100%;padding:12px;font-size:18px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;margin-bottom:10px;">
+      <div style="font-size:15px;font-weight:800;color:#003a70;margin-bottom:6px;">Açık Adres</div>
+      <textarea id="adresYonetimAdresInput" rows="3" style="width:100%;padding:12px;font-size:18px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button onclick="adresEkleFormKapat()" style="flex:1;background:#eef1f4;color:#556;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;">Vazgeç</button>
+        <button onclick="adresKaydet()" style="flex:2;background:#0e7c63;color:#fff;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;">✓ Kaydet</button>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('adresYonetimModal').style.display='none';" style="width:100%;margin-top:14px;background:#ffcdd2;color:#b71c1c;border:none;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
+  </div>
+</div>
+
 <!-- FATURA İŞLEMLER — eskiden Hareket Seç + 6 ayrı buton olarak dağınık duran
      eylemler, tek bir "⚙️ İşlemler" tetikleyicisinin açtığı bu popup'ta toplandı.
      Butonların ID'leri ve onclick'leri AYNI kaldı — sadece fiziksel yerleri
@@ -2691,7 +2712,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808260917-515</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808260936-516</div>
 </div>
 
 </div>

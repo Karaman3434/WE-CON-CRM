@@ -1924,6 +1924,10 @@ function islemleriTemizle(){
   secilenMod = null;
   seciliYetkiliKisi = null;
   localStorage.removeItem("weicon_secili_yetkili");
+  seciliFaturaAdresi = null;
+  localStorage.removeItem("weicon_secili_fatura");
+  seciliTeslimatAdresi = null;
+  localStorage.removeItem("weicon_secili_teslimat");
   if(typeof islemTuruRenkGuncelle==="function") islemTuruRenkGuncelle();
   localStorage.removeItem("weicon_secili_musteri");
   updateBasketCount();

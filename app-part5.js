@@ -1628,6 +1628,8 @@ function _arsiveKaydetIslem(tip, kod, kanal){
   if(!arsivData.numune) arsivData.numune=[];
   var cn=getDynamicCustomerName(); var cv=getDynamicCustomerVade(); var cf=getDynamicCustomerFatura();
   var cy=getDynamicCustomerYetkili(); var ck=getDynamicCustomerKargo();
+  var cFaturaAdr = (typeof getDynamicCustomerFaturaAdresi==="function") ? getDynamicCustomerFaturaAdresi() : "";
+  var cTeslimatAdr = (typeof getDynamicCustomerTeslimatAdresi==="function") ? getDynamicCustomerTeslimatAdresi() : "";
   var bugun=new Date();
   var aylar=["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
   var saat=bugun.getHours().toString().padStart(2,"0")+":"+bugun.getMinutes().toString().padStart(2,"0");
@@ -1669,6 +1671,7 @@ function _arsiveKaydetIslem(tip, kod, kanal){
     });
     eslesenKayit.urunler = JSON.parse(JSON.stringify(hareketListesi));
     eslesenKayit.vade=cv; eslesenKayit.fatura=cf; eslesenKayit.yetkili=cy; eslesenKayit.kargo=ck;
+    eslesenKayit.faturaAdresi=cFaturaAdr; eslesenKayit.teslimatAdresi=cTeslimatAdr;
     if(kanal) eslesenKayit.kanal = kanal;
     if(!eslesenKayit.musteriId && aktifMusteriId) eslesenKayit.musteriId = aktifMusteriId; // eski kayıtta ID yoksa şimdi tamamla
     eslesenKayit.revizeZamani = ts;
@@ -1679,6 +1682,7 @@ function _arsiveKaydetIslem(tip, kod, kanal){
       tarih:tarih, ts:ts, kod:kod||benzersizKodUret(tip),
       musteri:cn, musteriId:(typeof seciliMusteri!=="undefined" && seciliMusteri && seciliMusteri.id) || null,
       vade:cv, fatura:cf, yetkili:cy, kargo:ck,
+      faturaAdresi:cFaturaAdr, teslimatAdresi:cTeslimatAdr,
       mod:tip, kanal:(kanal||null),
       urunler:JSON.parse(JSON.stringify(hareketListesi))
     };
