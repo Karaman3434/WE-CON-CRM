@@ -1152,15 +1152,17 @@ function yetkiliKisiEtiketGuncelle(){
   if(!altEl) return;
   var m = musteriListesi[musteriKartIdx];
   var kisiSayisi = m ? ((m.iletisimler||[]).length) : 0;
-  if(seciliYetkiliKisi && seciliYetkiliKisi.isim){
-    altEl.innerHTML = "Seçili: <b>"+safeText(seciliYetkiliKisi.isim)+"</b> <span style='color:#e0524a;font-weight:900;' onclick=\"event.stopPropagation();yetkiliKisiTemizle();\">✕</span>";
+  if(seciliYetkililer.length){
+    var isimler = seciliYetkililer.map(function(k){return safeText(k.isim);}).join(", ");
+    altEl.innerHTML = "Seçili: <b>"+isimler+"</b> <span style='color:#e0524a;font-weight:900;' onclick=\"event.stopPropagation();yetkiliKisiTemizle();\">✕</span>";
   } else {
     altEl.textContent = kisiSayisi+" kişi kayıtlı";
   }
 }
 
 function yetkiliKisiTemizle(){
-  seciliYetkiliKisi = null;
+  seciliYetkililer = [];
+  localStorage.removeItem("weicon_secili_yetkililer");
   localStorage.removeItem("weicon_secili_yetkili");
   yetkiliKisiEtiketGuncelle();
   if(typeof musteriSeritiGuncelle==="function") musteriSeritiGuncelle();
@@ -1898,7 +1900,7 @@ function musteriSeritiGuncelle(){
   var alan = document.getElementById("iletisimMusteriAlani");
   if(!alan) return;
   if(seciliMusteri && seciliMusteri.ad){
-    var gosterilecekAd = safeText(seciliMusteri.ad) + ((seciliYetkiliKisi && seciliYetkiliKisi.isim) ? " - "+safeText(seciliYetkiliKisi.isim) : "");
+    var gosterilecekAd = safeText(seciliMusteri.ad) + (seciliYetkililer.length ? " - "+safeText(seciliYetkililer.map(function(k){return k.isim;}).join(", ")) : "");
     alan.innerHTML =
       "<div style='border:1px solid #ddd;border-radius:12px;padding:2px 16px;'>"
       +"<div style='display:flex;justify-content:space-between;align-items:center;padding:16px 2px;flex-wrap:wrap;gap:8px;'>"
@@ -1922,7 +1924,8 @@ function islemleriTemizle(){
   aktarilanUrun = null;
   seciliMusteri = null;
   secilenMod = null;
-  seciliYetkiliKisi = null;
+  seciliYetkililer = [];
+  localStorage.removeItem("weicon_secili_yetkililer");
   localStorage.removeItem("weicon_secili_yetkili");
   seciliFaturaAdresi = null;
   localStorage.removeItem("weicon_secili_fatura");

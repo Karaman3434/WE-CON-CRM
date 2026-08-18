@@ -1628,6 +1628,9 @@ function _arsiveKaydetIslem(tip, kod, kanal){
   if(!arsivData.numune) arsivData.numune=[];
   var cn=getDynamicCustomerName(); var cv=getDynamicCustomerVade(); var cf=getDynamicCustomerFatura();
   var cy=getDynamicCustomerYetkili(); var ck=getDynamicCustomerKargo();
+  // Çoklu yetkili — belge kaydedildiği andaki TAM listeyi (isim+telefon+eposta)
+  // saklıyoruz, böylece bu belgeye tekrar bakıldığında hep o anki doğru kişiler görünür.
+  var cYetkililer = (typeof seciliYetkililer!=="undefined") ? JSON.parse(JSON.stringify(seciliYetkililer)) : [];
   var cFaturaAdr = (typeof getDynamicCustomerFaturaAdresi==="function") ? getDynamicCustomerFaturaAdresi() : "";
   var cTeslimatAdr = (typeof getDynamicCustomerTeslimatAdresi==="function") ? getDynamicCustomerTeslimatAdresi() : "";
   var bugun=new Date();
@@ -1670,7 +1673,7 @@ function _arsiveKaydetIslem(tip, kod, kanal){
       urunSayisi: (eslesenKayit.urunler||[]).length
     });
     eslesenKayit.urunler = JSON.parse(JSON.stringify(hareketListesi));
-    eslesenKayit.vade=cv; eslesenKayit.fatura=cf; eslesenKayit.yetkili=cy; eslesenKayit.kargo=ck;
+    eslesenKayit.vade=cv; eslesenKayit.fatura=cf; eslesenKayit.yetkili=cy; eslesenKayit.yetkililer=cYetkililer; eslesenKayit.kargo=ck;
     eslesenKayit.faturaAdresi=cFaturaAdr; eslesenKayit.teslimatAdresi=cTeslimatAdr;
     if(kanal) eslesenKayit.kanal = kanal;
     if(!eslesenKayit.musteriId && aktifMusteriId) eslesenKayit.musteriId = aktifMusteriId; // eski kayıtta ID yoksa şimdi tamamla
@@ -1681,7 +1684,7 @@ function _arsiveKaydetIslem(tip, kod, kanal){
     var kayit={
       tarih:tarih, ts:ts, kod:kod||benzersizKodUret(tip),
       musteri:cn, musteriId:(typeof seciliMusteri!=="undefined" && seciliMusteri && seciliMusteri.id) || null,
-      vade:cv, fatura:cf, yetkili:cy, kargo:ck,
+      vade:cv, fatura:cf, yetkili:cy, yetkililer:cYetkililer, kargo:ck,
       faturaAdresi:cFaturaAdr, teslimatAdresi:cTeslimatAdr,
       mod:tip, kanal:(kanal||null),
       urunler:JSON.parse(JSON.stringify(hareketListesi))

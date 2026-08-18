@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1808261407-525";
+var APP_VERSION = "V1808261704-526";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1377,7 +1377,8 @@ function musteriKartAc(idx){
   document.getElementById("musteriKartAd").textContent = m.ad||"";
   var kartKoduEl = document.getElementById("musteriKartKodu");
   if(kartKoduEl) kartKoduEl.textContent = m.id ? ("🏷 Müşteri Kodu: "+m.id) : "";
-  seciliYetkiliKisi = null;
+  seciliYetkililer = [];
+  localStorage.removeItem("weicon_secili_yetkililer");
   localStorage.removeItem("weicon_secili_yetkili");
   seciliFaturaAdresi = null;
   localStorage.removeItem("weicon_secili_fatura");
@@ -1537,7 +1538,9 @@ function cariKartYetkiliDuzenleAc(i){
 function teslimatDahilEtDegistir(){
   teslimatDahilEt = !teslimatDahilEt;
   localStorage.setItem("weicon_teslimat_dahil_et", teslimatDahilEt ? "true" : "false");
-  if(typeof urunBulKontrolAktif!=="undefined" && urunBulKontrolAktif && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  var ubkModal = document.getElementById("urunBulOnKontrolModal");
+  if(ubkModal && ubkModal.style.display==="flex" && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  if(typeof belgeBilgileriOzetGuncelle==="function") belgeBilgileriOzetGuncelle();
 }
 
 // TEK SEFERLİK (GEÇİCİ) ADRES — müşteri kartındaki kayıtlı listeye hiç
@@ -1561,7 +1564,9 @@ function geciciAdresKullan(){
   if(tip==="fatura"){ seciliFaturaAdresi = geciciKayit; localStorage.setItem("weicon_secili_fatura", JSON.stringify(geciciKayit)); }
   else { seciliTeslimatAdresi = geciciKayit; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(geciciKayit)); }
   adresYonetimKapat();
-  if(typeof urunBulKontrolAktif!=="undefined" && urunBulKontrolAktif && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  var ubkModal = document.getElementById("urunBulOnKontrolModal");
+  if(ubkModal && ubkModal.style.display==="flex" && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  if(typeof belgeBilgileriOzetGuncelle==="function") belgeBilgileriOzetGuncelle();
 }
 
 function cariKartYetkiliSilAc(i){
@@ -1665,7 +1670,9 @@ function adresSecildi(tip, idx){
   if(tip==="fatura"){ seciliFaturaAdresi = secilen; localStorage.setItem("weicon_secili_fatura", JSON.stringify(secilen)); }
   else { seciliTeslimatAdresi = secilen; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(secilen)); }
   adresYonetimKapat();
-  if(typeof urunBulKontrolAktif!=="undefined" && urunBulKontrolAktif && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  var ubkModal = document.getElementById("urunBulOnKontrolModal");
+  if(ubkModal && ubkModal.style.display==="flex" && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  if(typeof belgeBilgileriOzetGuncelle==="function") belgeBilgileriOzetGuncelle();
   if(typeof musteriCariKartAc==="function" && document.getElementById("musteriCariKartModal") && document.getElementById("musteriCariKartModal").style.display==="flex"){
     cariKartAdresListesiniRenderEt(tip);
   }
@@ -1749,7 +1756,15 @@ function adresSilAc(tip, idx){
 // İLETİŞİM KİŞİLERİ — firmanın farklı departman/kişilerini yönetme
 var iletisimSecimModu = false; // true iken bir kişi seçiliyor (temas veya yetkili amaçlı)
 var kisiSeciciAmaci = "temas"; // "temas" | "yetkili"
-var seciliYetkiliKisi = JSON.parse(localStorage.getItem("weicon_secili_yetkili")||"null");
+// Seçili Yetkili Kişi(ler) — ARTIK DİZİ: bir belgeye birden fazla yetkili
+// eklenebilir (örn. hem satınalma hem muhasebe yetkilisi). Eski tekil format
+// ("weicon_secili_yetkili") varsa, veri kaybı olmadan diziye taşınır.
+var seciliYetkililer = (function(){
+  var yeniFormat = localStorage.getItem("weicon_secili_yetkililer");
+  if(yeniFormat){ try{ return JSON.parse(yeniFormat)||[]; }catch(e){ return []; } }
+  var eskiFormat = JSON.parse(localStorage.getItem("weicon_secili_yetkili")||"null");
+  return eskiFormat ? [eskiFormat] : [];
+})();
 // Seçili Fatura/Teslimat Adresi — Yetkili Kişi ile BİREBİR aynı mantık: müşterinin
 // birden fazla kayıtlı adresi olabilir (faturaAdresleri/teslimatAdresleri dizileri),
 // gönderim/kayıt sırasında hangisinin kullanılacağı burada seçilir ve cihazda saklanır.
@@ -1779,7 +1794,7 @@ var onizlemeCagrildigiYer = null; // "gonder" ise, önizleme kapanınca İletiş
 var urunBulKontrolAktif = false; // true iken "Ürün Bul" ön-kontrol popup'ı aktif — yetkili seçimi tamamlanınca oraya geri dönülür
 
 function iletisimGonderKontrolluBaslat(tip){
-  if(!seciliYetkiliKisi || !seciliYetkiliKisi.isim){
+  if(!seciliYetkililer.length){
     document.getElementById('iletisimIslemleriModal').style.display='none';
     if(musteriKartIdx===null){
       showToast("⚠️ Göndermeden önce müşteri kartından yetkili kişi seçmelisiniz.", 5000);
@@ -1932,10 +1947,13 @@ function musteriIletisimListesiRenderEt(){
     return;
   }
   var html = "";
+  if(iletisimSecimModu && kisiSeciciAmaci==="yetkili"){
+    html += "<div style='background:#eef4fb;border:1.5px solid #c3d7f0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:15px;font-weight:700;color:#3569b8;'>💡 Birden fazla yetkili seçebilirsin — istediğin kadar kişiye dokun, bitince altta \"✓ Tamam\" de.</div>";
+  }
   for(var i=0;i<liste.length;i++){
     var k = liste[i];
-    var secili = iletisimSecimModu && (kisiSeciciAmaci==="yetkili" ? (seciliYetkiliKisi && seciliYetkiliKisi.isim===k.isim) : (ziyaretSeciliKisi && ziyaretSeciliKisi.isim===k.isim));
-    html += "<div "+(iletisimSecimModu ? "onclick='ziyaretKisiSec("+i+")'" : "")+" style='cursor:"+(iletisimSecimModu?"pointer":"default")+";background:"+(secili?"#eafaf3":"#f7f9fc")+";border:2px solid "+(secili?"#16a085":"#d5dce6")+";border-radius:8px;padding:20px 22px;margin-bottom:14px;'>"
+    var secili = iletisimSecimModu && (kisiSeciciAmaci==="yetkili" ? seciliYetkililer.some(function(sy){return sy.isim===k.isim;}) : (ziyaretSeciliKisi && ziyaretSeciliKisi.isim===k.isim));
+    html += "<div "+(iletisimSecimModu ? "onclick='"+(kisiSeciciAmaci==="yetkili"?"yetkiliKisiToggle(":"ziyaretKisiSec(")+i+")'" : "")+" style='cursor:"+(iletisimSecimModu?"pointer":"default")+";background:"+(secili?"#eafaf3":"#f7f9fc")+";border:2px solid "+(secili?"#16a085":"#d5dce6")+";border-radius:8px;padding:20px 22px;margin-bottom:14px;'>"
       +"<div style='display:flex;justify-content:space-between;align-items:flex-start;gap:12px;'>"
       +"<div style='flex:1;display:flex;align-items:flex-start;gap:14px;'>"
       +(iletisimSecimModu ? "<span style='flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px;border-radius:20px;font-size:16px;font-weight:800;border:2px solid #16a085;background:"+(secili?"#16a085":"#eafaf3")+";color:"+(secili?"#fff":"#0e7a60")+";white-space:nowrap;margin-top:3px;'>"+(secili?"✓ Seçili":"Seç")+"</span>" : "")
@@ -1952,7 +1970,40 @@ function musteriIletisimListesiRenderEt(){
       +"</div>"
       +"</div>";
   }
-  el.innerHTML = html + (iletisimSecimModu ? "<button onclick=\"musteriIletisimTabSec('ekle')\" style='width:100%;background:linear-gradient(135deg,#3d76a3,#2c5a80);color:#fff;border:none;padding:22px;font-size:28px;font-weight:800;border-radius:10px;cursor:pointer;margin-top:4px;'>＋ Bir Kişi Daha Ekle</button>" : "");
+  el.innerHTML = html + (iletisimSecimModu ? "<button onclick=\"musteriIletisimTabSec('ekle')\" style='width:100%;background:linear-gradient(135deg,#3d76a3,#2c5a80);color:#fff;border:none;padding:22px;font-size:28px;font-weight:800;border-radius:10px;cursor:pointer;margin-top:4px;'>＋ Bir Kişi Daha Ekle</button>" : "")
+    + (iletisimSecimModu && kisiSeciciAmaci==="yetkili" ? "<button onclick=\"yetkiliSecimiTamamla()\" style='width:100%;background:linear-gradient(135deg,#16a085,#0e8a72);color:#fff;border:none;padding:22px;font-size:30px;font-weight:900;border-radius:10px;cursor:pointer;margin-top:10px;'>✓ Tamam ("+seciliYetkililer.length+" seçili)</button>" : "");
+}
+
+// Seçim modunda + amaç "yetkili" ise: TOGGLE (ekle/çıkar), modal AÇIK kalır —
+// kullanıcı istediği kadar kişi seçebilsin. Diğer amaçlarda (ziyaret gibi)
+// davranış eskisi gibi: seç ve modalı kapat (tekli seçim).
+function yetkiliKisiToggle(i){
+  var m = musteriListesi[musteriKartIdx];
+  if(!m || !m.iletisimler || !m.iletisimler[i]) return;
+  var k = m.iletisimler[i];
+  var idx = seciliYetkililer.findIndex(function(sy){ return sy.isim===k.isim; });
+  if(idx>=0){ seciliYetkililer.splice(idx,1); }
+  else { seciliYetkililer.push({isim:k.isim, bolum:k.bolum||"", gorev:k.gorev||"", telefon:k.telefon||"", eposta:k.eposta||""}); }
+  localStorage.setItem("weicon_secili_yetkililer", JSON.stringify(seciliYetkililer));
+  yetkiliKisiEtiketGuncelle();
+  if(typeof musteriSeritiGuncelle==="function") musteriSeritiGuncelle();
+  musteriIletisimListesiRenderEt();
+}
+function yetkiliSecimiTamamla(){
+  iletisimSecimModu = false;
+  document.getElementById("musteriIletisimModal").style.display="none";
+  if(yetkiliSecimSonrasiGonder){
+    var bekleyenTip = yetkiliSecimSonrasiGonder;
+    yetkiliSecimSonrasiGonder = null;
+    iletisimGonderimYap(bekleyenTip);
+    return;
+  }
+  var ubkModal = document.getElementById("urunBulOnKontrolModal");
+  if(ubkModal && (ubkModal.style.display==="flex" || (typeof urunBulKontrolAktif!=="undefined" && urunBulKontrolAktif))){
+    ubkModal.style.display="flex";
+    if(typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+  }
+  if(typeof belgeBilgileriOzetGuncelle==="function") belgeBilgileriOzetGuncelle();
 }
 
 function ziyaretKisiSec(i){
@@ -1962,28 +2013,9 @@ function ziyaretKisiSec(i){
   var secilenKisi = {isim:k.isim, bolum:k.bolum||"", gorev:k.gorev||"", telefon:k.telefon||"", eposta:k.eposta||""};
   iletisimSecimModu = false;
   document.getElementById("musteriIletisimModal").style.display="none";
-  if(kisiSeciciAmaci==="yetkili"){
-    seciliYetkiliKisi = secilenKisi;
-    localStorage.setItem("weicon_secili_yetkili", JSON.stringify(seciliYetkiliKisi));
-    yetkiliKisiEtiketGuncelle();
-    if(typeof musteriSeritiGuncelle==="function") musteriSeritiGuncelle();
-    if(yetkiliSecimSonrasiGonder){
-      var bekleyenTip = yetkiliSecimSonrasiGonder;
-      yetkiliSecimSonrasiGonder = null;
-      iletisimGonderimYap(bekleyenTip);
-      return;
-    }
-    if(urunBulKontrolAktif){
-      document.getElementById("urunBulOnKontrolModal").style.display="flex";
-      urunBulOnKontrolRenderEt();
-    } else {
-      document.getElementById("musteriKartModal").style.display="flex";
-    }
-  } else {
-    ziyaretSeciliKisi = secilenKisi;
-    document.getElementById("musteriZiyaretModal").style.display="flex";
-    ziyaretKisiEtiketGuncelle();
-  }
+  ziyaretSeciliKisi = secilenKisi;
+  document.getElementById("musteriZiyaretModal").style.display="flex";
+  ziyaretKisiEtiketGuncelle();
 }
 
 var micDuzenlenenIndex = null; // null = yeni kişi ekleniyor, sayı = o index'teki kişi düzenleniyor

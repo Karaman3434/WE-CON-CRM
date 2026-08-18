@@ -76,8 +76,8 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
     faturaTuru = (typeof getDynamicCustomerFatura==="function") ? getDynamicCustomerFatura() : "";
     kargo = (typeof getDynamicCustomerKargo==="function") ? getDynamicCustomerKargo() : "";
     yetkiliAd = (typeof getDynamicCustomerYetkili==="function") ? getDynamicCustomerYetkili() : "";
-    yetkiliTel = (typeof seciliYetkiliKisi!=="undefined" && seciliYetkiliKisi && seciliYetkiliKisi.telefon) || "";
-    yetkiliMail = (typeof seciliYetkiliKisi!=="undefined" && seciliYetkiliKisi && seciliYetkiliKisi.eposta) || "";
+    yetkiliTel = (seciliYetkililer[0] && seciliYetkililer[0].telefon) || "";
+    yetkiliMail = (seciliYetkililer[0] && seciliYetkililer[0].eposta) || "";
     teslimatAdr = (typeof getDynamicCustomerTeslimatAdresi==="function") ? getDynamicCustomerTeslimatAdresi() : "";
     faturaAdr = (typeof getDynamicCustomerFaturaAdresi==="function") ? getDynamicCustomerFaturaAdresi() : "";
   }
@@ -118,11 +118,6 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
 
   var musteriKaydi = (typeof musteriKartIdx!=="undefined" && musteriKartIdx!==null && musteriListesi[musteriKartIdx]) ? musteriListesi[musteriKartIdx] : null;
   var adresGosterilecek = faturaAdr || (musteriKaydi && musteriKaydi.acikAdres) || musteriSehir || "";
-  var digerKisiler = (musteriKaydi && musteriKaydi.iletisimler) ? musteriKaydi.iletisimler : [];
-  var ikinciKisi = null;
-  for(var _fk=0;_fk<digerKisiler.length;_fk++){
-    if(digerKisiler[_fk].isim && digerKisiler[_fk].isim!==yetkiliAd){ ikinciKisi = digerKisiler[_fk]; break; }
-  }
   var yetkiliSatiriYaz = function(isim, tel, eposta){
     if(!isim && !tel && !eposta) return "";
     var parcalar = [];
@@ -130,6 +125,21 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
     if(eposta) parcalar.push("✉️ "+eposta);
     return "<div style='font-size:15px;color:#1a2a3a;line-height:1.5;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid #eef1f4;'>👤 <b style='font-weight:800;'>"+(isim||"-")+"</b>"+(parcalar.length?" — <span style='color:#556;font-size:14px;'>"+parcalar.join(" · ")+"</span>":"")+"</div>";
   };
+  // Belge üzerinde gösterilecek TÜM yetkililer — artık heuristik ("iletisim
+  // listesindeki ilk farklı kişi") DEĞİL, gerçekten seçilmiş kişi listesi.
+  // Arşivden görüntülenirken o belge kaydedildiği andaki liste (aktifKayit.yetkililer)
+  // kullanılır; canlı derlemede o an seçili olan seciliYetkililer kullanılır.
+  var yetkiliListesiGoster = [];
+  if(aktifKayit){
+    if(aktifKayit.yetkililer && aktifKayit.yetkililer.length){
+      yetkiliListesiGoster = aktifKayit.yetkililer;
+    } else if(yetkiliAd){
+      // Eski (bu özellikten önce) kaydedilmiş belgeler için geriye dönük uyumluluk
+      yetkiliListesiGoster = [{isim:yetkiliAd, telefon:yetkiliTel, eposta:yetkiliMail}];
+    }
+  } else {
+    yetkiliListesiGoster = seciliYetkililer;
+  }
 
   var musteriBilgileriBlok =
     "<div style='background:"+LACIVERT+";color:#fff;padding:9px 16px;font-size:16px;font-weight:900;letter-spacing:.5px;'>MÜŞTERİ BİLGİLERİ</div>"
@@ -143,8 +153,7 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
         + kosulKutusu("🚚", "KARGO", kargo)
       +"</div>"
     ) : "")
-    + yetkiliSatiriYaz(yetkiliAd, yetkiliTel, yetkiliMail)
-    + (ikinciKisi ? yetkiliSatiriYaz(ikinciKisi.isim, ikinciKisi.telefon, ikinciKisi.eposta) : "")
+    + yetkiliListesiGoster.map(function(k){ return yetkiliSatiriYaz(k.isim, k.telefon, k.eposta); }).join("")
     +(teslimatAdr ? "<div style='font-size:12.5px;color:#3a4a5c;font-weight:700;line-height:1.35;margin-top:8px;padding-top:8px;border-top:1px dashed #dde3ea;'><b style='color:#c0392b;font-size:16px;display:block;margin-bottom:2px;font-weight:900;'>🚚 TESLİMAT ADRESİ</b>"+teslimatAdr+"</div>" : "")
     +"</div>";
 
@@ -499,12 +508,12 @@ function getModLabel(){
 }
 
 function getDynamicCustomerYetkili(){
-  if(seciliYetkiliKisi && seciliYetkiliKisi.isim) return seciliYetkiliKisi.isim;
+  if(seciliYetkililer.length) return seciliYetkililer.map(function(k){return k.isim;}).join(", ");
   return document.getElementById("custYetkiliInput").value.trim()||"";
 }
 function getDynamicCustomerYetkiliIletisim(){
-  if(seciliYetkiliKisi && seciliYetkiliKisi.isim){
-    return [seciliYetkiliKisi.telefon, seciliYetkiliKisi.eposta].filter(Boolean).join("  ·  ");
+  if(seciliYetkililer.length){
+    return seciliYetkililer.map(function(k){ return [k.telefon, k.eposta].filter(Boolean).join("  ·  "); }).filter(Boolean).join("   /   ");
   }
   return "";
 }
@@ -802,11 +811,6 @@ function siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo
 
   var musteriKaydiPng = (typeof musteriKartIdx!=="undefined" && musteriKartIdx!==null && musteriListesi[musteriKartIdx]) ? musteriListesi[musteriKartIdx] : null;
   var adresGosterilecekPng = faturaAdresi || (musteriKaydiPng && musteriKaydiPng.acikAdres) || sehir || "";
-  var digerKisilerPng = (musteriKaydiPng && musteriKaydiPng.iletisimler) ? musteriKaydiPng.iletisimler : [];
-  var ikinciKisiPng = null;
-  for(var _pk=0;_pk<digerKisilerPng.length;_pk++){
-    if(digerKisilerPng[_pk].isim && digerKisilerPng[_pk].isim!==yetkili){ ikinciKisiPng = digerKisilerPng[_pk]; break; }
-  }
   var yetkiliSatiriPng = function(isim, tel, eposta){
     if(!isim && !tel && !eposta) return "";
     var parcalar = [];
@@ -814,6 +818,8 @@ function siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo
     if(eposta) parcalar.push("✉️ "+esc(eposta));
     return "<div style='font-size:21px;color:#1a2a3a;line-height:1.6;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #eef1f4;'>👤 <b style='font-weight:800;'>"+esc(isim||"-")+"</b>"+(parcalar.length?" — <span style='color:#556;font-size:20px;'>"+parcalar.join(" · ")+"</span>":"")+"</div>";
   };
+  // Belgede gösterilecek TÜM yetkililer — gerçek seçim listesinden (heuristik yok).
+  var yetkiliListesiPng = (typeof seciliYetkililer!=="undefined" && seciliYetkililer.length) ? seciliYetkililer : (yetkili ? [{isim:yetkili, telefon:yetkiliTel, eposta:yetkiliMail}] : []);
 
   var musteriKarti = sadeMod ? "" : (
     "<div>"
@@ -828,8 +834,7 @@ function siparisResmiHtmlOlustur(musteriAdi, sehir, yetkili, vade, fatura, kargo
             + kosulKutusu("🚚", "KARGO", kargo)
           +"</div>"
       ) : "")
-      + yetkiliSatiriPng(yetkili, yetkiliTel, yetkiliMail)
-      + (ikinciKisiPng ? yetkiliSatiriPng(ikinciKisiPng.isim, ikinciKisiPng.telefon, ikinciKisiPng.eposta) : "")
+      + yetkiliListesiPng.map(function(k){ return yetkiliSatiriPng(k.isim, k.telefon, k.eposta); }).join("")
       +(teslimatAdresi ? (
         "<div style='font-size:21px;color:#3a4a5c;font-weight:700;line-height:1.4;margin-top:10px;padding-top:10px;border-top:1px dashed #dde3ea;'><b style='color:#c0392b;font-size:27px;display:block;margin-bottom:3px;font-weight:900;'>🚚 TESLİMAT ADRESİ</b>"+esc(teslimatAdresi)+"</div>"
       ) : "")

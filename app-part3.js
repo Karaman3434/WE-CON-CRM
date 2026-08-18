@@ -18,13 +18,106 @@ function musteriSecimBaslat(hedefSayfa){
 // ÜRÜN BUL ÖN-KONTROL — İşlemler ekranındaki "Ürün Bul"a basılınca önce açılır.
 // Fatura Adresi / Teslimat Adresi / Yetkili Kişi'yi kontrol eder, eksikse hemen
 // tamamlama imkanı sunar. "Eksik bilgiyle devam et" ile atlanabilir (zorunlu değil).
+// TEK KAYNAK: Fatura/Teslimat/Yetkili'nin hazır olup olmadığını kontrol eder
+// VE mümkünse otomatik seçer (tek seçenek varsa). Ürün Bul ön-kontrolü, Kaydet
+// ve Gönder akışlarının HEPSİ bu TEK fonksiyona bakar — böylece "bazen soruyor
+// bazen sormuyor" tutarsızlığı ortadan kalkar.
+function belgeBilgileriHazirlaVeKontrolEt(){
+  if(musteriKartIdx===null) return {faturaVar:false, teslimatVar:false, yetkiliVar:false, hepsiTam:false};
+  var m = musteriListesi[musteriKartIdx];
+  if(!m) return {faturaVar:false, teslimatVar:false, yetkiliVar:false, hepsiTam:false};
+
+  var faturaListesi = musteriAdresListesiGetir(m, "fatura");
+  var teslimatListesi = musteriAdresListesiGetir(m, "teslimat");
+  var yetkiliListesi = m.iletisimler || [];
+  if(!seciliFaturaAdresi && faturaListesi.length===1){ seciliFaturaAdresi = faturaListesi[0]; localStorage.setItem("weicon_secili_fatura", JSON.stringify(seciliFaturaAdresi)); }
+  if(!seciliTeslimatAdresi && teslimatListesi.length===1){ seciliTeslimatAdresi = teslimatListesi[0]; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(seciliTeslimatAdresi)); }
+  // SORUN 1 DÜZELTİLDİ: Yetkili için de artık aynı otomatik seçim kuralı var —
+  // müşterinin tek bir yetkilisi varsa elle seçmeye gerek kalmıyor.
+  if(!seciliYetkililer.length && yetkiliListesi.length===1){
+    var tekYetkili = yetkiliListesi[0];
+    seciliYetkililer = [{isim:tekYetkili.isim, bolum:tekYetkili.bolum||"", gorev:tekYetkili.gorev||"", telefon:tekYetkili.telefon||"", eposta:tekYetkili.eposta||""}];
+    localStorage.setItem("weicon_secili_yetkililer", JSON.stringify(seciliYetkililer));
+    if(typeof yetkiliKisiEtiketGuncelle==="function") yetkiliKisiEtiketGuncelle();
+  }
+
+  var faturaVar = !!(seciliFaturaAdresi && seciliFaturaAdresi.adres);
+  var teslimatVar = !!(seciliTeslimatAdresi && seciliTeslimatAdresi.adres);
+  var yetkiliVar = seciliYetkililer.length>0;
+  return {faturaVar:faturaVar, teslimatVar:teslimatVar, yetkiliVar:yetkiliVar, hepsiTam: faturaVar && teslimatVar && yetkiliVar};
+}
+
+// Ön-kontrol ekranı KAPANDIĞINDA nereye devam edileceğini tutar — bu sayede
+// aynı ekran hem "Ürün Bul" hem "Gönder" hem "Kaydet" akışları için TEK ORTAK
+// kapı olarak kullanılabiliyor (SORUN 2'nin kökten çözümü).
+var onKontrolSonrasiAksiyon = "urunBul"; // 'urunBul' | 'gonder' | 'kaydet'
+
+// Gönder/Kaydet akışlarının BAŞINDA çağrılır. Bilgiler eksikse ön-kontrol
+// ekranını açar ve true döner (çağıran fonksiyon burada durmalı). Bilgiler
+// tamsa hiçbir şey yapmadan false döner (çağıran fonksiyon normal akışına devam eder).
+function belgeBilgileriEksikMi(sonrakiAksiyon){
+  if(musteriKartIdx===null) return false; // müşteri kartı bağlamı yoksa bu kapıyı devre dışı bırak
+  var durum = belgeBilgileriHazirlaVeKontrolEt();
+  if(durum.hepsiTam) return false;
+  onKontrolSonrasiAksiyon = sonrakiAksiyon;
+  urunBulKontrolAktif = false;
+  var m = musteriListesi[musteriKartIdx];
+  document.getElementById("ubkMusteriAdi").textContent = m ? (m.ad||"") : "";
+  urunBulOnKontrolRenderEt();
+  var iim = document.getElementById("iletisimIslemleriModal"); if(iim) iim.style.display="none";
+  document.getElementById("urunBulOnKontrolModal").style.display="flex";
+  return true;
+}
+
+// ÖNERİ C — Sepet ekranının üstündeki her-zaman-görünen mini özet çubuğu.
+// Hem Kaydet hem Gönder'in baktığı belgeBilgileriHazirlaVeKontrolEt() ile
+// AYNI veriye bakar — burada gördüğün ile Kaydet/Gönder'de karşılaşacağın
+// durum HER ZAMAN birebir aynıdır.
+function belgeBilgileriOzetGuncelle(){
+  var el = document.getElementById("belgeBilgileriOzetCubugu");
+  if(!el) return;
+  if(musteriKartIdx===null){ el.style.display="none"; return; }
+  var durum = belgeBilgileriHazirlaVeKontrolEt();
+  var parcalar = [];
+  if(durum.yetkiliVar) parcalar.push("👤 "+seciliYetkililer.map(function(k){return k.isim;}).join(", "));
+  if(durum.faturaVar) parcalar.push("🧾 "+(seciliFaturaAdresi.gecici?"Geçici Adres":seciliFaturaAdresi.etiket));
+  if(durum.teslimatVar && teslimatDahilEt) parcalar.push("🚚 "+(seciliTeslimatAdresi.gecici?"Geçici Adres":seciliTeslimatAdresi.etiket));
+  var tamMi = durum.hepsiTam;
+  el.style.display = "flex";
+  el.style.background = tamMi ? "linear-gradient(135deg,#f0f7ff,#dbe9f9)" : "linear-gradient(135deg,#fff6ec,#ffe8d1)";
+  el.style.border = "2.5px solid "+(tamMi?"#3569b8":"#b7601f");
+  var metin = parcalar.length ? parcalar.join(" · ") : "Fatura/Teslimat/Yetkili seçilmedi";
+  el.innerHTML = "<span style='font-size:14px;font-weight:800;color:"+(tamMi?"#003a70":"#a8590c")+";overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+(tamMi?"✅ ":"⚠️ ")+safeText(metin)+"</span>"
+    +"<span style='font-size:13px;font-weight:900;color:#fff;background:"+(tamMi?"#003a70":"#b7601f")+";padding:5px 12px;border-radius:6px;flex-shrink:0;'>Değiştir</span>";
+}
+// Özet çubuğuna dokununca — Gönder/Kaydet'in kullandığı AYNI ekranı, AYNI
+// verilerle açar. "Devam Et" onKontrolSonrasiAksiyon="ozet" olduğu için sadece
+// ekranı kapatıp sepete geri döner (gönder/kaydet'i otomatik tetiklemez).
+function belgeBilgileriOzetDuzenle(){
+  if(musteriKartIdx===null) return;
+  urunBulKontrolAktif = false;
+  onKontrolSonrasiAksiyon = "ozet";
+  var m = musteriListesi[musteriKartIdx];
+  document.getElementById("ubkMusteriAdi").textContent = m ? (m.ad||"") : "";
+  urunBulOnKontrolRenderEt();
+  document.getElementById("urunBulOnKontrolModal").style.display="flex";
+}
+
 function urunBulOnKontrolAc(){
   if(musteriKartIdx===null) return;
   var m = musteriListesi[musteriKartIdx];
   if(!m) return;
   urunBulKontrolAktif = true;
+  onKontrolSonrasiAksiyon = "urunBul";
   document.getElementById("musteriKartModal").style.display="none";
   document.getElementById("ubkMusteriAdi").textContent = m.ad||"";
+  var durum = belgeBilgileriHazirlaVeKontrolEt();
+  // ÖNERİ A — AKILLI ATLAMA: fatura+teslimat+yetkili otomatik seçilip hepsi
+  // tamsa, kullanıcıya HİÇ soru sormadan doğrudan Ürün Bul'a geçiyoruz.
+  if(durum.hepsiTam){
+    urunBulOnKontrolDevamEt();
+    return;
+  }
   urunBulOnKontrolRenderEt();
   document.getElementById("urunBulOnKontrolModal").style.display="flex";
 }
@@ -32,7 +125,13 @@ function urunBulOnKontrolAc(){
 function urunBulOnKontrolKapat(){
   urunBulKontrolAktif = false;
   document.getElementById("urunBulOnKontrolModal").style.display="none";
-  document.getElementById("musteriKartModal").style.display="flex";
+  // Sadece "Ürün Bul" akışından açıldıysa Müşteri Kartı'na geri dön — Gönder/
+  // Kaydet/Özet çubuğundan açıldıysa (o an Sepet ekranındayız) kart açmaya gerek yok.
+  if((onKontrolSonrasiAksiyon||"urunBul")==="urunBul"){
+    document.getElementById("musteriKartModal").style.display="flex";
+  }
+  if(typeof belgeBilgileriOzetGuncelle==="function") belgeBilgileriOzetGuncelle();
+  onKontrolSonrasiAksiyon = "urunBul";
 }
 
 function urunBulOnKontrolRenderEt(){
@@ -40,17 +139,11 @@ function urunBulOnKontrolRenderEt(){
   var m = musteriListesi[musteriKartIdx];
   if(!m) return;
 
-  // Sadece TEK seçenek varsa ve henüz seçim yapılmamışsa otomatik seç —
-  // gereksiz bir tıklama istemiyoruz. 2+ adres varsa kullanıcı elle seçmeli.
-  var faturaListesi = musteriAdresListesiGetir(m, "fatura");
-  var teslimatListesi = musteriAdresListesiGetir(m, "teslimat");
-  if(!seciliFaturaAdresi && faturaListesi.length===1){ seciliFaturaAdresi = faturaListesi[0]; localStorage.setItem("weicon_secili_fatura", JSON.stringify(seciliFaturaAdresi)); }
-  if(!seciliTeslimatAdresi && teslimatListesi.length===1){ seciliTeslimatAdresi = teslimatListesi[0]; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(seciliTeslimatAdresi)); }
-
-  var faturaVar = !!(seciliFaturaAdresi && seciliFaturaAdresi.adres);
-  var teslimatVar = !!(seciliTeslimatAdresi && seciliTeslimatAdresi.adres);
-  var yetkiliVar = !!(seciliYetkiliKisi && seciliYetkiliKisi.isim);
-  var hepsiTam = faturaVar && teslimatVar && yetkiliVar;
+  var durum = belgeBilgileriHazirlaVeKontrolEt();
+  var faturaVar = durum.faturaVar;
+  var teslimatVar = durum.teslimatVar;
+  var yetkiliVar = durum.yetkiliVar;
+  var hepsiTam = durum.hepsiTam;
 
   function satirOlustur(tamamMi, baslik, altYazi, butonYazi, butonOnclick, geciciMi, toggleHtml){
     var renkBg = tamamMi ? "linear-gradient(135deg,#f0fbf3,#dceedf)" : "linear-gradient(135deg,#fff6ec,#ffe8d1)";
@@ -86,7 +179,7 @@ function urunBulOnKontrolRenderEt(){
   if(teslimatVar && !teslimatDahilEt) teslimatAltYazi = "Seçili ama belgeye eklenmeyecek";
   html += satirOlustur(teslimatVar && teslimatDahilEt, "TESLİMAT ADRESİ", teslimatAltYazi, teslimatVar?"Değiştir":"+ Seç", "adresYonetimAc('teslimat')", teslimatVar && seciliTeslimatAdresi.gecici, teslimatVar ? dahilEtAnahtariOlustur(teslimatDahilEt) : "");
 
-  html += satirOlustur(yetkiliVar, "YETKİLİ KİŞİ", yetkiliVar?safeText(seciliYetkiliKisi.isim):"Seçilmedi", yetkiliVar?"Değiştir":"+ Seç", "musteriIletisimYetkiliSecmeyeAc()");
+  html += satirOlustur(yetkiliVar, "YETKİLİ KİŞİ", yetkiliVar?safeText(seciliYetkililer.map(function(k){return k.isim;}).join(", ")):"Seçilmedi", yetkiliVar?"Değiştir":"+ Seç", "musteriIletisimYetkiliSecmeyeAc()");
 
   document.getElementById("ubkListesi").innerHTML = html;
 
@@ -105,6 +198,12 @@ function urunBulOnKontrolRenderEt(){
 function urunBulOnKontrolDevamEt(){
   urunBulKontrolAktif = false;
   document.getElementById("urunBulOnKontrolModal").style.display="none";
+  var aksiyon = onKontrolSonrasiAksiyon || "urunBul";
+  onKontrolSonrasiAksiyon = "urunBul";
+  if(typeof belgeBilgileriOzetGuncelle==="function") belgeBilgileriOzetGuncelle();
+  if(aksiyon==="gonder"){ iletisimIslemleriPopupAc(); return; }
+  if(aksiyon==="kaydet"){ hesaplaKaydetTikla(); return; }
+  if(aksiyon==="ozet"){ return; } // sadece kapat, sepete geri dön — otomatik gönder/kaydet YOK
   musteriIslemBaslatKarttan();
 }
 
@@ -159,7 +258,8 @@ function islemBaslatSecildi(mod){
   seciliMusteri.sonGoruntuleme = Date.now();
   musteriListesiniKaydet();
   lsSet("weicon_secili_musteri", seciliMusteri);
-  seciliYetkiliKisi = null;
+  seciliYetkililer = [];
+  localStorage.removeItem("weicon_secili_yetkililer");
   localStorage.removeItem("weicon_secili_yetkili");
   if(typeof yetkiliKisiEtiketGuncelle==="function") yetkiliKisiEtiketGuncelle();
   musteriSeritiGuncelle();
@@ -210,7 +310,8 @@ function musteriSecimYap(idx){
   seciliMusteri.sonGoruntuleme = Date.now();
   musteriListesiniKaydet();
   lsSet("weicon_secili_musteri", seciliMusteri);
-  seciliYetkiliKisi = null;
+  seciliYetkililer = [];
+  localStorage.removeItem("weicon_secili_yetkililer");
   localStorage.removeItem("weicon_secili_yetkili");
   if(typeof yetkiliKisiEtiketGuncelle==="function") yetkiliKisiEtiketGuncelle();
   musteriSeritiGuncelle();
@@ -730,6 +831,7 @@ function switchTab(n){
     var btnWhatsappYedek = document.getElementById('btnWhatsappYedek');
     if(btnWhatsappYedek) btnWhatsappYedek.style.display = cihazMobilMi() ? 'none' : 'flex';
     if(typeof islemTuruRenkGuncelle==="function") islemTuruRenkGuncelle();
+    if(typeof belgeBilgileriOzetGuncelle==="function") belgeBilgileriOzetGuncelle();
   }
   if(n===1) performFilter();
   if(n===5){
@@ -1209,6 +1311,7 @@ function iletisimIslemleriPopupAc(){
     anomaliUyariPopupGoster(uyarilar, 'gonder');
     return;
   }
+  if(belgeBilgileriEksikMi("gonder")) return;
   document.getElementById("fiyatGorunumuModal").style.display="flex";
 }
 
@@ -1236,6 +1339,7 @@ function hesaplaKaydetTikla(){
     anomaliUyariPopupGoster(uyarilar, 'kaydet');
     return;
   }
+  if(belgeBilgileriEksikMi("kaydet")) return;
   kaydetOnayPopupAc();
 }
 
