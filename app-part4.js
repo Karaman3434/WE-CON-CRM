@@ -144,12 +144,21 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
     +(teslimatAdr ? "<div style='font-size:12.5px;color:#3a4a5c;font-weight:700;line-height:1.35;margin-top:8px;padding-top:8px;border-top:1px dashed #dde3ea;'><b style='color:#c0392b;font-size:16px;display:block;margin-bottom:2px;font-weight:900;'>🚚 TESLİMAT ADRESİ</b>"+teslimatAdr+"</div>" : "")
     +"</div>";
 
+  var belgeGecmisiOnclick = duzenlenebilir ? " onclick=\"belgeGecmisiPopupAc('"+tip+"',"+idx+")\"" : "";
+  var belgeBaslikMetni = (belgeTipi||"SİPARİŞ") + (kayitKodu ? " · "+kayitKodu : " DETAYLARI");
+  var belgeBaslikSagIkon = duzenlenebilir
+    ? "<span style='display:flex;align-items:center;gap:6px;flex-shrink:0;'>"
+        +(kayitRevizeZamani ? "<span style='background:#c0392b;color:#fff;font-size:11px;font-weight:900;padding:3px 9px;border-radius:8px;'>REVİZE</span>" : "")
+        +"<span style='font-size:11px;font-weight:900;opacity:.85;white-space:nowrap;'>📜 Geçmiş</span>"
+      +"</span>"
+    : "";
+
   return "<div style='border:"+(sorunluKayitMi?"4px solid #c0392b":"2px solid "+LACIVERT)+";border-radius:8px;overflow:hidden;box-sizing:border-box;margin-bottom:14px;'>"
     + durumRozetBlok
     + ustBaslikBlok
     + musteriBilgileriBlok
     +(hareketSecBtn?"<div style='padding:0 16px 14px;'>"+hareketSecBtn+"</div>":"")
-    +"<div style='background:"+LACIVERT+";color:#fff;padding:9px 16px;font-size:13px;font-weight:900;letter-spacing:.5px;'>"+(belgeTipi||"SİPARİŞ")+" DETAYLARI</div>"
+    +"<div"+belgeGecmisiOnclick+" style='background:"+LACIVERT+";color:#fff;padding:9px 16px;font-size:13px;font-weight:900;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;gap:8px;"+(duzenlenebilir?"cursor:pointer;":"")+"'><span style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+belgeBaslikMetni+"</span>"+belgeBaslikSagIkon+"</div>"
     +"<table style='width:100%;table-layout:fixed;border-collapse:collapse;font-size:12px;'>"
     +"<thead><tr style='background:#cfe2f3;'>"
     +"<th style='border:1px solid #3569b8;color:#3569b8;padding:5px 2px;text-align:center;width:6%;font-size:15px;'>SIRA</th>"
@@ -171,6 +180,118 @@ function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, 
 
 var _faturaOnizlemeAktifTip = null;
 var _faturaOnizlemeAktifIdx = null;
+
+// --- Belge Geçmişi (soy ağacı) ---------------------------------------------
+// Bir belgenin (Numune/Teklif/Proforma/Sipariş) geriye ve ileriye doğru
+// bağlantılı olduğu diğer belgeleri bulur: aynı müşteri + ortak Berta ürün
+// kodu eşleşmesiyle. NOT: Belgelerde "bir önceki belgenin kimliği" bilgisi
+// AYRICA saklanmadığı için bu tahmine dayalı (best-effort) bir eşleştirmedir;
+// bu yüzden tespit edilemeyen ara adımlar zincirde görünmeyebilir.
+var TUM_BELGE_TIPLERI = ["numune","teklif","proforma","siparis"];
+var TUM_BELGE_TIP_ETIKET = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
+var TUM_BELGE_TIP_IKON = {numune:"🧪", teklif:"📝", proforma:"🧾", siparis:"📦"};
+var TUM_BELGE_TIP_RENK = {numune:"#b7601f", teklif:"#1f9d55", proforma:"#8e44ad", siparis:"#003a70"};
+
+function belgeZinciriBul(tip, idx){
+  arsivData = lsGet("weicon_arsiv",{});
+  var hepsi = [];
+  for(var t=0;t<TUM_BELGE_TIPLERI.length;t++){
+    var tt = TUM_BELGE_TIPLERI[t];
+    var liste = arsivData[tt]||[];
+    for(var k=0;k<liste.length;k++){
+      var kayit = liste[k];
+      hepsi.push({
+        tipKey: tt, tipIdx: k, musteri: kayit.musteri||"-", tarih: kayit.tarih||"", ts: kayit.ts||0,
+        kod: kayit.kod||"", durum: kayit.durum||null, revizeZamani: kayit.revizeZamani||null,
+        adet: (kayit.urunler||[]).length,
+        bertaKodlari: (kayit.urunler||[]).map(function(u){ return u.berta; }).filter(Boolean)
+      });
+    }
+  }
+  var mevcut = null;
+  for(var i=0;i<hepsi.length;i++){ if(hepsi[i].tipKey===tip && hepsi[i].tipIdx===idx){ mevcut = hepsi[i]; break; } }
+  if(!mevcut) return [];
+
+  function bagliMi(a,b){
+    if(a.musteri !== b.musteri) return false;
+    return a.bertaKodlari.some(function(kod){ return b.bertaKodlari.indexOf(kod)>=0; });
+  }
+
+  var zincir = [mevcut];
+  var kullanildi = {}; kullanildi[mevcut.tipKey+"_"+mevcut.tipIdx] = true;
+
+  // Geriye doğru: her adımda "şu ana kadarki en eski adımdan önceki, ona bağlı en yakın kayıt"
+  var referans = mevcut;
+  while(true){
+    var enYakinOncesi = null;
+    for(var g=0;g<hepsi.length;g++){
+      var aday = hepsi[g];
+      var anahtar = aday.tipKey+"_"+aday.tipIdx;
+      if(kullanildi[anahtar]) continue;
+      if(aday.ts >= referans.ts) continue;
+      if(!bagliMi(referans, aday)) continue;
+      if(!enYakinOncesi || aday.ts > enYakinOncesi.ts) enYakinOncesi = aday;
+    }
+    if(!enYakinOncesi) break;
+    zincir.unshift(enYakinOncesi);
+    kullanildi[enYakinOncesi.tipKey+"_"+enYakinOncesi.tipIdx] = true;
+    referans = enYakinOncesi;
+  }
+
+  // İleriye doğru: aynı mantık, sonrasına bakarak
+  referans = mevcut;
+  while(true){
+    var enYakinSonrasi = null;
+    for(var s=0;s<hepsi.length;s++){
+      var aday2 = hepsi[s];
+      var anahtar2 = aday2.tipKey+"_"+aday2.tipIdx;
+      if(kullanildi[anahtar2]) continue;
+      if(aday2.ts <= referans.ts) continue;
+      if(!bagliMi(referans, aday2)) continue;
+      if(!enYakinSonrasi || aday2.ts < enYakinSonrasi.ts) enYakinSonrasi = aday2;
+    }
+    if(!enYakinSonrasi) break;
+    zincir.push(enYakinSonrasi);
+    kullanildi[enYakinSonrasi.tipKey+"_"+enYakinSonrasi.tipIdx] = true;
+    referans = enYakinSonrasi;
+  }
+
+  return zincir;
+}
+
+function belgeGecmisiPopupAc(tip, idx){
+  var zincir = belgeZinciriBul(tip, idx);
+  var html = "<div style='font-size:19px;font-weight:900;color:#003a70;margin-bottom:4px;'>📜 Belge Geçmişi</div>";
+  if(zincir.length<=1){
+    html += "<div style='font-size:14px;color:#8a97a6;font-weight:700;'>Bu belgeyle bağlantılı başka bir belge bulunamadı.</div>";
+  } else {
+    html += "<div style='font-size:14px;color:#8a97a6;font-weight:700;margin-bottom:16px;'>"+safeText(zincir[0].musteri)+" — bu iş için "+zincir.length+" belge bulundu</div>";
+    for(var i=0;i<zincir.length;i++){
+      var adim = zincir[i];
+      var renk = TUM_BELGE_TIP_RENK[adim.tipKey] || "#3569b8";
+      var aktifMi = (adim.tipKey===tip && adim.tipIdx===idx);
+      var sonMu = (i===zincir.length-1);
+      html += "<div style='position:relative;padding-left:30px;padding-bottom:"+(sonMu?"0":"20px")+";'>"
+        +(sonMu?"":"<div style='position:absolute;left:9px;top:22px;bottom:0;width:3px;background:#c3d7f0;'></div>")
+        +"<div style='position:absolute;left:0;top:2px;width:20px;height:20px;border-radius:50%;background:"+renk+";box-shadow:0 0 0 4px #fff;'></div>"
+        +"<div style='font-size:12px;font-weight:800;color:#8a97a6;margin-bottom:2px;'>"+tarihKisaltTekSatir(adim.tarih)+"</div>"
+        +"<div onclick=\"belgeGecmisiKapat();arsivDetayAc('"+adim.tipKey+"',"+adim.tipIdx+")\" style='cursor:pointer;border-radius:10px;padding:8px 12px;background:"+renk+"18;border:1.5px solid "+renk+"55;'>"
+          +"<div style='font-size:16px;font-weight:900;color:"+renk+";'>"+TUM_BELGE_TIP_IKON[adim.tipKey]+" "+TUM_BELGE_TIP_ETIKET[adim.tipKey]
+            +(aktifMi ? "<span style='float:right;background:#16a085;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:6px;'>ŞU AN BURADASIN</span>" : "")
+          +"</div>"
+          +"<div style='font-size:12.5px;font-weight:700;color:"+renk+";opacity:.8;margin-top:2px;'>"+safeText(adim.kod)+" · "+adim.adet+" ürün"+(adim.revizeZamani?" · 🔄 revize edildi":"")+(adim.durum==="iptal"?" · 🚫 iptal":adim.durum==="iade"?" · ↩️ iade":adim.durum==="kacan"?" · ❌ kaçtı":"")+"</div>"
+        +"</div>"
+      +"</div>";
+    }
+  }
+  document.getElementById("belgeGecmisiIcerik").innerHTML = html;
+  document.getElementById("belgeGecmisiModal").style.display = "flex";
+}
+function belgeGecmisiKapat(){
+  document.getElementById("belgeGecmisiModal").style.display = "none";
+}
+// --------------------------------------------------------------------------
+
 function faturaOnizlemePopupGoster(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   document.getElementById("faturaOnizlemeIcerik").innerHTML = faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx);
   document.getElementById("faturaOnizlemeModal").style.display = "flex";

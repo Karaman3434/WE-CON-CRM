@@ -1889,6 +1889,16 @@ function rafUpdate(fn){
   </div>
 </div>
 
+<!-- BELGE GEÇMİŞİ (soy ağacı) — bir siparişin/teklifin hangi belgelerden geldiğini
+     (Numune → Teklif → Sipariş gibi) zaman çizgisi olarak gösteren popup.
+     faturaOnizlemeModal'ın ÜSTÜNDE açılır (daha yüksek z-index). -->
+<div id="belgeGecmisiModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:10002;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;padding:20px 16px;width:96%;max-width:600px;max-height:94vh;overflow-y:auto;box-sizing:border-box;">
+    <div id="belgeGecmisiIcerik"></div>
+    <button onclick="belgeGecmisiKapat()" style="width:100%;margin-top:14px;background:#ffcdd2;color:#b71c1c;border:none;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
+  </div>
+</div>
+
 <!-- FATURA İŞLEMLER — eskiden Hareket Seç + 6 ayrı buton olarak dağınık duran
      eylemler, tek bir "⚙️ İşlemler" tetikleyicisinin açtığı bu popup'ta toplandı.
      Butonların ID'leri ve onclick'leri AYNI kaldı — sadece fiziksel yerleri
@@ -2675,7 +2685,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1708261828-511</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808260701-512</div>
 </div>
 
 </div>
