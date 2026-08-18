@@ -1076,22 +1076,22 @@ function aySiparisleriAc(ayIndex){
     // yok, ince alt çizgiyle ayrılıyor + çift satırda hafif zebra — ekrana çok
     // daha fazla müşteri sığsın diye (tarih hâlâ HİÇ gizlenmiyor).
     var zebra = (i%2===1) ? "background:#f7f9fc;" : "";
-    satirlar += "<div onclick=\"document.getElementById('aySiparisleriModal').style.display='none';arsivDetayAc('siparis',"+it.idx+")\" style='cursor:pointer;padding:9px 14px;border-bottom:1.5px solid #eef1f5;"+zebra+(sorunluMu?"opacity:.85;":"")+"'>"
-      +"<div style='display:flex;align-items:center;gap:7px;margin-bottom:2px;flex-wrap:nowrap;overflow:hidden;'>"
-        +"<span style='font-size:12px;font-weight:900;padding:2px 7px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
-        +"<span style='font-size:12.5px;font-weight:700;color:#8a97a6;flex-shrink:0;'>"+tarihKisaltTekSatir(it.kayit.tarih)+"</span>"
-        +(durumEk ? "<span style='font-size:12px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+durumEk+"</span>" : "")
+    satirlar += "<div onclick=\"document.getElementById('aySiparisleriModal').style.display='none';arsivDetayAc('siparis',"+it.idx+")\" style='cursor:pointer;padding:10px 14px;border-bottom:1.5px solid #eef1f5;"+zebra+(sorunluMu?"opacity:.85;":"")+"'>"
+      +"<div style='display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:nowrap;overflow:hidden;'>"
+        +"<span style='font-size:14px;font-weight:900;padding:2px 8px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
+        +"<span style='font-size:15px;font-weight:800;color:#556170;flex-shrink:0;'>"+tarihKisaltTekSatir(it.kayit.tarih)+"</span>"
+        +(durumEk ? "<span style='font-size:14px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+durumEk+"</span>" : "")
       +"</div>"
       +"<div style='display:flex;align-items:baseline;justify-content:space-between;gap:8px;'>"
-        +"<span style='font-size:18px;font-weight:800;color:#1a2a3a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+safeText(it.kayit.musteri||"-")+"</span>"
-        +"<span style='font-size:17px;font-weight:900;flex-shrink:0;white-space:nowrap;'><span style='color:"+kartRenk+";'>"+fmt(it.toplam)+"€</span><span style='opacity:.4;font-size:13px;'> · </span><span style='color:"+(sorunluMu?kartRenk:"#0e6b34")+";font-size:14px;'>"+fmt(it.prim)+"€</span></span>"
+        +"<span style='font-size:25px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+safeText(it.kayit.musteri||"-")+"</span>"
+        +"<span style='font-size:22px;font-weight:900;flex-shrink:0;white-space:nowrap;'><span style='color:"+kartRenk+";'>"+fmt(it.toplam)+"€</span><span style='color:#8a97a6;font-size:15px;'> · </span><span style='color:"+(sorunluMu?kartRenk:"#0e6b34")+";font-size:16px;'>"+fmt(it.prim)+"€</span></span>"
       +"</div>"
       +"</div>";
   }
-  var html = "<div style='font-size:24px;font-weight:900;color:#003a70;margin-bottom:12px;text-align:center;border-bottom:3px solid #f2994a;padding-bottom:10px;'>📅 "+ay.ayAd+" "+ay.yil+" Siparişleri</div>"
+  var html = "<div style='font-size:29px;font-weight:900;color:#003a70;margin-bottom:12px;text-align:center;border-bottom:3px solid #f2994a;padding-bottom:10px;'>📅 "+ay.ayAd+" "+ay.yil+" Siparişleri</div>"
     +"<div style='background:linear-gradient(135deg,#0a1628,#132840);border-radius:14px;padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;'>"
-      +"<span style='font-size:17px;font-weight:800;color:#7fd6ff;'>🧮 AY TOPLAMI ("+ay.kayitlar.length+" sipariş)</span>"
-      +"<span style='font-size:23px;font-weight:900;color:#00d9ff;'>"+fmt(ayToplam)+" €</span>"
+      +"<span style='font-size:20px;font-weight:800;color:#7fd6ff;'>🧮 AY TOPLAMI ("+ay.kayitlar.length+" sipariş)</span>"
+      +"<span style='font-size:28px;font-weight:900;color:#00d9ff;'>"+fmt(ayToplam)+" €</span>"
     +"</div>"
     +"<div style='border:1.5px solid #eef1f5;border-radius:10px;overflow:hidden;'>"+satirlar+"</div>";
   document.getElementById("aySiparisleriIcerik").innerHTML = html;
