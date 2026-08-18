@@ -519,6 +519,9 @@ function getDynamicCustomerFaturaAdresi(){
   return (musteriKaydiF && musteriKaydiF.acikAdres) || "";
 }
 function getDynamicCustomerTeslimatAdresi(){
+  // "Dahil et" anahtarı KAPALIYSA, bir adres seçili olsa bile belgeye hiç
+  // eklenmez — kullanıcı bilinçli olarak "sadece merkeze gönder" demiş demektir.
+  if(typeof teslimatDahilEt!=="undefined" && !teslimatDahilEt) return "";
   if(seciliTeslimatAdresi && seciliTeslimatAdresi.adres) return seciliTeslimatAdresi.adres;
   var cb = document.getElementById("custTeslimatKullanCheckbox");
   if(!cb || !cb.checked) return "";

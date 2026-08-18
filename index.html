@@ -1905,6 +1905,17 @@ function rafUpdate(fn){
     <div id="adresYonetimBaslik" style="font-size:24px;font-weight:900;color:#003a70;margin-bottom:14px;">🧾 Fatura Adresi Seç</div>
     <div id="adresYonetimListesi"></div>
 
+    <button onclick="geciciAdresFormAc()" style="width:100%;background:#fff6ec;color:#a8590c;border:1.5px dashed #f2994a;border-radius:10px;padding:12px;font-size:15px;font-weight:800;text-align:center;margin-top:4px;cursor:pointer;">📝 Bu Sipariş İçin Farklı/Tek Seferlik Adres Yaz</button>
+
+    <div id="geciciAdresForm" style="display:none;border:2px solid #f2994a;border-radius:10px;padding:12px;margin-top:10px;background:#fff8ee;">
+      <div style="font-size:13px;font-weight:900;color:#a8590c;margin-bottom:6px;">⚠️ Bu adres SADECE bu sipariş için kullanılır, müşteri kartına kaydedilmez</div>
+      <textarea id="geciciAdresInput" rows="2" style="width:100%;padding:10px;font-size:15px;border:1.5px solid #f0c880;border-radius:8px;box-sizing:border-box;" placeholder="Örn: Şantiye şefi Ahmet Bey'e, XYZ İnşaat sahası, Kayseri yolu 12.km"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="geciciAdresFormKapat()" style="flex:1;background:#eef1f4;color:#556;border:none;padding:11px;border-radius:8px;font-size:15px;font-weight:800;cursor:pointer;">Vazgeç</button>
+        <button onclick="geciciAdresKullan()" style="flex:2;background:#f2994a;color:#fff;border:none;padding:11px;border-radius:8px;font-size:15px;font-weight:800;cursor:pointer;">✓ Sadece Bu Sipariş İçin Kullan</button>
+      </div>
+    </div>
+
     <div id="adresYonetimEkleForm" style="display:none;background:#f7f9fc;border:2px solid #d5dce6;border-radius:12px;padding:14px;margin-top:10px;">
       <div style="font-size:15px;font-weight:800;color:#003a70;margin-bottom:6px;">Etiket (opsiyonel — örn. "Merkez Ofis")</div>
       <input id="adresYonetimEtiketInput" type="text" style="width:100%;padding:12px;font-size:18px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;margin-bottom:10px;">
@@ -2712,7 +2723,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808260936-516</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808261042-517</div>
 </div>
 
 </div>

@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1808260936-516";
+var APP_VERSION = "V1808261042-517";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1383,6 +1383,8 @@ function musteriKartAc(idx){
   localStorage.removeItem("weicon_secili_fatura");
   seciliTeslimatAdresi = null;
   localStorage.removeItem("weicon_secili_teslimat");
+  teslimatDahilEt = true;
+  localStorage.removeItem("weicon_teslimat_dahil_et");
   yetkiliKisiEtiketGuncelle();
   var bilgiParts = [];
   if(m.sehir) bilgiParts.push(sehirFormatla(m.sehir));
@@ -1532,6 +1534,36 @@ function cariKartYetkiliDuzenleAc(i){
   musteriIletisimAc();
   yetkiliKisiDuzenleAc(i);
 }
+function teslimatDahilEtDegistir(){
+  teslimatDahilEt = !teslimatDahilEt;
+  localStorage.setItem("weicon_teslimat_dahil_et", teslimatDahilEt ? "true" : "false");
+  if(typeof urunBulKontrolAktif!=="undefined" && urunBulKontrolAktif && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+}
+
+// TEK SEFERLİK (GEÇİCİ) ADRES — müşteri kartındaki kayıtlı listeye hiç
+// eklenmez, sadece bu andaki gönderim/kayıt için kullanılır. "gecici:true"
+// işaretiyle taşınır; ekran bunu turuncu bir rozetle ayırt eder.
+function geciciAdresFormAc(){
+  var form = document.getElementById("geciciAdresForm");
+  if(form) form.style.display = "block";
+  var ta = document.getElementById("geciciAdresInput");
+  if(ta) ta.value = "";
+}
+function geciciAdresFormKapat(){
+  var form = document.getElementById("geciciAdresForm");
+  if(form) form.style.display = "none";
+}
+function geciciAdresKullan(){
+  var tip = adresYonetimTipi;
+  var adres = (document.getElementById("geciciAdresInput").value||"").trim();
+  if(!adres){ showToast("⚠️ Adres boş olamaz."); return; }
+  var geciciKayit = {etiket:"Geçici Adres", adres:adres, gecici:true};
+  if(tip==="fatura"){ seciliFaturaAdresi = geciciKayit; localStorage.setItem("weicon_secili_fatura", JSON.stringify(geciciKayit)); }
+  else { seciliTeslimatAdresi = geciciKayit; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(geciciKayit)); }
+  adresYonetimKapat();
+  if(typeof urunBulKontrolAktif!=="undefined" && urunBulKontrolAktif && typeof urunBulOnKontrolRenderEt==="function") urunBulOnKontrolRenderEt();
+}
+
 function cariKartYetkiliSilAc(i){
   if(musteriKartIdx===null) return;
   var m = musteriListesi[musteriKartIdx];
@@ -1620,6 +1652,8 @@ function adresYonetimListesiniRenderEt(){
       +"</div></div></div>";
   }
   document.getElementById("adresYonetimListesi").innerHTML = html || "<div style='text-align:center;color:#8a97a6;font-size:15px;padding:14px 0;'>Henüz adres eklenmemiş.</div>";
+  var geciciForm = document.getElementById("geciciAdresForm");
+  if(geciciForm) geciciForm.style.display = "none";
 }
 function adresSecildi(tip, idx){
   if(musteriKartIdx===null) return;
@@ -1721,6 +1755,11 @@ var seciliYetkiliKisi = JSON.parse(localStorage.getItem("weicon_secili_yetkili")
 // gönderim/kayıt sırasında hangisinin kullanılacağı burada seçilir ve cihazda saklanır.
 var seciliFaturaAdresi = JSON.parse(localStorage.getItem("weicon_secili_fatura")||"null");
 var seciliTeslimatAdresi = JSON.parse(localStorage.getItem("weicon_secili_teslimat")||"null");
+// Teslimat adresi SEÇİLİ olsa bile, bu belgeye eklenip eklenmeyeceğini ayrıca
+// kontrol eden anahtar — "sadece merkeze gönder, teslimat yazma" durumları için.
+// Varsayılan: açık (true). Değer localStorage'da yoksa true kabul edilir.
+var _teslimatDahilEtDeger = localStorage.getItem("weicon_teslimat_dahil_et");
+var teslimatDahilEt = _teslimatDahilEtDeger===null ? true : (_teslimatDahilEtDeger==="true");
 
 // Bir müşterinin Fatura/Teslimat adres LİSTESİNİ döndürür. Eskiden her müşterinin
 // tek bir "acikAdres"/"teslimatAdresi" metni vardı — bu fonksiyon ilk çağrıldığında

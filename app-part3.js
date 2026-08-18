@@ -52,27 +52,41 @@ function urunBulOnKontrolRenderEt(){
   var yetkiliVar = !!(seciliYetkiliKisi && seciliYetkiliKisi.isim);
   var hepsiTam = faturaVar && teslimatVar && yetkiliVar;
 
-  function satirOlustur(tamamMi, baslik, altYazi, butonYazi, butonOnclick){
+  function satirOlustur(tamamMi, baslik, altYazi, butonYazi, butonOnclick, geciciMi, toggleHtml){
     var renkBg = tamamMi ? "#e3f7ef" : "#fdf1e0";
     var renkBorder = tamamMi ? "#7dcdb3" : "#f0c880";
     var renkYazi = tamamMi ? "#0e7c63" : "#9a6a10";
     var ikon = tamamMi ? "✅" : "⚠️";
+    var geciciRozet = geciciMi ? "<span style='background:#f2994a;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:3px;'>GEÇİCİ · SADECE BU SİPARİŞ</span><br>" : "";
     return "<div style='background:"+renkBg+";border:2px solid "+renkBorder+";border-radius:10px;padding:14px 16px;margin-bottom:10px;'>"
       +"<div style='display:flex;align-items:center;gap:10px;'>"
       +"<span style='font-size:26px;'>"+ikon+"</span>"
       +"<div style='flex:1;min-width:0;'>"
       +"<div style='font-size:20px;font-weight:900;color:"+renkYazi+";'>"+baslik+"</div>"
-      +"<div style='font-size:20px;color:"+renkYazi+";margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+altYazi+"</div>"
+      +"<div style='font-size:20px;color:"+renkYazi+";margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+geciciRozet+altYazi+"</div>"
       +"</div>"
       +"<button onclick='"+butonOnclick+"' style='background:"+(tamamMi?"#0e7c63":"#f2994a")+";color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:18px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;'>"+butonYazi+"</button>"
       +"</div>"
+      + (toggleHtml||"")
       +"</div>";
   }
 
+  function dahilEtAnahtariOlustur(acikMi){
+    return "<div onclick='teslimatDahilEtDegistir()' style='cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px dashed "+(acikMi?"#7dcdb3":"#d5dce6")+";'>"
+      +"<span style='font-size:14px;font-weight:800;color:"+(acikMi?"#0e7c63":"#8a97a6")+";'>📧 Bu belgeye dahil et</span>"
+      +"<div style='width:46px;height:26px;border-radius:14px;background:"+(acikMi?"#0e7c63":"#c7cdd6")+";position:relative;flex-shrink:0;'>"
+      +"<div style='position:absolute;top:2px;"+(acikMi?"right:2px;":"left:2px;")+"width:22px;height:22px;border-radius:50%;background:#fff;'></div>"
+      +"</div></div>";
+  }
+
   var html = "";
-  html += satirOlustur(faturaVar, "FATURA ADRESİ", faturaVar?(safeText(seciliFaturaAdresi.etiket)+" — "+safeText(seciliFaturaAdresi.adres)):"Seçilmedi", faturaVar?"Değiştir":"+ Seç", "adresYonetimAc('fatura')");
-  html += satirOlustur(teslimatVar, "TESLİMAT ADRESİ", teslimatVar?(safeText(seciliTeslimatAdresi.etiket)+" — "+safeText(seciliTeslimatAdresi.adres)):"Seçilmedi", teslimatVar?"Değiştir":"+ Seç", "adresYonetimAc('teslimat')");
-  html += satirOlustur(yetkiliVar, "YETKİLİ KİŞİ", yetkiliVar?safeText(seciliYetkiliKisi.isim):"Seçilmedi", yetkiliVar?"Değiştir":"+ Seç", "musteriIletisimYetkiliSecmeyeAc()", "");
+  html += satirOlustur(faturaVar, "FATURA ADRESİ", faturaVar?(safeText(seciliFaturaAdresi.gecici?"":seciliFaturaAdresi.etiket)+(seciliFaturaAdresi.gecici?"":" — ")+safeText(seciliFaturaAdresi.adres)):"Seçilmedi", faturaVar?"Değiştir":"+ Seç", "adresYonetimAc('fatura')", faturaVar && seciliFaturaAdresi.gecici);
+
+  var teslimatAltYazi = teslimatVar ? (safeText(seciliTeslimatAdresi.gecici?"":seciliTeslimatAdresi.etiket)+(seciliTeslimatAdresi.gecici?"":" — ")+safeText(seciliTeslimatAdresi.adres)) : "Seçilmedi";
+  if(teslimatVar && !teslimatDahilEt) teslimatAltYazi = "Seçili ama belgeye eklenmeyecek";
+  html += satirOlustur(teslimatVar && teslimatDahilEt, "TESLİMAT ADRESİ", teslimatAltYazi, teslimatVar?"Değiştir":"+ Seç", "adresYonetimAc('teslimat')", teslimatVar && seciliTeslimatAdresi.gecici, teslimatVar ? dahilEtAnahtariOlustur(teslimatDahilEt) : "");
+
+  html += satirOlustur(yetkiliVar, "YETKİLİ KİŞİ", yetkiliVar?safeText(seciliYetkiliKisi.isim):"Seçilmedi", yetkiliVar?"Değiştir":"+ Seç", "musteriIletisimYetkiliSecmeyeAc()");
 
   document.getElementById("ubkListesi").innerHTML = html;
 
