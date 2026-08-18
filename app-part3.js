@@ -522,14 +522,14 @@ function sonIslemleriRenderEt(){
     else if(item.durum==="kacan") durumEkX = " — ❌ KAÇTI"+(item.kacanRakip?" → "+safeText(item.kacanRakip):"");
     if(item.revizeZamani) durumEkX += " — 🔄 REVİZE "+revizeTarihSaatFormatla(item.revizeZamani);
     return {kartRenkX:kartRenkX, html:
-      "<div style='display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;margin-bottom:3px;'>"
-        +"<span style='font-size:14px;font-weight:900;padding:2px 8px;border-radius:5px;color:#fff;background:"+kartRenkX+";flex-shrink:0;'>"+kanalOnEkX+harfX+"</span>"
-        +"<span style='font-size:15px;font-weight:800;color:#556170;flex-shrink:0;'>"+tarihKisaltTekSatir(item.tarih)+"</span>"
-        +(durumEkX ? "<span style='font-size:14px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEkX+"</span>" : "")
+      "<div style='display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;margin-bottom:3px;'>"
+        +"<span style='font-size:17px;font-weight:900;padding:2px 9px;border-radius:5px;color:#fff;background:"+kartRenkX+";flex-shrink:0;'>"+kanalOnEkX+harfX+"</span>"
+        +"<span style='font-size:18px;font-weight:800;color:#111827;flex-shrink:0;'>"+tarihKisaltTekSatir(item.tarih)+"</span>"
+        +(durumEkX ? "<span style='font-size:17px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEkX+"</span>" : "")
       +"</div>"
       +"<div style='display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden;'>"
-        +"<span style='font-size:25px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;'>"+safeText(item.musteri)+"</span>"
-        +"<span style='font-size:16px;font-weight:800;color:"+kartRenkX+";flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehirDeger)+"</span>"
+        +"<span style='font-size:30px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;'>"+safeText(item.musteri)+"</span>"
+        +"<span style='font-size:19px;font-weight:800;color:#111827;flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehirDeger)+"</span>"
       +"</div>"
     };
   }
@@ -569,10 +569,10 @@ function sonIslemleriRenderEt(){
       var yeniHarf3 = (it.kod||"").slice(0,3);
       var donusumMetni = DONUSUM_ETIKET[yeniHarf3] || "YENİ DURUMA";
 
-      satirlar += "<div style='border-radius:10px;border:2.5px solid "+yeniIcerik.kartRenkX+";overflow:hidden;margin-bottom:7px;'>"
-        +"<div onclick=\"sonIslemDetayAc('"+bagli.tipKey+"',"+bagli.tipIdx+")\" style='cursor:pointer;padding:8px 12px;background:linear-gradient(135deg,#f0fbf3,#dceedf);opacity:.7;text-decoration:line-through;text-decoration-color:"+eskiIcerik.kartRenkX+";text-decoration-thickness:2px;'>"+eskiIcerik.html+"</div>"
-        +"<div style='background:"+yeniIcerik.kartRenkX+";color:#fff;text-align:center;padding:5px;font-size:14px;font-weight:900;letter-spacing:.2px;'>⬇ "+donusumMetni+" DÖNÜŞTÜ ⬇</div>"
-        +"<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;padding:8px 12px;background:linear-gradient(135deg,#eef4fb,#dbe9f9);'>"+yeniIcerik.html+"</div>"
+      satirlar += "<div style='border-radius:10px;border:2.5px solid "+yeniIcerik.kartRenkX+";overflow:hidden;margin-bottom:8px;'>"
+        +"<div onclick=\"sonIslemDetayAc('"+bagli.tipKey+"',"+bagli.tipIdx+")\" style='cursor:pointer;padding:9px 13px;background:#fff;opacity:.6;text-decoration:line-through;text-decoration-color:"+eskiIcerik.kartRenkX+";text-decoration-thickness:2px;'>"+eskiIcerik.html+"</div>"
+        +"<div style='background:"+yeniIcerik.kartRenkX+";color:#fff;text-align:center;padding:5px;font-size:17px;font-weight:900;letter-spacing:.2px;'>⬇ "+donusumMetni+" DÖNÜŞTÜ ⬇</div>"
+        +"<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;padding:9px 13px;background:#fff;'>"+yeniIcerik.html+"</div>"
         +"</div>";
       continue;
     }
@@ -584,9 +584,7 @@ function sonIslemleriRenderEt(){
 
     var sorunluMu = it.durum==="iptal" || it.durum==="iade" || it.durum==="kacan";
     var kartRenk = sorunluMu ? "#c0392b" : renk;
-    // Rengin açık degrade zemin karşılığı (Ana Sayfa/Müşteri Kartı ile aynı dil)
-    var ZEMIN_ACIK = {"#003a70":"#eef4fb,#dbe9f9","#28a745":"#f0fbf3,#dceedf","#8e44ad":"#f6f0fd,#ece0fa","#b7601f":"#fff6ec,#ffe8d1","#16a085":"#f0fbf3,#dceedf","#c0392b":"#fff1f0,#fbdbd8"};
-    var zeminGrad = ZEMIN_ACIK[kartRenk] || "#eef4fb,#dbe9f9";
+    var zebra = (i%2===1) ? "background:#f7f9fc;" : "background:#fff;";
 
     // Satır 1'in sonuna eklenecek durum/revize bilgisi (varsa) — kısa
     // metin, gerekirse ellipsis ile kesilir, satır sayısı asla artmaz.
@@ -596,22 +594,22 @@ function sonIslemleriRenderEt(){
     else if(it.durum==="kacan") durumEk = " — ❌ KAÇTI"+(it.kacanRakip?" → "+safeText(it.kacanRakip):"");
     if(it.revizeZamani) durumEk += " — 🔄 REVİZE "+revizeTarihSaatFormatla(it.revizeZamani);
 
-    // İKİ SATIRLIK sabit düzen — punto boyutları önceki (onaylanmış) ölçülerle
-    // birebir aynı, sadece yerleşim sıkıştırıldı. Her iki satır da nowrap +
-    // ellipsis ile korunur: içerik ne kadar uzun olursa olsun asla 2 satırı geçmez.
-    satirlar += "<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;border-radius:10px;background:linear-gradient(135deg,"+zeminGrad+");border:2.5px solid "+kartRenk+";padding:9px 12px;margin-bottom:7px;overflow:hidden;"+(sorunluMu?"opacity:.85;":"")+"'>"
-      +"<div style='display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;margin-bottom:3px;'>"
-        +"<span style='font-size:14px;font-weight:900;padding:2px 8px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
-        +"<span style='font-size:15px;font-weight:800;color:#556170;flex-shrink:0;'>"+tarihKisaltTekSatir(it.tarih)+"</span>"
-        +(durumEk ? "<span style='font-size:14px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEk+"</span>" : "")
+    // Aylık Sipariş listesiyle BİREBİR aynı zemin dili: beyaz + hafif zebra +
+    // ince alt çizgi. Renk sadece SİP/TEK rozetinde kalıyor — müşteri adı,
+    // tarih ve şehir HER ZAMAN koyu siyah (#111827), kontrast en yüksek seviyede.
+    satirlar += "<div onclick=\"sonIslemDetayAc('"+it.tipKey+"',"+it.tipIdx+")\" style='cursor:pointer;"+zebra+"border-bottom:1.5px solid #eef1f5;padding:10px 13px;overflow:hidden;"+(sorunluMu?"opacity:.85;":"")+"'>"
+      +"<div style='display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;margin-bottom:3px;'>"
+        +"<span style='font-size:17px;font-weight:900;padding:2px 9px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
+        +"<span style='font-size:18px;font-weight:800;color:#111827;flex-shrink:0;'>"+tarihKisaltTekSatir(it.tarih)+"</span>"
+        +(durumEk ? "<span style='font-size:17px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;'>"+durumEk+"</span>" : "")
       +"</div>"
       +"<div style='display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden;'>"
-        +"<span style='font-size:25px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;"+(it.durum==="iptal"||it.durum==="iade"?"text-decoration:line-through;":"")+"'>"+safeText(it.musteri)+"</span>"
-        +"<span style='font-size:16px;font-weight:800;color:"+kartRenk+";flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehir)+"</span>"
+        +"<span style='font-size:30px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;"+(it.durum==="iptal"||it.durum==="iade"?"text-decoration:line-through;":"")+"'>"+safeText(it.musteri)+"</span>"
+        +"<span style='font-size:19px;font-weight:800;color:#111827;flex-shrink:0;margin-left:auto;padding-left:8px;'>"+sehirTekSatir(sehir)+"</span>"
       +"</div>"
       +"</div>";
   }
-  var html = "<div style='overflow-x:hidden;overflow-y:auto;max-height:65vh;'>"+satirlar+"</div>";
+  var html = "<div style='overflow-x:hidden;overflow-y:auto;max-height:65vh;border:1.5px solid #eef1f5;border-radius:10px;'>"+satirlar+"</div>";
   el.innerHTML = secKutusu + toplamKutusu + html;
 }
 
