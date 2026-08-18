@@ -944,13 +944,7 @@ function rafUpdate(fn){
       <div id="cariKartAd" style="font-size:36px;font-weight:900;color:#1a2a3a;margin-bottom:6px;"></div>
       <div id="cariKartAltBaslik" style="font-size:25px;font-weight:800;color:#7ea6d6;margin-bottom:10px;"></div>
 
-      <div id="cariKartFaturaBaslik" style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:8px;">🧾 FATURA ADRESLERİ (0)</div>
-      <div id="cariKartFaturaListesi" style="margin-bottom:14px;"></div>
-
-      <div id="cariKartTeslimatBaslik" style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:8px;">🚚 TESLİMAT ADRESLERİ (0)</div>
-      <div id="cariKartTeslimatListesi" style="margin-bottom:4px;"></div>
-
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #d5dce6;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid #d5dce6;">
         <div style="display:flex;align-items:center;gap:8px;min-width:0;">
           <div style="width:46px;height:46px;border-radius:7px;background:#003a70;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📅</div>
           <div style="min-width:0;"><div style="font-size:18px;font-weight:900;color:#c0392b;">VADE</div><div id="cariKartVade" style="font-size:25px;font-weight:800;color:#222;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">-</div></div>
@@ -964,6 +958,12 @@ function rafUpdate(fn){
           <div style="min-width:0;"><div style="font-size:18px;font-weight:900;color:#c0392b;">KARGO</div><div id="cariKartKargo" style="font-size:25px;font-weight:800;color:#222;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">-</div></div>
         </div>
       </div>
+
+      <div id="cariKartFaturaBaslik" style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:8px;">🧾 FATURA ADRESLERİ (0)</div>
+      <div id="cariKartFaturaListesi" style="margin-bottom:14px;"></div>
+
+      <div id="cariKartTeslimatBaslik" style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:8px;">🚚 TESLİMAT ADRESLERİ (0)</div>
+      <div id="cariKartTeslimatListesi" style="margin-bottom:14px;"></div>
 
       <div id="cariKartYetkiliBaslik" style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:8px;">👥 YETKİLİLER (0)</div>
       <div id="cariKartYetkiliListesi"></div>
@@ -1921,18 +1921,25 @@ function rafUpdate(fn){
       </div>
     </div>
 
-    <div id="adresYonetimEkleForm" style="display:none;background:#f7f9fc;border:2px solid #d5dce6;border-radius:12px;padding:14px;margin-top:10px;">
-      <div style="font-size:15px;font-weight:800;color:#003a70;margin-bottom:6px;">Etiket (opsiyonel — örn. "Merkez Ofis")</div>
-      <input id="adresYonetimEtiketInput" type="text" style="width:100%;padding:12px;font-size:18px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;margin-bottom:10px;">
-      <div style="font-size:15px;font-weight:800;color:#003a70;margin-bottom:6px;">Açık Adres</div>
-      <textarea id="adresYonetimAdresInput" rows="3" style="width:100%;padding:12px;font-size:18px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;"></textarea>
-      <div style="display:flex;gap:8px;margin-top:10px;">
-        <button onclick="adresEkleFormKapat()" style="flex:1;background:#eef1f4;color:#556;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;">Vazgeç</button>
-        <button onclick="adresKaydet()" style="flex:2;background:#0e7c63;color:#fff;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;">✓ Kaydet</button>
-      </div>
-    </div>
-
     <button onclick="document.getElementById('adresYonetimModal').style.display='none';" style="width:100%;margin-top:14px;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
+  </div>
+</div>
+
+<!-- ADRES EKLE/DÜZENLE — TEK BAŞINA, ODAKLI mini-form. Eskiden bu form
+     adresYonetimModal'ın İÇİNDE, seçim listesinin ALTINDA gizli kalıyordu —
+     kullanıcı "hiçbir şey açılmadı" sanıyordu. Artık kendi net ekranı var,
+     hem Müşteri Kartı'ndan hem seçim ekranından "+ Ekle"/"✏️ Düzenle" ile açılır. -->
+<div id="adresFormModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:10004;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;padding:22px 18px;width:96%;max-width:600px;max-height:94vh;overflow-y:auto;box-sizing:border-box;">
+    <div id="adresFormBaslik" style="font-size:24px;font-weight:900;color:#003a70;margin-bottom:16px;">🧾 Yeni Fatura Adresi Ekle</div>
+    <div style="font-size:15px;font-weight:800;color:#003a70;margin-bottom:6px;">Etiket (opsiyonel — örn. "Merkez Ofis")</div>
+    <input id="adresFormEtiketInput" type="text" style="width:100%;padding:14px;font-size:18px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;margin-bottom:14px;">
+    <div style="font-size:15px;font-weight:800;color:#003a70;margin-bottom:6px;">Açık Adres</div>
+    <textarea id="adresFormAdresInput" rows="4" style="width:100%;padding:14px;font-size:18px;border:2px solid #d5dce6;border-radius:8px;box-sizing:border-box;"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button onclick="adresFormKapat()" style="flex:1;background:#eef1f4;color:#556;border:none;padding:16px;border-radius:8px;font-size:18px;font-weight:800;cursor:pointer;">Vazgeç</button>
+      <button onclick="adresFormKaydet()" style="flex:2;background:#0e7c63;color:#fff;border:none;padding:16px;border-radius:8px;font-size:18px;font-weight:800;cursor:pointer;">✓ Kaydet</button>
+    </div>
   </div>
 </div>
 
@@ -2728,7 +2735,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808262318-528</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808262347-529</div>
 </div>
 
 </div>

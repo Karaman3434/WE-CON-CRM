@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1808262318-528";
+var APP_VERSION = "V1808262347-529";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1633,7 +1633,6 @@ function cariKartAdresListesiniRenderEt(tip){
 function adresYonetimAc(tip){
   if(musteriKartIdx===null) return;
   adresYonetimTipi = tip;
-  document.getElementById("adresYonetimEkleForm").style.display = "none";
   var baslikEl = document.getElementById("adresYonetimBaslik");
   if(baslikEl) baslikEl.textContent = (tip==="fatura" ? "🧾 Fatura Adresi Seç" : "🚚 Teslimat Adresi Seç");
   adresYonetimListesiniRenderEt();
@@ -1686,41 +1685,60 @@ function adresSecildi(tip, idx){
     cariKartAdresListesiniRenderEt(tip);
   }
 }
+// ADRES EKLE/DÜZENLE — artık kendi net, odaklı ekranında (adresFormModal).
+// adresFormDonusYeri: bu form nereden açıldıysa (kart veya seçim ekranı)
+// kaydettikten/vazgeçtikten sonra oraya geri döner ve orayı tazeler.
+var adresFormDonusYeri = "kart"; // "kart" | "secim"
+
 function adresEkleAc(tip){
-  adresYonetimTipi = tip;
-  adresDuzenlenenIdx = null;
-  document.getElementById("adresYonetimEtiketInput").value = "";
-  document.getElementById("adresYonetimAdresInput").value = "";
-  var baslikEl = document.getElementById("adresYonetimBaslik");
-  if(baslikEl) baslikEl.textContent = (tip==="fatura" ? "🧾 Fatura Adresi" : "🚚 Teslimat Adresi");
-  adresYonetimListesiniRenderEt();
-  document.getElementById("adresYonetimEkleForm").style.display = "block";
-  document.getElementById("adresYonetimModal").style.display = "flex";
+  adresFormAc(tip, null);
 }
 function adresDuzenleAc(tip, idx){
+  adresFormAc(tip, idx);
+}
+function adresFormAc(tip, idx){
   if(musteriKartIdx===null) return;
   adresYonetimTipi = tip;
-  var m = musteriListesi[musteriKartIdx];
-  var liste = musteriAdresListesiGetir(m, tip);
-  var a = liste[idx];
-  if(!a) return;
   adresDuzenlenenIdx = idx;
-  document.getElementById("adresYonetimEtiketInput").value = a.etiket||"";
-  document.getElementById("adresYonetimAdresInput").value = a.adres||"";
-  document.getElementById("adresYonetimEkleForm").style.display = "block";
-  document.getElementById("adresYonetimModal").style.display = "flex";
+  var secimEkraniAcikMi = document.getElementById("adresYonetimModal").style.display === "flex";
+  adresFormDonusYeri = secimEkraniAcikMi ? "secim" : "kart";
+  if(secimEkraniAcikMi) document.getElementById("adresYonetimModal").style.display = "none";
+
+  var etiketVal = "", adresVal = "";
+  if(idx!==null){
+    var m = musteriListesi[musteriKartIdx];
+    var liste = musteriAdresListesiGetir(m, tip);
+    var a = liste[idx];
+    if(!a) return;
+    etiketVal = a.etiket||""; adresVal = a.adres||"";
+  }
+  document.getElementById("adresFormEtiketInput").value = etiketVal;
+  document.getElementById("adresFormAdresInput").value = adresVal;
+  var baslikEl = document.getElementById("adresFormBaslik");
+  var tipAdi = tip==="fatura" ? "Fatura" : "Teslimat";
+  var ikon = tip==="fatura" ? "🧾" : "🚚";
+  if(baslikEl) baslikEl.textContent = ikon+" "+(idx!==null ? tipAdi+" Adresini Düzenle" : "Yeni "+tipAdi+" Adresi Ekle");
+  document.getElementById("adresFormModal").style.display = "flex";
 }
-function adresEkleFormKapat(){
-  document.getElementById("adresYonetimEkleForm").style.display = "none";
+function _adresFormDonusYap(){
+  document.getElementById("adresFormModal").style.display = "none";
+  cariKartAdresListesiniRenderEt(adresYonetimTipi);
+  if(adresFormDonusYeri==="secim"){
+    adresYonetimListesiniRenderEt();
+    document.getElementById("adresYonetimModal").style.display = "flex";
+  }
 }
-function adresKaydet(){
+function adresFormKapat(){
+  _adresFormDonusYap();
+}
+function adresFormKaydet(){
   if(musteriKartIdx===null) return;
   var m = musteriListesi[musteriKartIdx];
   if(!m) return;
   var tip = adresYonetimTipi;
   var liste = musteriAdresListesiGetir(m, tip);
-  var etiket = (document.getElementById("adresYonetimEtiketInput").value||"").trim() || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi");
-  var adres = (document.getElementById("adresYonetimAdresInput").value||"").trim();
+  var etiket = (document.getElementById("adresFormEtiketInput").value||"").trim() || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi");
+  var adres = (document.getElementById("adresFormAdresInput").value||"").trim();
   if(!adres){ showToast("⚠️ Adres boş olamaz."); return; }
   var yeniKayit = {etiket:etiket, adres:adres};
   if(adresDuzenlenenIdx!==null && liste[adresDuzenlenenIdx]){
@@ -1737,10 +1755,8 @@ function adresKaydet(){
   }
   musteriListesiniKaydet();
   if(window.fbSet) musteriListesiGuvenliKaydet(m).catch(function(e){ console.error("Firebase yazma hatası:", e); });
-  document.getElementById("adresYonetimEkleForm").style.display = "none";
-  adresYonetimListesiniRenderEt();
-  cariKartAdresListesiniRenderEt(tip);
   showToast("✓ Kaydedildi.");
+  _adresFormDonusYap();
 }
 function adresSilAc(tip, idx){
   if(musteriKartIdx===null) return;
