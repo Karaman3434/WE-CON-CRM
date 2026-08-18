@@ -2029,7 +2029,10 @@ function modSec(mod){
   generateCommunicationData();
   if(islemTuruSeciminSonrasiAksiyon === 'iletisim'){
     islemTuruSeciminSonrasiAksiyon = null;
-    document.getElementById("iletisimIslemleriModal").style.display="flex";
+    // NOT: Doğrudan modalı açmak yerine iletisimIslemleriPopupAc()'i TEKRAR
+    // çağırıyoruz — böylece anomali kontrolü VE belgeBilgileriEksikMi (fatura/
+    // teslimat/yetkili) kontrolü de bu yoldan geçen kullanıcı için atlanmıyor.
+    iletisimIslemleriPopupAc();
   } else if(islemTuruSeciminSonrasiAksiyon === 'gonderimOnay'){
     islemTuruSeciminSonrasiAksiyon = null;
     if(sonSecilenKanal) _resimGonderOrtak(sonSecilenKanal);

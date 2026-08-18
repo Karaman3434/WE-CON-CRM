@@ -1355,7 +1355,15 @@ function kayitDuzenleKaydetOrtak(){
   kayit.ts = yeniTs;
   kayit.mod = yeniTip;
   var yetkiliEl2 = document.getElementById("kdYetkiliInput");
-  if(yetkiliEl2) kayit.yetkili = yetkiliEl2.value.trim();
+  if(yetkiliEl2){
+    var yeniYetkiliMetni = yetkiliEl2.value.trim();
+    // İsim değiştiyse, gösterimde kullanılan çoklu-yetkili listesini (yetkililer)
+    // de senkron tut — aksi halde belgede eski isim(ler) görünmeye devam eder.
+    if(yeniYetkiliMetni !== (kayit.yetkili||"")){
+      kayit.yetkililer = yeniYetkiliMetni ? [{isim:yeniYetkiliMetni, telefon:"", eposta:""}] : [];
+    }
+    kayit.yetkili = yeniYetkiliMetni;
+  }
   var vadeEl2 = document.getElementById("kdVadeInput");
   if(vadeEl2) kayit.vade = vadeEl2.value.trim();
   var kargoEl2 = document.getElementById("kdKargoInput");
@@ -1802,6 +1810,24 @@ function renderArsiv(){
 // ============================================================
 var hareketSecKaynak = null;
 
+// ORTAK YARDIMCI — Bir arşiv kaydından yeni bir işleme geçilirken (Hareket Seç,
+// Düzenle ve İlerle, İşlemi Tekrarla) müşteri kartı bağlamını (musteriKartIdx)
+// VE o kayıtta seçili olan fatura/teslimat/yetkili bilgilerini geri yükler.
+// Bu olmadan belgeBilgileriHazirlaVeKontrolEt() "müşteri kartı yok" sanıp
+// kontrolü tamamen atlar, yeni belge bu bilgiler olmadan gidebilir.
+function _belgeBaglamiGeriYukle(kayit, bulunanMusteri){
+  musteriKartIdx = null;
+  if(bulunanMusteri){
+    for(var _hi=0;_hi<musteriListesi.length;_hi++){ if(musteriListesi[_hi]===bulunanMusteri){ musteriKartIdx=_hi; break; } }
+  }
+  seciliFaturaAdresi = kayit.faturaAdresi ? {etiket:"Fatura Adresi", adres:kayit.faturaAdresi} : null;
+  localStorage.setItem("weicon_secili_fatura", JSON.stringify(seciliFaturaAdresi));
+  seciliTeslimatAdresi = kayit.teslimatAdresi ? {etiket:"Teslimat Adresi", adres:kayit.teslimatAdresi} : null;
+  localStorage.setItem("weicon_secili_teslimat", JSON.stringify(seciliTeslimatAdresi));
+  seciliYetkililer = (kayit.yetkililer && kayit.yetkililer.length) ? JSON.parse(JSON.stringify(kayit.yetkililer)) : (kayit.yetkili ? [{isim:kayit.yetkili, telefon:"", eposta:""}] : []);
+  localStorage.setItem("weicon_secili_yetkililer", JSON.stringify(seciliYetkililer));
+}
+
 function hareketSecPopupAc(tip, idx){
   hareketSecKaynak = {tip:tip, idx:idx};
   document.getElementById("hareketSecModal").style.display = "flex";
@@ -1829,6 +1855,7 @@ function hareketSecTuruSecildi(hedefTur){
   }
   seciliMusteri = bulunanMusteri || {ad: kayit.musteri||"-", sehir:"", vade:kayit.vade||"", fatura:kayit.fatura||"", yetkili:kayit.yetkili||"", kargo:kayit.kargo||""};
   lsSet("weicon_secili_musteri", seciliMusteri);
+  _belgeBaglamiGeriYukle(kayit, bulunanMusteri);
 
   // Ürünleri mevcut fiyat/iskonto/adediyle DOĞRUDAN HESAPLANMIŞ (yeşil) olarak yükle.
   hareketListesi = kayit.urunler.map(function(item, i){
@@ -1879,6 +1906,7 @@ function islemiDuzenleVeIlerle(tip, idx){
   }
   seciliMusteri = bulunanMusteri || {ad: kayit.musteri||"-", sehir:"", vade:kayit.vade||"", fatura:kayit.fatura||"", yetkili:kayit.yetkili||"", kargo:kayit.kargo||""};
   lsSet("weicon_secili_musteri", seciliMusteri);
+  _belgeBaglamiGeriYukle(kayit, bulunanMusteri);
 
   // Ürünleri HESAPLANMIŞ olarak değil, BEKLEYEN (sarı) olarak sepete koy —
   // böylece her ürüne dokunup "✏️ Düzenle" ile farklı bir ürün/gramaj seçilebilir.
@@ -1928,6 +1956,7 @@ function islemiTekrarla(tip, idx){
   }
   seciliMusteri = bulunanMusteri || {ad: kayit.musteri||"-", sehir:"", vade:kayit.vade||"", fatura:kayit.fatura||"", yetkili:kayit.yetkili||"", kargo:kayit.kargo||""};
   lsSet("weicon_secili_musteri", seciliMusteri);
+  _belgeBaglamiGeriYukle(kayit, bulunanMusteri);
 
   // Ürünleri hareket listesine yükle (tarih, gönderim anında otomatik bugünün tarihi olacak)
   hareketListesi = JSON.parse(JSON.stringify(kayit.urunler));
