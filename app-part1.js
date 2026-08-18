@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1808261156-519";
+var APP_VERSION = "V1808261215-520";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"

@@ -58,8 +58,8 @@ body{display:flex;justify-content:center;align-items:flex-start;}
 .urun-adi{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;font-size:36px;font-weight:700;color:#111;}
 .tablo-fiyat{background:#fdeaea;color:#d9182b;padding:3px 6px;border-radius:4px;font-weight:bold;display:inline-block;font-size:28px;white-space:nowrap;}
 .price-tag{background:#e8f4fd;color:#003a70;padding:5px 8px;border-radius:4px;font-weight:bold;display:inline-block;font-size:42px;white-space:nowrap;}
-.btn-add{background:linear-gradient(135deg,#003a70,#0a4f8f);color:#fff;border:none;padding:16px 10px;font-size:36px;border-radius:3px;cursor:pointer;width:100%;text-align:center;font-weight:bold;}
-.btn-add.added{background:linear-gradient(135deg,#e0524a,#c73f38)!important;}
+.btn-add{background:linear-gradient(135deg,#f0f7ff,#dbe9f9);color:#003a70;border:2.5px solid #3569b8;padding:16px 10px;font-size:36px;border-radius:8px;cursor:pointer;width:100%;text-align:center;font-weight:bold;}
+.btn-add.added{background:linear-gradient(135deg,#fff1f0,#fbdbd8)!important;color:#c0392b!important;border-color:#c0392b!important;}
 .no-data-msg{text-align:center;color:#888;padding:30px;font-size:34px;font-style:italic;}
 .list-item-block{background:#f8f9fa;border:1px solid #ddd;border-radius:6px;padding:10px;margin-bottom:6px;position:relative;}
 .btn-item-remove{position:absolute;top:6px;right:6px;background:#e0524a;color:#fff;border:none;padding:6px 15px;font-size:24px;font-weight:bold;border-radius:4px;cursor:pointer;}
@@ -997,13 +997,11 @@ function rafUpdate(fn){
 <div id="musteriKartModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
   <div style="background:#fff;border-radius:16px;width:98%;max-width:1100px;max-height:94vh;overflow-y:auto;box-sizing:border-box;overflow:hidden;">
 
-    <!-- Üst başlık — Müşteri Kartı ile birebir aynı dil -->
-    <div style="padding:16px 18px;display:flex;align-items:center;gap:14px;border-bottom:2px solid #003a70;">
-      <svg viewBox="0 0 420 70" style="height:52px;width:auto;flex-shrink:0;">
-        <g fill="#003a70"><rect x="3" y="3" width="62" height="64" rx="4"/><rect x="73" y="3" width="62" height="64" rx="4"/><rect x="143" y="3" width="62" height="64" rx="4"/><rect x="213" y="3" width="62" height="64" rx="4"/><rect x="283" y="3" width="62" height="64" rx="4"/><rect x="353" y="3" width="62" height="64" rx="4"/></g>
-        <g fill="#fff" font-family="Arial Black,Arial" font-weight="900" font-size="44" text-anchor="middle"><text x="34" y="54">W</text><text x="104" y="54">E</text><text x="174" y="54">I</text><text x="244" y="54">C</text><text x="314" y="54">O</text><text x="384" y="54">N</text></g>
-      </svg>
-      <span style="font-size:44px;font-weight:900;color:#003a70;">İŞLEMLER</span>
+    <!-- Üst başlık — logo yok, o an hangi işlemdeysek onu gösteren, ortalanmış bir
+         etiket. Bu kalıp genel bir kural: ileride eklenecek her ekran/modal başlığı
+         aynı mantıkla (logosuz, ortalı, o anki bağlamı yazan) olacak. -->
+    <div style="padding:14px 18px;text-align:center;border-bottom:2px solid #003a70;">
+      <span style="font-size:31px;font-weight:900;color:#003a70;letter-spacing:.3px;">⚡ İŞLEMLER</span>
     </div>
     <div style="background:#003a70;color:#fff;padding:14px 18px;font-size:32px;font-weight:900;">
       <div id="musteriKartAd"></div>
@@ -1543,13 +1541,13 @@ function rafUpdate(fn){
   <button type="button" onclick="document.getElementById('searchInput').focus();performFilter();" class="arama-pil-btn" aria-label="Ara">🔍</button>
 </div>
 <div style="display:flex;gap:10px;margin-bottom:10px;">
-  <button onclick="hitUrunlerAc()" style="flex:1;background:linear-gradient(135deg,#e0524a,#c73f38);color:#fff;border:none;padding:18px 8px;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;">🔥 Hit Ürünler</button>
-  <button onclick="enCokAranakAc()" style="flex:1;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border:none;padding:18px 8px;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;">🔍 En Çok Aranan</button>
+  <button onclick="hitUrunlerAc()" style="flex:1;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;padding:18px 8px;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;">🔥 Hit Ürünler</button>
+  <button onclick="enCokAranakAc()" style="flex:1;background:linear-gradient(135deg,#f0fbf3,#dceedf);color:#0e6b34;border:2.5px solid #1f9d55;padding:18px 8px;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;">🔍 En Çok Aranan</button>
 </div>
 <div id="sonKullanilanUrunlerDiv" style="margin-bottom:6px;display:none;"></div>
 <div id="aramaGecmisiDiv" style="margin-bottom:8px;display:none;"></div>
 <div style="display:flex;gap:8px;margin-bottom:8px;align-items:stretch;">
-  <button onclick="switchTab(5)" style="width:100%;background:linear-gradient(135deg,#f2994a,#d97e2f);color:#fff;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:14px;font-size:28px;font-weight:900;padding:22px;text-transform:uppercase;box-shadow:0 2px 6px rgba(0,0,0,.15);">
+  <button onclick="switchTab(5)" style="width:100%;background:linear-gradient(135deg,#fff6ec,#ffe8d1);color:#a8590c;border:2.5px solid #b7601f;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:14px;font-size:28px;font-weight:900;padding:22px;text-transform:uppercase;">
     🛒 Sepet (<span id="urunBulSepetSayac">0</span>) <span style="font-size:33px;font-weight:700;opacity:0.9;">→ İletişim/Hesapla</span>
   </button>
   <input type="file" id="jsonFileInput" accept=".json" style="display:none;">
@@ -2432,8 +2430,8 @@ function rafUpdate(fn){
   <input type="hidden" id="kmPlakaInput" onchange="kmAyarlarKaydet()">
 
   <div style="display:flex;gap:8px;margin-bottom:14px;">
-    <button id="kmGorunumGunlukBtn" onclick="kmTakipGorunumDegistir('gunluk')" style="flex:1;padding:18px;border:none;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;background:#003a70;color:#fff;">📝 Günlük Kayıt</button>
-    <button id="kmGorunumAylikBtn" onclick="kmTakipGorunumDegistir('aylik')" style="flex:1;padding:18px;border:none;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;background:#e8edf5;color:#556;">📊 Aylık Rapor</button>
+    <button id="kmGorunumGunlukBtn" onclick="kmTakipGorunumDegistir('gunluk')" style="flex:1;padding:18px;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#f0f7ff,#dbe9f9);color:#003a70;border:2.5px solid #3569b8;">📝 Günlük Kayıt</button>
+    <button id="kmGorunumAylikBtn" onclick="kmTakipGorunumDegistir('aylik')" style="flex:1;padding:18px;border-radius:10px;font-size:24px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#f4f5f7,#e3e6ea);color:#556170;border:2.5px solid #8a97a6;">📊 Aylık Rapor</button>
   </div>
 
   <!-- GÜNLÜK KAYIT GÖRÜNÜMÜ -->
@@ -2500,7 +2498,7 @@ function rafUpdate(fn){
       </div>
     </div>
 
-    <button onclick="kmTakipKaydet()" style="width:100%;background:linear-gradient(135deg,#16a085,#0e8a72);color:#fff;border:none;border-radius:12px;padding:24px;font-size:28px;font-weight:900;letter-spacing:.2px;cursor:pointer;">💾 Günü Kaydet</button>
+    <button onclick="kmTakipKaydet()" style="width:100%;background:linear-gradient(135deg,#f0fbf3,#dceedf);color:#0e6b34;border:2.5px solid #1f9d55;border-radius:12px;padding:24px;font-size:28px;font-weight:900;letter-spacing:.2px;cursor:pointer;">💾 Günü Kaydet</button>
   </div>
 
   <!-- AYLIK RAPOR GÖRÜNÜMÜ -->
@@ -2725,7 +2723,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808261156-519</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808261215-520</div>
 </div>
 
 </div>

@@ -1593,13 +1593,13 @@ function kmTakipGorunumDegistir(hangi){
   var aView = document.getElementById("kmAylikView");
   if(hangi==="aylik"){
     gView.style.display="none"; aView.style.display="block";
-    aBtn.style.background="#003a70"; aBtn.style.color="#fff";
-    gBtn.style.background="#e8edf5"; gBtn.style.color="#556";
+    aBtn.style.background="linear-gradient(135deg,#f0f7ff,#dbe9f9)"; aBtn.style.color="#003a70"; aBtn.style.border="2.5px solid #3569b8";
+    gBtn.style.background="linear-gradient(135deg,#f4f5f7,#e3e6ea)"; gBtn.style.color="#556170"; gBtn.style.border="2.5px solid #8a97a6";
     kmTakipAylikTabloRenderEt();
   } else {
     gView.style.display="block"; aView.style.display="none";
-    gBtn.style.background="#003a70"; gBtn.style.color="#fff";
-    aBtn.style.background="#e8edf5"; aBtn.style.color="#556";
+    gBtn.style.background="linear-gradient(135deg,#f0f7ff,#dbe9f9)"; gBtn.style.color="#003a70"; gBtn.style.border="2.5px solid #3569b8";
+    aBtn.style.background="linear-gradient(135deg,#f4f5f7,#e3e6ea)"; aBtn.style.color="#556170"; aBtn.style.border="2.5px solid #8a97a6";
     // Aylık tabloda bu arada değişiklik yapılmış olabilir (KM/Saat) — güncel
     // veriyle yeniden yükle ki BAŞLANGIÇ/BİTİŞ KM kutuları hemen yansısın.
     kmGunKayitYukle(kmAktifTarih);
