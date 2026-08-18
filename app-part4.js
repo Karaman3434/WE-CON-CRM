@@ -980,10 +980,14 @@ function _resimGonderOrtak(kanal){
   var toplamEuro = 0;
   for(var i=0;i<hareketListesi.length;i++) toplamEuro += hareketListesi[i].toplamEuro||0;
 
+  var toplamAdet = 0;
+  for(var ai=0;ai<hareketListesi.length;ai++) toplamAdet += hareketListesi[ai].adet||0;
+
   document.getElementById("gonderimOnayMusteri").textContent = musteriAdi;
   document.getElementById("gonderimOnayIslemTuru").textContent = belgeTipi;
   document.getElementById("gonderimOnayIslemTuru").style.background = belgeRengi;
-  document.getElementById("gonderimOnayUrunSayisi").textContent = hareketListesi.length+" ürün";
+  document.getElementById("gonderimOnayUrunSayisi").textContent = hareketListesi.length+" kalem";
+  document.getElementById("gonderimOnayToplamAdet").textContent = toplamAdet+" adet";
   document.getElementById("gonderimOnayToplam").textContent = fmt(toplamEuro)+" €";
   document.getElementById("gonderimOnayKanal").textContent = kanal==="whatsapp" ? "💬 WhatsApp" : "📧 Mail";
 
