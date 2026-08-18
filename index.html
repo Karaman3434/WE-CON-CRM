@@ -1742,12 +1742,12 @@ function rafUpdate(fn){
 <div id="topluIskontoMesaj" style="display:none;"></div>
 
 <div id="extraActionBar" style="display:none;margin-bottom:14px;">
-  <button onclick="elleUrunEkleAc()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#f2994a,#d97e2f);color:#fff;border:none;border-radius:8px;padding:16px;font-size:22px;font-weight:900;cursor:pointer;margin-bottom:10px;letter-spacing:.2px;">➕ Listede Olmayan Ürün Ekle (Elle)</button>
-  <div style="display:flex;gap:10px;width:100%;box-sizing:border-box;">
-    <button id="btnIletisimIslemleri" onclick="iletisimIslemleriPopupAc()" style="flex:1 1 0%;min-width:0;box-sizing:border-box;text-align:center;background:#eef4fb;color:#003a70;border:2px solid #003a70;padding:18px 10px;font-size:30px;font-weight:800;border-radius:8px;cursor:pointer;white-space:nowrap;overflow:hidden;">✉️ Gönder</button>
-    <button id="btnHesaplaKaydet" onclick="hesaplaKaydetTikla()" style="flex:1 1 0%;min-width:0;box-sizing:border-box;text-align:center;background:#eafaf3;color:#0e7c63;border:2px solid #0e7c63;padding:18px 10px;font-size:30px;font-weight:800;border-radius:8px;cursor:pointer;white-space:nowrap;overflow:hidden;">💾 Kaydet</button>
-    <button onclick="islemleriTemizle()" title="İşlemi İptal Et / Temizle" style="flex:0 0 76px;width:76px;box-sizing:border-box;background:#e0524a;color:#fff;border:none;border-radius:8px;font-size:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;">🗑</button>
+  <button onclick="elleUrunEkleAc()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#f2994a,#d97e2f);color:#fff;border:none;border-radius:10px;height:58px;font-size:19px;font-weight:900;cursor:pointer;margin-bottom:10px;letter-spacing:.2px;">➕ Listede Olmayan Ürün Ekle (Elle)</button>
+  <div style="display:flex;gap:8px;width:100%;box-sizing:border-box;margin-bottom:8px;">
+    <button id="btnIletisimIslemleri" onclick="iletisimIslemleriPopupAc()" style="flex:1 1 0%;min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;height:60px;background:#eef4fb;color:#003a70;border:2px solid #003a70;border-radius:10px;font-size:18px;font-weight:900;cursor:pointer;white-space:nowrap;overflow:hidden;">✉️ Gönder</button>
+    <button id="btnHesaplaKaydet" onclick="hesaplaKaydetTikla()" style="flex:1 1 0%;min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;height:60px;background:#eafaf3;color:#0e7c63;border:2px solid #0e7c63;border-radius:10px;font-size:18px;font-weight:900;cursor:pointer;white-space:nowrap;overflow:hidden;">💾 Kaydet</button>
   </div>
+  <button onclick="islemleriTemizle()" title="İşlemi İptal Et / Temizle" style="width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;height:44px;background:#fdeceb;color:#c0392b;border:1.5px solid #e0524a;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;">🗑 İşlemi Temizle</button>
 </div>
 
 
@@ -2097,18 +2097,24 @@ function rafUpdate(fn){
       </div>
     </div>
 
-    <div style="display:flex;gap:10px;margin-bottom:14px;">
-      <div style="flex:1;background:#eef2f8;border-radius:10px;padding:14px;text-align:center;">
-        <div style="font-size:15px;color:#667;font-weight:700;">ÜRÜN SAYISI</div>
-        <div id="gonderimOnayUrunSayisi" style="font-size:24px;font-weight:900;color:#003a70;">-</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div style="background:#eef2f8;border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:13px;color:#667;font-weight:700;">ÜRÜN ÇEŞİDİ</div>
+        <div id="gonderimOnayUrunSayisi" style="font-size:22px;font-weight:900;color:#003a70;">-</div>
       </div>
-      <div style="flex:1;background:#eef2f8;border-radius:10px;padding:14px;text-align:center;">
-        <div style="font-size:15px;color:#667;font-weight:700;">TOPLAM</div>
-        <div id="gonderimOnayToplam" style="font-size:24px;font-weight:900;color:#f2994a;">-</div>
+      <div style="background:#eef2f8;border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:13px;color:#667;font-weight:700;">TOPLAM ADET</div>
+        <div id="gonderimOnayToplamAdet" style="font-size:22px;font-weight:900;color:#0e7c63;">-</div>
       </div>
-      <div style="flex:1;background:#eef2f8;border-radius:10px;padding:14px;text-align:center;">
-        <div style="font-size:15px;color:#667;font-weight:700;">KANAL</div>
-        <div id="gonderimOnayKanal" style="font-size:24px;font-weight:900;color:#003a70;">-</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div style="background:#eef2f8;border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:13px;color:#667;font-weight:700;">TOPLAM</div>
+        <div id="gonderimOnayToplam" style="font-size:22px;font-weight:900;color:#f2994a;">-</div>
+      </div>
+      <div style="background:#eef2f8;border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:13px;color:#667;font-weight:700;">KANAL</div>
+        <div id="gonderimOnayKanal" style="font-size:20px;font-weight:900;color:#003a70;">-</div>
       </div>
     </div>
 
@@ -2685,7 +2691,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808260801-513</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1808260917-515</div>
 </div>
 
 </div>
