@@ -53,12 +53,12 @@ function urunBulOnKontrolRenderEt(){
   var hepsiTam = faturaVar && teslimatVar && yetkiliVar;
 
   function satirOlustur(tamamMi, baslik, altYazi, butonYazi, butonOnclick, geciciMi, toggleHtml){
-    var renkBg = tamamMi ? "#e3f7ef" : "#fdf1e0";
-    var renkBorder = tamamMi ? "#7dcdb3" : "#f0c880";
-    var renkYazi = tamamMi ? "#0e7c63" : "#9a6a10";
+    var renkBg = tamamMi ? "linear-gradient(135deg,#f0fbf3,#dceedf)" : "linear-gradient(135deg,#fff6ec,#ffe8d1)";
+    var renkBorder = tamamMi ? "#1f9d55" : "#b7601f";
+    var renkYazi = tamamMi ? "#0e6b34" : "#a8590c";
     var ikon = tamamMi ? "✅" : "⚠️";
     var geciciRozet = geciciMi ? "<span style='background:#f2994a;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:3px;'>GEÇİCİ · SADECE BU SİPARİŞ</span><br>" : "";
-    return "<div style='background:"+renkBg+";border:2px solid "+renkBorder+";border-radius:10px;padding:14px 16px;margin-bottom:10px;'>"
+    return "<div style='background:"+renkBg+";border:2.5px solid "+renkBorder+";border-radius:10px;padding:14px 16px;margin-bottom:10px;'>"
       +"<div style='display:flex;align-items:center;gap:10px;'>"
       +"<span style='font-size:26px;'>"+ikon+"</span>"
       +"<div style='flex:1;min-width:0;'>"
