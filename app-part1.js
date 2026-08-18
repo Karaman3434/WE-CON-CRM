@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1808262159-527";
+var APP_VERSION = "V1808262318-528";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1174,7 +1174,16 @@ function musteriKaydetGercek(){
   var teslimatAdresi = document.getElementById("yeniMusteriTeslimatAdresi").value.trim();
 
   function kaydiTamamla(guncelListe){
-    var yeniMusteri = {id:musteriIdUret(), ad:ad, sehir:sehir, acikAdres:acikAdres, vade:vade, fatura:fatura, telefon:yetkiliTelefon, eposta:yetkiliEposta, kargo:kargo, teslimatAdresi:teslimatAdresi};
+    // ŞEMA STABİLİZASYONU: yeni müşteri artık DOĞRUDAN yeni (dizi) formatta
+    // oluşturuluyor — acikAdres/teslimatAdresi (eski tekil alanlar) ARTIK HİÇ
+    // YAZILMIYOR. Bu alanlar sadece ÇOK ESKİ (bu değişiklikten önce oluşmuş)
+    // müşteri kayıtlarını okumak için hâlâ kodda duruyor, yeni veri üretmiyorlar.
+    var yeniMusteri = {
+      id:musteriIdUret(), ad:ad, sehir:sehir, vade:vade, fatura:fatura,
+      telefon:yetkiliTelefon, eposta:yetkiliEposta, kargo:kargo,
+      faturaAdresleri: acikAdres ? [{etiket:"Fatura Adresi", adres:acikAdres}] : [],
+      teslimatAdresleri: teslimatAdresi ? [{etiket:"Teslimat Adresi", adres:teslimatAdresi}] : []
+    };
     guncelListe.unshift(yeniMusteri);
     musteriListesi = guncelListe;
     lsSet("weicon_musteriler", musteriListesi);

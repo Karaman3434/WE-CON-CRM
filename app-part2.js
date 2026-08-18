@@ -1777,13 +1777,19 @@ function musteriDuzenle(idx){
   document.getElementById("duzenleOrijinalAd").value = m.ad||"";
   document.getElementById("duzenleMusteriAdi").value = m.ad||"";
   document.getElementById("duzenleSehir").value = m.sehir||"";
-  if(document.getElementById("duzenleAcikAdres")) document.getElementById("duzenleAcikAdres").value = m.acikAdres||"";
+  // ŞEMA STABİLİZASYONU: artık yeni dizinin ilk kaydından okunuyor (m.acikAdres/
+  // m.teslimatAdresi ARTIK YENİ VERİDE YAZILMIYOR — sadece çok eski kayıtlarda
+  // bulunabilir; musteriAdresListesiGetir zaten o eski değeri de otomatik
+  // diziye taşıyıp buradan okunabilir hâle getiriyor).
+  var faturaListesiAcilis = (typeof musteriAdresListesiGetir==="function") ? musteriAdresListesiGetir(m, "fatura") : [];
+  var teslimatListesiAcilis = (typeof musteriAdresListesiGetir==="function") ? musteriAdresListesiGetir(m, "teslimat") : [];
+  if(document.getElementById("duzenleAcikAdres")) document.getElementById("duzenleAcikAdres").value = (faturaListesiAcilis[0] && faturaListesiAcilis[0].adres) || "";
   document.getElementById("duzenleVade").value = m.vade||"";
   document.getElementById("duzenleFatura").value = m.fatura||"";
   document.getElementById("duzenleYetkiliTelefon").value = m.telefon || "";
   document.getElementById("duzenleYetkiliEposta").value = m.eposta || "";
   document.getElementById("duzenleKargo").value = m.kargo||"";
-  document.getElementById("duzenleTeslimatAdresi").value = m.teslimatAdresi||"";
+  document.getElementById("duzenleTeslimatAdresi").value = (teslimatListesiAcilis[0] && teslimatListesiAcilis[0].adres) || "";
   document.getElementById("musteriDuzenleModal").style.display="flex";
 }
 
@@ -1810,13 +1816,27 @@ function musteriDuzenleKaydet(){
     if(!guncelListe[hedefIdx]) return;
     guncelListe[hedefIdx].ad = yeniAd;
     guncelListe[hedefIdx].sehir = yeniSehir;
-    guncelListe[hedefIdx].acikAdres = yeniAcikAdres;
     guncelListe[hedefIdx].vade = yeniVade;
     guncelListe[hedefIdx].fatura = yeniFatura;
     guncelListe[hedefIdx].telefon = yeniYetkiliTelefon;
     guncelListe[hedefIdx].eposta = yeniYetkiliEposta;
     guncelListe[hedefIdx].kargo = yeniKargo;
-    guncelListe[hedefIdx].teslimatAdresi = yeniTeslimatAdresi;
+    // ŞEMA STABİLİZASYONU: bu ekran hâlâ TEK bir fatura/teslimat adresi alıyor
+    // (basit metin kutusu) — ama artık eski acikAdres/teslimatAdresi'ne değil,
+    // yeni dizinin İLK kaydına yazıyor (tek gerçek kaynak orası). Birden fazla
+    // adres eklemek/yönetmek için Müşteri Kartı'ndaki tam liste kullanılmalı.
+    if(typeof musteriAdresListesiGetir==="function"){
+      var faturaListesiDuzenle = musteriAdresListesiGetir(guncelListe[hedefIdx], "fatura");
+      if(yeniAcikAdres){
+        if(faturaListesiDuzenle.length) faturaListesiDuzenle[0].adres = yeniAcikAdres;
+        else faturaListesiDuzenle.push({etiket:"Fatura Adresi", adres:yeniAcikAdres});
+      }
+      var teslimatListesiDuzenle = musteriAdresListesiGetir(guncelListe[hedefIdx], "teslimat");
+      if(yeniTeslimatAdresi){
+        if(teslimatListesiDuzenle.length) teslimatListesiDuzenle[0].adres = yeniTeslimatAdresi;
+        else teslimatListesiDuzenle.push({etiket:"Teslimat Adresi", adres:yeniTeslimatAdresi});
+      }
+    }
     musteriListesi = guncelListe;
     lsSet("weicon_musteriler", musteriListesi);
     if(window.fbSet){
