@@ -50,12 +50,15 @@ function kmTakipKaydet(sessiz){
   }
   var gunTipiKontrol = document.getElementById("kmGunTipiSelect").value;
   if(!sessiz && gunTipiKontrol === "normal"){
+    // SADECE Sayaçtaki KM zorunlu — Güzergah/Ziyaret/Kategori gün içinde
+    // sonradan doldurulabilir (kullanıcının istediği akış: sabah tek başına
+    // KM gir → kaydet; güzergah/ziyaret/kategori günün ilerleyen saatlerinde
+    // ayrıca girilir). Tarih/Saat zaten otomatik dolduğu için pratikte hiç
+    // eksik çıkmaz, yine de güvenlik amacıyla kontrolde tutuluyor.
     var eksikler = [];
     if(!(document.getElementById("kmBitisKmInput").value||"").trim()) eksikler.push("KM");
     if(!(document.getElementById("kmTarihGosterInput").value||"").trim()) eksikler.push("Tarih");
     if(!(document.getElementById("kmSaatInput").value||"").trim()) eksikler.push("Saat");
-    if(!(document.getElementById("kmGuzergahInput").value||"").trim()) eksikler.push("Seyir Güzergahı");
-    if(!(document.getElementById("kmKategoriSelect").value||"").trim()) eksikler.push("Kategori (İş/Özel KM)");
     if(eksikler.length){
       var mesaj = "⚠️ Eksik bilgi(ler): " + eksikler.join(", ") + " — lütfen doldurup tekrar kaydedin.";
       if(typeof showToast==="function") showToast(mesaj); else alert(mesaj);
