@@ -2683,15 +2683,25 @@ function rafUpdate(fn){
   </div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
-  <div onclick="satisMenusuAc()" style="cursor:pointer;min-height:150px;box-sizing:border-box;border-radius:14px;background:linear-gradient(135deg,#fff1f0,#fbdbd8);border:3px solid #c0392b;padding:22px 16px;display:flex;align-items:center;gap:14px;">
-    <div style="font-size:40px;flex-shrink:0;line-height:1;">🧾</div>
-    <div style="width:1px;align-self:stretch;background:#f0bcbc;flex-shrink:0;"></div>
+  <div onclick="hareketlerMenusuAc()" style="cursor:pointer;min-height:150px;box-sizing:border-box;border-radius:14px;background:linear-gradient(135deg,#fff6ec,#ffe8d1);border:3px solid #b7601f;padding:22px 16px;display:flex;align-items:center;gap:14px;">
+    <div style="font-size:40px;flex-shrink:0;line-height:1;">⚡</div>
+    <div style="width:1px;align-self:stretch;background:#f0d0a0;flex-shrink:0;"></div>
     <div style="min-width:0;">
-      <div style="font-size:32px;font-weight:900;color:#c0392b;line-height:1.15;">Satış</div>
-      <div style="font-size:20px;font-weight:800;color:#8a94a3;letter-spacing:.3px;margin-top:2px;">YENİ İŞLEM</div>
+      <div style="font-size:32px;font-weight:900;color:#a8590c;line-height:1.15;">Hareketler</div>
+      <div style="font-size:20px;font-weight:800;color:#8a94a3;letter-spacing:.3px;margin-top:2px;">SATIŞ · MÜŞTERİ</div>
     </div>
   </div>
-  <div onclick="switchTab(10)" style="cursor:pointer;min-height:150px;box-sizing:border-box;border-radius:14px;background:linear-gradient(135deg,#f0f7ff,#dbe9f9);border:3px solid #3569b8;padding:22px 16px;display:flex;align-items:center;gap:14px;">
+  <div onclick="raporlarMenusuAc()" style="cursor:pointer;min-height:150px;box-sizing:border-box;border-radius:14px;background:linear-gradient(135deg,#f0f7ff,#dbe9f9);border:3px solid #3569b8;padding:22px 16px;display:flex;align-items:center;gap:14px;">
+    <div style="font-size:40px;flex-shrink:0;line-height:1;">📊</div>
+    <div style="width:1px;align-self:stretch;background:#b8cff5;flex-shrink:0;"></div>
+    <div style="min-width:0;">
+      <div style="font-size:32px;font-weight:900;color:#2563eb;line-height:1.15;">Raporlar</div>
+      <div style="font-size:20px;font-weight:800;color:#8a94a3;letter-spacing:.3px;margin-top:2px;">İSTATİSTİK · GÖREV</div>
+    </div>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr;gap:32px;margin-top:32px;">
+  <div onclick="switchTab(10)" style="cursor:pointer;min-height:120px;box-sizing:border-box;border-radius:14px;background:linear-gradient(135deg,#f0f7ff,#dbe9f9);border:3px solid #3569b8;padding:18px 16px;display:flex;align-items:center;gap:14px;">
     <div style="font-size:40px;flex-shrink:0;line-height:1;">🚚</div>
     <div style="width:1px;align-self:stretch;background:#b8cff5;flex-shrink:0;"></div>
     <div style="min-width:0;">
@@ -2704,34 +2714,51 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1908260623-534</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1908261109-537</div>
 </div>
 
 </div>
 
-<!-- SATIŞ MENÜSÜ POPUP -->
-<div id="satisMenusuModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
+<!-- HAREKETLER MENÜSÜ POPUP — eskiden "Satış" idi, artık sadece 2 alt buton:
+     SATIŞ (yeni işlem başlat) ve MÜŞTERİLER (liste/yönetim). İstatistik/Görev/
+     Ziyaret buradan RAPORLAR'a taşındı. -->
+<div id="hareketlerMenusuModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
   <div style="background:#fff;border-radius:16px;padding:28px;width:96%;max-width:1100px;max-height:94vh;overflow-y:auto;box-sizing:border-box;">
-    <div style="font-size:34px;font-weight:900;color:#e0524a;margin-bottom:18px;">📋 Satış</div>
+    <div style="font-size:34px;font-weight:900;color:#a8590c;margin-bottom:18px;">⚡ Hareketler</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:16px;">
-      <div onclick="satisMenusuKapatVeGit(7)" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#003a70,#0a4f8f);display:flex;align-items:center;justify-content:center;gap:10px;min-height:130px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-        <div style="font-size:44px;line-height:1;">👤</div>
-        <div style="font-size:26px;font-weight:800;text-transform:uppercase;">Müşteri</div>
+      <div onclick="document.getElementById('hareketlerMenusuModal').style.display='none';hareketlerSatisBaslat();" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#16a34a,#0e8a3a);display:flex;align-items:center;justify-content:center;gap:10px;min-height:150px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+        <div style="font-size:44px;line-height:1;">💰</div>
+        <div style="font-size:26px;font-weight:900;line-height:1.15;">SATIŞ</div>
       </div>
-      <div onclick="document.getElementById('satisMenusuModal').style.display='none';anaSayfadanZiyaretTakvimiAc();" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#28a745,#1e7e34);display:flex;align-items:center;justify-content:center;gap:10px;min-height:130px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-        <div style="font-size:44px;line-height:1;">📆</div>
-        <div style="font-size:26px;font-weight:900;line-height:1.15;">ZİYARET<br>TAKVİMİ</div>
+      <div onclick="satisMenusuKapatVeGit(7)" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#003a70,#0a4f8f);display:flex;align-items:center;justify-content:center;gap:10px;min-height:150px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+        <div style="font-size:44px;line-height:1;">👥</div>
+        <div style="font-size:26px;font-weight:900;line-height:1.15;">MÜŞTERİLER</div>
       </div>
-      <div onclick="satisMenusuKapatVeGit(6)" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#003a70,#0a4f8f);display:flex;align-items:center;justify-content:center;gap:10px;min-height:130px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+    </div>
+    <button onclick="document.getElementById('hareketlerMenusuModal').style.display='none';" style="width:100%;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
+  </div>
+</div>
+
+<!-- RAPORLAR MENÜSÜ POPUP — İstatistikler/Görevler/Ziyaret Takvimi eskiden
+     "Satış" popup'ının içindeydi, artık ayrı bir Ana Sayfa kartı. -->
+<div id="raporlarMenusuModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;padding:28px;width:96%;max-width:1100px;max-height:94vh;overflow-y:auto;box-sizing:border-box;">
+    <div style="font-size:34px;font-weight:900;color:#003a70;margin-bottom:18px;">📊 Raporlar</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:16px;">
+      <div onclick="raporlarMenusuKapatVeGit(6)" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#003a70,#0a4f8f);display:flex;align-items:center;justify-content:center;gap:10px;min-height:130px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
         <div style="font-size:44px;line-height:1;">📊</div>
         <div style="font-size:26px;font-weight:900;line-height:1.15;">İSTATİSTİKLER</div>
       </div>
-      <div onclick="document.getElementById('satisMenusuModal').style.display='none';gorevListesiAc();" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#28a745,#1e7e34);display:flex;align-items:center;justify-content:center;gap:10px;min-height:130px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+      <div onclick="document.getElementById('raporlarMenusuModal').style.display='none';gorevListesiAc();" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#28a745,#1e7e34);display:flex;align-items:center;justify-content:center;gap:10px;min-height:130px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
         <div style="font-size:44px;line-height:1;">📌</div>
         <div style="font-size:26px;font-weight:900;line-height:1.15;">GÖREVLERİM</div>
       </div>
+      <div onclick="document.getElementById('raporlarMenusuModal').style.display='none';anaSayfadanZiyaretTakvimiAc();" style="cursor:pointer;border-radius:16px;padding:13px 10px;color:#fff;background:linear-gradient(135deg,#28a745,#1e7e34);display:flex;align-items:center;justify-content:center;gap:10px;min-height:130px;box-shadow:0 2px 6px rgba(0,0,0,0.15);grid-column:1 / span 2;">
+        <div style="font-size:44px;line-height:1;">📆</div>
+        <div style="font-size:26px;font-weight:900;line-height:1.15;">ZİYARET TAKVİMİ</div>
+      </div>
     </div>
-    <button onclick="document.getElementById('satisMenusuModal').style.display='none';" style="width:100%;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
+    <button onclick="document.getElementById('raporlarMenusuModal').style.display='none';" style="width:100%;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
   </div>
 </div>
 
@@ -2741,6 +2768,16 @@ function rafUpdate(fn){
     <div id="urunIstatistikBaslik" style="font-size:30px;font-weight:900;color:#003a70;margin-bottom:18px;"></div>
     <div id="urunIstatistikIcerik"></div>
     <button onclick="document.getElementById('urunIstatistikModal').style.display='none';" style="width:100%;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
+  </div>
+</div>
+
+<!-- ÜRÜN SATIŞ GEÇMİŞİ — "Hit Ürünler"de bir ürünün "📊 Geçmiş" butonuna basınca
+     açılır: bu ürün bugüne kadar hangi müşterilere, ne zaman, hangi fiyat/
+     iskontoyla satılmış/teklif edilmiş. urunIstatistikModal'ın ÜSTÜNDE açılır. -->
+<div id="urunSatisGecmisiModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:10005;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;padding:0 0 16px;width:97%;max-width:700px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-sizing:border-box;">
+    <div id="urunSatisGecmisiIcerik" style="overflow-y:auto;"></div>
+    <button onclick="document.getElementById('urunSatisGecmisiModal').style.display='none';" style="margin:14px 16px 0;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;border-radius:10px;padding:16px;font-size:20px;font-weight:bold;cursor:pointer;">Kapat</button>
   </div>
 </div>
 

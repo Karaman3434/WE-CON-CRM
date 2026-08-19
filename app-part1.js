@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1908260623-534";
+var APP_VERSION = "V1908261109-537";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -402,6 +402,94 @@ function hitUrundenSepeteEkle(name, price, berta, abas){
   showToast("✓ "+name+" sepete eklendi.");
 }
 
+// ÜRÜN SATIŞ GEÇMİŞİ — "Hit Ürünler"de bir ürünün "📊 Geçmiş" butonuna basınca:
+// bu ürün BUGÜNE KADAR hangi müşterilere, hangi tarihte, hangi fiyat/iskontoyla
+// satılmış/teklif edilmiş — tek bakışta gösterir. SAP Business One'daki "Last
+// Selling Price" ve Sage 50'deki "Item Sales History By Customer" mantığı.
+// Salt-okunur: hiçbir yeni veri kaydetmez, sadece arşivi (kayit.urunler[])
+// ürün bazında yeniden gruplar.
+// Müşteri ID'sinden (M-0030 gibi) doğrudan Müşteri Kartı'nı açan yardımcı —
+// arşiv kayıtları musteriKartIdx (dizideki sıra) değil musteriId (kalıcı kod)
+// sakladığı için, index her zaman ID'den yeniden bulunmalı.
+function musteriKartAcId(musteriId){
+  if(!musteriId) return;
+  for(var i=0;i<musteriListesi.length;i++){
+    if(musteriListesi[i].id===musteriId){
+      document.getElementById("urunSatisGecmisiModal").style.display="none";
+      var ubk = document.getElementById("urunIstatistikModal"); if(ubk) ubk.style.display="none";
+      musteriKartAc(i);
+      return;
+    }
+  }
+  showToast("⚠️ Müşteri bulunamadı (silinmiş olabilir).");
+}
+
+function urunSatisGecmisiGetir(berta, abas){
+  var arsiv = lsGet("weicon_arsiv", {});
+  var tipler = ["siparis","teklif","proforma","numune"];
+  var sonuc = [];
+  for(var t=0;t<tipler.length;t++){
+    var liste = arsiv[tipler[t]]||[];
+    for(var k=0;k<liste.length;k++){
+      var kayit = liste[k];
+      if(!kayit.urunler) continue;
+      for(var j=0;j<kayit.urunler.length;j++){
+        var u = kayit.urunler[j];
+        var eslesiyorMu = berta ? (u.berta===berta && u.abas===abas) : false;
+        if(eslesiyorMu){
+          sonuc.push({
+            musteri: kayit.musteri||"-", musteriId: kayit.musteriId||null,
+            tarih: kayit.tarih||"", ts: kayit.ts||0, tip: tipler[t],
+            adet: u.adet||0, iskBirim: u.iskBirim||0, iskonto: u.iskonto||0, toplamEuro: u.toplamEuro||0
+          });
+        }
+      }
+    }
+  }
+  sonuc.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+  return sonuc;
+}
+
+function urunSatisGecmisiAc(berta, abas, ad){
+  var gecmis = urunSatisGecmisiGetir(berta, abas);
+  var musteriSayisi = {};
+  var toplamAdet = 0;
+  gecmis.forEach(function(g){ musteriSayisi[g.musteriId||g.musteri]=true; toplamAdet += g.adet; });
+  var farkliMusteri = Object.keys(musteriSayisi).length;
+
+  var html = "<div style='background:#003a70;color:#fff;padding:14px 16px;border-radius:10px 10px 0 0;'>"
+    +"<div style='font-size:14px;font-weight:800;color:#7fd6ff;'>Berta: "+safeText(berta||"-")+" · Abas: "+safeText(abas||"-")+"</div>"
+    +"<div style='font-size:23px;font-weight:900;'>"+safeText(ad)+"</div>"
+    +"</div>"
+    +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;background:#f7f9fc;border-left:1px solid #eef1f5;border-right:1px solid #eef1f5;'>"
+    +"<div style='text-align:center;'><div style='font-size:24px;font-weight:900;color:#003a70;'>"+farkliMusteri+"</div><div style='font-size:11px;font-weight:800;color:#556170;'>FARKLI MÜŞTERİ</div></div>"
+    +"<div style='text-align:center;'><div style='font-size:24px;font-weight:900;color:#0e6b34;'>"+toplamAdet+" adet</div><div style='font-size:11px;font-weight:800;color:#556170;'>TOPLAM SATILAN</div></div>"
+    +"</div>"
+    +"<div style='border:1px solid #eef1f5;border-top:none;border-radius:0 0 10px 10px;overflow:hidden;max-height:50vh;overflow-y:auto;'>";
+
+  if(gecmis.length===0){
+    html += "<div style='padding:20px;text-align:center;color:#8a97a6;font-size:16px;font-weight:700;'>Bu ürün henüz hiçbir müşteriye satılmamış/teklif edilmemiş.</div>";
+  } else {
+    gecmis.forEach(function(g,i){
+      var zebra = (i%2===1) ? "background:#f7f9fc;" : "background:#fff;";
+      var TIP_ETIKET = {siparis:"SİP", teklif:"TEK", proforma:"PRO", numune:"NUM"};
+      var TIP_RENK = {siparis:"#003a70", teklif:"#1f9d55", proforma:"#8e44ad", numune:"#b7601f"};
+      html += "<div onclick=\""+(g.musteriId?"musteriKartAcId('"+g.musteriId+"')":"")+"\" style='padding:11px 14px;border-bottom:1.5px solid #eef1f5;"+zebra+(g.musteriId?"cursor:pointer;":"")+"'>"
+        +"<div style='display:flex;justify-content:space-between;align-items:baseline;gap:8px;'>"
+        +"<span style='font-size:12px;font-weight:900;color:#fff;background:"+(TIP_RENK[g.tip]||"#556170")+";padding:2px 7px;border-radius:5px;flex-shrink:0;'>"+(TIP_ETIKET[g.tip]||"")+"</span>"
+        +"<span style='font-size:19px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;'>"+safeText(g.musteri)+"</span>"
+        +"<span style='font-size:12px;font-weight:700;color:#374151;flex-shrink:0;'>"+tarihKisaltTekSatir(g.tarih)+"</span>"
+        +"</div>"
+        +"<div style='font-size:13px;color:#374151;margin-top:3px;padding-left:38px;'>"+g.adet+" adet · "+fmt(g.iskBirim)+"€/birim · %"+g.iskonto+" iskonto</div>"
+        +"</div>";
+    });
+  }
+  html += "</div>";
+
+  document.getElementById("urunSatisGecmisiIcerik").innerHTML = html;
+  document.getElementById("urunSatisGecmisiModal").style.display = "flex";
+}
+
 function hitUrunlerAc(){
   var liste = hitUrunleriHesapla().slice(0,30);
   document.getElementById("urunIstatistikBaslik").textContent = "🔥 Hit Ürünler (en çok satılan)";
@@ -411,15 +499,15 @@ function hitUrunlerAc(){
   } else {
     var html = "<div style='color:#888;font-size:18px;text-align:center;margin-bottom:6px;'>💡 Bir ürüne dokunarak doğrudan sepete ekleyebilirsiniz.</div>"
       +"<table style='width:100%;border-collapse:collapse;'>"
-      +"<tr style='background:#cfe2f3;'><th style='padding:8px;text-align:left;font-size:28px;color:#3569b8;border:1px solid #3569b8;'>Ürün</th><th style='padding:8px;text-align:center;font-size:28px;color:#3569b8;border:1px solid #3569b8;'>Toplam Adet</th><th style='padding:8px;text-align:center;font-size:28px;color:#3569b8;border:1px solid #3569b8;'>Sipariş Sayısı</th></tr>";
+      +"<tr style='background:#cfe2f3;'><th style='padding:8px;text-align:left;font-size:28px;color:#111827;border:1px solid #3569b8;'>Ürün</th><th style='padding:8px;text-align:center;font-size:28px;color:#111827;border:1px solid #3569b8;'>Toplam Adet</th><th style='padding:8px;text-align:center;font-size:22px;color:#111827;border:1px solid #3569b8;'>Satış<br>Geçmişi</th></tr>";
     liste.forEach(function(u,i){
       var safeAd = String(u.ad||"").replace(/'/g,"&#39;");
       var safeBerta = String(u.berta||"").replace(/'/g,"&#39;");
       var safeAbas = String(u.abas||"").replace(/'/g,"&#39;");
-      html += "<tr onclick=\"hitUrundenSepeteEkle('"+safeAd+"',"+(parseFloat(u.fiyat)||0)+",'"+safeBerta+"','"+safeAbas+"')\" style='cursor:pointer;border:1px solid #3569b8;background:#fff;'>"
-        +"<td style='padding:9px 8px;font-size:30px;font-weight:800;color:#222;border:1px solid #3569b8;'>"+(i+1)+". "+u.ad+"<div style='font-size:22px;color:#3569b8;font-weight:700;'>Berta: "+(u.berta||"-")+" · Abas: "+(u.abas||"-")+"</div></td>"
-        +"<td style='padding:9px 8px;text-align:center;font-size:34px;font-weight:900;color:#16a085;border:1px solid #3569b8;'>"+u.adet+"</td>"
-        +"<td style='padding:9px 8px;text-align:center;font-size:30px;color:#3569b8;border:1px solid #3569b8;'>"+u.siparisSayisi+"</td>"
+      html += "<tr style='border:1px solid #3569b8;background:#fff;'>"
+        +"<td onclick=\"hitUrundenSepeteEkle('"+safeAd+"',"+(parseFloat(u.fiyat)||0)+",'"+safeBerta+"','"+safeAbas+"')\" style='cursor:pointer;padding:9px 8px;font-size:30px;font-weight:800;color:#111827;border:1px solid #3569b8;'>"+(i+1)+". "+u.ad+"<div style='font-size:22px;color:#3569b8;font-weight:700;'>Berta: "+(u.berta||"-")+" · Abas: "+(u.abas||"-")+"</div></td>"
+        +"<td onclick=\"hitUrundenSepeteEkle('"+safeAd+"',"+(parseFloat(u.fiyat)||0)+",'"+safeBerta+"','"+safeAbas+"')\" style='cursor:pointer;padding:9px 8px;text-align:center;font-size:34px;font-weight:900;color:#0e6b34;border:1px solid #3569b8;'>"+u.adet+"</td>"
+        +"<td onclick=\"urunSatisGecmisiAc('"+safeBerta+"','"+safeAbas+"','"+safeAd+"')\" style='cursor:pointer;padding:9px 8px;text-align:center;border:1px solid #3569b8;background:#eef4fb;'><div style='font-size:26px;font-weight:900;color:#003a70;'>📊</div><div style='font-size:14px;font-weight:800;color:#003a70;'>Geçmiş</div></td>"
         +"</tr>";
     });
     html += "</table>";
@@ -1725,18 +1813,22 @@ function adresFormKaydet(){
   var etiket = (document.getElementById("adresFormEtiketInput").value||"").trim() || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi");
   var adres = (document.getElementById("adresFormAdresInput").value||"").trim();
   if(!adres){ showToast("⚠️ Adres boş olamaz."); return; }
-  var yeniKayit = {etiket:etiket, adres:adres};
   if(adresDuzenlenenIdx!==null && liste[adresDuzenlenenIdx]){
-    // Bu kayıt şu an seçiliyse, seçimi de güncel tut
-    var eskiKayit = liste[adresDuzenlenenIdx];
+    // ÖNEMLİ DÜZELTME: yeni bir obje ile DEĞİŞTİRMEK yerine, var olan objenin
+    // içeriğini yerinde güncelliyoruz. seciliFaturaAdresi/seciliTeslimatAdresi
+    // bu objeye doğrudan REFERANS tutuyor (kopya değil) — bu sayede "şu an
+    // seçili mi" diye kırılgan metin karşılaştırması yapmaya hiç gerek kalmıyor,
+    // düzenleme HER ZAMAN o an aktif seçime de otomatik yansıyor. Eskiden
+    // (metin birebir eşleşmeli) mantık, bazı durumlarda güncellemeyi atlayıp
+    // gönderilen belgede eski adresin kalmasına yol açabiliyordu.
+    liste[adresDuzenlenenIdx].etiket = etiket;
+    liste[adresDuzenlenenIdx].adres = adres;
     var seciliAdres = tip==="fatura" ? seciliFaturaAdresi : seciliTeslimatAdresi;
-    if(seciliAdres && seciliAdres.adres===eskiKayit.adres && seciliAdres.etiket===eskiKayit.etiket){
-      if(tip==="fatura"){ seciliFaturaAdresi = yeniKayit; localStorage.setItem("weicon_secili_fatura", JSON.stringify(yeniKayit)); }
-      else { seciliTeslimatAdresi = yeniKayit; localStorage.setItem("weicon_secili_teslimat", JSON.stringify(yeniKayit)); }
+    if(seciliAdres === liste[adresDuzenlenenIdx]){
+      localStorage.setItem(tip==="fatura" ? "weicon_secili_fatura" : "weicon_secili_teslimat", JSON.stringify(seciliAdres));
     }
-    liste[adresDuzenlenenIdx] = yeniKayit;
   } else {
-    liste.push(yeniKayit);
+    liste.push({etiket:etiket, adres:adres});
   }
   musteriListesiniKaydet();
   if(window.fbSet) musteriListesiGuvenliKaydet(m).catch(function(e){ console.error("Firebase yazma hatası:", e); });

@@ -1602,11 +1602,34 @@ function listeyeEkleButonGuncelle(){
 var hizliHesaplaModu = false;
 
 // SATIŞ MENÜSÜ — Müşteri / Ziyaret Takvimi / İstatistikler / Görevlerim tek buton altında
+// HAREKETLER MENÜSÜ — eskiden "Satış" idi, artık sadece SATIŞ+MÜŞTERİLER içeriyor.
+function hareketlerMenusuAc(){
+  document.getElementById("hareketlerMenusuModal").style.display = "flex";
+}
+// "SATIŞ" butonuna basılınca — AŞAMA 1 (bu güncelleme): müşteri seçimine
+// götürüyor, aynı MÜŞTERİLER akışı. Siparişe özel adres/vade/kargo override
+// ekranı VE "hareket seç"in ürün seçiminden önceye taşınması BİR SONRAKİ
+// aşamada eklenecek — henüz bu ikisi yok, sadece navigasyon değişti.
+function hareketlerSatisBaslat(){
+  switchTab(7);
+}
+// Eski fonksiyon adı — geriye dönük uyumluluk için (herhangi bir yerde hâlâ
+// çağrılıyorsa hata vermesin diye) hareketlerMenusuAc'a yönlendiriyoruz.
 function satisMenusuAc(){
-  document.getElementById("satisMenusuModal").style.display = "flex";
+  hareketlerMenusuAc();
 }
 function satisMenusuKapatVeGit(sekmeNo){
-  document.getElementById("satisMenusuModal").style.display = "none";
+  var hm = document.getElementById("hareketlerMenusuModal"); if(hm) hm.style.display = "none";
+  var sm = document.getElementById("satisMenusuModal"); if(sm) sm.style.display = "none";
+  switchTab(sekmeNo);
+}
+
+// RAPORLAR MENÜSÜ — İstatistik/Görev/Ziyaret Takvimi buraya taşındı.
+function raporlarMenusuAc(){
+  document.getElementById("raporlarMenusuModal").style.display = "flex";
+}
+function raporlarMenusuKapatVeGit(sekmeNo){
+  document.getElementById("raporlarMenusuModal").style.display = "none";
   switchTab(sekmeNo);
 }
 

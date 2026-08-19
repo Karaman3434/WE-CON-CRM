@@ -1432,6 +1432,16 @@ function urunAdiniWeiconDaAra(urunAdi, abasKodu){
   window.open("https://www.weicon.com.tr/search?search="+encodeURIComponent(sorgu), "_blank");
 }
 
+// İşlem Geçmişi ekranı iki görünüm sunar: "liste" (mevcut, işlem bazlı tam
+// döküm) ve "urunOzeti" (YENİ — bu müşteriye satılan HER ÜRÜN sadece bir kez,
+// en son verilen fiyat/iskontoyla). SAP Business One'daki "Last Selling
+// Price" mantığı — salt-okunur, hiçbir yeni veri kaydetmez.
+var musteriGecmisGorunum = "liste"; // "liste" | "urunOzeti"
+function musteriGecmisGorunumDegistir(mod){
+  musteriGecmisGorunum = mod;
+  musteriGecmisRenderEt();
+}
+
 function musteriGecmisRenderEt(){
   if(musteriKartIdx===null) return;
   var m = musteriListesi[musteriKartIdx];
@@ -1464,7 +1474,58 @@ function musteriGecmisRenderEt(){
     return;
   }
 
-  var html = "<div style='display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px;'>"
+  // Görünüm değiştirme sekmeleri — HER İKİ görünümde de üstte görünür.
+  var gorunumSekmeleri = "<div style='display:flex;gap:8px;margin-bottom:10px;'>"
+    +"<div onclick=\"musteriGecmisGorunumDegistir('liste')\" style='cursor:pointer;flex:1;background:"+(musteriGecmisGorunum==="liste"?"#003a70":"#eef1f4")+";color:"+(musteriGecmisGorunum==="liste"?"#fff":"#556170")+";border-radius:8px;padding:9px 4px;text-align:center;font-size:16px;font-weight:900;'>📋 İşlem Listesi</div>"
+    +"<div onclick=\"musteriGecmisGorunumDegistir('urunOzeti')\" style='cursor:pointer;flex:1;background:"+(musteriGecmisGorunum==="urunOzeti"?"#0e7c63":"#eef1f4")+";color:"+(musteriGecmisGorunum==="urunOzeti"?"#fff":"#556170")+";border-radius:8px;padding:9px 4px;text-align:center;font-size:16px;font-weight:900;'>📦 Ürün Özeti</div>"
+    +"</div>";
+
+  if(musteriGecmisGorunum==="urunOzeti"){
+    // Aynı ürün (berta+abas) birden fazla işlemde geçmiş olabilir — sadece
+    // EN SON (islemler zaten ts'ye göre azalan sırada) görülen kaydı tutuyoruz.
+    var urunOzet = {};
+    var siraNo = [];
+    for(var oi=0; oi<islemler.length; oi++){
+      var okayit = islemler[oi].kayit;
+      if(!okayit.urunler) continue;
+      for(var oj=0; oj<okayit.urunler.length; oj++){
+        var ou = okayit.urunler[oj];
+        var anahtar = (ou.berta||"")+"|"+(ou.abas||"")+"|"+(ou.name||"");
+        if(!urunOzet[anahtar]){
+          urunOzet[anahtar] = {name:ou.name, berta:ou.berta, abas:ou.abas, tarih:okayit.tarih, adet:ou.adet, iskBirim:ou.iskBirim, iskonto:ou.iskonto, tip:islemler[oi].tip};
+          siraNo.push(anahtar);
+        }
+      }
+    }
+    var ozetHtml = gorunumSekmeleri;
+    if(siraNo.length===0){
+      ozetHtml += "<div style='color:#8a97a6;font-size:20px;padding:24px 0;text-align:center;'>Bu müşteriye henüz ürün satılmamış/teklif edilmemiş.</div>";
+    } else {
+      var TIP_ETIKET2 = {siparis:"SİP", teklif:"TEK", proforma:"PRO", numune:"NUM"};
+      var TIP_RENK2 = {siparis:"#003a70", teklif:"#1f9d55", proforma:"#8e44ad", numune:"#b7601f"};
+      ozetHtml += "<div style='font-size:13px;color:#8a97a6;font-weight:700;margin-bottom:8px;'>"+siraNo.length+" farklı ürün — her biri EN SON verilen fiyatla, tek satır</div>";
+      ozetHtml += "<div style='border:1px solid #eef1f5;border-radius:10px;overflow:hidden;'>";
+      siraNo.forEach(function(anahtar, i){
+        var o = urunOzet[anahtar];
+        var zebra = (i%2===1) ? "background:#f7f9fc;" : "background:#fff;";
+        ozetHtml += "<div style='padding:12px 14px;border-bottom:1.5px solid #eef1f5;"+zebra+"'>"
+          +"<div style='display:flex;align-items:center;gap:6px;'><span style='font-size:11px;font-weight:900;color:#fff;background:"+(TIP_RENK2[o.tip]||"#556170")+";padding:2px 6px;border-radius:5px;flex-shrink:0;'>"+(TIP_ETIKET2[o.tip]||"")+"</span><span style='font-size:19px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+safeText(o.name)+"</span></div>"
+          +"<div style='display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;padding-left:2px;'>"
+          +"<span style='font-size:12px;color:#374151;font-weight:700;'>Son: "+tarihKisaltTekSatir(o.tarih)+" · "+o.adet+" adet</span>"
+          +"<span style='font-size:17px;font-weight:900;color:#003a70;'>"+fmt(o.iskBirim)+"€ <span style='font-size:12px;color:#c0392b;'>(%"+o.iskonto+")</span></span>"
+          +"</div>"
+          +"</div>";
+      });
+      ozetHtml += "</div>";
+    }
+    el.innerHTML = ozetHtml;
+    var revizeBtnGizle = document.getElementById("gecmisRevizeBtn");
+    if(revizeBtnGizle) revizeBtnGizle.style.display = "none";
+    return;
+  }
+
+  var html = gorunumSekmeleri;
+  html += "<div style='display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px;'>"
     +"<div style='flex:1;min-width:0;background:#dbe9f9;border:1px solid #3569b8;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#003a70;white-space:nowrap;'>SİPARİŞ</div>"
     +"<div style='flex:1;min-width:0;background:#cdf3de;border:1px solid #0e7c63;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#0e7c63;white-space:nowrap;'>TEKLİF</div>"
     +"<div style='flex:1;min-width:0;background:#e5cdf7;border:1px solid #8e44ad;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#6a1b7a;white-space:nowrap;'>PROFORMA</div>"
