@@ -1257,6 +1257,11 @@ function musteriGecmisIslemleriAc(){
   if(!m) return;
   document.getElementById("gecmisIslemlerBaslik").textContent = "🕘 İşlem Geçmişi";
   document.getElementById("gecmisIslemlerMusteriAd").textContent = m.ad||"";
+  // Müşteri Kartı'nda gösterilen "İşlem Özeti" artık burada — İşlemler'de zaten
+  // müşteri geçmişi olduğu için Kart'ta tekrar göstermeye gerek yoktu.
+  var ozet = musteriIslemOzetiGetir(m);
+  document.getElementById("gecmisIslemSayisi").textContent = ozet.sayi;
+  document.getElementById("gecmisToplamTutar").textContent = ozet.toplamEuro.toFixed(2).replace(".",",")+" €";
   musteriGecmisRenderEt();
   document.getElementById("musteriKartModal").style.display="none";
   document.getElementById("musteriGecmisIslemlerModal").style.display="flex";

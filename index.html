@@ -971,26 +971,15 @@ function rafUpdate(fn){
     </div>
 
     <div style="padding:0 18px 14px;">
-      <div style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:10px;">📊 İŞLEM ÖZETİ</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;">
-        <div style="background:#eef4fe;border-radius:9px;padding:11px;text-align:center;">
-          <div id="cariKartIslemSayisi" style="font-size:36px;font-weight:900;color:#2563eb;">0</div>
-          <div style="font-size:18px;font-weight:800;color:#556;">TOPLAM İŞLEM</div>
-        </div>
-        <div style="background:#eefaf1;border-radius:9px;padding:11px;text-align:center;">
-          <div id="cariKartToplamTutar" style="font-size:36px;font-weight:900;color:#16a34a;">0 €</div>
-          <div style="font-size:18px;font-weight:800;color:#556;">TOPLAM TUTAR</div>
-        </div>
-      </div>
       <div style="font-size:21px;font-weight:900;color:#8a94a3;letter-spacing:.3px;margin-bottom:6px;">🕐 SON TEMAS</div>
       <div id="cariKartSonTemas" style="font-size:25px;color:#333;">-</div>
     </div>
 
     <div style="padding:0 18px 14px;display:flex;gap:10px;">
-      <button onclick="musteriKartDuzenleAc()" style="flex:1;background:#fff8dc;color:#a8790a;border:2px solid #f0d878;border-radius:9px;padding:14px;font-size:24px;font-weight:800;cursor:pointer;">✏️ Düzenle</button>
-      <button onclick="musteriKartModalaGitCariKarttan()" style="flex:1;background:linear-gradient(135deg,#f2994a,#d97e2f);color:#fff;border:none;border-radius:9px;padding:14px;font-size:24px;font-weight:800;cursor:pointer;">⚡ İşlemler'e Git</button>
+      <button onclick="musteriKartDuzenleAc()" style="flex:1;background:#fff8dc;color:#a8790a;border:2px solid #f0d878;border-radius:9px;padding:17px;font-size:29px;font-weight:800;cursor:pointer;">✏️ Düzenle</button>
+      <button onclick="musteriKartModalaGitCariKarttan()" style="flex:1;background:linear-gradient(135deg,#f2994a,#d97e2f);color:#fff;border:none;border-radius:9px;padding:17px;font-size:29px;font-weight:800;cursor:pointer;">⚡ İşlemler'e Git</button>
     </div>
-    <button onclick="musteriCariKartKapat()" style="width:calc(100% - 36px);margin:0 18px 14px;background:#ffcdd2;color:#b71c1c;border:none;border-radius:9px;padding:14px;font-size:24px;font-weight:bold;cursor:pointer;">Kapat</button>
+    <button onclick="musteriCariKartKapat()" style="width:calc(100% - 36px);margin:0 18px 14px;background:#ffcdd2;color:#b71c1c;border:none;border-radius:9px;padding:17px;font-size:29px;font-weight:bold;cursor:pointer;">Kapat</button>
   </div>
 </div>
 
@@ -1285,6 +1274,16 @@ function rafUpdate(fn){
   <div style="background:#fff;border-radius:16px;padding:20px 10px;width:99%;max-width:1100px;max-height:94vh;overflow-y:auto;box-sizing:border-box;">
     <div id="gecmisIslemlerBaslik" style="font-size:51px;font-weight:bold;color:#003a70;margin-bottom:9px;">🕘 Geçmiş İşlemler</div>
     <div id="gecmisIslemlerMusteriAd" style="font-size:33px;color:#666;margin-bottom:14px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;">
+      <div style="background:#eef4fe;border-radius:9px;padding:11px;text-align:center;">
+        <div id="gecmisIslemSayisi" style="font-size:36px;font-weight:900;color:#2563eb;">0</div>
+        <div style="font-size:18px;font-weight:800;color:#556;">TOPLAM İŞLEM</div>
+      </div>
+      <div style="background:#eefaf1;border-radius:9px;padding:11px;text-align:center;">
+        <div id="gecmisToplamTutar" style="font-size:36px;font-weight:900;color:#16a34a;">0 €</div>
+        <div style="font-size:18px;font-weight:800;color:#556;">TOPLAM TUTAR</div>
+      </div>
+    </div>
     <div id="surecListesiDiv" style="margin-bottom:18px;"></div>
     <div id="gecmisIslemlerListesi"></div>
     <div style="margin-top:14px;">
@@ -2735,7 +2734,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1908260012-530</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V1908260527-531</div>
 </div>
 
 </div>

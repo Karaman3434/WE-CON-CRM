@@ -373,31 +373,30 @@ function musteriListesiniRenderEt(){
   for(var i=0;i<filtrelenmis.length;i++){
     var m = filtrelenmis[i];
     var gercekIdx = musteriListesi.indexOf(m);
+    var zebra = (i%2===1) ? "background:#f7f9fc;" : "background:#fff;";
 
-    // Ziyaret uyarısı
-    var ziyaretUyari = "";
+    // Ziyaret bilgisi — artık isim satırının SONUNA taşındı (Son İşlemler
+    // tablosuyla aynı dil: 2 satır, koyu siyah metin, ince alt çizgi).
+    var ziyaretRozet = "";
     if(m.sonZiyaret){
       var ziyaretGun = Math.floor((Date.now() - m.sonZiyaret) / 86400000);
-      if(ziyaretGun > 30) ziyaretUyari = "<div style='margin-top:8px;'><span style='background:#fff3cd;color:#856404;font-size:20px;font-weight:800;padding:5px 14px;border-radius:8px;'>⚠️ "+ziyaretGun+" gün ziyaret yok</span></div>";
-      else ziyaretUyari = "<div style='margin-top:8px;'><span style='background:#d4edda;color:#155724;font-size:17px;font-weight:800;padding:5px 14px;border-radius:8px;'>✓ "+ziyaretGun+" gün önce</span></div>";
+      if(ziyaretGun > 30) ziyaretRozet = "<span style='background:#fff3cd;color:#856404;font-size:13px;font-weight:800;padding:3px 10px;border-radius:8px;flex-shrink:0;white-space:nowrap;'>⚠️ "+ziyaretGun+" gün ziyaret yok</span>";
+      else ziyaretRozet = "<span style='background:#d4edda;color:#155724;font-size:13px;font-weight:800;padding:3px 10px;border-radius:8px;flex-shrink:0;white-space:nowrap;'>✓ "+ziyaretGun+" gün önce</span>";
     }
 
-    // Ana Sayfa/İşlemler kartlarıyla aynı dil: açık degrade zemin + koyu solid
-    // kenarlık (WEICON marka lacivert — her müşteri aynı "tür" kayıt olduğu
-    // için kategori rengi yerine tutarlı tek marka rengi kullanıyoruz).
-    // Kompakt v2 düzen: isim üstte tam satır (uzun firma isimleri rahat sığsın),
-    // alt satırda kod solda / ilçe-il sağda — eski 3 satırlık yapıya göre yer kazancı.
-    satirlar += "<div onclick=\"musteriKartAc("+gercekIdx+")\" style='cursor:pointer;border-radius:14px;background:linear-gradient(135deg,#f0f7ff,#dbe9f9);border:2.5px solid #3569b8;padding:16px 18px;margin-bottom:12px;'>"
-      +"<div style='font-size:26px;font-weight:900;color:#003a70;line-height:1.25;'>"+safeText(m.ad)+"</div>"
-      +"<div style='display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:8px;'>"
-      +(m.id ? "<span style='font-size:19px;font-weight:800;color:#3569b8;letter-spacing:.2px;flex-shrink:0;'>🏷 "+safeText(m.id)+"</span>" : "<span></span>")
-      +"<span style='font-size:20px;font-weight:700;color:#5a7ba8;text-align:right;'>"+safeText(sehirFormatla(m.sehir)||"-")+"</span>"
+    satirlar += "<div onclick=\"musteriKartAc("+gercekIdx+")\" style='cursor:pointer;"+zebra+"border-bottom:1.5px solid #eef1f5;padding:12px 16px;'>"
+      +"<div style='display:flex;align-items:baseline;justify-content:space-between;gap:10px;'>"
+      +"<span style='font-size:26px;font-weight:900;color:#111827;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+safeText(m.ad)+"</span>"
+      +ziyaretRozet
       +"</div>"
-      +ziyaretUyari
+      +"<div style='display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:5px;'>"
+      +(m.id ? "<span style='font-size:16px;font-weight:800;color:#556170;letter-spacing:.2px;flex-shrink:0;'>🏷 "+safeText(m.id)+"</span>" : "<span></span>")
+      +"<span style='font-size:17px;font-weight:700;color:#556170;text-align:right;'>"+safeText(sehirFormatla(m.sehir)||"-")+"</span>"
+      +"</div>"
       +"</div>";
   }
 
-  c.innerHTML = bilgiNotu + satirlar;
+  c.innerHTML = bilgiNotu + "<div style='border:1.5px solid #eef1f5;border-radius:10px;overflow:hidden;'>"+satirlar+"</div>";
 }
 
 var sonIslemFiltreTipi = "";

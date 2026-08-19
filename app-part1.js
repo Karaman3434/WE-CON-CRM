@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1908260012-530";
+var APP_VERSION = "V1908260527-531";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1439,12 +1439,10 @@ function musteriKartAc(idx){
   } else {
     ziyaretBilgiDiv.style.display="none";
   }
-  // Doğrudan İşlemler menüsü yerine önce "Müşteri Kartı / İşlemler" seçim ekranı açılır.
-  document.getElementById("musteriSecimAd").textContent = m.ad||"";
-  var secimKoduEl = document.getElementById("musteriSecimKodu");
-  if(secimKoduEl) secimKoduEl.textContent = m.id ? ("🏷 "+m.id) : "";
-  document.getElementById("musteriSecimSehir").textContent = sehirFormatla(m.sehir)||"";
-  document.getElementById("musteriSecimModal").style.display="flex";
+  // ARTIK seçim ekranı ("Müşteri Kartı / İşlemler") YOK — isme dokununca
+  // doğrudan Müşteri Kartı açılıyor. İşlemler ekranına gitmek istersen Kart'ın
+  // altındaki "⚡ İşlemler'e Git" butonunu kullanıyorsun (zaten kart üzerinde var).
+  musteriCariKartAc();
 }
 
 // Müşterinin toplam işlem sayısı ve toplam € tutarını hesaplar (id varsa id ile,
@@ -1484,9 +1482,6 @@ function musteriCariKartAc(){
 
   cariKartYetkiliListesiniRenderEt();
 
-  var ozet = musteriIslemOzetiGetir(m);
-  document.getElementById("cariKartIslemSayisi").textContent = ozet.sayi;
-  document.getElementById("cariKartToplamTutar").textContent = ozet.toplamEuro.toFixed(2).replace(".",",")+" €";
   var sonTemasEl = document.getElementById("cariKartSonTemas");
   if(m.sonZiyaret){
     var gunFark = Math.floor((Date.now()-m.sonZiyaret)/86400000);
