@@ -1474,12 +1474,15 @@ function musteriGecmisRenderEt(){
   html += "<div style='overflow-x:hidden;'>";
   html += "<table style='border-collapse:collapse;width:100%;table-layout:fixed;font-size:21px;'>";
   html += "<thead><tr style='background:#cfe2f3;'>"
-    +"<th style='padding:5px 3px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#3569b8;width:15%;'>KOD</th>"
-    +"<th style='padding:5px 3px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#3569b8;width:13%;font-size:16px;font-weight:800;letter-spacing:.3px;'>TARİH</th>"
-    +"<th style='padding:5px 3px;text-align:left;border:1px solid #3569b8;color:#3569b8;width:34%;'>ÜRÜN İSMİ</th>"
-    +"<th style='padding:5px 2px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#3569b8;width:9%;'>ADET</th>"
-    +"<th style='padding:5px 2px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#3569b8;width:15%;'>BİRİM</th>"
-    +"<th style='padding:5px 2px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#3569b8;width:14%;'>PRİM</th>"
+    +"<th style='padding:5px 2px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:12%;'>KOD</th>"
+    +"<th style='padding:5px 2px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:9%;font-size:15px;font-weight:800;letter-spacing:.3px;'>TARİH</th>"
+    +"<th style='padding:5px 2px;text-align:left;border:1px solid #3569b8;color:#111827;width:19%;'>ÜRÜN İSMİ</th>"
+    +"<th style='padding:5px 1px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:7%;'>ADET</th>"
+    +"<th style='padding:5px 1px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:11%;'>LİSTE</th>"
+    +"<th style='padding:5px 1px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:9%;'>İSK</th>"
+    +"<th style='padding:5px 1px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:11%;'>NET</th>"
+    +"<th style='padding:5px 1px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:11%;'>TOPLAM</th>"
+    +"<th style='padding:5px 1px;text-align:center;white-space:nowrap;border:1px solid #3569b8;color:#111827;width:11%;'>PRİM</th>"
     +"</tr></thead><tbody>";
 
   for(var i=0;i<islemler.length;i++){
@@ -1498,12 +1501,15 @@ function musteriGecmisRenderEt(){
       var uPrim = uMk*(u.adet||0)*0.22;
       if(uPrim<0) uPrim = 0;
       html += "<tr onclick=\"if(uzunBasiTikSonrasi())return;musteriGecmisIslemDetayAc('"+tip+"',"+idx+")\" style='background:"+satirBg+";cursor:pointer;'>";
-      html += "<td oncontextmenu='return false;' onmousedown=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" onmouseup='uzunBasiBitir()' onmouseleave='uzunBasiBitir()' ontouchstart=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" ontouchend='uzunBasiBitir()' ontouchmove='uzunBasiBitir()' style='padding:5px 3px;border:1px solid #3569b8;text-align:center;-webkit-user-select:none;user-select:none;overflow-wrap:break-word;'>"+(j===0?(kodHtmlOlustur(kayit.kod,16,11,kayit.kanal)+(kayit.durum?"<div style='font-size:10px;font-weight:900;color:"+(kayit.durum==="iptal"||kayit.durum==="kacan"?"#c0392b":"#6a1b9a")+";margin-top:3px;'>"+(kayit.durum==="iptal"?"🚫 İPTAL":kayit.durum==="iade"?"↩️ İADE":kayit.durum==="kacan"?("❌ KAÇTI"+(kayit.kacanRakip?"<br><span style='font-size:9px;font-weight:700;'>→ "+kayit.kacanRakip+"</span>":"")):"")+"</div>":"")+(kayit.revizeZamani?"<div style='font-size:10px;font-weight:900;color:#c0392b;margin-top:3px;'>🔄 REVİZE<br>"+revizeTarihSaatFormatla(kayit.revizeZamani)+"</div>":"")):"")+"</td>";
-      html += "<td style='padding:5px 3px;border:1px solid #3569b8;text-align:center;color:#555;font-size:16px;'>"+(j===0?tarihKisalt(kayit.tarih):"")+"</td>";
-      html += "<td oncontextmenu='return false;' onmousedown=\"event.stopPropagation();uzunBasiBaslat(function(){"+urunSilCagri+"})\" onmouseup='uzunBasiBitir()' onmouseleave='uzunBasiBitir()' ontouchstart=\"event.stopPropagation();uzunBasiBaslat(function(){"+urunSilCagri+"})\" ontouchend='uzunBasiBitir()' ontouchmove='uzunBasiBitir()' style='padding:5px 3px;border:1px solid #3569b8;-webkit-user-select:none;user-select:none;overflow-wrap:break-word;'><div style='font-size:13px;font-weight:800;color:#444;'><span style='color:#003a70;'>Berta:</span>"+(u.berta||"-")+" <span style='color:#e0524a;'>- Abas:</span>"+(u.abas||"-")+"</div><div style='font-weight:800;color:#222;margin-top:4px;font-size:15px;'>"+u.name+"</div></td>";
-      html += "<td style='padding:5px 2px;border:1px solid #3569b8;color:#222;font-weight:800;text-align:center;white-space:nowrap;'>"+u.adet+"</td>";
-      html += "<td style='padding:5px 2px;border:1px solid #3569b8;font-size:19px;font-weight:900;color:"+renk+";text-align:center;white-space:nowrap;'>"+fmt(u.iskBirim)+" €</td>";
-      html += "<td style='padding:5px 2px;border:1px solid #3569b8;font-size:16px;font-weight:800;color:#0e7c63;text-align:center;white-space:nowrap;'>"+fmt(uPrim)+" €</td>";
+      html += "<td oncontextmenu='return false;' onmousedown=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" onmouseup='uzunBasiBitir()' onmouseleave='uzunBasiBitir()' ontouchstart=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" ontouchend='uzunBasiBitir()' ontouchmove='uzunBasiBitir()' style='padding:5px 2px;border:1px solid #3569b8;text-align:center;-webkit-user-select:none;user-select:none;overflow-wrap:break-word;'>"+(j===0?(kodHtmlOlustur(kayit.kod,16,11,kayit.kanal)+(kayit.durum?"<div style='font-size:10px;font-weight:900;color:"+(kayit.durum==="iptal"||kayit.durum==="kacan"?"#c0392b":"#6a1b9a")+";margin-top:3px;'>"+(kayit.durum==="iptal"?"🚫 İPTAL":kayit.durum==="iade"?"↩️ İADE":kayit.durum==="kacan"?("❌ KAÇTI"+(kayit.kacanRakip?"<br><span style='font-size:9px;font-weight:700;'>→ "+kayit.kacanRakip+"</span>":"")):"")+"</div>":"")+(kayit.revizeZamani?"<div style='font-size:10px;font-weight:900;color:#c0392b;margin-top:3px;'>🔄 REVİZE<br>"+revizeTarihSaatFormatla(kayit.revizeZamani)+"</div>":"")):"")+"</td>";
+      html += "<td style='padding:5px 2px;border:1px solid #3569b8;text-align:center;color:#374151;font-size:16px;font-weight:700;'>"+(j===0?tarihKisalt(kayit.tarih):"")+"</td>";
+      html += "<td oncontextmenu='return false;' onmousedown=\"event.stopPropagation();uzunBasiBaslat(function(){"+urunSilCagri+"})\" onmouseup='uzunBasiBitir()' onmouseleave='uzunBasiBitir()' ontouchstart=\"event.stopPropagation();uzunBasiBaslat(function(){"+urunSilCagri+"})\" ontouchend='uzunBasiBitir()' ontouchmove='uzunBasiBitir()' style='padding:5px 2px;border:1px solid #3569b8;-webkit-user-select:none;user-select:none;overflow-wrap:break-word;'><div style='font-size:12px;font-weight:800;color:#111827;'><span style='color:#003a70;'>B:</span>"+(u.berta||"-")+" <span style='color:#e0524a;'>A:</span>"+(u.abas||"-")+"</div><div style='font-weight:900;color:#111827;margin-top:4px;font-size:15px;'>"+u.name+"</div></td>";
+      html += "<td style='padding:5px 1px;border:1px solid #3569b8;color:#111827;font-weight:900;text-align:center;white-space:nowrap;'>"+u.adet+"</td>";
+      html += "<td style='padding:5px 1px;border:1px solid #3569b8;font-size:14px;font-weight:800;color:#111827;text-align:center;white-space:nowrap;'>"+fmt(u.listeFiyat)+" €</td>";
+      html += "<td style='padding:5px 1px;border:1px solid #3569b8;font-size:13px;font-weight:900;color:#c0392b;text-align:center;white-space:nowrap;'>%"+u.iskonto+"</td>";
+      html += "<td style='padding:5px 1px;border:1px solid #3569b8;font-size:16px;font-weight:900;color:"+renk+";text-align:center;white-space:nowrap;'>"+fmt(u.iskBirim)+" €</td>";
+      html += "<td style='padding:5px 1px;border:1px solid #3569b8;font-size:15px;font-weight:900;color:#0e6b34;text-align:center;white-space:nowrap;'>"+fmt(u.toplamEuro)+" €</td>";
+      html += "<td style='padding:5px 1px;border:1px solid #3569b8;font-size:14px;font-weight:800;color:#0e7c63;text-align:center;white-space:nowrap;'>"+fmt(uPrim)+" €</td>";
       html += "</tr>";
     }
   }

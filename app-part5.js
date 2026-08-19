@@ -1078,20 +1078,20 @@ function aySiparisleriAc(ayIndex){
     var zebra = (i%2===1) ? "background:#f7f9fc;" : "";
     satirlar += "<div onclick=\"document.getElementById('aySiparisleriModal').style.display='none';arsivDetayAc('siparis',"+it.idx+")\" style='cursor:pointer;padding:12px 16px;border-bottom:1.5px solid #eef1f5;"+zebra+(sorunluMu?"opacity:.85;":"")+"'>"
       +"<div style='display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:nowrap;overflow:hidden;'>"
-        +"<span style='font-size:17px;font-weight:900;padding:2px 9px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
-        +"<span style='font-size:18px;font-weight:800;color:#111827;flex-shrink:0;'>"+tarihKisaltTekSatir(it.kayit.tarih)+"</span>"
-        +(durumEk ? "<span style='font-size:17px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+durumEk+"</span>" : "")
+        +"<span style='font-size:19px;font-weight:900;padding:2px 9px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
+        +"<span style='font-size:20px;font-weight:800;color:#111827;flex-shrink:0;'>"+tarihKisaltTekSatir(it.kayit.tarih)+"</span>"
+        +(durumEk ? "<span style='font-size:19px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+durumEk+"</span>" : "")
       +"</div>"
       +"<div style='display:flex;align-items:baseline;justify-content:space-between;gap:8px;'>"
-        +"<span style='font-size:30px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+safeText(it.kayit.musteri||"-")+"</span>"
-        +"<span style='font-size:26px;font-weight:900;flex-shrink:0;white-space:nowrap;'><span style='color:"+kartRenk+";'>"+fmt(it.toplam)+"€</span><span style='color:#8a97a6;font-size:18px;'> · </span><span style='color:"+(sorunluMu?kartRenk:"#0e6b34")+";font-size:19px;'>"+fmt(it.prim)+"€</span></span>"
+        +"<span style='font-size:33px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+safeText(it.kayit.musteri||"-")+"</span>"
+        +"<span style='font-size:29px;font-weight:900;flex-shrink:0;white-space:nowrap;'><span style='color:"+kartRenk+";'>"+fmt(it.toplam)+"€</span><span style='color:#374151;font-size:20px;'> · </span><span style='color:"+(sorunluMu?kartRenk:"#0e6b34")+";font-size:21px;'>"+fmt(it.prim)+"€</span></span>"
       +"</div>"
       +"</div>";
   }
-  var html = "<div style='font-size:35px;font-weight:900;color:#003a70;margin-bottom:12px;text-align:center;border-bottom:3px solid #f2994a;padding-bottom:10px;'>📅 "+ay.ayAd+" "+ay.yil+" Siparişleri</div>"
+  var html = "<div style='font-size:39px;font-weight:900;color:#003a70;margin-bottom:12px;text-align:center;border-bottom:3px solid #f2994a;padding-bottom:10px;'>📅 "+ay.ayAd+" "+ay.yil+" Siparişleri</div>"
     +"<div style='background:linear-gradient(135deg,#0a1628,#132840);border-radius:14px;padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;'>"
-      +"<span style='font-size:24px;font-weight:800;color:#7fd6ff;'>🧮 AY TOPLAMI ("+ay.kayitlar.length+" sipariş)</span>"
-      +"<span style='font-size:34px;font-weight:900;color:#00d9ff;'>"+fmt(ayToplam)+" €</span>"
+      +"<span style='font-size:26px;font-weight:800;color:#7fd6ff;'>🧮 AY TOPLAMI ("+ay.kayitlar.length+" sipariş)</span>"
+      +"<span style='font-size:37px;font-weight:900;color:#00d9ff;'>"+fmt(ayToplam)+" €</span>"
     +"</div>"
     +"<div style='border:1.5px solid #eef1f5;border-radius:10px;overflow:hidden;'>"+satirlar+"</div>";
   document.getElementById("aySiparisleriIcerik").innerHTML = html;
