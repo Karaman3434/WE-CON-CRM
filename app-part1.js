@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1908260527-531";
+var APP_VERSION = "V1908260549-533";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1467,8 +1467,6 @@ function musteriIslemOzetiGetir(m){
 
 // "📇 MÜŞTERİ KARTI" — salt-okunur cari bilgiler (adres/vade/fatura/kargo/özet/son temas).
 function musteriCariKartAc(){
-  oncekiPopupId = "musteriSecimModal";
-  document.getElementById("musteriSecimModal").style.display="none";
   if(musteriKartIdx===null) return;
   var m = musteriListesi[musteriKartIdx];
   if(!m) return;
@@ -1482,14 +1480,6 @@ function musteriCariKartAc(){
 
   cariKartYetkiliListesiniRenderEt();
 
-  var sonTemasEl = document.getElementById("cariKartSonTemas");
-  if(m.sonZiyaret){
-    var gunFark = Math.floor((Date.now()-m.sonZiyaret)/86400000);
-    var tarihStr = new Date(m.sonZiyaret).toLocaleDateString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric"});
-    sonTemasEl.textContent = tarihStr+" · "+gunFark+" gün önce";
-  } else {
-    sonTemasEl.textContent = "Kayıtlı temas yok";
-  }
   document.getElementById("musteriCariKartModal").style.display="flex";
 }
 

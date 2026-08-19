@@ -1029,14 +1029,6 @@ function musteriKartModalaGitCariKarttan(){
   document.getElementById("musteriKartModal").style.display="flex";
 }
 
-// Seçim ekranından ("Müşteri Kartı / İşlemler") doğrudan İşlemler'e geçerken
-// de aynı şekilde dönüş adresini işaretler.
-function musteriKartModalaGitSecimden(){
-  oncekiPopupId = "musteriSecimModal";
-  document.getElementById("musteriSecimModal").style.display="none";
-  document.getElementById("musteriKartModal").style.display="flex";
-}
-
 // Müşteri Kartı popup'ının kendi Kapat'ı — eğer seçim ekranından buraya
 // gelinmişse (oncekiPopupId), bir önceki adıma (seçim ekranına) döner;
 // değilse (doğrudan açılmışsa) normal şekilde kapatır.
