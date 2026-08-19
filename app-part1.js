@@ -19,7 +19,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "V1908261109-537";
+var APP_VERSION = "V1908261130-539";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -1774,8 +1774,14 @@ function adresFormAc(tip, idx){
   adresYonetimTipi = tip;
   adresDuzenlenenIdx = idx;
   var secimEkraniAcikMi = document.getElementById("adresYonetimModal").style.display === "flex";
-  adresFormDonusYeri = secimEkraniAcikMi ? "secim" : "kart";
+  var kartAcikMi = document.getElementById("musteriCariKartModal").style.display === "flex";
+  adresFormDonusYeri = secimEkraniAcikMi ? "secim" : (kartAcikMi ? "kart" : "hicbiri");
   if(secimEkraniAcikMi) document.getElementById("adresYonetimModal").style.display = "none";
+  // ÖNEMLİ: Müşteri Kartı'nı da geçici olarak GİZLİYORUZ (sadece görünürlük,
+  // veri/durum bozulmaz). Bazı tarayıcılarda z-index'e rağmen üst üste binme
+  // sorunu yaşanabiliyordu — bu form kapanınca Kart otomatik geri gösterilir,
+  // bu şekilde "form arkada kaldı" sorunu kesin olarak ortadan kalkıyor.
+  if(kartAcikMi) document.getElementById("musteriCariKartModal").style.display = "none";
 
   var etiketVal = "", adresVal = "";
   if(idx!==null){
@@ -1799,6 +1805,8 @@ function _adresFormDonusYap(){
   if(adresFormDonusYeri==="secim"){
     adresYonetimListesiniRenderEt();
     document.getElementById("adresYonetimModal").style.display = "flex";
+  } else if(adresFormDonusYeri==="kart"){
+    document.getElementById("musteriCariKartModal").style.display = "flex";
   }
 }
 function adresFormKapat(){

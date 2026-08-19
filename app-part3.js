@@ -204,6 +204,15 @@ function urunBulOnKontrolDevamEt(){
   if(aksiyon==="gonder"){ iletisimIslemleriPopupAc(); return; }
   if(aksiyon==="kaydet"){ hesaplaKaydetTikla(); return; }
   if(aksiyon==="ozet"){ return; } // sadece kapat, sepete geri dön — otomatik gönder/kaydet YOK
+  // "Ürün Bul" akışı: işlem türü (Numune/Teklif/Proforma/Sipariş) artık BURADA,
+  // ürünleri seçmeden ÖNCE soruluyor — eskiden Gönder anında sorulurdu. Zaten
+  // seçilmişse (aynı oturumda daha önce seçildiyse) tekrar sorulmaz, doğrudan
+  // Ürün Bul'a geçilir — bu sayede Gönder anında bir daha çıkmaz.
+  if(!secilenMod){
+    islemTuruSeciminSonrasiAksiyon = "urunBul";
+    islemTuruModalAc();
+    return;
+  }
   musteriIslemBaslatKarttan();
 }
 
@@ -2061,6 +2070,9 @@ function modSec(mod){
   } else if(islemTuruSeciminSonrasiAksiyon === 'kaydet'){
     islemTuruSeciminSonrasiAksiyon = null;
     hesaplaKaydetTikla();
+  } else if(islemTuruSeciminSonrasiAksiyon === 'urunBul'){
+    islemTuruSeciminSonrasiAksiyon = null;
+    musteriIslemBaslatKarttan();
   }
 }
 
