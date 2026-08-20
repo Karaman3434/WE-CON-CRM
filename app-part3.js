@@ -107,19 +107,14 @@ function urunBulOnKontrolAc(){
   if(musteriKartIdx===null) return;
   var m = musteriListesi[musteriKartIdx];
   if(!m) return;
-  urunBulKontrolAktif = true;
-  onKontrolSonrasiAksiyon = "urunBul";
   document.getElementById("musteriKartModal").style.display="none";
-  document.getElementById("ubkMusteriAdi").textContent = m.ad||"";
-  var durum = belgeBilgileriHazirlaVeKontrolEt();
-  // ÖNERİ A — AKILLI ATLAMA: fatura+teslimat+yetkili otomatik seçilip hepsi
-  // tamsa, kullanıcıya HİÇ soru sormadan doğrudan Ürün Bul'a geçiyoruz.
-  if(durum.hepsiTam){
-    urunBulOnKontrolDevamEt();
-    return;
-  }
-  urunBulOnKontrolRenderEt();
-  document.getElementById("urunBulOnKontrolModal").style.display="flex";
+  // TEK ROTA sadeleştirmesi: fatura/teslimat/yetkili hâlâ arka planda sessizce
+  // otomatik seçiliyor (belge doğru oluşsun diye) ama artık HİÇBİR ZAMAN bir
+  // popup ile kullanıcıya soru sormuyor — "Ürün Bul"a basınca doğrudan Ürün
+  // Bul sayfasına geçiliyor. İşlem türü (Numune/Teklif/Proforma/Sipariş)
+  // artık burada değil, Gönder'e basıldığında soruluyor.
+  belgeBilgileriHazirlaVeKontrolEt();
+  musteriIslemBaslatKarttan();
 }
 
 function urunBulOnKontrolKapat(){
@@ -1314,12 +1309,9 @@ function iletisimIslemleriPopupAc(){
     if(typeof islemTuruModalAc==="function") islemTuruModalAc();
     return;
   }
-  var uyarilar = hareketAnomaliKontrolEt();
-  if(uyarilar.length > 0){
-    anomaliUyariPopupGoster(uyarilar, 'gonder');
-    return;
-  }
-  if(belgeBilgileriEksikMi("gonder")) return;
+  // TEK ROTA sadeleştirmesi: "Devam etmeden önce kontrol et" anomali popup'ı
+  // ve fatura/teslimat/yetkili ön-kontrol ekranı Gönder akışından kaldırıldı
+  // — artık işlem türü seçilince doğrudan fiyat görünümü ekranına geçiliyor.
   document.getElementById("fiyatGorunumuModal").style.display="flex";
 }
 
