@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASIST VERSİYON: V1208260919-425 -->
+<!-- WEICON ASİST VERSİYON: W220826.2252.543 — index.html -->
 <html lang="tr" style="width:100%;">
 <head>
 <meta charset="UTF-8">
@@ -199,7 +199,18 @@ button[onclick="geriGit()"], .tab-btn, #aktifSayfaGosterge, #navTabsContainer {
       if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
       db = firebase.database();
       try{ storage = firebase.storage(); }catch(e){ console.error("Firebase storage init error", e); storage = null; }
-      try{ auth = firebase.auth(); girisSistemiKur(); }catch(e){ console.error("Firebase auth init error", e); auth = null; document.body.style.visibility="visible"; var ge=document.getElementById("girisEkrani"); if(ge) ge.style.display="none"; }
+      try{ auth = firebase.auth(); girisSistemiKur(); }catch(e){
+        // GÜVENLİK DÜZELTMESİ: Eskiden bu hata durumunda body doğrudan
+        // "visible" yapılıyordu — auth servisi kurulamazsa bile ekran
+        // PIN/şifre sormadan açılabiliyordu. Artık auth kurulamazsa body
+        // GİZLİ KALIYOR, sadece bir hata mesajı gösteriliyor — güvenlik
+        // asla atlanmıyor.
+        console.error("Firebase auth init error", e);
+        auth = null;
+        var geHataEl = document.getElementById("girisHata");
+        if(geHataEl){ geHataEl.textContent = "Bağlantı hatası — giriş sistemi başlatılamadı. Sayfayı yenileyin."; geHataEl.style.display = "block"; }
+        girisEkraniniGoster();
+      }
       window.firebaseHazir = true;
       window.dispatchEvent(new Event("firebaseHazir"));
       return true;
@@ -377,11 +388,24 @@ button[onclick="geriGit()"], .tab-btn, #aktifSayfaGosterge, #navTabsContainer {
           auth.signOut();
           return;
         }
-        girisEkraniniGizle();
+        // GÜVENLİK DÜZELTMESİ: Eskiden burada ÖNCE girisEkraniniGizle() (yani
+        // ekranı AÇIĞA ÇIKARAN document.body.style.visibility="visible")
+        // çağrılıyor, ANCAK ONDAN SONRA PIN gerekip gerekmediği kontrol
+        // ediliyordu. Firebase'in bu callback'i tetiklemesi yavaş bağlantıda
+        // 15-20 saniye gecikebildiği için, bu sırada PIN hiç sorulmadan
+        // uygulama bir an için (bazı cihazlarda kalıcı olarak) açığa
+        // çıkabiliyordu — ciddi bir güvenlik açığıydı. Artık body ASLA
+        // açığa çıkarılmadan önce PIN gerekip gerekmediği belirleniyor.
+        var girisEl = document.getElementById("girisEkrani");
         if(durum === 1){
+          // PIN gerekiyor — giriş formunu gizle ama body'yi HİÇBİR ZAMAN
+          // açığa çıkarma, doğrudan PIN ekranını göster (kendi overlay'i var).
+          if(girisEl) girisEl.style.display = "none";
           pinEkraniniGoster();
-        } else if(pinKilitliMi){
-          pinEkraniniGizle();
+        } else {
+          // durum===0: gerçekten kilit gerekmiyor, şimdi güvenle açılabilir.
+          girisEkraniniGizle();
+          if(pinKilitliMi) pinEkraniniGizle();
         }
       } else {
         pinKilitliMi = false;
@@ -1254,12 +1278,21 @@ function rafUpdate(fn){
     <div id="surecListesiDiv" style="margin-bottom:18px;"></div>
     <div id="gecmisIslemlerListesi"></div>
     <div style="margin-top:14px;">
-      <div style="display:flex;gap:10px;margin-bottom:10px;">
-        <button onclick="musteriGecmisIslemleriGeriDon()" style="flex:1;background:#e8f4fd;color:#003a70;border:2px solid #003a70;padding:18px 8px;font-size:24px;font-weight:bold;border-radius:8px;cursor:pointer;">← Müşteri Kartına Dön</button>
-        <button id="gecmisRevizeBtn" style="flex:1;display:none;background:#fdf0e3;color:#b7601f;border:2px solid #eab98a;padding:18px 8px;font-size:24px;font-weight:900;border-radius:8px;cursor:pointer;">🔄 Revize</button>
-      </div>
       <button onclick="musteriGecmisIslemleriKapat()" style="width:100%;background:linear-gradient(135deg,#fff1f0,#fbdbd8);color:#c0392b;border:2.5px solid #c0392b;border-radius:10px;padding:22px;font-size:28px;font-weight:bold;cursor:pointer;">Kapat</button>
     </div>
+  </div>
+</div>
+
+<!-- HAREKET HÜCRESİ POPUP'I — İşlem Geçmişi tablosunda KOD hücresine
+     dokununca açılır. "Revize" artık buradan başlatılıyor (eskiden ekranın
+     en altında, sadece en güncel işlem için tek bir buton olarak duruyordu —
+     artık HER satırın kendi kod hücresinden, o satıra özel çalışıyor). -->
+<div id="hareketHucresiModal" style="display:none;position:fixed;top:var(--ust-panel-h,150px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:10006;justify-content:center;align-items:flex-start;padding-top:15px;overflow-y:auto;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;padding:22px 18px;width:94%;max-width:600px;box-sizing:border-box;">
+    <div id="hareketHucresiBaslik" style="font-size:22px;font-weight:900;color:#003a70;margin-bottom:4px;"></div>
+    <div id="hareketHucresiAltBaslik" style="font-size:14px;color:#8a97a6;font-weight:700;margin-bottom:18px;"></div>
+    <button id="hareketHucresiRevizeBtn" style="width:100%;background:linear-gradient(135deg,#f2994a,#d97e2f);color:#fff;border:none;border-radius:10px;padding:18px;font-size:19px;font-weight:900;cursor:pointer;margin-bottom:10px;">🔄 Revize Et</button>
+    <button onclick="document.getElementById('hareketHucresiModal').style.display='none';" style="width:100%;background:#eef1f4;color:#556170;border:none;border-radius:10px;padding:16px;font-size:17px;font-weight:800;cursor:pointer;">Vazgeç</button>
   </div>
 </div>
 
@@ -2705,13 +2738,15 @@ function rafUpdate(fn){
       <div style="font-size:32px;font-weight:900;color:#2563eb;line-height:1.15;">Araç KM</div>
       <div style="font-size:20px;font-weight:800;color:#8a94a3;letter-spacing:.3px;margin-top:2px;">TAKİP</div>
     </div>
+    <div style="flex:1;min-width:0;"></div>
+    <div id="anaSayfaGununKmBildirimi" style="display:none;text-align:right;flex-shrink:0;"></div>
   </div>
 </div>
 
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST V2008260103-541</div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST W220826.2252.543</div>
 </div>
 
 </div>
