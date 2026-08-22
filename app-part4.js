@@ -1,3 +1,5 @@
+// WEICON ASİST VERSİYON: W220826.2252.543 — app-part4.js
+var APP_PART4_VERSION = "W220826.2252.543";
 function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   var primGoster = true; // Uygulama içindeki tüm kayıt detaylarında (SİPARİŞ/TEKLİF/PROFORMA/NUMUNE) prim her zaman gösterilir. NOT: Bu popup sadece uygulama içi görünüm — Mail/WhatsApp'a giden belge (siparisResmiHtmlOlustur) zaten hiç prim sütunu içermiyor.
   var satirlarHtml = "";
@@ -1370,6 +1372,24 @@ function anaSayfaRenderEt(){
 
   var kayitliKur = localStorage.getItem("weicon_kur");
   if(kayitliKur) anaKurDegerGuncelle(kayitliKur);
+
+  // Araç KM kartındaki bugünkü kayıt bildirimi — sabah KM girilip kaydedildiyse
+  // "GÜNÜN KM KAYDI YAPILDI" + değeri gösterir, henüz girilmediyse hiçbir şey
+  // göstermez (kutucuk boş kalır, gereksiz uyarı vermez).
+  var anaKmBildirimEl = document.getElementById("anaSayfaGununKmBildirimi");
+  if(anaKmBildirimEl){
+    var bugunKmAnahtari = (typeof kmTarihAnahtari==="function") ? kmTarihAnahtari(new Date()) : null;
+    var kmKayitlari = lsGet("weicon_km_kayitlari", {});
+    var bugunKmKaydi = bugunKmAnahtari ? kmKayitlari[bugunKmAnahtari] : null;
+    if(bugunKmKaydi && bugunKmKaydi.km){
+      anaKmBildirimEl.style.display = "block";
+      anaKmBildirimEl.innerHTML = "<div style='font-size:14px;font-weight:900;color:#0e6b34;line-height:1.3;'>✓ GÜNÜN KM KAYDI YAPILDI</div>"
+        +"<div style='font-size:32px;font-weight:900;color:#2563eb;line-height:1.15;'>KM "+fmt(bugunKmKaydi.km).replace(",00","")+"</div>";
+    } else {
+      anaKmBildirimEl.style.display = "none";
+      anaKmBildirimEl.innerHTML = "";
+    }
+  }
 
   anaSayfaKarsilamaGuncelle(gunVeri);
 }

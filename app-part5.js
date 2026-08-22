@@ -1,3 +1,5 @@
+// WEICON ASİST VERSİYON: W220826.2252.543 — app-part5.js
+var APP_PART5_VERSION = "W220826.2252.543";
 function kmSuAnTarihSaatDoldur(){
   var simdi = new Date();
   var gg = String(simdi.getDate()).padStart(2,"0");
@@ -87,6 +89,9 @@ function kmTakipKaydet(sessiz){
 
   lsSet("weicon_km_kayitlari", kmTakipKayitlariObj);
   kmDurumCubuguGuncelle();
+  // Ana Sayfa'daki "Araç KM" kartındaki bildirimin anında güncellenmesi için —
+  // kaydettikten hemen sonra, Ana Sayfa'ya dönmeden bile doğru gösterilsin.
+  if(typeof anaSayfaRenderEt==="function") anaSayfaRenderEt();
 
   // "Excel'e kaydedildi" mesajı ARTIK sadece Firebase'den GERÇEK yazma onayı
   // geldikten sonra gösterilir. Buton basılır basılmaz "kaydediliyor" gösterilir;
@@ -1994,4 +1999,44 @@ function arsivDetayKapat(){
   document.getElementById("arsivAnaPanel").style.display="none";
   document.getElementById("istatistikPanel").style.display="block";
   istatistikHesapla();
+}
+// ============================================================================
+// VERSİYON UYUMLULUK KONTROLÜ — app-part5.js en son yüklenen dosya olduğu için
+// bu kontrol burada çalışır. Her app-partN.js kendi versiyon damgasını
+// (APP_PARTN_VERSION) taşır; hepsi APP_VERSION (app-part1.js'teki ana kaynak)
+// ile birebir aynı olmalı. Biri eksikse (dosya hiç yüklenmemiş) ya da farklıysa
+// (eski bir sürüm kalmış) — sessizce "veriler gelmiyor" gibi belirsiz bir
+// arızaya yol açmak yerine, kullanıcıya HEMEN görünür kırmızı bir uyarı verir.
+function versiyonUyumlulukKontroluYap(){
+  var ana = (typeof APP_VERSION !== "undefined") ? APP_VERSION : null;
+  var parcalar = {
+    "app-part2.js": (typeof APP_PART2_VERSION !== "undefined") ? APP_PART2_VERSION : null,
+    "app-part3.js": (typeof APP_PART3_VERSION !== "undefined") ? APP_PART3_VERSION : null,
+    "app-part4.js": (typeof APP_PART4_VERSION !== "undefined") ? APP_PART4_VERSION : null,
+    "app-part5.js": (typeof APP_PART5_VERSION !== "undefined") ? APP_PART5_VERSION : null
+  };
+  var sorunlular = [];
+  for(var dosyaAdi in parcalar){
+    var v = parcalar[dosyaAdi];
+    if(!v) sorunlular.push(dosyaAdi + " — HİÇ YÜKLENMEMİŞ");
+    else if(v !== ana) sorunlular.push(dosyaAdi + " — ESKİ SÜRÜM (" + v + ")");
+  }
+  if(!ana){
+    sorunlular.unshift("app-part1.js — HİÇ YÜKLENMEMİŞ (ana versiyon kaynağı bulunamadı)");
+  }
+  if(sorunlular.length === 0) return; // Her şey uyumlu, sessizce geç.
+
+  var banner = document.createElement("div");
+  banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:14px 16px;font-family:sans-serif;font-size:14px;font-weight:800;line-height:1.5;box-shadow:0 2px 10px rgba(0,0,0,0.3);";
+  var html = "⚠️ DOSYA UYUMSUZLUĞU — Program yanlış/eksik veri gösterebilir!<br>";
+  html += "<span style='font-weight:700;font-size:12.5px;'>Ana sürüm (index.html + app-part1.js): " + (ana||"BULUNAMADI") + "</span><br>";
+  html += "<span style='font-weight:700;font-size:12.5px;'>" + sorunlular.join(" · ") + "</span><br>";
+  html += "<span style='font-weight:700;font-size:12.5px;'>Çözüm: GitHub'a TÜM dosyaları (index.html + app-part1'den 5'e kadar) aynı sette, hiç atlamadan tekrar yükleyin.</span>";
+  banner.innerHTML = html;
+  document.body.insertBefore(banner, document.body.firstChild);
+}
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", versiyonUyumlulukKontroluYap);
+} else {
+  versiyonUyumlulukKontroluYap();
 }

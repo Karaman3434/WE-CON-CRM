@@ -1,3 +1,5 @@
+// WEICON ASİST VERSİYON: W220826.2252.543 — app-part2.js
+var APP_PART2_VERSION = "W220826.2252.543";
 function gorevKaydet(){
   if(musteriKartIdx===null || !musteriListesi[musteriKartIdx]) return;
   var aciklama = document.getElementById("gorevAciklamaInput").value.trim();
@@ -1486,16 +1488,12 @@ function musteriGecmisRenderEt(){
   var el = document.getElementById("gecmisIslemlerListesi");
   if(islemler.length===0){
     el.innerHTML = "<div style='color:#888;font-size:33px;padding:24px 0;'>Bu müşteri için kayıtlı sipariş/fiyat teklifi geçmişi yok.</div>";
-    var revizeBtnBos = document.getElementById("gecmisRevizeBtn");
-    if(revizeBtnBos) revizeBtnBos.style.display = "none";
     return;
   }
 
-  // Görünüm değiştirme sekmeleri — HER İKİ görünümde de üstte görünür.
-  var gorunumSekmeleri = "<div style='display:flex;gap:8px;margin-bottom:10px;'>"
-    +"<div onclick=\"musteriGecmisGorunumDegistir('liste')\" style='cursor:pointer;flex:1;background:"+(musteriGecmisGorunum==="liste"?"#003a70":"#eef1f4")+";color:"+(musteriGecmisGorunum==="liste"?"#fff":"#556170")+";border-radius:8px;padding:9px 4px;text-align:center;font-size:16px;font-weight:900;'>📋 İşlem Listesi</div>"
-    +"<div onclick=\"musteriGecmisGorunumDegistir('urunOzeti')\" style='cursor:pointer;flex:1;background:"+(musteriGecmisGorunum==="urunOzeti"?"#0e7c63":"#eef1f4")+";color:"+(musteriGecmisGorunum==="urunOzeti"?"#fff":"#556170")+";border-radius:8px;padding:9px 4px;text-align:center;font-size:16px;font-weight:900;'>📦 Ürün Özeti</div>"
-    +"</div>";
+  // "İşlem Listesi / Ürün Özeti" sekme kutucukları kaldırıldı — artık bu ekran
+  // her zaman tek, sade bir İşlem Listesi tablosu gösteriyor.
+  var gorunumSekmeleri = "";
 
   if(musteriGecmisGorunum==="urunOzeti"){
     // Aynı ürün (berta+abas) birden fazla işlemde geçmiş olabilir — sadece
@@ -1536,19 +1534,10 @@ function musteriGecmisRenderEt(){
       ozetHtml += "</div>";
     }
     el.innerHTML = ozetHtml;
-    var revizeBtnGizle = document.getElementById("gecmisRevizeBtn");
-    if(revizeBtnGizle) revizeBtnGizle.style.display = "none";
     return;
   }
 
   var html = gorunumSekmeleri;
-  html += "<div style='display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px;'>"
-    +"<div style='flex:1;min-width:0;background:#dbe9f9;border:1px solid #3569b8;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#003a70;white-space:nowrap;'>SİPARİŞ</div>"
-    +"<div style='flex:1;min-width:0;background:#cdf3de;border:1px solid #0e7c63;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#0e7c63;white-space:nowrap;'>TEKLİF</div>"
-    +"<div style='flex:1;min-width:0;background:#e5cdf7;border:1px solid #8e44ad;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#6a1b7a;white-space:nowrap;'>PROFORMA</div>"
-    +"<div style='flex:1;min-width:0;background:#ffe3bf;border:1px solid #d97e2f;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#a85d1e;white-space:nowrap;'>NUMUNE</div>"
-    +"<div style='flex:1;min-width:0;background:#fac9c5;border:1px solid #c0392b;border-radius:6px;padding:5px 3px;text-align:center;font-size:22px;font-weight:900;color:#c0392b;white-space:nowrap;'>İADE/İPTAL/KAÇAN</div>"
-    +"</div>";
   html += "<div style='overflow-x:hidden;'>";
   html += "<table style='border-collapse:collapse;width:100%;table-layout:fixed;font-size:21px;'>";
   html += "<thead><tr style='background:#cfe2f3;'>"
@@ -1579,7 +1568,7 @@ function musteriGecmisRenderEt(){
       var uPrim = uMk*(u.adet||0)*0.22;
       if(uPrim<0) uPrim = 0;
       html += "<tr onclick=\"if(uzunBasiTikSonrasi())return;musteriGecmisIslemDetayAc('"+tip+"',"+idx+")\" style='background:"+satirBg+";cursor:pointer;'>";
-      html += "<td oncontextmenu='return false;' onmousedown=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" onmouseup='uzunBasiBitir()' onmouseleave='uzunBasiBitir()' ontouchstart=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" ontouchend='uzunBasiBitir()' ontouchmove='uzunBasiBitir()' style='padding:5px 2px;border:1px solid #3569b8;text-align:center;-webkit-user-select:none;user-select:none;overflow-wrap:break-word;'>"+(j===0?(kodHtmlOlustur(kayit.kod,16,11,kayit.kanal)+(kayit.durum?"<div style='font-size:10px;font-weight:900;color:"+(kayit.durum==="iptal"||kayit.durum==="kacan"?"#c0392b":"#6a1b9a")+";margin-top:3px;'>"+(kayit.durum==="iptal"?"🚫 İPTAL":kayit.durum==="iade"?"↩️ İADE":kayit.durum==="kacan"?("❌ KAÇTI"+(kayit.kacanRakip?"<br><span style='font-size:9px;font-weight:700;'>→ "+kayit.kacanRakip+"</span>":"")):"")+"</div>":"")+(kayit.revizeZamani?"<div style='font-size:10px;font-weight:900;color:#c0392b;margin-top:3px;'>🔄 REVİZE<br>"+revizeTarihSaatFormatla(kayit.revizeZamani)+"</div>":"")):"")+"</td>";
+      html += "<td onclick=\"event.stopPropagation();if(uzunBasiTikSonrasi())return;hareketHucresiPopupAc('"+tip+"',"+idx+")\" oncontextmenu='return false;' onmousedown=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" onmouseup='uzunBasiBitir()' onmouseleave='uzunBasiBitir()' ontouchstart=\"event.stopPropagation();uzunBasiBaslat(function(){"+kayitSilCagri+"})\" ontouchend='uzunBasiBitir()' ontouchmove='uzunBasiBitir()' style='padding:5px 2px;border:1px solid #3569b8;text-align:center;-webkit-user-select:none;user-select:none;overflow-wrap:break-word;cursor:pointer;'>"+(j===0?(kodHtmlOlustur(kayit.kod,16,11,kayit.kanal)+(kayit.durum?"<div style='font-size:10px;font-weight:900;color:"+(kayit.durum==="iptal"||kayit.durum==="kacan"?"#c0392b":"#6a1b9a")+";margin-top:3px;'>"+(kayit.durum==="iptal"?"🚫 İPTAL":kayit.durum==="iade"?"↩️ İADE":kayit.durum==="kacan"?("❌ KAÇTI"+(kayit.kacanRakip?"<br><span style='font-size:9px;font-weight:700;'>→ "+kayit.kacanRakip+"</span>":"")):"")+"</div>":"")+(kayit.revizeZamani?"<div style='font-size:10px;font-weight:900;color:#c0392b;margin-top:3px;'>🔄 REVİZE<br>"+revizeTarihSaatFormatla(kayit.revizeZamani)+"</div>":"")):"")+"</td>";
       html += "<td style='padding:5px 2px;border:1px solid #3569b8;text-align:center;color:#374151;font-size:16px;font-weight:700;'>"+(j===0?tarihKisalt(kayit.tarih):"")+"</td>";
       html += "<td oncontextmenu='return false;' onmousedown=\"event.stopPropagation();uzunBasiBaslat(function(){"+urunSilCagri+"})\" onmouseup='uzunBasiBitir()' onmouseleave='uzunBasiBitir()' ontouchstart=\"event.stopPropagation();uzunBasiBaslat(function(){"+urunSilCagri+"})\" ontouchend='uzunBasiBitir()' ontouchmove='uzunBasiBitir()' style='padding:5px 2px;border:1px solid #3569b8;-webkit-user-select:none;user-select:none;overflow-wrap:break-word;'><div style='font-size:12px;font-weight:800;color:#111827;'><span style='color:#003a70;'>B:</span>"+(u.berta||"-")+" <span style='color:#e0524a;'>A:</span>"+(u.abas||"-")+"</div><div style='font-weight:900;color:#111827;margin-top:4px;font-size:15px;'>"+u.name+"</div></td>";
       html += "<td style='padding:5px 1px;border:1px solid #3569b8;color:#111827;font-weight:900;text-align:center;white-space:nowrap;'>"+u.adet+"</td>";
@@ -1594,18 +1583,6 @@ function musteriGecmisRenderEt(){
   html += "</tbody></table></div>";
   html += "<div style='font-size:15px;color:#888;text-align:center;margin-top:8px;'>💡 Kod etiketine uzun basarsan tüm işlem, ürüne uzun basarsan sadece o ürün silinir.</div>";
   el.innerHTML = html;
-
-  // Alt kısımdaki tekli Revize butonu, listede en üstteki (en güncel) işlemi hedef alır
-  var revizeBtn = document.getElementById("gecmisRevizeBtn");
-  if(revizeBtn){
-    if(islemler.length>0){
-      var enGuncel = islemler[0];
-      revizeBtn.style.display = "block";
-      revizeBtn.onclick = function(){ kayitDuzenleAc(enGuncel.tip, enGuncel.idx); };
-    } else {
-      revizeBtn.style.display = "none";
-    }
-  }
 }
 
 function musteriGecmisUrunSil(tip, idx, urunIdx){
@@ -1641,6 +1618,27 @@ function musteriGecmisIslemDetayAc(tip, idx){
   if(!kayit){ showToast("Kayıt bulunamadı."); return; }
   var belgeTipi = ISLEM_TURU_ADI[tip] || (tip?tip.toUpperCase():"SİPARİŞ");
   faturaOnizlemePopupGoster(kayit.musteri||"-", "", kayit.tarih||"-", kayit.urunler||[], belgeTipi, tip, idx);
+}
+
+// HAREKET HÜCRESİ POPUP'I — İşlem Geçmişi tablosunda bir satırın KOD hücresine
+// dokununca açılır. "Revize Et" artık HER satır için ayrı ayrı buradan
+// başlatılıyor (eskiden ekranın en altında sadece EN GÜNCEL işlem için tek
+// bir buton olarak duruyordu). Revize Et, zaten var olan kayitDuzenleAc
+// mekanizmasını kullanır — o da "Kaydet" / "Kaydet ve Gönder" seçenekleriyle
+// (Kaydet ve Gönder → belge önizleme → 🔁 Hareket Seç → mail gönderim) aynı
+// mevcut rotaya bağlanıyor, hiçbir yeni altyapı kurmaya gerek kalmadı.
+function hareketHucresiPopupAc(tip, idx){
+  var arsiv = lsGet("weicon_arsiv",{});
+  var kayit = arsiv[tip] ? arsiv[tip][idx] : null;
+  if(!kayit){ showToast("Kayıt bulunamadı."); return; }
+  document.getElementById("hareketHucresiBaslik").textContent = safeText(kayit.kod||"-") + " — " + safeText(kayit.musteri||"");
+  document.getElementById("hareketHucresiAltBaslik").textContent = (kayit.tarih||"") + (kayit.revizeZamani ? " · 🔄 Daha önce revize edilmiş" : "");
+  var btn = document.getElementById("hareketHucresiRevizeBtn");
+  btn.onclick = function(){
+    document.getElementById("hareketHucresiModal").style.display = "none";
+    kayitDuzenleAc(tip, idx);
+  };
+  document.getElementById("hareketHucresiModal").style.display = "flex";
 }
 
 function musteriGecmisIslemleriGeriDon(){
