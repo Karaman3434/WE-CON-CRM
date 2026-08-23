@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.0859.546 — app-part5.js
-var APP_PART5_VERSION = "W230826.0859.546";
+// WEICON ASİST VERSİYON: W230826.1148.549 — app-part5.js
+var APP_PART5_VERSION = "W230826.1148.549";
 function kmSuAnTarihSaatDoldur(){
   var simdi = new Date();
   var gg = String(simdi.getDate()).padStart(2,"0");

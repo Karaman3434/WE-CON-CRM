@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.0859.546 — app-part3.js
-var APP_PART3_VERSION = "W230826.0859.546";
+// WEICON ASİST VERSİYON: W230826.1148.549 — app-part3.js
+var APP_PART3_VERSION = "W230826.1148.549";
 function ziyaretGunicinEkleBaslat(gun){
   gun = parseInt(gun, 10);
   var now = new Date();
@@ -1101,24 +1101,32 @@ function sepetFiyatGecmisiUyariGuncelle(){
   div.style.display="block";
 }
 
-// TABLO KAYDIRMA İKAZI — tablo yatayda sığmıyorsa sağda titreşen ok gösterir, sona kaydırılınca kaybolur
-function hareketTabloKaydirmaKontrol(){
-  var wrap = document.getElementById("hareketTabloWrap");
-  var ikaz = document.getElementById("hareketTabloKaydirmaIkaz");
+// TABLO KAYDIRMA İKAZI — TEK bir tablo için (artık iki ayrı tablo olduğundan
+// her biri kendi kaydırma durumunu kendi izliyor).
+function hareketTabloKaydirmaKontrolTek(wrapId, ikazId){
+  var wrap = document.getElementById(wrapId);
+  var ikaz = document.getElementById(ikazId);
   if(!wrap || !ikaz) return;
   var tasiyorMu = wrap.scrollWidth > wrap.clientWidth + 2;
   var sonaGeldiMi = wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 2;
   ikaz.style.display = (tasiyorMu && !sonaGeldiMi) ? "flex" : "none";
 }
+// Geriye dönük uyumluluk için eski isim, her iki tabloyu da kontrol eder.
+function hareketTabloKaydirmaKontrol(){
+  hareketTabloKaydirmaKontrolTek("hesaplanacakTabloWrap","hesaplanacakKaydirmaIkaz");
+  hareketTabloKaydirmaKontrolTek("hesaplandiTabloWrap","hesaplandiKaydirmaIkaz");
+}
 
 function renderBirlesikTablo(){
-  var c=document.getElementById("hareketTabloBody");
+  var cHesaplandi=document.getElementById("hesaplandiTabloBody");
+  var cHesaplanacak=document.getElementById("hesaplanacakTabloBody");
   var wrap=document.getElementById("hareketTabloWrap");
   var e=document.getElementById("emptyBasketMsg");
   var tb=document.getElementById("hareketToplamBox");
   var btnFatura=document.getElementById("btnFaturaOnizleme");
-  if(!c) return;
-  c.innerHTML="";
+  if(!cHesaplandi || !cHesaplanacak) return;
+  cHesaplandi.innerHTML="";
+  cHesaplanacak.innerHTML="";
 
   // Hareket listesinde henüz olmayan (bekleyen) sepet ürünlerini bul
   var bekleyenler=[];
@@ -1141,19 +1149,53 @@ function renderBirlesikTablo(){
   if(e) e.style.display="none";
   if(wrap) wrap.style.display="block";
 
-  // Önce HESAPLANDI (koyu yeşil) grup başlığı + satırlar
+  // ÖNCE HESAPLANACAK (SARI) — bekleyen, henüz fiyatlandırılmamış ürünler.
+  // Artık ayrı bir tablo, İşlem Geçmişi'ndeki standart "G tasarımı" ile aynı
+  // renk/font kurallarını kullanıyor (koyu #111827 ürün adı, mavi kenarlık).
+  var hesaplanacakBaslikEl = document.getElementById("hesaplanacakBaslik");
+  var hesaplanacakWrapEl = document.getElementById("hesaplanacakTabloWrap");
+  if(bekleyenler.length>0){
+    if(hesaplanacakBaslikEl){ hesaplanacakBaslikEl.textContent = "⏳ HESAPLANACAK ("+bekleyenler.length+")"; hesaplanacakBaslikEl.style.display="block"; }
+    if(hesaplanacakWrapEl) hesaplanacakWrapEl.style.display="block";
+  } else {
+    if(hesaplanacakBaslikEl) hesaplanacakBaslikEl.style.display="none";
+    if(hesaplanacakWrapEl) hesaplanacakWrapEl.style.display="none";
+  }
+  for(var m=0;m<bekleyenler.length;m++){
+    var bItem=bekleyenler[m];
+    var safeId=bItem.id.toString().replace(/'/g,"&#39;");
+    var safeName=bItem.name.replace(/'/g,"&#39;");
+    var tr2=document.createElement("tr");
+    tr2.style.cursor="pointer";
+    tr2.style.background="#fff8dc";
+    tr2.onclick=(function(id,name,price,berta,abas){ return function(){ sepetBekleyenModalAc(id,name,price,berta,abas); }; })(safeId,safeName,bItem.price,bItem.berta,bItem.abas);
+    tr2.innerHTML="<td style='text-align:center;padding:8px 2px;'></td>"
+      +"<td style='text-align:center;'><div style='font-size:20px;font-weight:900;color:#222;white-space:nowrap;'><span style=\"color:#c0392b;\">B:</span> "+(bItem.berta||"-")+" <span style=\"color:#003a70;\">- A:</span> "+(bItem.abas||"-")+"</div><div class='ht-urun-ad' style='margin-top:4px;text-align:center;'>"+bItem.name+"</div></td>"
+      +"<td style='text-align:center;white-space:nowrap;'>1</td>"
+      +"<td style='text-align:center;white-space:nowrap;' class='ht-birim'>"+fmt(bItem.price)+" €</td>"
+      +"<td style='text-align:center;white-space:nowrap;color:#bbb;'>-</td>"
+      +"<td style='text-align:center;white-space:nowrap;color:#bbb;'>-</td>"
+      +"<td style='text-align:center;white-space:nowrap;color:#bbb;'>-</td>";
+    cHesaplanacak.appendChild(tr2);
+  }
+
+  // SONRA HESAPLANDI (YEŞİL) — fiyatlandırması tamamlanmış ürünler.
   var gtEuro=0;
+  var hesaplandiBaslikEl = document.getElementById("hesaplandiBaslik");
+  var hesaplandiWrapEl = document.getElementById("hesaplandiTabloWrap");
   if(hareketListesi.length>0){
-    var grupBasHesaplandi=document.createElement("tr");
-    grupBasHesaplandi.innerHTML="<td colspan='7' style='background:#003a70;color:#fff;font-weight:900;font-size:20px;text-align:left;padding:10px 14px;letter-spacing:0.3px;'>✅ HESAPLANDI ("+hareketListesi.length+")</td>";
-    c.appendChild(grupBasHesaplandi);
+    if(hesaplandiBaslikEl){ hesaplandiBaslikEl.textContent = "✅ HESAPLANDI ("+hareketListesi.length+")"; hesaplandiBaslikEl.style.display="block"; }
+    if(hesaplandiWrapEl) hesaplandiWrapEl.style.display="block";
+  } else {
+    if(hesaplandiBaslikEl) hesaplandiBaslikEl.style.display="none";
+    if(hesaplandiWrapEl) hesaplandiWrapEl.style.display="none";
   }
   for(var k=0;k<hareketListesi.length;k++){
     var item=hareketListesi[k];
     gtEuro+=item.toplamEuro;
     var tr=document.createElement("tr");
     tr.style.cursor="pointer";
-    tr.style.background = item.elleEklendi ? "#fdeecb" : "#b8ecc9";
+    tr.style.background = item.elleEklendi ? "#fdeecb" : "#e8f8f0";
     tr.onclick=(function(idx){ return function(){ hareketUrunModalAc(idx); }; })(k);
     var elleEtiket = item.elleEklendi ? "<span style='display:inline-block;background:#f2994a;color:#fff;font-size:11px;font-weight:900;padding:2px 8px;border-radius:10px;margin-bottom:3px;letter-spacing:.2px;'>ELLE</span><br>" : "";
     var elleNotEsc = (item.not||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -1172,30 +1214,7 @@ function renderBirlesikTablo(){
       +"<td style='text-align:center;white-space:nowrap;'><span class='ht-iskonto-rozet'>%"+item.iskonto+"</span></td>"
       +"<td style='text-align:center;white-space:nowrap;'>"+fmt(item.iskBirim)+" €</td>"
       +"<td style='text-align:center;white-space:nowrap;' class='ht-tutar'>"+toplamHucre+"</td>";
-    c.appendChild(tr);
-  }
-  // Sonra HESAPLANACAK (sarı/bekleyen) grup başlığı + satırlar
-  if(bekleyenler.length>0){
-    var grupBasBekleyen=document.createElement("tr");
-    grupBasBekleyen.innerHTML="<td colspan='7' style='background:#6fcf97;color:#0c3d24;font-weight:900;font-size:20px;text-align:left;padding:10px 14px;letter-spacing:0.3px;'>⏳ HESAPLANACAK ("+bekleyenler.length+")</td>";
-    c.appendChild(grupBasBekleyen);
-  }
-  for(var m=0;m<bekleyenler.length;m++){
-    var bItem=bekleyenler[m];
-    var safeId=bItem.id.toString().replace(/'/g,"&#39;");
-    var safeName=bItem.name.replace(/'/g,"&#39;");
-    var tr2=document.createElement("tr");
-    tr2.style.cursor="pointer";
-    tr2.style.background="#e7f8ee";
-    tr2.onclick=(function(id,name,price,berta,abas){ return function(){ sepetBekleyenModalAc(id,name,price,berta,abas); }; })(safeId,safeName,bItem.price,bItem.berta,bItem.abas);
-    tr2.innerHTML="<td style='text-align:center;padding:8px 2px;'></td>"
-      +"<td style='text-align:center;'><div style='font-size:20px;font-weight:900;color:#222;white-space:nowrap;'><span style=\"color:#c0392b;\">B:</span> "+(bItem.berta||"-")+" <span style=\"color:#003a70;\">- A:</span> "+(bItem.abas||"-")+"</div><div class='ht-urun-ad' style='margin-top:4px;text-align:center;'>"+bItem.name+"</div></td>"
-      +"<td style='text-align:center;white-space:nowrap;'>1</td>"
-      +"<td style='text-align:center;white-space:nowrap;' class='ht-birim'>"+fmt(bItem.price)+" €</td>"
-      +"<td style='text-align:center;white-space:nowrap;color:#bbb;'>-</td>"
-      +"<td style='text-align:center;white-space:nowrap;color:#bbb;'>-</td>"
-      +"<td style='text-align:center;white-space:nowrap;color:#bbb;'>-</td>";
-    c.appendChild(tr2);
+    cHesaplandi.appendChild(tr);
   }
 
   if(tb){

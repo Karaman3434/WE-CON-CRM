@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.0859.546 — app-part2.js
-var APP_PART2_VERSION = "W230826.0859.546";
+// WEICON ASİST VERSİYON: W230826.1148.549 — app-part2.js
+var APP_PART2_VERSION = "W230826.1148.549";
 function gorevKaydet(){
   if(musteriKartIdx===null || !musteriListesi[musteriKartIdx]) return;
   var aciklama = document.getElementById("gorevAciklamaInput").value.trim();
