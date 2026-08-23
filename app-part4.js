@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.1822.552 — app-part4.js
-var APP_PART4_VERSION = "W230826.1822.552";
+// WEICON ASİST VERSİYON: W230826.1849.553 — app-part4.js
+var APP_PART4_VERSION = "W230826.1849.553";
 function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   var primGoster = true; // Uygulama içindeki tüm kayıt detaylarında (SİPARİŞ/TEKLİF/PROFORMA/NUMUNE) prim her zaman gösterilir. NOT: Bu popup sadece uygulama içi görünüm — Mail/WhatsApp'a giden belge (siparisResmiHtmlOlustur) zaten hiç prim sütunu içermiyor.
   var satirlarHtml = "";
@@ -1401,6 +1401,18 @@ function anaSayfaTeshisGoster(){
       var cs = getComputedStyle(el);
       ekle(id, "var | text=\""+el.textContent.slice(0,30)+"\" | display="+cs.display+" | visibility="+cs.visibility+" | opacity="+cs.opacity+" | color="+cs.color+" | bg="+cs.backgroundColor+" | h="+el.offsetHeight+"px");
     });
+    satirlar.push("");
+    satirlar.push("--- #page8 TÜM ÇOCUK ELEMANLARI (kesilme noktasını bulmak için) ---");
+    if(p8){
+      ekle("Toplam çocuk sayısı", p8.children.length);
+      for(var ci=0; ci<p8.children.length; ci++){
+        var c = p8.children[ci];
+        var ccs = getComputedStyle(c);
+        var ozet = (c.id?"#"+c.id:"") + " " + (c.textContent||"").trim().slice(0,25).replace(/\n/g," ");
+        satirlar.push("  ["+ci+"] <"+c.tagName.toLowerCase()+"> "+ozet+" | display="+ccs.display+" | h="+c.offsetHeight+"px");
+      }
+      ekle("appVersionEtiket DOM'da var mı", !!document.getElementById("appVersionEtiket"));
+    }
     satirlar.push("");
     satirlar.push("--- Kart üst container (grid) ---");
     if(p8 && p8.children.length>6){

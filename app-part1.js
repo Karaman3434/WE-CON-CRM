@@ -1,4 +1,4 @@
-// WEICON ASİST VERSİYON: W230826.1822.552 — app-part1.js
+// WEICON ASİST VERSİYON: W230826.1849.553 — app-part1.js
 var globalProductCatalog = [];
 var basket = [];
 var ilerletilenSurecKaynagi = null; // {tip, ts} - açık süreç ilerletilirken kaynak kayıt, arşive kaydedince otomatik bağlanır
@@ -20,7 +20,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "W230826.1822.552";
+var APP_VERSION = "W230826.1849.553";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
