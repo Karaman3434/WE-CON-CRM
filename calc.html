@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — HIZLI HESAPLA v2
+  ==================================
+  Sepete eklemeden, tek bir ürün için anlık fiyat/kâr/prim hesaplaması.
+  Katalogdan ürün arayabilir VEYA elle liste fiyatı girebilirsin.
+  Hesaplama formülleri cart-data.js'teki CartData.hesapla() ile PAYLAŞILIR
+  — aynı mantık iki yerde tekrar yazılmadı.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Hızlı Hesapla</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="cart-style.css">
+<link rel="stylesheet" href="product-style.css">
+<link rel="stylesheet" href="calc-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="arama-kutusu">
+    <input type="text" id="searchInput" placeholder="Katalogdan ürün ara (opsiyonel)..." autocomplete="off">
+    <span class="arama-ikon">🔍</span>
+  </div>
+  <div class="sonuc-listesi" id="sonucListesi"></div>
+
+  <div class="secili-urun-kutu" id="seciliUrunKutu" hidden>
+    <span id="seciliUrunAd"></span>
+    <button id="btnUrunTemizle">✕</button>
+  </div>
+
+  <div class="kur-satiri">
+    <label for="kurInput">Güncel Kur (EUR→TL)</label>
+    <input type="number" id="kurInput" step="0.0001">
+  </div>
+
+  <div class="hesap-alan-grid">
+    <div class="hesap-alan"><label>Liste Fiyat (EUR)</label><input type="number" step="0.01" id="hesListeFiyat" value="0"></div>
+    <div class="hesap-alan"><label>Dip Fiyat (EUR)</label><input type="number" step="0.01" id="hesDipFiyat" value="0"></div>
+    <div class="hesap-alan"><label>İskonto (%)</label><input type="number" step="0.1" id="hesIskonto" value="0"></div>
+    <div class="hesap-alan"><label>Adet</label><input type="number" step="1" min="1" id="hesAdet" value="1"></div>
+  </div>
+
+  <div class="hesap-sonuc-buyuk" id="hesapSonuc"></div>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="product-data.js"></script>
+<script src="cart-data.js"></script>
+<script src="calc-render.js"></script>
+</body>
+</html>
