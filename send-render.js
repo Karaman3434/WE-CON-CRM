@@ -100,7 +100,7 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   tipSecimBagla();
-  document.getElementById("btnMenu").onclick = function(){ alert("Menü — sonraki adımda bağlanacak."); };
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKaydet").onclick = kaydetTiklandi;
   ozetiCiz();
 });

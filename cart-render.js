@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function(){
     CartData.kurKaydet(parseFloat(this.value)||0);
     sayfayiCiz();
   });
-  document.getElementById("btnMenu").onclick = function(){ alert("Menü — sonraki adımda bağlanacak."); };
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnDevamEt").onclick = function(){ window.location.href = "customer.html"; };
   sayfayiCiz();
 });

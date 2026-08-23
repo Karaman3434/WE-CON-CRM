@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — MENÜ v2
+  =========================
+  Kur ve KDV oranı ayarları (eski uygulamayla PAYLAŞILAN localStorage
+  anahtarları) + çıkış yap.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Menü</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="menu-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenuAktif">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <section class="ayar-kutu">
+    <label>Güncel Kur (EUR → TL)</label>
+    <input type="number" id="kurInput" step="0.0001">
+  </section>
+
+  <section class="ayar-kutu">
+    <label>KDV Oranı (%)</label>
+    <input type="number" id="kdvInput" step="1">
+  </section>
+
+  <button class="kaydet-buton" id="btnAyarKaydet">Ayarları Kaydet</button>
+
+  <hr class="ayrac">
+
+  <div class="kullanici-bilgi" id="kullaniciBilgi"></div>
+
+  <button class="cikis-buton" id="btnCikis">Çıkış Yap</button>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="menu-render.js"></script>
+</body>
+</html>

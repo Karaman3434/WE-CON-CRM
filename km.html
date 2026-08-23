@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — ARAÇ KM TAKİP v2
+  ==================================
+  Eski uygulamayla AYNI Firebase yolları: "kmTakip" (günlük kayıtlar,
+  anahtar "YYYY-MM-DD") ve "kmTakipAyarlari" (ad-soyad, plaka).
+  Basitleştirme: otomatik "önceki günün bitişi = bu günün başlangıcı"
+  kuralı korunuyor; İş/Özel kategori ayrımı korunuyor. Fotoğraf okuma
+  (AI) ve kilitleme mekanizması bu ilk sürümde YOK — doğrudan manuel giriş.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Araç KM</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="km-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <section class="km-form-kutu km-ayarlar-kutu">
+    <div class="km-ayarlar-satir">
+      <input type="text" id="kmAdSoyad" placeholder="Ad Soyad">
+      <input type="text" id="kmPlaka" placeholder="Plaka">
+    </div>
+  </section>
+
+  <section class="km-form-kutu">
+    <div class="km-form-baslik">Bugünün Kaydı — <span id="kmBugunTarih"></span></div>
+
+    <div class="hesap-alan-grid">
+      <div class="hesap-alan">
+        <label>Başlangıç KM</label>
+        <input type="number" id="kmBaslangic" placeholder="örn. 45200">
+      </div>
+      <div class="hesap-alan">
+        <label>Bitiş KM</label>
+        <input type="number" id="kmBitis" placeholder="örn. 45340">
+      </div>
+    </div>
+
+    <div class="kategori-secim">
+      <button class="kategori-btn kategori-btn--secili" data-kategori="is">İş</button>
+      <button class="kategori-btn" data-kategori="ozel">Özel</button>
+    </div>
+
+    <div class="km-fark-kutu">
+      <span>Günlük Mesafe</span>
+      <strong id="kmFarkGoster">0 km</strong>
+    </div>
+
+    <button class="km-kaydet-buton" id="btnKmKaydet">✓ Günü Kaydet</button>
+  </section>
+
+  <section class="km-tablo-kutu">
+    <div class="km-tablo-baslik-satir">
+      <div class="km-tablo-baslik">Bu Ayın Kayıtları</div>
+      <button class="excel-buton" id="btnExcel">📊 Excel'e Aktar</button>
+    </div>
+    <div id="kmTablo"></div>
+    <div class="km-ay-toplam">
+      <span>Aylık Toplam (İş)</span>
+      <strong id="kmAyToplamIs">0 km</strong>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="km-data.js"></script>
+<script src="km-render.js"></script>
+</body>
+</html>

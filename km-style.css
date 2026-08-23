@@ -1,0 +1,148 @@
+/* km-style.css — aynı kural: gradyan/gölge yığılması yok. */
+
+.sayfa { padding: 8px 14px 24px; }
+
+.km-form-kutu {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 18px;
+  background: #fafbfc;
+}
+.km-form-baslik {
+  font-size: 14px;
+  font-weight: 800;
+  color: #556170;
+  margin-bottom: 12px;
+}
+
+.hesap-alan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.hesap-alan { display: flex; flex-direction: column; gap: 3px; }
+.hesap-alan label { font-size: 11px; font-weight: 800; color: #556170; text-transform: uppercase; }
+.hesap-alan input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #003a70;
+}
+.hesap-alan input:focus { outline: none; border-color: #003a70; }
+
+.kategori-secim {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.kategori-btn {
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #556170;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.kategori-btn--secili {
+  border-color: #3569b8;
+  background: #eaf2fc;
+  color: #003a70;
+}
+
+.km-fark-kutu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #003a70;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.km-fark-kutu strong { font-size: 20px; }
+
+.km-kaydet-buton {
+  width: 100%;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.km-ayarlar-kutu {
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.km-ayarlar-satir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.km-ayarlar-satir input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #003a70;
+}
+
+.km-tablo-baslik-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.excel-buton {
+  background: #e9f7ee;
+  color: #16a34a;
+  border: 1px solid #1f9d55;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.km-tablo-baslik {
+  font-size: 14px;
+  font-weight: 800;
+  color: #556170;
+}
+.km-tablo-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e6ec;
+  padding: 10px 4px;
+  font-size: 13px;
+}
+.km-tablo-tarih { font-weight: 800; color: #111; }
+.km-tablo-detay { color: #8a94a3; font-size: 11px; margin-top: 2px; }
+.km-tablo-fark { font-weight: 900; color: #003a70; }
+.km-tablo-fark.ozel { color: #b7601f; }
+
+.km-ay-toplam {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px solid #003a70;
+  font-size: 14px;
+  font-weight: 800;
+  color: #003a70;
+}

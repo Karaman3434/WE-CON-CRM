@@ -77,7 +77,7 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("musteriAra").addEventListener("input", listeyiCiz);
-  document.getElementById("btnMenu").onclick = function(){ alert("Menü — sonraki adımda bağlanacak."); };
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   CustomerData.listeDegistiginde(listeyiCiz);
   listeyiCiz();
 });

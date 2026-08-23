@@ -105,7 +105,7 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("searchInput").addEventListener("input", sonuclariCiz);
-  document.getElementById("btnMenu").onclick = function(){ alert("Menü — sonraki adımda bağlanacak."); };
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnSepeteDevam").onclick = function(){ window.location.href = "cart.html"; };
   ProductData.katalogDegistiginde(sonuclariCiz);
   sepetSatiriniGuncelle();
