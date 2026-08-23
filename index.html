@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST VERSİYON: W230826.1939.557 — index.html -->
+<!-- WEICON ASİST VERSİYON: W230826.1222.550 — index.html -->
 <html lang="tr" style="width:100%;">
 <head>
 <meta charset="UTF-8">
@@ -26,11 +26,7 @@
 *{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:0;}
 html,body{width:100%;height:100%;margin:0;padding:0;background-color:#f5f7fa;overflow:hidden;}
 body{display:flex;justify-content:center;align-items:flex-start;}
-.phone-container{width:calc(100% - 18px);height:100vh;background:#fff;display:flex;flex-direction:column;overflow:hidden;position:fixed;top:0;left:9px;right:9px;bottom:0;font-size:16px;transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;}
-/* Bazı Android WebView sürümlerinde yoğun gradyan/gölgeli elementlerde
-   "hesaplanan stil doğru ama ekrana çizilmiyor" (paint/compositing) hatası
-   görülüyor. Tüm uygulamayı kendi GPU katmanına zorlayarak bu sınıf hatayı
-   kökten önlüyoruz — tek tek bölüm yamalamaya gerek kalmıyor. */
+.phone-container{width:calc(100% - 18px);height:100vh;background:#fff;display:flex;flex-direction:column;overflow:hidden;position:fixed;top:0;left:9px;right:9px;bottom:0;font-size:16px;}
 .app-header{text-align:center;padding:4px 8px 2px;font-size:18px;font-weight:bold;color:#003a70;flex-shrink:0;display:inline;}
 .tarih-satir{font-size:30px;color:#003366;font-weight:700;flex-shrink:0;display:inline;margin-left:6px;}.baslik-satir{display:flex;align-items:center;justify-content:center;padding:6px 10px 2px;flex-shrink:0;gap:8px;flex-wrap:wrap;}
 .nav-tabs{display:flex;padding:5px 4px 0 4px;gap:2px;flex-shrink:0;}
@@ -1342,8 +1338,8 @@ function rafUpdate(fn){
   </div>
 </div>
 <div class="phone-container">
-<div id="ustBaslikSatiri" style="background:#fff;padding:14px 14px 10px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;text-align:center;flex-wrap:wrap;">
-<svg onclick="switchTab(8);anaSayfaTeshisSayaciArtir();" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 70" style="height:47px;width:auto;cursor:pointer;">
+<div style="background:#fff;padding:14px 14px 10px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;text-align:center;flex-wrap:wrap;">
+<svg onclick="switchTab(8)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 70" style="height:47px;width:auto;cursor:pointer;">
   <rect width="420" height="70" rx="6" ry="6" fill="none" stroke="#3569b8" stroke-width="3"/>
   <g fill="#3569b8">
     <rect x="3" y="3" width="62" height="64" rx="4" ry="4"/>
@@ -2656,27 +2652,25 @@ function rafUpdate(fn){
   <div style="background:rgba(255,255,255,0.25);border-radius:18px;padding:5px 13px;font-size:18px;font-weight:900;"><span id="bekleyenSenkronSayi">0</span></div>
 </div>
 
-<!-- Özet kartları — Satış/Prim kutuları koyu zemin + vurgu renk. NOT: Bu kartlar
-     önceden gradient+box-shadow+text-shadow'u AYNI ANDA kullanıyordu; bu üçlü
-     kombinasyon bazı Android WebView sürümlerinde "hesaplanan stil doğru ama
-     ekrana çizilmiyor" (paint/compositing) hatasını tetikliyordu. Artık düz
-     (solid) arka plan + tek, sade gölge kullanılıyor; text-shadow kaldırıldı. -->
+<!-- Özet kartları — Satış/Prim kutuları koyu zemin + neon vurgu; imza öge olarak
+     bilerek korunuyor (tek bir vurgu = en önemli rakam net anlaşılsın). İkonlar,
+     referans tasarıma göre artık daire arka plan olmadan yalın duruyor. -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px;">
-  <div style="border-radius:14px;background:#0e2038;border:1px solid #0a1628;padding:29px 12px;display:flex;align-items:stretch;gap:14px;">
+  <div style="border-radius:14px;background:linear-gradient(145deg,#0a1628,#132840);border:1px solid #0a1628;box-shadow:0 2px 16px rgba(0,217,255,.25);padding:29px 12px;display:flex;align-items:stretch;gap:14px;">
     <div style="font-size:38px;flex-shrink:0;align-self:center;line-height:1;">📊</div>
     <div style="width:1px;background:rgba(0,217,255,.25);flex-shrink:0;"></div>
     <div style="flex:1;min-width:0;">
       <div style="font-size:33px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;line-height:1.15;color:#7fd6ff;">Bu Ay · Ağustos<br>Satışım</div>
-      <div id="anaSayfaSatisToplam" style="font-size:45px;font-weight:900;color:#00d9ff;line-height:1.15;margin-top:4px;">0,00</div>
+      <div id="anaSayfaSatisToplam" style="font-size:45px;font-weight:900;color:#00d9ff;line-height:1.15;margin-top:4px;text-shadow:0 0 12px rgba(0,217,255,.8),0 0 24px rgba(0,217,255,.4);">0,00</div>
       <div id="anaSayfaAyEtiketi1" style="font-size:20px;font-weight:700;color:#7fd6ff;letter-spacing:.3px;opacity:.8;">EUR</div>
     </div>
   </div>
-  <div style="border-radius:14px;background:#12291a;border:1px solid #0d1f14;padding:29px 12px;display:flex;align-items:stretch;gap:14px;">
+  <div style="border-radius:14px;background:linear-gradient(145deg,#0d1f14,#173a20);border:1px solid #0d1f14;box-shadow:0 2px 16px rgba(57,255,20,.22);padding:29px 12px;display:flex;align-items:stretch;gap:14px;">
     <div style="font-size:38px;flex-shrink:0;align-self:center;line-height:1;">💰</div>
     <div style="width:1px;background:rgba(57,255,20,.25);flex-shrink:0;"></div>
     <div style="flex:1;min-width:0;">
       <div style="font-size:33px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;line-height:1.15;color:#a8ffb0;">Bu Ay · Ağustos<br>Primim</div>
-      <div id="anaSayfaPrimToplam" style="font-size:45px;font-weight:900;color:#39ff14;line-height:1.15;margin-top:4px;">0,00</div>
+      <div id="anaSayfaPrimToplam" style="font-size:45px;font-weight:900;color:#39ff14;line-height:1.15;margin-top:4px;text-shadow:0 0 12px rgba(57,255,20,.8),0 0 24px rgba(57,255,20,.4);">0,00</div>
       <div style="font-size:20px;font-weight:700;color:#a8ffb0;letter-spacing:.3px;opacity:.8;">EUR · Sipariş</div>
     </div>
   </div>
@@ -2763,17 +2757,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" onclick="anaSayfaTeshisSayaciArtir()" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;cursor:pointer;">WEİCON ASİST W230826.1939.557</div>
-</div>
-
-<div id="anaSayfaTeshisModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:99999;overflow-y:auto;padding:16px;box-sizing:border-box;">
-  <div style="font-size:24px;font-weight:900;color:#003a70;margin-bottom:10px;">🔧 Ana Sayfa Teşhis Raporu</div>
-  <textarea id="anaSayfaTeshisMetin" readonly style="width:100%;height:70vh;font-size:14px;font-family:monospace;border:2px solid #003a70;border-radius:8px;padding:10px;box-sizing:border-box;" onclick="this.select();"></textarea>
-  <div style="display:flex;gap:8px;margin-top:10px;">
-    <button onclick="anaSayfaTeshisKopyala()" style="flex:1;background:#28a745;color:#fff;border:none;padding:18px;font-size:20px;font-weight:bold;border-radius:6px;">📋 Kopyala</button>
-    <button onclick="document.getElementById('anaSayfaTeshisModal').style.display='none';if(typeof _zorlaYenidenCiz==='function')_zorlaYenidenCiz();" style="flex:1;background:#f2994a;color:#fff;border:none;padding:18px;font-size:20px;font-weight:bold;border-radius:6px;">🔄 Kapat + Tazele</button>
-    <button onclick="document.getElementById('anaSayfaTeshisModal').style.display='none';" style="flex:1;background:#e0524a;color:#fff;border:none;padding:18px;font-size:20px;font-weight:bold;border-radius:6px;">Kapat</button>
-  </div>
+  <div id="appVersionEtiket" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;">WEİCON ASİST W230826.1222.550</div>
 </div>
 
 </div>

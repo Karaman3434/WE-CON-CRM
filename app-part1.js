@@ -1,4 +1,4 @@
-// WEICON ASİST VERSİYON: W230826.1939.557 — app-part1.js
+// WEICON ASİST VERSİYON: W230826.1222.550 — app-part1.js
 var globalProductCatalog = [];
 var basket = [];
 var ilerletilenSurecKaynagi = null; // {tip, ts} - açık süreç ilerletilirken kaynak kayıt, arşive kaydedince otomatik bağlanır
@@ -20,7 +20,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "W230826.1939.557";
+var APP_VERSION = "W230826.1222.550";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -147,66 +147,9 @@ function debounce(fn,delay){
 }
 
 window.__APP_STARTED__=false;
-// HATA GÜVENLİK AĞI — daha önce bazı ekranlarda (özellikle Ana Sayfa) bir JS
-// hatası SESSİZCE oluşup render'ın yarıda kesilmesine yol açıyordu; hata
-// konsolda kalıyor, telefonda görünmüyordu. Artık yakalanmamış HER hata
-// ekranda kırmızı bir toast olarak gösteriliyor — bir dahaki sefere sorun
-// olursa, tam hata mesajının ekran görüntüsü teşhis için yeterli olacak.
-window.__sonHatalar = [];
-window.addEventListener("error", function(ev){
-  try{
-    var msg = "⚠️ HATA: " + (ev && ev.message ? ev.message : "bilinmeyen") +
-      (ev && ev.filename ? " (" + ev.filename.split("/").pop() + ":" + ev.lineno + ")" : "");
-    console.error("Yakalanmamış hata:", ev);
-    window.__sonHatalar.push(new Date().toLocaleTimeString()+" "+msg);
-    if(typeof showToast === "function") showToast(msg, 9000);
-    else alert(msg);
-  }catch(e){}
-});
-
-// GPU/ÇİZİM (PAINT) TAZELEME — bazı Android WebView/Chrome sürümlerinde, sekme
-// arka plana atılıp tekrar öne getirildiğinde (uygulama simgesine tekrar
-// dokunma, "son uygulamalar"dan geri dönme) ekran kartı katmanları "bayat"
-// kalıp içerik boş/eksik görünüyor — DOM ve CSS doğru olsa bile. Bunu önlemek
-// için sekme her görünür olduğunda .phone-container'ı bir anlığına gizleyip
-// tekrar göstererek tarayıcıyı zorla yeniden çizime (reflow+repaint) sokuyoruz.
-function _zorlaYenidenCiz(){
-  try{
-    var el = document.querySelector(".phone-container");
-    if(!el) return;
-    var eskiDisplay = el.style.display;
-    el.style.display = "none";
-    void el.offsetHeight; // reflow'u zorla tetikle
-    el.style.display = eskiDisplay || "";
-    // Aktif sayfayı da ayrıca tazele — özellikle Ana Sayfa'yı
-    if(typeof activeCurrentPage!=="undefined" && activeCurrentPage===8 && typeof anaSayfaRenderEt==="function"){
-      anaSayfaRenderEt();
-    }
-  }catch(e){ console.error("_zorlaYenidenCiz hata:", e); }
-}
-document.addEventListener("visibilitychange", function(){
-  if(document.visibilityState === "visible"){
-    setTimeout(_zorlaYenidenCiz, 60);
-  }
-});
-window.addEventListener("pageshow", function(ev){
-  if(ev.persisted) setTimeout(_zorlaYenidenCiz, 60);
-});
-window.addEventListener("focus", function(){
-  setTimeout(_zorlaYenidenCiz, 60);
-});
-window.addEventListener("unhandledrejection", function(ev){
-  try{
-    var msg = "⚠️ HATA (promise): " + (ev && ev.reason ? (ev.reason.message || ev.reason) : "bilinmeyen");
-    console.error("Yakalanmamış promise hatası:", ev);
-    if(typeof showToast === "function") showToast(msg, 9000);
-  }catch(e){}
-});
-
 window.onload = function(){
   if(window.__APP_STARTED__) return;
   window.__APP_STARTED__=true;
-  try{
   window.addEventListener("resize", function(){ if(typeof hareketTabloKaydirmaKontrol==="function") hareketTabloKaydirmaKontrol(); });
 
 
@@ -365,10 +308,6 @@ window.onload = function(){
     firebasdenYukle();
   } else {
     window.addEventListener("firebaseHazir", firebasdenYukle);
-  }
-  }catch(e){
-    console.error("window.onload içinde hata:", e);
-    try{ showToast("⚠️ AÇILIŞ HATASI: " + (e && e.message ? e.message : e), 9000); }catch(e2){ alert("Açılış hatası: " + (e && e.message ? e.message : e)); }
   }
 };
 
