@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST VERSİYON: W230826.1849.553 — index.html -->
+<!-- WEICON ASİST VERSİYON: W230826.1859.554 — index.html -->
 <html lang="tr" style="width:100%;">
 <head>
 <meta charset="UTF-8">
@@ -33,6 +33,10 @@ body{display:flex;justify-content:center;align-items:flex-start;}
 .tab-btn{flex:1;padding:12px 2px;font-size:30px;font-weight:800;border:none;border-radius:4px 4px 0 0;cursor:pointer;text-align:center;background:#bcbcbc;color:#333;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .content-page{padding:10px 12px 10px 12px;width:100%;display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;flex:1;}
 .content-page.active{display:flex;}
+/* Bazı Android WebView sürümlerinde yoğun gradyan/gölgeli kartlarda "hesaplanan
+   stil doğru ama ekrana çizilmiyor" (paint/compositing) hatası görülüyor.
+   Ana Sayfa'yı kendi GPU katmanına zorlayarak bu sınıf hatayı önlüyoruz. */
+#page8.active{transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;}
 .page-info{text-align:center;font-size:34px;color:#666;margin-bottom:5px;font-weight:bold;}
 .step-label{display:inline-block;background:#e2e8f0;color:#4a5568;font-size:30px;font-weight:bold;padding:4px 10px;border-radius:4px;margin-bottom:5px;text-transform:uppercase;}
 .search-box-container{border:1px solid #999;border-radius:6px;padding:8px;margin-bottom:7px;background:#fff;}
@@ -2757,7 +2761,7 @@ function rafUpdate(fn){
 <!-- Ayarlar bölümü artık üstteki ☰ Menü'ye taşındı -->
 <div style="text-align:center;margin-top:24px;">
   <hr style="border:none;border-top:1px solid #eef0f3;margin:0 0 10px;">
-  <div id="appVersionEtiket" onclick="anaSayfaTeshisSayaciArtir()" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;cursor:pointer;">WEİCON ASİST W230826.1849.553</div>
+  <div id="appVersionEtiket" onclick="anaSayfaTeshisSayaciArtir()" style="font-size:16px;color:#2563eb;font-weight:900;letter-spacing:0.3px;cursor:pointer;">WEİCON ASİST W230826.1859.554</div>
 </div>
 
 <div id="anaSayfaTeshisModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:99999;overflow-y:auto;padding:16px;box-sizing:border-box;">
