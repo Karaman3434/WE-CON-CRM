@@ -1,4 +1,4 @@
-// WEICON ASİST VERSİYON: W230826.1253.551 — app-part1.js
+// WEICON ASİST VERSİYON: W230826.1822.552 — app-part1.js
 var globalProductCatalog = [];
 var basket = [];
 var ilerletilenSurecKaynagi = null; // {tip, ts} - açık süreç ilerletilirken kaynak kayıt, arşive kaydedince otomatik bağlanır
@@ -20,7 +20,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "W230826.1253.551";
+var APP_VERSION = "W230826.1822.552";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -152,11 +152,13 @@ window.__APP_STARTED__=false;
 // konsolda kalıyor, telefonda görünmüyordu. Artık yakalanmamış HER hata
 // ekranda kırmızı bir toast olarak gösteriliyor — bir dahaki sefere sorun
 // olursa, tam hata mesajının ekran görüntüsü teşhis için yeterli olacak.
+window.__sonHatalar = [];
 window.addEventListener("error", function(ev){
   try{
     var msg = "⚠️ HATA: " + (ev && ev.message ? ev.message : "bilinmeyen") +
       (ev && ev.filename ? " (" + ev.filename.split("/").pop() + ":" + ev.lineno + ")" : "");
     console.error("Yakalanmamış hata:", ev);
+    window.__sonHatalar.push(new Date().toLocaleTimeString()+" "+msg);
     if(typeof showToast === "function") showToast(msg, 9000);
     else alert(msg);
   }catch(e){}

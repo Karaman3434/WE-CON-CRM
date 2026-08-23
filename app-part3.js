@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.1253.551 — app-part3.js
-var APP_PART3_VERSION = "W230826.1253.551";
+// WEICON ASİST VERSİYON: W230826.1822.552 — app-part3.js
+var APP_PART3_VERSION = "W230826.1822.552";
 function ziyaretGunicinEkleBaslat(gun){
   gun = parseInt(gun, 10);
   var now = new Date();

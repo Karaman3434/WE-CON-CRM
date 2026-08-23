@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.1253.551 — app-part4.js
-var APP_PART4_VERSION = "W230826.1253.551";
+// WEICON ASİST VERSİYON: W230826.1822.552 — app-part4.js
+var APP_PART4_VERSION = "W230826.1822.552";
 function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   var primGoster = true; // Uygulama içindeki tüm kayıt detaylarında (SİPARİŞ/TEKLİF/PROFORMA/NUMUNE) prim her zaman gösterilir. NOT: Bu popup sadece uygulama içi görünüm — Mail/WhatsApp'a giden belge (siparisResmiHtmlOlustur) zaten hiç prim sütunu içermiyor.
   var satirlarHtml = "";
@@ -1349,6 +1349,110 @@ function buGuneAitSiparisVerisi(){
     }
   }
   return {toplamEuro:toplamEuro, toplamPrim:toplamPrim, aktifMi:true};
+}
+
+// TEŞHİS ARACI — Ana Sayfa'daki gizemli boş görünüm hatasını canlı cihazda
+// yakalamak için: versiyon etiketine 5 kez art arda dokununca, o anki gerçek
+// DOM/CSS/Firebase durumunu ekrana metin olarak döker. Kullanıcı bu metni
+// kopyalayıp gönderebilir — devtools'a gerek kalmadan tam teşhis sağlar.
+var _anaSayfaTeshisSayac = 0;
+var _anaSayfaTeshisZaman = 0;
+function anaSayfaTeshisSayaciArtir(){
+  var simdi = Date.now();
+  if(simdi - _anaSayfaTeshisZaman > 2500) _anaSayfaTeshisSayac = 0;
+  _anaSayfaTeshisZaman = simdi;
+  _anaSayfaTeshisSayac++;
+  if(_anaSayfaTeshisSayac >= 5){
+    _anaSayfaTeshisSayac = 0;
+    anaSayfaTeshisGoster();
+  }
+}
+function anaSayfaTeshisGoster(){
+  var satirlar = [];
+  function ekle(k,v){ satirlar.push(k+": "+v); }
+  try{
+    ekle("Zaman", new Date().toString());
+    ekle("Versiyon", typeof APP_VERSION!=="undefined"?APP_VERSION:"?");
+    ekle("User-Agent", navigator.userAgent);
+    ekle("Ekran", window.innerWidth+"x"+window.innerHeight+" (devicePixelRatio:"+window.devicePixelRatio+")");
+    ekle("activeCurrentPage", typeof activeCurrentPage!=="undefined"?activeCurrentPage:"?");
+    ekle("firebaseHazir", !!window.firebaseHazir);
+    ekle("fbDinle var mı", typeof window.fbDinle);
+    satirlar.push("");
+    satirlar.push("--- #page8 durumu ---");
+    var p8 = document.getElementById("page8");
+    if(p8){
+      var p8cs = getComputedStyle(p8);
+      ekle("page8 var mı", "EVET");
+      ekle("page8 class", p8.className);
+      ekle("page8 display(computed)", p8cs.display);
+      ekle("page8 visibility", p8cs.visibility);
+      ekle("page8 opacity", p8cs.opacity);
+      ekle("page8 height", p8cs.height);
+      ekle("page8 çocuk sayısı", p8.children.length);
+    } else {
+      ekle("page8 var mı", "HAYIR — DOM'DA YOK!");
+    }
+    satirlar.push("");
+    satirlar.push("--- İstatistik kartı elementleri ---");
+    ["anaSayfaSatisToplam","anaSayfaPrimToplam","anaSayfaAyEtiketi1","anaSayfaKarsilama","bildirimBanner"].forEach(function(id){
+      var el = document.getElementById(id);
+      if(!el){ ekle(id, "YOK (getElementById null döndü)"); return; }
+      var cs = getComputedStyle(el);
+      ekle(id, "var | text=\""+el.textContent.slice(0,30)+"\" | display="+cs.display+" | visibility="+cs.visibility+" | opacity="+cs.opacity+" | color="+cs.color+" | bg="+cs.backgroundColor+" | h="+el.offsetHeight+"px");
+    });
+    satirlar.push("");
+    satirlar.push("--- Kart üst container (grid) ---");
+    if(p8 && p8.children.length>6){
+      var gridDiv = p8.children[6]; // 0:karşılama,1:cmt,2:banner,3:cmt,4:senkron,5:cmt,6:grid
+      if(gridDiv){
+        var gcs = getComputedStyle(gridDiv);
+        ekle("grid display", gcs.display);
+        ekle("grid height", gridDiv.offsetHeight+"px");
+        ekle("grid childCount", gridDiv.children.length);
+        for(var i=0;i<gridDiv.children.length;i++){
+          var kart = gridDiv.children[i];
+          var kcs = getComputedStyle(kart);
+          ekle("  kart["+i+"]", "bg="+kcs.backgroundColor+" | bgImage="+(kcs.backgroundImage||"none").slice(0,40)+" | display="+kcs.display+" | h="+kart.offsetHeight+"px | w="+kart.offsetWidth+"px");
+        }
+      }
+    } else {
+      ekle("grid container", "BULUNAMADI (page8 çocuk sayısı yetersiz)");
+    }
+    satirlar.push("");
+    satirlar.push("--- Veri durumu ---");
+    ekle("arsivData var mı", typeof arsivData!=="undefined" && arsivData ? "EVET" : "HAYIR/undefined");
+    if(typeof arsivData!=="undefined" && arsivData){
+      ekle("arsivData.siparis uzunluk", (arsivData.siparis||[]).length);
+      ekle("arsivData.proforma uzunluk", (arsivData.proforma||[]).length);
+    }
+    ekle("localStorage weicon_arsiv var mı", !!localStorage.getItem("weicon_arsiv"));
+    satirlar.push("");
+    satirlar.push("--- Konsol hataları (varsa son 10) ---");
+    if(window.__sonHatalar && window.__sonHatalar.length){
+      window.__sonHatalar.slice(-10).forEach(function(h){ satirlar.push("  "+h); });
+    } else {
+      satirlar.push("  (Hata kaydı yok — hiç JS hatası fırlatılmamış)");
+    }
+  }catch(e){
+    satirlar.push("TEŞHİS ARACININ KENDİSİ HATA VERDİ: "+(e&&e.message?e.message:e));
+  }
+  var metin = satirlar.join("\n");
+  var ta = document.getElementById("anaSayfaTeshisMetin");
+  if(ta) ta.value = metin;
+  var modal = document.getElementById("anaSayfaTeshisModal");
+  if(modal) modal.style.display = "block";
+}
+function anaSayfaTeshisKopyala(){
+  var ta = document.getElementById("anaSayfaTeshisMetin");
+  if(!ta) return;
+  ta.select();
+  try{
+    document.execCommand("copy");
+    if(typeof showToast==="function") showToast("📋 Kopyalandı — şimdi yapıştırıp gönderebilirsin", 3000);
+  }catch(e){
+    if(typeof showToast==="function") showToast("Kopyalanamadı, metni elle seçip kopyala", 3000);
+  }
 }
 
 function anaSayfaRenderEt(){
