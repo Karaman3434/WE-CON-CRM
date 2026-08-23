@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — GİRİŞ v2
+  =========================
+  Eski uygulamadaki e-posta/şifre giriş sistemiyle AYNI Firebase hesabını
+  kullanır. Giriş yapınca Firebase oturumu tarayıcıda kalıcı olarak saklanır
+  (firebase varsayılan davranışı) — yani her sayfada tekrar giriş istemez,
+  sadece oturum süresi dolunca veya çıkış yapınca tekrar sorar.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Giriş</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="login-style.css">
+</head>
+<body>
+
+<main class="giris-kutu">
+  <div class="logo">WEICON</div>
+  <h1>Giriş Yap</h1>
+
+  <label for="girisEmail">E-posta</label>
+  <input type="email" id="girisEmail" autocomplete="username">
+
+  <label for="girisSifre">Şifre</label>
+  <input type="password" id="girisSifre" autocomplete="current-password">
+
+  <p class="giris-hata" id="girisHata" hidden></p>
+
+  <button class="giris-buton" id="girisBtn">Giriş Yap</button>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="auth.js"></script>
+<script src="login-render.js"></script>
+</body>
+</html>
