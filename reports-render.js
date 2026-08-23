@@ -1,0 +1,135 @@
+/*
+  reports-render.js
+  =================
+  Sekme geçişini, Son İşlemler listesini ve Görevler listesini/formunu yönetir.
+*/
+
+function hataGoster(mesaj){
+  console.error(mesaj);
+  var kutu = document.createElement("div");
+  kutu.textContent = "⚠️ " + mesaj;
+  kutu.style.cssText = "position:fixed;top:8px;left:8px;right:8px;background:#c0392b;color:#fff;padding:10px;border-radius:8px;font-size:13px;z-index:99999;";
+  document.body.appendChild(kutu);
+  setTimeout(function(){ kutu.remove(); }, 8000);
+}
+
+function tarihiGuncelle(){
+  try{
+    var el = document.getElementById("gunTarihi");
+    if(!el) return;
+    var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+    var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+    var d = new Date();
+    el.textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
+  }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
+}
+
+function htmlEsc(s){
+  return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
+
+function sekmeGecisBagla(){
+  document.querySelectorAll(".sekme-btn").forEach(function(btn){
+    btn.onclick = function(){
+      var hedef = this.getAttribute("data-sekme");
+      document.querySelectorAll(".sekme-btn").forEach(function(b){ b.classList.remove("sekme-btn--secili"); });
+      this.classList.add("sekme-btn--secili");
+      document.getElementById("sekmeIslemler").hidden = hedef !== "islemler";
+      document.getElementById("sekmeGorevler").hidden = hedef !== "gorevler";
+    };
+  });
+}
+
+function islemleriCiz(){
+  try{
+    var liste = ReportsData.sonIslemler(50);
+    var kapsayici = document.getElementById("islemlerListesi");
+    var bos = document.getElementById("islemlerBosMesaj");
+
+    if(liste.length === 0){
+      kapsayici.innerHTML = "";
+      bos.hidden = false;
+      return;
+    }
+    bos.hidden = true;
+
+    kapsayici.innerHTML = liste.map(function(k){
+      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+      return "<div class='islem-karti'>"
+        + "<div class='islem-ust-satir'>"
+        + "<span class='islem-musteri'>" + htmlEsc(k.musteri) + "</span>"
+        + "<span class='islem-tip islem-tip--" + k.tip + "'>" + TIP_ETIKET[k.tip] + "</span>"
+        + "</div>"
+        + "<div class='islem-detay'>" + htmlEsc(k.tarih) + " · " + (k.urunler||[]).length + " ürün · " + htmlEsc(k.sehir||"") + "</div>"
+        + "<div class='islem-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</div>"
+        + "</div>";
+    }).join("");
+  }catch(e){ hataGoster("İşlemler çizilemedi: " + e.message); }
+}
+
+function gorevleriCiz(){
+  try{
+    var liste = ReportsData.gorevleriGetir();
+    var kapsayici = document.getElementById("gorevListesiKapsayici");
+    var bos = document.getElementById("gorevBosMesaj");
+
+    if(liste.length === 0){
+      kapsayici.innerHTML = "";
+      bos.hidden = false;
+      return;
+    }
+    bos.hidden = true;
+
+    kapsayici.innerHTML = liste.map(function(g){
+      return "<div class='gorev-karti" + (g.tamamlandi?" tamamlandi":"") + "'>"
+        + "<input type='checkbox' class='gorev-checkbox' data-id='" + g.id + "' " + (g.tamamlandi?"checked":"") + ">"
+        + "<div class='gorev-bilgi'>"
+        + "<div class='gorev-musteri'>" + htmlEsc(g.musteriAd) + "</div>"
+        + "<div class='gorev-aciklama'>" + htmlEsc(g.aciklama) + "</div>"
+        + "<div class='gorev-zaman'>" + htmlEsc(g.tarih||"") + " " + htmlEsc(g.saat||"") + "</div>"
+        + "</div>"
+        + "</div>";
+    }).join("");
+
+    kapsayici.querySelectorAll(".gorev-checkbox").forEach(function(cb){
+      cb.onchange = function(){
+        ReportsData.gorevTamamlandiToggle(this.getAttribute("data-id"));
+      };
+    });
+  }catch(e){ hataGoster("Görevler çizilemedi: " + e.message); }
+}
+
+function gorevEkleTiklandi(){
+  try{
+    var musteri = document.getElementById("gorevMusteri").value.trim();
+    var aciklama = document.getElementById("gorevAciklama").value.trim();
+    var tarih = document.getElementById("gorevTarih").value;
+    var saat = document.getElementById("gorevSaat").value;
+    if(!musteri || !aciklama){
+      hataGoster("Müşteri/konu ve açıklama girin.");
+      return;
+    }
+    ReportsData.gorevEkle(musteri, aciklama, tarih, saat);
+    document.getElementById("gorevMusteri").value = "";
+    document.getElementById("gorevAciklama").value = "";
+  }catch(e){ hataGoster("Görev eklenemedi: " + e.message); }
+}
+
+window.addEventListener("error", function(ev){
+  hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
+});
+
+document.addEventListener("DOMContentLoaded", function(){
+  tarihiGuncelle();
+  sekmeGecisBagla();
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  document.getElementById("btnGorevEkle").onclick = gorevEkleTiklandi;
+
+  var bugun = new Date();
+  document.getElementById("gorevTarih").value = bugun.toISOString().slice(0,10);
+
+  ReportsData.arsivDegistiginde(islemleriCiz);
+  ReportsData.gorevDegistiginde(gorevleriCiz);
+});

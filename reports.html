@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — RAPORLAR v2
+  =============================
+  İki bölüm: Son İşlemler (arşivden okunan geçmiş kayıtlar) ve Görevler
+  (Firebase "gorevler" yolu — eski uygulamayla AYNI). İstatistikler ve
+  Ziyaret Takvimi bu ilk sürümde YOK, sonraki pakette eklenecek.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Raporlar</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="reports-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="sekme-secim">
+    <button class="sekme-btn sekme-btn--secili" data-sekme="islemler">Son İşlemler</button>
+    <button class="sekme-btn" data-sekme="gorevler">Görevler</button>
+  </div>
+
+  <!-- SON İŞLEMLER -->
+  <section id="sekmeIslemler" class="sekme-panel">
+    <div id="islemlerListesi"></div>
+    <p class="bos-mesaj" id="islemlerBosMesaj" hidden>Henüz kayıt yok.</p>
+  </section>
+
+  <!-- GÖREVLER -->
+  <section id="sekmeGorevler" class="sekme-panel" hidden>
+    <div class="gorev-ekle-kutu">
+      <input type="text" id="gorevMusteri" placeholder="Müşteri / konu">
+      <input type="text" id="gorevAciklama" placeholder="Görev açıklaması">
+      <div class="gorev-tarih-satir">
+        <input type="date" id="gorevTarih">
+        <input type="time" id="gorevSaat">
+      </div>
+      <button class="gorev-ekle-buton" id="btnGorevEkle">+ Görev Ekle</button>
+    </div>
+    <div id="gorevListesiKapsayici"></div>
+    <p class="bos-mesaj" id="gorevBosMesaj" hidden>Henüz görev yok.</p>
+  </section>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="reports-data.js"></script>
+<script src="reports-render.js"></script>
+</body>
+</html>

@@ -74,7 +74,6 @@ function butonlariBagla(){
     document.getElementById("btnGeri").onclick = atlaBaglantisi("Geri");
     document.getElementById("btnAnaSayfa").onclick = function(){ kartlariGuncelle(); };
     document.getElementById("btnHizliHesapla").onclick = atlaBaglantisi("Hızlı Hesapla");
-    document.getElementById("btnRaporlar").onclick = atlaBaglantisi("Raporlar");
   }catch(e){ hataGoster("Butonlar bağlanamadı: " + e.message); }
 }
 
