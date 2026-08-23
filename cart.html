@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — SEPET / HESAPLAMA v2
+  =====================================
+  Ürün Bul sayfasında seçilen ürünler burada listelenir; her ürün için
+  liste fiyatı, dip fiyat, iskonto% ve adet girilip anlık hesaplama yapılır.
+  Aynı desen: shell / style / data / render, ağır CSS efekti yok.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Sepet</title>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="cart-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="product.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="kur-satiri">
+    <label for="kurInput">Güncel Kur (EUR→TL)</label>
+    <input type="number" id="kurInput" step="0.0001" placeholder="örn. 34.50">
+  </div>
+
+  <div id="sepetListesi"></div>
+
+  <p class="bos-mesaj" id="sepetBosMesaj" hidden>Sepetiniz boş. Önce Ürün Bul'dan ürün seçin.</p>
+
+  <section class="toplam-kutu" id="toplamKutu" hidden>
+    <div class="toplam-satir">
+      <span>Toplam (EUR)</span>
+      <strong id="genelToplamEuro">0,00 EUR</strong>
+    </div>
+    <div class="toplam-satir toplam-satir--alt">
+      <span>Toplam Prim (EUR)</span>
+      <strong id="genelToplamPrim">0,00 EUR</strong>
+    </div>
+  </section>
+
+  <button class="devam-buton" id="btnDevamEt" hidden>Devam Et — Müşteri Seç</button>
+
+</main>
+
+<script src="cart-data.js"></script>
+<script src="cart-render.js"></script>
+</body>
+</html>

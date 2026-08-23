@@ -1,0 +1,162 @@
+/*
+  cart-style.css
+  ==============
+  home-style.css'in üzerine eklenir. Aynı kural: gradyan/gölge yığılması yok.
+*/
+
+.sayfa { padding: 8px 14px 24px; }
+
+.kur-satiri {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #eef2f8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.kur-satiri label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #556170;
+}
+.kur-satiri input {
+  width: 110px;
+  border: 2px solid #3569b8;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: right;
+  color: #003a70;
+}
+
+.sepet-urun {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  background: #fafbfc;
+}
+.sepet-urun-baslik {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+.sepet-urun-ad {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111;
+}
+.sepet-urun-kod {
+  font-size: 11px;
+  color: #8a94a3;
+  margin-top: 2px;
+}
+.sepet-sil-btn {
+  flex-shrink: 0;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 1px solid #f0b8b3;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hesap-alan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.hesap-alan {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.hesap-alan label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #556170;
+  text-transform: uppercase;
+}
+.hesap-alan input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #003a70;
+}
+.hesap-alan input:focus {
+  outline: none;
+  border-color: #003a70;
+}
+
+.hesap-sonuc {
+  background: #003a70;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+}
+.hesap-sonuc-satir {
+  display: flex;
+  flex-direction: column;
+}
+.hesap-sonuc-satir .lbl {
+  font-size: 10px;
+  color: #a8c0e8;
+  font-weight: 700;
+}
+.hesap-sonuc-satir .val {
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.bos-mesaj {
+  text-align: center;
+  color: #8a94a3;
+  font-size: 14px;
+  padding: 40px 0;
+  font-style: italic;
+}
+
+.toplam-kutu {
+  background: #0e2038;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 16px 0;
+}
+.toplam-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+}
+.toplam-satir--alt {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #a8ffb0;
+}
+
+.devam-buton {
+  width: 100%;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}

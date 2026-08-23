@@ -1,0 +1,188 @@
+/*
+  product-style.css
+  =================
+  AYNI KURAL home-style.css'teki gibi geçerli: linear-gradient yok, box-shadow
+  + text-shadow birlikte kullanılmıyor. Bkz. home-style.css üst yorumu.
+*/
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html, body {
+  width: 100%;
+  background: #f5f7fa;
+}
+
+body {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+/* ---------- Başlık / Nav — home-style.css ile birebir aynı ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 14px 8px;
+}
+.app-header .logo {
+  background: #3569b8;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 3px;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+.app-header .tarih {
+  font-size: 18px;
+  font-weight: 700;
+  color: #003366;
+}
+.app-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  padding: 0 12px 12px;
+}
+.nav-btn {
+  background: #eef2f8;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 4px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #334155;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.nav-btn--geri { color: #c0392b; }
+.nav-btn--ana { color: #003a70; }
+
+/* ---------- Sayfa gövdesi ---------- */
+.sayfa {
+  padding: 8px 14px 24px;
+}
+
+/* ---------- Arama kutusu ---------- */
+.arama-kutusu {
+  position: relative;
+  margin-bottom: 10px;
+}
+.arama-kutusu input {
+  width: 100%;
+  border: 2px solid #3569b8;
+  border-radius: 999px;
+  padding: 14px 44px 14px 18px;
+  font-size: 16px;
+  outline: none;
+  color: #222;
+}
+.arama-kutusu input:focus {
+  border-color: #003a70;
+}
+.arama-ikon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+/* ---------- Sepet satırı ---------- */
+.sepet-satiri {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #556170;
+}
+.sepet-buton {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ---------- Ürün kartları ---------- */
+.sonuc-listesi {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.urun-karti {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #fafbfc;
+}
+.urun-bilgi {
+  flex: 1;
+  min-width: 0;
+}
+.urun-kod {
+  font-size: 11px;
+  color: #8a94a3;
+  margin-bottom: 2px;
+}
+.urun-ad {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.urun-fiyat {
+  font-size: 13px;
+  font-weight: 800;
+  color: #d9182b;
+  background: #fdeaea;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.urun-ekle-btn {
+  flex-shrink: 0;
+  border: 2px solid #3569b8;
+  background: #eaf2fc;
+  color: #003a70;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.urun-ekle-btn.eklendi {
+  border-color: #c0392b;
+  background: #fdeaea;
+  color: #c0392b;
+}
+
+.bos-mesaj, .yukleniyor-mesaj {
+  text-align: center;
+  color: #8a94a3;
+  font-size: 14px;
+  padding: 30px 0;
+  font-style: italic;
+}

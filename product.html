@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — ÜRÜN BUL v2
+  ===========================
+  home.html ile aynı desen: shell / style / data / render ayrımı, ağır CSS
+  efekti yok (gradyan/gölge yığılması yasak — bkz. product-style.css üst yorum).
+
+  Ürün kataloğu Firebase'in KÖK ("/") yolundan, eski uygulamayla AYNI
+  yöntemle çekiliyor — böylece iki sürüm aynı veriyi paylaşır, ayrı bir
+  veri taşıma işine gerek kalmaz.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Ürün Bul</title>
+<link rel="stylesheet" href="product-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="arama-kutusu">
+    <input type="text" id="searchInput" placeholder="Ürün adı, Berta veya Abas kodu ara..." autocomplete="off">
+    <span class="arama-ikon">🔍</span>
+  </div>
+
+  <div class="sepet-satiri">
+    <span id="sepetSayisi">0 ürün seçili</span>
+    <button class="sepet-buton" id="btnSepeteDevam" hidden>Sepete Git →</button>
+  </div>
+
+  <div class="sonuc-listesi" id="sonucListesi"></div>
+
+  <p class="bos-mesaj" id="bosMesaj" hidden>Sonuç bulunamadı.</p>
+  <p class="yukleniyor-mesaj" id="yukleniyorMesaj">Katalog yükleniyor...</p>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="product-data.js"></script>
+<script src="product-render.js"></script>
+</body>
+</html>
