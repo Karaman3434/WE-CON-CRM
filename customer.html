@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — MÜŞTERİ SEÇ v2
+  ================================
+  Sepet'ten "Devam Et" ile buraya gelinir. Müşteri listesi eski uygulamayla
+  AYNI Firebase yolundan ("musteriler") okunur — ayrı veri girmeye gerek yok.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Müşteri Seç</title>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="customer-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="cart.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="arama-kutusu">
+    <input type="text" id="musteriAra" placeholder="Müşteri adı veya şehir ara..." autocomplete="off">
+    <span class="arama-ikon">🔍</span>
+  </div>
+
+  <div id="musteriListesi"></div>
+  <p class="bos-mesaj" id="musteriBosMesaj" hidden>Müşteri bulunamadı.</p>
+  <p class="yukleniyor-mesaj" id="musteriYukleniyor">Müşteri listesi yükleniyor...</p>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="customer-data.js"></script>
+<script src="customer-render.js"></script>
+</body>
+</html>

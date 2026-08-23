@@ -1,0 +1,58 @@
+/* send-style.css — aynı kural: gradyan/gölge yığılması yok. */
+
+.musteri-ozet-kutu {
+  background: #eaf2fc;
+  border: 2px solid #3569b8;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.musteri-ozet-ad {
+  font-size: 18px;
+  font-weight: 900;
+  color: #003a70;
+}
+.musteri-ozet-sehir {
+  font-size: 13px;
+  color: #556170;
+  margin-top: 2px;
+}
+
+.tip-secim {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.tip-btn {
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #556170;
+  border-radius: 8px;
+  padding: 10px 4px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+}
+.tip-btn--secili {
+  border-color: #003a70;
+  background: #003a70;
+  color: #ffffff;
+}
+
+.kaydet-buton {
+  width: 100%;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 18px;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.kaydet-buton:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}

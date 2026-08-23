@@ -75,7 +75,6 @@ function butonlariBagla(){
     document.getElementById("btnAnaSayfa").onclick = function(){ kartlariGuncelle(); };
     document.getElementById("btnMenu").onclick = atlaBaglantisi("Menü");
     document.getElementById("btnHizliHesapla").onclick = atlaBaglantisi("Hızlı Hesapla");
-    document.getElementById("btnHareketler").onclick = atlaBaglantisi("Hareketler");
     document.getElementById("btnRaporlar").onclick = atlaBaglantisi("Raporlar");
     document.getElementById("btnAracKm").onclick = atlaBaglantisi("Araç KM Takip");
   }catch(e){ hataGoster("Butonlar bağlanamadı: " + e.message); }

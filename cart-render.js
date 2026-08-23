@@ -132,6 +132,6 @@ document.addEventListener("DOMContentLoaded", function(){
     sayfayiCiz();
   });
   document.getElementById("btnMenu").onclick = function(){ alert("Menü — sonraki adımda bağlanacak."); };
-  document.getElementById("btnDevamEt").onclick = function(){ alert("Müşteri seçme ekranı — sonraki pakette eklenecek."); };
+  document.getElementById("btnDevamEt").onclick = function(){ window.location.href = "customer.html"; };
   sayfayiCiz();
 });

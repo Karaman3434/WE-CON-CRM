@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — KAYDET v2
+  ===========================
+  Akışın son adımı: seçilen müşteri + sepet özeti gösterilir, belge türü
+  (Numune/Teklif/Proforma/Sipariş) seçilir, "Kaydet" ile Firebase arşivine
+  eski uygulamayla UYUMLU bir kayıt yazılır (Ana Sayfa'daki rakamlar bu
+  kayıttan hesaplanır).
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Kaydet</title>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="cart-style.css">
+<link rel="stylesheet" href="send-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="customer.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <section class="musteri-ozet-kutu">
+    <div class="musteri-ozet-ad" id="ozetMusteriAd">—</div>
+    <div class="musteri-ozet-sehir" id="ozetMusteriSehir"></div>
+  </section>
+
+  <div class="tip-secim" id="tipSecim">
+    <button class="tip-btn" data-tip="numune">Numune</button>
+    <button class="tip-btn" data-tip="teklif">Teklif</button>
+    <button class="tip-btn" data-tip="proforma">Proforma</button>
+    <button class="tip-btn tip-btn--secili" data-tip="siparis">Sipariş</button>
+  </div>
+
+  <section class="toplam-kutu">
+    <div class="toplam-satir">
+      <span>Ürün Sayısı</span>
+      <strong id="ozetUrunSayisi">0</strong>
+    </div>
+    <div class="toplam-satir">
+      <span>Toplam (EUR)</span>
+      <strong id="ozetToplamEuro">0,00 EUR</strong>
+    </div>
+    <div class="toplam-satir toplam-satir--alt">
+      <span>Toplam Prim (EUR)</span>
+      <strong id="ozetToplamPrim">0,00 EUR</strong>
+    </div>
+  </section>
+
+  <button class="kaydet-buton" id="btnKaydet">✓ Kaydet</button>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="cart-data.js"></script>
+<script src="customer-data.js"></script>
+<script src="send-data.js"></script>
+<script src="send-render.js"></script>
+</body>
+</html>
