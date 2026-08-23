@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.1859.554 — app-part4.js
-var APP_PART4_VERSION = "W230826.1859.554";
+// WEICON ASİST VERSİYON: W230826.1915.555 — app-part4.js
+var APP_PART4_VERSION = "W230826.1915.555";
 function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   var primGoster = true; // Uygulama içindeki tüm kayıt detaylarında (SİPARİŞ/TEKLİF/PROFORMA/NUMUNE) prim her zaman gösterilir. NOT: Bu popup sadece uygulama içi görünüm — Mail/WhatsApp'a giden belge (siparisResmiHtmlOlustur) zaten hiç prim sütunu içermiyor.
   var satirlarHtml = "";
