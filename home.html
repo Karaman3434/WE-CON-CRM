@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — ANA SAYFA v2 (yeniden yapılanma)
+  =================================================
+  Bu sayfa, önceki tasarımdaki ağır CSS efektlerini (çoklu gradyan, box-shadow +
+  text-shadow yığılması) KASITLI OLARAK kullanmaz. Amaç: bazı cihaz/tarayıcı
+  kombinasyonlarında görülen "DOM doğru ama ekrana çizilmiyor" türü render
+  sorunlarına karşı en düşük riskli, en sade yapıyı kurmak.
+
+  DOSYA YAPISI:
+    home.html       — bu dosya: sadece HTML iskeleti, hiç inline style yok
+    home-style.css  — TÜM görsel stiller burada (düz renkler, minimal gölge)
+    home-data.js    — Firebase bağlantısı + veri çekme/hesaplama mantığı
+    home-render.js  — veriyi okuyup DOM'a yazma mantığı
+
+  Her dosya TEK bir işten sorumlu. Bir sonraki sayfa eklenirken bu dört
+  dosyanın deseni (shell / style / data / render) tekrarlanacak.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Ana Sayfa</title>
+<link rel="stylesheet" href="home-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <button class="nav-btn nav-btn--geri" id="btnGeri">Geri</button>
+  <button class="nav-btn nav-btn--ana" id="btnAnaSayfa">Ana Sayfa</button>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa" id="page8">
+
+  <p class="karsilama" id="anaSayfaKarsilama"></p>
+
+  <div class="banner banner--kirmizi" id="bildirimBanner" hidden>
+    <div class="banner-baslik">Takip Gerekiyor</div>
+    <div class="banner-alt" id="bildirimBannerAlt"></div>
+  </div>
+
+  <section class="kart-grid">
+    <div class="kart kart--koyu-mavi">
+      <div class="kart-baslik">Bu Ay · Satışım</div>
+      <div class="kart-deger" id="anaSayfaSatisToplam">0,00</div>
+      <div class="kart-etiket" id="anaSayfaAyEtiketi">EUR</div>
+    </div>
+    <div class="kart kart--koyu-yesil">
+      <div class="kart-baslik">Bu Ay · Primim</div>
+      <div class="kart-deger" id="anaSayfaPrimToplam">0,00</div>
+      <div class="kart-etiket">EUR · Sipariş</div>
+    </div>
+  </section>
+
+  <section class="kart-grid">
+    <div class="kart kart--acik-mavi">
+      <div class="kart-baslik">Bugünün Satışı</div>
+      <div class="kart-deger" id="anaSayfaBugunSatis">0,00</div>
+      <div class="kart-etiket">EUR · bugün</div>
+    </div>
+    <div class="kart kart--acik-yesil">
+      <div class="kart-baslik">Bugünün Primi</div>
+      <div class="kart-deger" id="anaSayfaBugunPrim">0,00</div>
+      <div class="kart-etiket">EUR · Sipariş</div>
+    </div>
+  </section>
+
+  <hr class="ayrac">
+
+  <section class="menu-grid">
+    <button class="menu-kart menu-kart--mavi" id="btnUrunBul">
+      <span class="menu-baslik">Ürün Bul</span>
+      <span class="menu-alt">KATALOG</span>
+    </button>
+    <button class="menu-kart menu-kart--yesil" id="btnHizliHesapla">
+      <span class="menu-baslik">Hızlı Hesapla</span>
+      <span class="menu-alt">FİYATLANDIR</span>
+    </button>
+    <button class="menu-kart menu-kart--turuncu" id="btnHareketler">
+      <span class="menu-baslik">Hareketler</span>
+      <span class="menu-alt">SATIŞ · MÜŞTERİ</span>
+    </button>
+    <button class="menu-kart menu-kart--mavi" id="btnRaporlar">
+      <span class="menu-baslik">Raporlar</span>
+      <span class="menu-alt">İSTATİSTİK · GÖREV</span>
+    </button>
+  </section>
+
+  <footer class="alt-bilgi">
+    <span id="versiyonEtiketi">WEİCON ASİST — v2 taslak</span>
+  </footer>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="home-data.js"></script>
+<script src="home-render.js"></script>
+</body>
+</html>
