@@ -192,6 +192,10 @@ body {
 .menu-kart--turuncu { background: #fff3e6; border-color: #b7601f; }
 .menu-kart--turuncu .menu-baslik { color: #a8590c; }
 
+.menu-grid--tek { grid-template-columns: 1fr; }
+.menu-kart--genis { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; }
+.menu-kart--genis .menu-baslik { margin-right: 8px; }
+
 /* ---------- Alt bilgi ---------- */
 .alt-bilgi {
   text-align: center;
