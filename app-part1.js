@@ -1,4 +1,4 @@
-// WEICON ASİST VERSİYON: W230826.1222.550 — app-part1.js
+// WEICON ASİST VERSİYON: W230826.1253.551 — app-part1.js
 var globalProductCatalog = [];
 var basket = [];
 var ilerletilenSurecKaynagi = null; // {tip, ts} - açık süreç ilerletilirken kaynak kayıt, arşive kaydedince otomatik bağlanır
@@ -20,7 +20,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "W230826.1222.550";
+var APP_VERSION = "W230826.1253.551";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -147,9 +147,32 @@ function debounce(fn,delay){
 }
 
 window.__APP_STARTED__=false;
+// HATA GÜVENLİK AĞI — daha önce bazı ekranlarda (özellikle Ana Sayfa) bir JS
+// hatası SESSİZCE oluşup render'ın yarıda kesilmesine yol açıyordu; hata
+// konsolda kalıyor, telefonda görünmüyordu. Artık yakalanmamış HER hata
+// ekranda kırmızı bir toast olarak gösteriliyor — bir dahaki sefere sorun
+// olursa, tam hata mesajının ekran görüntüsü teşhis için yeterli olacak.
+window.addEventListener("error", function(ev){
+  try{
+    var msg = "⚠️ HATA: " + (ev && ev.message ? ev.message : "bilinmeyen") +
+      (ev && ev.filename ? " (" + ev.filename.split("/").pop() + ":" + ev.lineno + ")" : "");
+    console.error("Yakalanmamış hata:", ev);
+    if(typeof showToast === "function") showToast(msg, 9000);
+    else alert(msg);
+  }catch(e){}
+});
+window.addEventListener("unhandledrejection", function(ev){
+  try{
+    var msg = "⚠️ HATA (promise): " + (ev && ev.reason ? (ev.reason.message || ev.reason) : "bilinmeyen");
+    console.error("Yakalanmamış promise hatası:", ev);
+    if(typeof showToast === "function") showToast(msg, 9000);
+  }catch(e){}
+});
+
 window.onload = function(){
   if(window.__APP_STARTED__) return;
   window.__APP_STARTED__=true;
+  try{
   window.addEventListener("resize", function(){ if(typeof hareketTabloKaydirmaKontrol==="function") hareketTabloKaydirmaKontrol(); });
 
 
@@ -308,6 +331,10 @@ window.onload = function(){
     firebasdenYukle();
   } else {
     window.addEventListener("firebaseHazir", firebasdenYukle);
+  }
+  }catch(e){
+    console.error("window.onload içinde hata:", e);
+    try{ showToast("⚠️ AÇILIŞ HATASI: " + (e && e.message ? e.message : e), 9000); }catch(e2){ alert("Açılış hatası: " + (e && e.message ? e.message : e)); }
   }
 };
 

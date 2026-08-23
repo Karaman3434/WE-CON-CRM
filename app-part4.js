@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.1222.550 — app-part4.js
-var APP_PART4_VERSION = "W230826.1222.550";
+// WEICON ASİST VERSİYON: W230826.1253.551 — app-part4.js
+var APP_PART4_VERSION = "W230826.1253.551";
 function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   var primGoster = true; // Uygulama içindeki tüm kayıt detaylarında (SİPARİŞ/TEKLİF/PROFORMA/NUMUNE) prim her zaman gösterilir. NOT: Bu popup sadece uygulama içi görünüm — Mail/WhatsApp'a giden belge (siparisResmiHtmlOlustur) zaten hiç prim sütunu içermiyor.
   var satirlarHtml = "";
@@ -1352,6 +1352,7 @@ function buGuneAitSiparisVerisi(){
 }
 
 function anaSayfaRenderEt(){
+  try{
   var veri = buAyinSiparisVerisi();
   var elSatis = document.getElementById("anaSayfaSatisToplam");
   var elPrim = document.getElementById("anaSayfaPrimToplam");
@@ -1390,6 +1391,10 @@ function anaSayfaRenderEt(){
   }
 
   anaSayfaKarsilamaGuncelle(gunVeri);
+  }catch(e){
+    console.error("anaSayfaRenderEt içinde hata:", e);
+    try{ showToast("⚠️ ANA SAYFA HATASI: " + (e && e.message ? e.message : e), 9000); }catch(e2){}
+  }
 }
 
 // Saat dilimine ve bugünkü performansa göre değişen, sakin bir karşılama
