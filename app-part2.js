@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W220826.2252.543 — app-part2.js
-var APP_PART2_VERSION = "W220826.2252.543";
+// WEICON ASİST VERSİYON: W230826.0859.546 — app-part2.js
+var APP_PART2_VERSION = "W230826.0859.546";
 function gorevKaydet(){
   if(musteriKartIdx===null || !musteriListesi[musteriKartIdx]) return;
   var aciklama = document.getElementById("gorevAciklamaInput").value.trim();
@@ -983,7 +983,6 @@ function acikSureciIlerlet(){
   var tipEtiket = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA"};
   document.getElementById("ilerletAsamaOzet").textContent = m.ad+" — şu an: "+tipEtiket[acikKayit.tip]+" ("+acikKayit.tarih+")";
   document.getElementById("musteriKartModal").style.display="none";
-  document.getElementById("islemBaslatModal").style.display="none";
   document.getElementById("ilerletAsamaSecModal").style.display="flex";
 }
 
@@ -1351,7 +1350,6 @@ function surecAsamaDetayAc(tip, ts){
     if(!kayit){ showToast("Kayıt bulunamadı (tip:"+tip+", ts:"+ts+")."); return; }
     document.getElementById("musteriGecmisIslemlerModal").style.display="none";
     document.getElementById("musteriKartModal").style.display="none";
-    document.getElementById("islemBaslatModal").style.display="none";
     var gorevModal = document.getElementById("gorevListesiModal");
     if(gorevModal) gorevModal.style.display="none";
     var belgeTipi = ISLEM_TURU_ADI[tip] || tip.toUpperCase();

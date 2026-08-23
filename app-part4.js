@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W220826.2252.543 — app-part4.js
-var APP_PART4_VERSION = "W220826.2252.543";
+// WEICON ASİST VERSİYON: W230826.0859.546 — app-part4.js
+var APP_PART4_VERSION = "W230826.0859.546";
 function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   var primGoster = true; // Uygulama içindeki tüm kayıt detaylarında (SİPARİŞ/TEKLİF/PROFORMA/NUMUNE) prim her zaman gösterilir. NOT: Bu popup sadece uygulama içi görünüm — Mail/WhatsApp'a giden belge (siparisResmiHtmlOlustur) zaten hiç prim sütunu içermiyor.
   var satirlarHtml = "";
@@ -462,7 +462,6 @@ function acikSurecKayitOnizlemeAc(){
     for(var i=0;i<liste.length;i++){ if(liste[i].ts===acikKayit.ts){ idx=i; break; } }
     var belgeTipi = ISLEM_TURU_ADI[acikKayit.tip] || acikKayit.tip.toUpperCase();
     document.getElementById("musteriKartModal").style.display="none";
-    document.getElementById("islemBaslatModal").style.display="none";
     faturaOnizlemePopupGoster(acikKayit.kayit.musteri||m.ad, sehirFormatla(m.sehir||""), acikKayit.kayit.tarih||acikKayit.tarih, acikKayit.kayit.urunler||[], belgeTipi, acikKayit.tip, idx);
     faturaOnizlemeIlerletModuAc();
   } catch(e){
@@ -492,7 +491,6 @@ function faturaOnizlemedenIlerlet(){
   document.getElementById("faturaOnizlemeModal").style.display="none";
   faturaOnizlemeIlerletModuKapat();
   document.getElementById("musteriKartModal").style.display="none";
-  document.getElementById("islemBaslatModal").style.display="none";
   acikSureciIlerlet();
 }
 

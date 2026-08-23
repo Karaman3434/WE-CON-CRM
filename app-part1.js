@@ -1,4 +1,4 @@
-// WEICON ASİST VERSİYON: W220826.2252.543 — app-part1.js
+// WEICON ASİST VERSİYON: W230826.0859.546 — app-part1.js
 var globalProductCatalog = [];
 var basket = [];
 var ilerletilenSurecKaynagi = null; // {tip, ts} - açık süreç ilerletilirken kaynak kayıt, arşive kaydedince otomatik bağlanır
@@ -20,7 +20,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "W220826.2252.543";
+var APP_VERSION = "W230826.0859.546";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -153,12 +153,16 @@ window.onload = function(){
   window.addEventListener("resize", function(){ if(typeof hareketTabloKaydirmaKontrol==="function") hareketTabloKaydirmaKontrol(); });
 
 
-  // Tüm popup'ları (id'si "Modal" ile biten div'ler) otomatik izler ve her açılışını
-  // KRONOLOJİK SIRAYLA modalYigini listesine ekler. "Geri" tuşu bu geçmişi adım adım
-  // geri sararak önceki adımı olduğu gibi tekrar görünür kılar. Bir popup kendi Kapat
-  // tuşuyla (Geri'ye uğramadan) kapatılırsa, yığının tepesindeyse oradan da düşürülür —
+  // Tüm popup'ları (id'si "Modal" veya "Popup" ile biten div'ler, artı
+  // yeniMusteriOzet gibi kalıp dışı ama tam ekran olan tek tük istisnalar)
+  // otomatik izler ve her açılışını KRONOLOJİK SIRAYLA modalYigini listesine
+  // ekler. "Geri" tuşu bu geçmişi adım adım geri sararak önceki adımı olduğu
+  // gibi tekrar görünür kılar. Bir popup kendi Kapat tuşuyla (Geri'ye
+  // uğramadan) kapatılırsa, yığının tepesindeyse oradan da düşürülür —
   // aksi halde çok sonra alakasız bir ekrandayken Geri o eski popup'ı canlandırabilirdi.
-  document.querySelectorAll('div[id$="Modal"]').forEach(function(el){
+  // (girisEkrani/pinEkrani BİLİNÇLİ OLARAK izlenmiyor — güvenlik ekranları,
+  // Geri ile atlanabilir olmamalı.)
+  document.querySelectorAll('div[id$="Modal"], div[id$="Popup"], #yeniMusteriOzet').forEach(function(el){
     var gozlemci = new MutationObserver(function(){
       var gorunur = el.style.display && el.style.display !== "none";
       if(gorunur){
@@ -180,6 +184,22 @@ window.onload = function(){
     });
     gozlemci.observe(el, {attributes:true, attributeFilter:["style"]});
   });
+
+  // KRİTİK: Telefonun/tarayıcının FİZİKSEL geri tuşu-jesti, eskiden uygulama
+  // içi Geri mantığına HİÇ bağlı değildi — basıldığında doğrudan uygulamadan
+  // çıkabiliyor ya da tarayıcının kendi geçmişine gidip ortadaki bir işlemi
+  // (yarım kalmış sipariş, açık bir form vb.) sessizce kaybettirebiliyordu.
+  // Artık sahte bir tarayıcı geçmişi girdisi ("tuzak") kuruyoruz: fiziksel geri
+  // tuşuna basılınca (popstate) uygulamadan ÇIKMAK yerine aynı geriGit()
+  // çalışıyor, hemen ardından tuzak yeniden kuruluyor — kullanıcı ne kadar üst
+  // üste fiziksel geri tuşuna basarsa bassın, uygulamadan asla istemeden çıkmıyor.
+  try{
+    history.pushState({weiconAsist:true}, "");
+    window.addEventListener("popstate", function(){
+      history.pushState({weiconAsist:true}, "");
+      geriGit();
+    });
+  }catch(e){ console.error("Geri tuşu tuzağı kurulamadı:", e); }
 
   // Tarih göster
   var aylar=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];

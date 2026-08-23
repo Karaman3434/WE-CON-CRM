@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W220826.2252.543 — app-part3.js
-var APP_PART3_VERSION = "W220826.2252.543";
+// WEICON ASİST VERSİYON: W230826.0859.546 — app-part3.js
+var APP_PART3_VERSION = "W230826.0859.546";
 function ziyaretGunicinEkleBaslat(gun){
   gun = parseInt(gun, 10);
   var now = new Date();
@@ -228,62 +228,6 @@ function musteriIslemBaslatKarttan(){
   document.getElementById("musteriKartModal").style.display="none";
   showToast(seciliMusteri.ad+" seçildi — ürün arayın.");
   switchTab(1);
-}
-
-function islemBaslatModalAc(){
-  if(musteriKartIdx===null) return;
-  var m = musteriListesi[musteriKartIdx];
-  if(!m) return;
-  document.getElementById("islemBaslatAd").textContent = m.ad||"";
-  var bilgiParts = [];
-  if(m.sehir) bilgiParts.push(sehirFormatla(m.sehir));
-  if(m.vade) bilgiParts.push(m.vade+" vade");
-  if(m.yetkili) bilgiParts.push(m.yetkili);
-  document.getElementById("islemBaslatBilgi").textContent = bilgiParts.join(" · ");
-  islemBaslatAcikSurecGoster(m.ad);
-  document.getElementById("islemBaslatModal").style.display="flex";
-}
-
-function islemBaslatAcikSurecGoster(musteriAdi){
-  var uyariDiv = document.getElementById("islemBaslatAcikSurecUyari");
-  if(!uyariDiv) return;
-  var enSonBekleyen = musteriAcikSurecKaydiGetir(musteriAdi);
-  if(!enSonBekleyen){ uyariDiv.style.display="none"; return; }
-  var tipEtiket = {teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA", numune:"NUMUNE"};
-  uyariDiv.innerHTML = "<span style='font-size:28px;'>⏳</span> <span style='color:#222;'>Açık süreç bulundu</span>"
-    +"<span onclick=\"acikSurecKayitOnizlemeAc()\" style='display:block;color:#ff2d2d;margin:8px 0 4px;text-decoration:underline;cursor:pointer;'>"+enSonBekleyen.tarih+" · "+tipEtiket[enSonBekleyen.tip]+"</span>"
-    +"<div style='color:#222;line-height:1.4;'>Henüz siparişe dönmemiş. Aynı süreçten mi devam edeceksiniz?</div>";
-  uyariDiv.style.display="block";
-}
-
-function islemBaslatSecildi(mod){
-  if(musteriKartIdx===null) return;
-  musteriListesi = lsGet("weicon_musteriler",[]);
-  seciliMusteri = musteriListesi[musteriKartIdx];
-  if(!seciliMusteri) return;
-  seciliMusteri.sonGoruntuleme = Date.now();
-  musteriListesiniKaydet();
-  lsSet("weicon_secili_musteri", seciliMusteri);
-  seciliYetkililer = [];
-  localStorage.removeItem("weicon_secili_yetkililer");
-  localStorage.removeItem("weicon_secili_yetkili");
-  if(typeof yetkiliKisiEtiketGuncelle==="function") yetkiliKisiEtiketGuncelle();
-  musteriSeritiGuncelle();
-  secilenMod = mod;
-  if(typeof islemTuruRenkGuncelle==="function") islemTuruRenkGuncelle();
-  document.getElementById("islemBaslatModal").style.display="none";
-  showToast(seciliMusteri.ad+" seçildi — "+(ISLEM_TURU_ADI[mod]||mod.toUpperCase())+" için ürün seçin.");
-  if(musteriSecimHedefSayfa){
-    var hedef = musteriSecimHedefSayfa;
-    musteriSecimHedefSayfa = null;
-    switchTab(hedef);
-  } else {
-    switchTab(1);
-  }
-}
-
-function islemBaslatModalKapat(){
-  document.getElementById("islemBaslatModal").style.display="none";
 }
 
 function musteriSecimYap(idx){
