@@ -1,4 +1,4 @@
-// WEICON ASİST VERSİYON: W230826.1915.555 — app-part1.js
+// WEICON ASİST VERSİYON: W230826.1939.557 — app-part1.js
 var globalProductCatalog = [];
 var basket = [];
 var ilerletilenSurecKaynagi = null; // {tip, ts} - açık süreç ilerletilirken kaynak kayıt, arşive kaydedince otomatik bağlanır
@@ -20,7 +20,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "W230826.1915.555";
+var APP_VERSION = "W230826.1939.557";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -162,6 +162,38 @@ window.addEventListener("error", function(ev){
     if(typeof showToast === "function") showToast(msg, 9000);
     else alert(msg);
   }catch(e){}
+});
+
+// GPU/ÇİZİM (PAINT) TAZELEME — bazı Android WebView/Chrome sürümlerinde, sekme
+// arka plana atılıp tekrar öne getirildiğinde (uygulama simgesine tekrar
+// dokunma, "son uygulamalar"dan geri dönme) ekran kartı katmanları "bayat"
+// kalıp içerik boş/eksik görünüyor — DOM ve CSS doğru olsa bile. Bunu önlemek
+// için sekme her görünür olduğunda .phone-container'ı bir anlığına gizleyip
+// tekrar göstererek tarayıcıyı zorla yeniden çizime (reflow+repaint) sokuyoruz.
+function _zorlaYenidenCiz(){
+  try{
+    var el = document.querySelector(".phone-container");
+    if(!el) return;
+    var eskiDisplay = el.style.display;
+    el.style.display = "none";
+    void el.offsetHeight; // reflow'u zorla tetikle
+    el.style.display = eskiDisplay || "";
+    // Aktif sayfayı da ayrıca tazele — özellikle Ana Sayfa'yı
+    if(typeof activeCurrentPage!=="undefined" && activeCurrentPage===8 && typeof anaSayfaRenderEt==="function"){
+      anaSayfaRenderEt();
+    }
+  }catch(e){ console.error("_zorlaYenidenCiz hata:", e); }
+}
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "visible"){
+    setTimeout(_zorlaYenidenCiz, 60);
+  }
+});
+window.addEventListener("pageshow", function(ev){
+  if(ev.persisted) setTimeout(_zorlaYenidenCiz, 60);
+});
+window.addEventListener("focus", function(){
+  setTimeout(_zorlaYenidenCiz, 60);
 });
 window.addEventListener("unhandledrejection", function(ev){
   try{
