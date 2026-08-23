@@ -1,0 +1,202 @@
+/*
+  home-style.css
+  ==============
+  KURAL: Bu dosyada HİÇBİR yerde şunlar kullanılmaz:
+    - linear-gradient / radial-gradient (arka planlarda)
+    - aynı elementte box-shadow + text-shadow birlikte
+    - 3'ten fazla iç içe box-shadow katmanı
+  Sebep: önceki tasarımda bu kombinasyonlar bazı cihazlarda "hesaplanan
+  stil doğru ama ekrana çizilmiyor" sorunuyla ilişkilendirildi. Kanıtlanmış
+  bir neden-sonuç olmasa da, en düşük riskli yapı için bu sınırlama
+  kasıtlı olarak korunuyor. Yeni bir stil eklerken bu kuralı bozma.
+*/
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html, body {
+  width: 100%;
+  background: #f5f7fa;
+}
+
+body {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+/* ---------- Başlık ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 14px 8px;
+}
+.app-header .logo {
+  background: #3569b8;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 3px;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+.app-header .tarih {
+  font-size: 18px;
+  font-weight: 700;
+  color: #003366;
+}
+
+/* ---------- Navigasyon ---------- */
+.app-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  padding: 0 12px 12px;
+}
+.nav-btn {
+  background: #eef2f8;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 4px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #334155;
+}
+.nav-btn--geri { color: #c0392b; }
+.nav-btn--ana { color: #003a70; }
+
+/* ---------- Sayfa gövdesi ---------- */
+.sayfa {
+  padding: 8px 14px 24px;
+}
+
+.karsilama {
+  font-size: 15px;
+  font-weight: 700;
+  color: #556170;
+  margin-bottom: 12px;
+}
+
+/* ---------- Bildirim banner ---------- */
+.banner {
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+.banner--kirmizi { background: #c0392b; }
+.banner-baslik { font-size: 16px; font-weight: 900; }
+.banner-alt { font-size: 13px; margin-top: 2px; opacity: .9; }
+
+/* ---------- İstatistik kartları ---------- */
+.kart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.kart {
+  border-radius: 10px;
+  padding: 16px 12px;
+  border: 1px solid transparent;
+}
+.kart-baslik {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: 6px;
+}
+.kart-deger {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.kart-etiket {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 4px;
+  opacity: .85;
+}
+
+.kart--koyu-mavi { background: #0e2038; }
+.kart--koyu-mavi .kart-baslik { color: #7fd6ff; }
+.kart--koyu-mavi .kart-deger { color: #00d9ff; }
+.kart--koyu-mavi .kart-etiket { color: #7fd6ff; }
+
+.kart--koyu-yesil { background: #12291a; }
+.kart--koyu-yesil .kart-baslik { color: #a8ffb0; }
+.kart--koyu-yesil .kart-deger { color: #39ff14; }
+.kart--koyu-yesil .kart-etiket { color: #a8ffb0; }
+
+.kart--acik-mavi { background: #eaf2fc; border-color: #3569b8; }
+.kart--acik-mavi .kart-baslik { color: #556170; }
+.kart--acik-mavi .kart-deger { color: #003a70; }
+.kart--acik-mavi .kart-etiket { color: #3569b8; }
+
+.kart--acik-yesil { background: #e9f7ee; border-color: #1f9d55; }
+.kart--acik-yesil .kart-baslik { color: #556170; }
+.kart--acik-yesil .kart-deger { color: #0e6b34; }
+.kart--acik-yesil .kart-etiket { color: #1f9d55; }
+
+/* ---------- Ayraç ---------- */
+.ayrac {
+  border: none;
+  border-top: 1px solid #e2e6ec;
+  margin: 10px 0 16px;
+}
+
+/* ---------- Menü kartları ---------- */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.menu-kart {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  border-radius: 10px;
+  padding: 16px 14px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.menu-baslik {
+  font-size: 16px;
+  font-weight: 900;
+}
+.menu-alt {
+  font-size: 11px;
+  font-weight: 800;
+  color: #8a94a3;
+  letter-spacing: .3px;
+}
+
+.menu-kart--mavi { background: #eaf2fc; border-color: #3569b8; }
+.menu-kart--mavi .menu-baslik { color: #2563eb; }
+
+.menu-kart--yesil { background: #e9f7ee; border-color: #1f9d55; }
+.menu-kart--yesil .menu-baslik { color: #16a34a; }
+
+.menu-kart--turuncu { background: #fff3e6; border-color: #b7601f; }
+.menu-kart--turuncu .menu-baslik { color: #a8590c; }
+
+/* ---------- Alt bilgi ---------- */
+.alt-bilgi {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+}
