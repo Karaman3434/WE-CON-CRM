@@ -61,6 +61,25 @@
   color: #003a70;
   margin-top: 4px;
 }
+.islem-karti--kacan { opacity: .8; }
+.islem-kacan-etiket {
+  font-size: 12px;
+  font-weight: 800;
+  color: #c0392b;
+  margin-top: 6px;
+}
+.islem-kacan-btn {
+  margin-top: 8px;
+  width: 100%;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 1px solid #f0b8b3;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
 
 /* Görevler */
 .gorev-ekle-kutu {
@@ -176,6 +195,28 @@
 }
 .istatistik-satir-ad { font-weight: 700; color: #111; }
 .istatistik-satir-deger { font-weight: 900; color: #003a70; }
+
+.kacan-ozet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.kacan-ozet-kart {
+  background: #e0524a;
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+.kacan-ozet-baslik { font-size: 12px; font-weight: 800; color: #ffffff; opacity: .9; }
+.kacan-ozet-deger { font-size: 22px; font-weight: 900; color: #ffffff; margin-top: 4px; }
+.kacan-satir {
+  border-bottom: 1px solid #e2e6ec;
+  padding: 8px 4px;
+  font-size: 12px;
+}
+.kacan-satir-ust { display: flex; justify-content: space-between; font-weight: 800; color: #c0392b; }
+.kacan-satir-alt { color: #8a94a3; margin-top: 2px; }
 
 /* Ziyaret Takvimi */
 .ziyaret-aciklama {

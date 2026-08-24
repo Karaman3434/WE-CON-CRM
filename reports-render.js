@@ -71,6 +71,18 @@ function istatistikleriCiz(){
           return "<div class='istatistik-satir'><span class='istatistik-satir-ad'>" + htmlEsc(m.ad) + "</span><span class='istatistik-satir-deger'>" + fmt(m.toplam) + " EUR</span></div>";
         }).join("");
     document.getElementById("istMusteriListe").innerHTML = musteriHtml;
+
+    var kacanOzet = ReportsData.kacanOzetBuAy();
+    document.getElementById("istKacanSayi").textContent = kacanOzet.kacanlar.length;
+    document.getElementById("istKacanTutar").textContent = fmt(kacanOzet.toplamTutar) + " EUR";
+    document.getElementById("istKacanListe").innerHTML = kacanOzet.kacanlar.length === 0
+      ? "<p class='bos-mesaj'>Bu ay kaçan işaretli kayıt yok.</p>"
+      : kacanOzet.kacanlar.map(function(k){
+          return "<div class='kacan-satir'>"
+            + "<div class='kacan-satir-ust'><span>" + htmlEsc(k.kayit.musteri) + "</span><span>" + fmt(k.tutar) + " EUR</span></div>"
+            + "<div class='kacan-satir-alt'>" + (k.kayit.kacanRakip ? "Rakip: "+htmlEsc(k.kayit.kacanRakip)+" · " : "") + (k.kayit.kacanSebep||"Sebep belirtilmedi") + "</div>"
+            + "</div>";
+        }).join("");
   }catch(e){ hataGoster("İstatistikler çizilemedi: " + e.message); }
 }
 
@@ -87,17 +99,34 @@ function islemleriCiz(){
     }
     bos.hidden = true;
 
-    kapsayici.innerHTML = liste.map(function(k){
+    kapsayici.innerHTML = liste.map(function(k, i){
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
-      return "<div class='islem-karti'>"
+      var kacanMi = k.durum === "kacan";
+      return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
         + "<div class='islem-ust-satir'>"
         + "<span class='islem-musteri'>" + htmlEsc(k.musteri) + "</span>"
         + "<span class='islem-tip islem-tip--" + k.tip + "'>" + TIP_ETIKET[k.tip] + "</span>"
         + "</div>"
         + "<div class='islem-detay'>" + htmlEsc(k.tarih) + " · " + (k.urunler||[]).length + " ürün · " + htmlEsc(k.sehir||"") + "</div>"
         + "<div class='islem-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</div>"
+        + (kacanMi
+            ? "<div class='islem-kacan-etiket'>❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"") + (k.kacanSebep?" ("+htmlEsc(k.kacanSebep)+")":"") + "</div>"
+            : (k.tip==="teklif"||k.tip==="proforma" ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : ""))
         + "</div>";
     }).join("");
+
+    kapsayici.querySelectorAll(".islem-kacan-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var i = parseInt(this.getAttribute("data-i"), 10);
+        var k = liste[i];
+        var sebep = prompt("Kaçırma sebebi (örn. Fiyat, Termin, Rakip):", "") || "";
+        var rakip = prompt("Rakip firma (opsiyonel):", "") || "";
+        ReportsData.kaydiKacanIsaretle(k.tip, k.ts, sebep, rakip, function(basarili, err){
+          if(basarili) alert("✓ İşaretlendi.");
+          else hataGoster("İşaretlenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        });
+      };
+    });
   }catch(e){ hataGoster("İşlemler çizilemedi: " + e.message); }
 }
 

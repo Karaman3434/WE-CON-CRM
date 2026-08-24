@@ -64,14 +64,15 @@ var KmData = (function(){
     return f<0 ? 0 : f;
   }
 
-  function kaydet(anahtar, baslangicKm, bitisKm, kategori, geriBildir){
+  function kaydet(anahtar, baslangicKm, bitisKm, kategori, saat, guzergah, ziyaretYerleri, geriBildir){
     try{
       var fark = farkHesapla(bitisKm, baslangicKm);
       var kayit = {
         km: baslangicKm, bitisKm: bitisKm,
         kmKategori: kategori,
         isKm: kategori==="is" ? fark : null,
-        ozelKm: kategori==="ozel" ? fark : null
+        ozelKm: kategori==="ozel" ? fark : null,
+        saat: saat || "", guzergah: guzergah || "", ziyaretYerleri: ziyaretYerleri || ""
       };
       var db = firebase.database();
       db.ref("kmTakip/" + anahtar).set(kayit).then(function(){

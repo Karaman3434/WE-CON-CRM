@@ -96,6 +96,45 @@ var ReportsData = (function(){
     return arsiv.siparis || [];
   }
 
+  function kaydiKacanIsaretle(tip, ts, sebep, rakip, geriBildir){
+    try{
+      var db = firebase.database();
+      db.ref("arsiv/" + tip).once("value").then(function(snap){
+        var mevcut = snap.val();
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+        var idx = liste.findIndex(function(k){ return k.ts === ts; });
+        if(idx === -1){ geriBildir(false, "Kayıt bulunamadı"); return; }
+        liste[idx].durum = "kacan";
+        liste[idx].kacanSebep = sebep || "";
+        liste[idx].kacanRakip = rakip || "";
+        return db.ref("arsiv/" + tip).set(liste).then(function(){ geriBildir(true); });
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function kacanOzetBuAy(){
+    var aylar = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+    var now = new Date();
+    var buAyAd = aylar[now.getMonth()];
+    var buYil = now.getFullYear().toString();
+    var kacanlar = [];
+    var teklifSayisi = 0;
+    ["siparis","teklif","proforma","numune"].forEach(function(tip){
+      (arsiv[tip]||[]).forEach(function(k){
+        if(!k.tarih) return;
+        var parca = k.tarih.split(" ");
+        if((parca[1]||"")!==buAyAd || (parca[2]||"")!==buYil) return;
+        if(tip==="teklif") teklifSayisi++;
+        if(k.durum==="kacan"){
+          var tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+          kacanlar.push({tip:tip, kayit:k, tutar:tutar});
+        }
+      });
+    });
+    var toplamTutar = kacanlar.reduce(function(s,k){ return s+k.tutar; }, 0);
+    return {kacanlar:kacanlar, toplamTutar:toplamTutar, teklifSayisi:teklifSayisi, ayAd:buAyAd, yil:buYil};
+  }
+
   function ayToplami(ayOfset){
     var now = new Date();
     var hedefAy = new Date(now.getFullYear(), now.getMonth()-ayOfset, 1);
@@ -142,7 +181,9 @@ var ReportsData = (function(){
     gorevTamamlandiToggle: gorevTamamlandiToggle,
     ayToplami: ayToplami,
     son6Ay: son6Ay,
-    enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler
+    enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler,
+    kaydiKacanIsaretle: kaydiKacanIsaretle,
+    kacanOzetBuAy: kacanOzetBuAy
   };
 
 })();

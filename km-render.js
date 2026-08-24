@@ -57,6 +57,9 @@ function formuDoldur(){
     if(kayit){
       baslangicInput.value = kayit.km || "";
       bitisInput.value = kayit.bitisKm || "";
+      document.getElementById("kmSaat").value = kayit.saat || "";
+      document.getElementById("kmGuzergah").value = kayit.guzergah || "";
+      document.getElementById("kmZiyaretYerleri").value = kayit.ziyaretYerleri || "";
       secilenKategori = kayit.kmKategori || "is";
       document.querySelectorAll(".kategori-btn").forEach(function(b){
         b.classList.toggle("kategori-btn--secili", b.getAttribute("data-kategori")===secilenKategori);
@@ -89,7 +92,7 @@ function tabloyuCiz(){
       if(k.isKm!=null) toplamIs += k.isKm;
       var kategoriSinif = k.kmKategori === "ozel" ? "ozel" : "";
       return "<div class='km-tablo-satir'>"
-        + "<div><div class='km-tablo-tarih'>" + etiket + "</div><div class='km-tablo-detay'>" + (k.km||"-") + " → " + (k.bitisKm||"-") + " km</div></div>"
+        + "<div><div class='km-tablo-tarih'>" + etiket + "</div><div class='km-tablo-detay'>" + (k.km||"-") + " → " + (k.bitisKm||"-") + " km" + (k.ziyaretYerleri?" · "+k.ziyaretYerleri:"") + "</div></div>"
         + "<div class='km-tablo-fark " + kategoriSinif + "'>" + fark + " km</div>"
         + "</div>";
     }).join("");
@@ -110,7 +113,10 @@ function kmKaydetTiklandi(){
     var btn = document.getElementById("btnKmKaydet");
     btn.disabled = true;
     btn.textContent = "Kaydediliyor...";
-    KmData.kaydet(KmData.bugunAnahtari(), parseFloat(b), parseFloat(s), secilenKategori, function(basarili, err){
+    var saat = document.getElementById("kmSaat").value.trim();
+    var guzergah = document.getElementById("kmGuzergah").value.trim();
+    var ziyaretYerleri = document.getElementById("kmZiyaretYerleri").value.trim();
+    KmData.kaydet(KmData.bugunAnahtari(), parseFloat(b), parseFloat(s), secilenKategori, saat, guzergah, ziyaretYerleri, function(basarili, err){
       btn.disabled = false;
       btn.textContent = "✓ Günü Kaydet";
       if(basarili){
@@ -139,13 +145,13 @@ function excelAktar(){
     var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
     var donemEtiket = aylar[now.getMonth()] + " " + now.getFullYear();
 
-    var basliklar = ["Tarih","Başlangıç KM","Bitiş KM","İş KM","Özel KM"];
+    var basliklar = ["Tarih","Başlangıç-Bitiş Saati","Seyir Güzergahı","Ziyaret Yerleri","Başlangıç KM","Bitiş KM","İş KM","Özel KM"];
     var veriSatirlari = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
       var d = new Date(parseInt(parca[0]), parseInt(parca[1])-1, parseInt(parca[2]));
       var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
       var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+" "+gunler[d.getDay()];
-      return [tarihStr, k.km||"", k.bitisKm||"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
+      return [tarihStr, k.saat||"", k.guzergah||"", k.ziyaretYerleri||"", k.km||"", k.bitisKm||"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
     });
 
     var aoa = [
@@ -155,7 +161,7 @@ function excelAktar(){
     ].concat(veriSatirlari);
 
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = [{wch:20},{wch:14},{wch:14},{wch:10},{wch:10}];
+    ws["!cols"] = [{wch:20},{wch:16},{wch:22},{wch:26},{wch:12},{wch:12},{wch:9},{wch:9}];
 
     var INCE_KENAR = { style:"thin", color:{rgb:"3569B8"} };
     var TUM_KENAR = { top:INCE_KENAR, bottom:INCE_KENAR, left:INCE_KENAR, right:INCE_KENAR };
