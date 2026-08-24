@@ -200,7 +200,14 @@ function islemleriCiz(){
 
 function gorevleriCiz(){
   try{
+    var q = (document.getElementById("gorevAra").value||"").trim().toLocaleLowerCase("tr-TR");
     var liste = ReportsData.gorevleriGetir();
+    if(q){
+      liste = liste.filter(function(g){
+        return (g.musteriAd||"").toLocaleLowerCase("tr-TR").indexOf(q)>=0
+            || (g.aciklama||"").toLocaleLowerCase("tr-TR").indexOf(q)>=0;
+      });
+    }
     var kapsayici = document.getElementById("gorevListesiKapsayici");
     var bos = document.getElementById("gorevBosMesaj");
 
@@ -290,13 +297,18 @@ function ziyaretleriCiz(){
 }
 
 var duzenlenenKayit = null;
+var duzenlemeSilinenIndeksler = [];
 
 function duzenlemeAc(k){
   duzenlenenKayit = k;
+  duzenlemeSilinenIndeksler = [];
   var kapsayici = document.getElementById("duzenleUrunListesi");
   kapsayici.innerHTML = (k.urunler||[]).map(function(u, i){
-    return "<div class='duzenle-urun-satir'>"
+    return "<div class='duzenle-urun-satir' id='duzenleSatir-" + i + "'>"
+      + "<div class='duzenle-urun-baslik-satir'>"
       + "<div class='duzenle-urun-ad'>" + htmlEsc(u.ad) + "</div>"
+      + "<button class='duzenle-urun-sil-btn' data-urun-sil-i='" + i + "'>🗑️</button>"
+      + "</div>"
       + "<div class='duzenle-alan-grid'>"
       + "<input type='number' step='0.01' data-alan='listeFiyat' data-i='" + i + "' value='" + (u.listeFiyat||0) + "' placeholder='Liste Fiyat'>"
       + "<input type='number' step='0.1' data-alan='iskonto' data-i='" + i + "' value='" + (u.iskonto||0) + "' placeholder='İskonto %'>"
@@ -305,24 +317,40 @@ function duzenlemeAc(k){
       + "</div>"
       + "</div>";
   }).join("");
+
+  kapsayici.querySelectorAll(".duzenle-urun-sil-btn").forEach(function(btn){
+    btn.onclick = function(){
+      var i = parseInt(this.getAttribute("data-urun-sil-i"), 10);
+      if((duzenlenenKayit.urunler||[]).length - duzenlemeSilinenIndeksler.length <= 1){
+        alert("Bir kayıtta en az 1 ürün kalmalı. Tüm ürünleri silmek istiyorsan, kaydı tamamen 'Sil' butonuyla kaldır.");
+        return;
+      }
+      duzenlemeSilinenIndeksler.push(i);
+      var satir = document.getElementById("duzenleSatir-" + i);
+      if(satir) satir.remove();
+    };
+  });
+
   document.getElementById("duzenleOverlay").hidden = false;
 }
 
 function duzenlemeKaydet(){
   try{
     if(!duzenlenenKayit) return;
-    var yeniUrunler = (duzenlenenKayit.urunler||[]).map(function(u, i){
+    var yeniUrunler = [];
+    (duzenlenenKayit.urunler||[]).forEach(function(u, i){
+      if(duzenlemeSilinenIndeksler.indexOf(i) >= 0) return; // silinmiş ürün, atla
       var listeFiyat = parseFloat(document.querySelector("[data-alan='listeFiyat'][data-i='"+i+"']").value)||0;
       var iskonto = parseFloat(document.querySelector("[data-alan='iskonto'][data-i='"+i+"']").value)||0;
       var adet = parseFloat(document.querySelector("[data-alan='adet'][data-i='"+i+"']").value)||1;
       var dipFiyat = parseFloat(document.querySelector("[data-alan='dipFiyat'][data-i='"+i+"']").value)||0;
       var iskontoluFiyat = listeFiyat - (listeFiyat*iskonto/100);
-      return {
+      yeniUrunler.push({
         ad: u.ad, berta: u.berta, abas: u.abas,
         listeFiyat: listeFiyat, iskonto: iskonto, adet: adet, dipFiyat: dipFiyat,
         iskBirim: iskontoluFiyat,
         toplamEuro: iskontoluFiyat * adet
-      };
+      });
     });
     var btn = document.getElementById("btnDuzenleKaydet");
     btn.disabled = true;
@@ -355,5 +383,6 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("islemAra").addEventListener("input", islemleriCiz);
   document.getElementById("islemTipFiltre").addEventListener("change", islemleriCiz);
   ReportsData.arsivDegistiginde(islemleriCiz);
+  document.getElementById("gorevAra").addEventListener("input", gorevleriCiz);
   ReportsData.gorevDegistiginde(gorevleriCiz);
 });

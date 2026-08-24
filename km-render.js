@@ -81,15 +81,17 @@ function tabloyuCiz(){
     if(kayitlar.length === 0){
       kapsayici.innerHTML = "<p style='text-align:center;color:#8a94a3;font-size:13px;padding:16px 0;'>Bu ay henüz kayıt yok.</p>";
       document.getElementById("kmAyToplamIs").textContent = "0 km";
+      document.getElementById("kmAyToplamOzel").textContent = "0 km";
       return;
     }
 
-    var toplamIs = 0;
+    var toplamIs = 0, toplamOzel = 0;
     var html = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
       var etiket = parseInt(parca[2],10) + " " + aylar[parseInt(parca[1],10)-1];
       var fark = k.isKm!=null ? k.isKm : (k.ozelKm!=null ? k.ozelKm : 0);
       if(k.isKm!=null) toplamIs += k.isKm;
+      if(k.ozelKm!=null) toplamOzel += k.ozelKm;
       var kategoriSinif = k.kmKategori === "ozel" ? "ozel" : "";
       return "<div class='km-tablo-satir'>"
         + "<div><div class='km-tablo-tarih'>" + etiket + "</div><div class='km-tablo-detay'>" + (k.km||"-") + " → " + (k.bitisKm||"-") + " km" + (k.ziyaretYerleri?" · "+k.ziyaretYerleri:"") + "</div></div>"
@@ -99,6 +101,7 @@ function tabloyuCiz(){
 
     kapsayici.innerHTML = html;
     document.getElementById("kmAyToplamIs").textContent = toplamIs + " km";
+    document.getElementById("kmAyToplamOzel").textContent = toplamOzel + " km";
   }catch(e){ hataGoster("Tablo çizilemedi: " + e.message); }
 }
 

@@ -148,3 +148,9 @@
   font-weight: 800;
   color: #003a70;
 }
+.km-ay-toplam--ozel {
+  margin-top: 6px;
+  padding-top: 0;
+  border-top: none;
+  color: #b7601f;
+}

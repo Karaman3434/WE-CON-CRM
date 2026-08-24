@@ -184,11 +184,24 @@
   padding: 10px;
   margin-bottom: 8px;
 }
+.duzenle-urun-baslik-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
 .duzenle-urun-ad {
   font-size: 13px;
   font-weight: 800;
   color: #111;
-  margin-bottom: 6px;
+}
+.duzenle-urun-sil-btn {
+  background: #fdeaea;
+  border: 1px solid #f0b8b3;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
 }
 .duzenle-alan-grid {
   display: grid;
@@ -260,6 +273,15 @@
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
+}
+
+.gorev-arama-kutusu { margin-bottom: 10px; }
+.gorev-arama-kutusu input {
+  width: 100%;
+  border: 2px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 13px;
 }
 
 .gorev-karti {

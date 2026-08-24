@@ -49,6 +49,14 @@ function siparisGecmisiniCiz(){
     var kapsayici = document.getElementById("detaySiparisListesi");
     var bos = document.getElementById("detaySiparisBos");
 
+    // Toplam ciro: sadece gerçekleşmiş satış sayılan Sipariş kayıtları üzerinden
+    // (Numune/Teklif/Proforma henüz kesinleşmemiş olabilir, ciroya dahil edilmiyor).
+    var toplamCiro = bunaAit
+      .filter(function(k){ return k.tip === "siparis"; })
+      .reduce(function(s,k){ return s + (k.urunler||[]).reduce(function(s2,u){ return s2+(u.toplamEuro||0); }, 0); }, 0);
+    var ciroEl = document.getElementById("detayToplamCiro");
+    if(ciroEl) ciroEl.textContent = toplamCiro.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR";
+
     if(bunaAit.length === 0){
       kapsayici.innerHTML = "";
       bos.hidden = false;
