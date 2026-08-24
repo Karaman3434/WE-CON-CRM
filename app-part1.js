@@ -372,6 +372,8 @@ function weiconSunucuVerisiniGuvenliUygula(path,data){
       window.fbSet("musteriler",mergedM).catch(function(e){console.error("Müşteri geri senkron hatası:",e);});
     }
   }
+  // ui-render-fix.js de aynı güvenli veri birleştirme köprüsünü kullanabilsin.
+  window.weiconSunucuVerisiniGuvenliUygula = weiconSunucuVerisiniGuvenliUygula;
 }
 
 // Firebase hazır olunca müşteri ve arşiv verilerini çek
