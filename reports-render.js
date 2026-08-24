@@ -103,6 +103,9 @@ function istatistikleriCiz(){
   }catch(e){ hataGoster("İstatistikler çizilemedi: " + e.message); }
 }
 
+var TIP_KOD = {numune:"NUM", teklif:"TEK", proforma:"PRO", siparis:"SIP"};
+var KOD_RENK = {SIP:"#003a70", TEK:"#28a745", PRO:"#8e44ad", NUM:"#b7601f"};
+
 function islemleriCiz(){
   try{
     var q = (document.getElementById("islemAra").value||"").trim().toLocaleLowerCase("tr-TR");
@@ -126,22 +129,31 @@ function islemleriCiz(){
     kapsayici.innerHTML = liste.map(function(k, i){
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
       var kacanMi = k.durum === "kacan";
+      var kod = TIP_KOD[k.tip] || "?";
+      var renk = kacanMi ? "#c0392b" : (KOD_RENK[kod] || "#3569b8");
+      var durumEk = "";
+      if(kacanMi) durumEk = " — ❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"");
+      if(k.revizeZamani) durumEk += " — 🔄 REVİZE";
       var urunDetayHtml = (k.urunler||[]).map(function(u){
         return "<div class='urun-detay-satir'><span>" + htmlEsc(u.ad) + " (" + (u.adet||1) + " adet)</span><span>" + (u.toplamEuro||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</span></div>";
       }).join("");
       return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
-        + "<div class='islem-ust-satir islem-tiklanabilir' data-ac-i='" + i + "'>"
-        + "<span class='islem-musteri'>" + htmlEsc(k.musteri) + "</span>"
-        + "<span class='islem-tip islem-tip--" + k.tip + "'>" + TIP_ETIKET[k.tip] + "</span>"
+        + "<div class='islem-rozet-satir islem-tiklanabilir' data-ac-i='" + i + "'>"
+        + "<span class='islem-kod-rozet' style='background:" + renk + ";'>" + kod + "</span>"
+        + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
+        + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
         + "</div>"
-        + "<div class='islem-detay islem-tiklanabilir' data-ac-i='" + i + "'>" + htmlEsc(k.tarih) + " · " + (k.urunler||[]).length + " ürün · " + htmlEsc(k.sehir||"") + " <span class='islem-ac-ikon'>▾</span></div>"
+        + "<div class='islem-musteri-satir islem-tiklanabilir' data-ac-i='" + i + "'>"
+        + "<span class='islem-musteri-buyuk'>" + htmlEsc(k.musteri) + "</span>"
+        + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
+        + "</div>"
+        + "<div class='islem-detay islem-tiklanabilir' data-ac-i='" + i + "'>" + (k.urunler||[]).length + " ürün <span class='islem-ac-ikon'>▾</span></div>"
         + "<div class='islem-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</div>"
         + "<div class='urun-detay-kutu' id='urunDetay-" + i + "' hidden>" + urunDetayHtml + "</div>"
-        + (kacanMi
-            ? "<div class='islem-kacan-etiket'>❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"") + (k.kacanSebep?" ("+htmlEsc(k.kacanSebep)+")":"") + "</div>"
-            : ""
-              + ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
+        + (!kacanMi
+              ? ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
               + (SONRAKI_ASAMA[k.tip] ? "<button class='islem-ilerlet-btn' data-ilerlet-i='"+i+"'>▶️ İlerlet — " + TIP_ETIKET[SONRAKI_ASAMA[k.tip]] + "</button>" : "")
+              : ""
            )
         + "<div class='islem-duzenle-sil-satir'>"
         + "<button class='islem-duzenle-btn' data-duzenle-i='" + i + "'>✏️ Düzenle</button>"

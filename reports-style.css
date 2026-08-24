@@ -68,25 +68,56 @@
   margin-bottom: 8px;
   background: #fafbfc;
 }
-.islem-ust-satir {
+.islem-karti--kacan { opacity: .85; }
+
+.islem-rozet-satir {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 4px;
+  flex-wrap: wrap;
 }
-.islem-musteri { font-size: 15px; font-weight: 800; color: #003a70; }
-.islem-tip {
-  font-size: 10px;
+.islem-kod-rozet {
+  color: #ffffff;
+  font-size: 12px;
   font-weight: 900;
-  padding: 3px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 5px;
   flex-shrink: 0;
 }
-.islem-tip--numune { background: #eef2f8; color: #556170; }
-.islem-tip--teklif { background: #fff3e6; color: #a8590c; }
-.islem-tip--proforma { background: #eaf2fc; color: #2563eb; }
-.islem-tip--siparis { background: #e9f7ee; color: #16a34a; }
+.islem-tarih-buyuk {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+}
+.islem-durum-ek {
+  font-size: 12px;
+  font-weight: 900;
+  color: #c0392b;
+}
+
+.islem-musteri-satir {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.islem-musteri-buyuk {
+  font-size: 17px;
+  font-weight: 900;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.islem-sehir-buyuk {
+  font-size: 13px;
+  font-weight: 800;
+  color: #556170;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 .islem-detay {
   font-size: 12px;
   color: #8a94a3;
