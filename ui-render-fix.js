@@ -15,7 +15,7 @@
     style.textContent = [
       "html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;}",
       "html,body{width:100%!important;height:100%!important;max-width:100%!important;overflow:hidden!important;}",
-      ".phone-container{width:100%!important;max-width:100vw!important;min-width:0!important;height:100vh!important;height:100dvh!important;min-height:0!important;margin-left:auto!important;margin-right:auto!important;transform:none!important;}",
+      ".phone-container{width:100%!important;max-width:100vw!important;min-width:0!important;height:100vh!important;height:100dvh!important;min-height:0!important;left:0!important;right:0!important;margin-left:0!important;margin-right:0!important;transform:none!important;}",
       "#ustBaslikSatiri,#ustNavGrid{flex:0 0 auto!important;position:relative!important;z-index:1200!important;}",
       "#ustBaslikSatiri{min-height:0!important;}",
       "#ustNavGrid{min-height:0!important;}",
