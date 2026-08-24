@@ -30,6 +30,23 @@ function htmlEsc(s){
 
 var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
 
+var SONRAKI_ASAMA = {numune:"teklif", teklif:"proforma", proforma:"siparis"};
+
+function ilerletTiklandi(k){
+  try{
+    if(!confirm(k.musteri + " için " + (k.urunler||[]).length + " ürün, bir sonraki aşamaya (" + TIP_ETIKET[SONRAKI_ASAMA[k.tip]] + ") taşınacak. Devam edilsin mi?")) return;
+
+    var sepet = (k.urunler||[]).map(function(u, i){
+      return {idx:i, ad:u.ad, berta:u.berta, abas:u.abas, listeFiyat:u.listeFiyat, dipFiyat:u.dipFiyat, iskonto:u.iskonto, adet:u.adet};
+    });
+    localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));
+    localStorage.setItem("weicon_secili_musteri", JSON.stringify({ad:k.musteri, sehir:k.sehir||"", id:k.musteriId||null}));
+    localStorage.setItem("weiconv2_ilerlet_kaynak", JSON.stringify({tip:k.tip, ts:k.ts, sonrakiAsama:SONRAKI_ASAMA[k.tip]}));
+
+    window.location.href = "cart.html";
+  }catch(e){ hataGoster("İlerletilemedi: " + e.message); }
+}
+
 function sekmeGecisBagla(){
   document.querySelectorAll(".sekme-btn").forEach(function(btn){
     btn.onclick = function(){
@@ -111,9 +128,19 @@ function islemleriCiz(){
         + "<div class='islem-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</div>"
         + (kacanMi
             ? "<div class='islem-kacan-etiket'>❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"") + (k.kacanSebep?" ("+htmlEsc(k.kacanSebep)+")":"") + "</div>"
-            : (k.tip==="teklif"||k.tip==="proforma" ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : ""))
+            : ""
+              + ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
+              + (SONRAKI_ASAMA[k.tip] ? "<button class='islem-ilerlet-btn' data-ilerlet-i='"+i+"'>▶️ İlerlet — " + TIP_ETIKET[SONRAKI_ASAMA[k.tip]] + "</button>" : "")
+           )
         + "</div>";
     }).join("");
+
+    kapsayici.querySelectorAll(".islem-ilerlet-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var i = parseInt(this.getAttribute("data-ilerlet-i"), 10);
+        ilerletTiklandi(liste[i]);
+      };
+    });
 
     kapsayici.querySelectorAll(".islem-kacan-btn").forEach(function(btn){
       btn.onclick = function(){

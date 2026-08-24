@@ -41,6 +41,17 @@
   color: #ffffff;
 }
 
+.ilerlet-bilgi-kutu {
+  background: #eaf2fc;
+  border: 1px solid #3569b8;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #003a70;
+  margin-bottom: 10px;
+}
+
 .kaydet-buton {
   width: 100%;
   background: #16a34a;

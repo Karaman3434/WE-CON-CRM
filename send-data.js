@@ -120,7 +120,23 @@ var SendData = (function(){
     }
   }
 
-  return { baslat: baslat, kaydet: kaydet };
+  function kaynakSil(tip, ts, geriBildir){
+    try{
+      var db = firebase.database();
+      db.ref("arsiv/" + tip).once("value").then(function(snap){
+        var mevcut = snap.val();
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+        var yeniListe = liste.filter(function(k){ return k.ts !== ts; });
+        return db.ref("arsiv/" + tip).set(yeniListe);
+      }).then(function(){
+        geriBildir(true);
+      }).catch(function(err){
+        geriBildir(false, err);
+      });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  return { baslat: baslat, kaydet: kaydet, kaynakSil: kaynakSil };
 
 })();
 

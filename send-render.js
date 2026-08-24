@@ -85,6 +85,13 @@ function kaydetTiklandi(){
         if(revizeMi){
           document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
         }
+        // İlerletme akışıysa (Numune→Teklif gibi), eski aşamanın kaydını sil —
+        // artık iki ayrı kayıt değil, tek kayıt yeni türe dönüşmüş olsun.
+        var kaynak = ilerletKaynagiOku();
+        if(kaynak){
+          SendData.kaynakSil(kaynak.tip, kaynak.ts, function(){});
+          localStorage.removeItem("weiconv2_ilerlet_kaynak");
+        }
         gonderKutusunuGoster(musteri, sepet, secilenTip, kur, kdv);
       } else {
         btn.disabled = false;
@@ -143,9 +150,30 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
+function ilerletKaynagiOku(){
+  try{
+    var v = localStorage.getItem("weiconv2_ilerlet_kaynak");
+    return v ? JSON.parse(v) : null;
+  }catch(e){ return null; }
+}
+
+function ilerletKaynagiVarsaSekmeAyarla(){
+  var kaynak = ilerletKaynagiOku();
+  if(!kaynak || !kaynak.sonrakiAsama) return;
+  secilenTip = kaynak.sonrakiAsama;
+  document.querySelectorAll(".tip-btn").forEach(function(b){
+    b.classList.toggle("tip-btn--secili", b.getAttribute("data-tip")===secilenTip);
+  });
+  var uyari = document.createElement("div");
+  uyari.className = "ilerlet-bilgi-kutu";
+  uyari.textContent = "▶️ İlerletiliyor — kayıt tamamlanınca önceki aşamanın belgesi otomatik silinecek.";
+  document.getElementById("tipSecim").insertAdjacentElement("beforebegin", uyari);
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   tipSecimBagla();
+  ilerletKaynagiVarsaSekmeAyarla();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKaydet").onclick = kaydetTiklandi;
   document.getElementById("btnWhatsapp").onclick = whatsappGonder;

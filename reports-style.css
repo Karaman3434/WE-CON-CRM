@@ -80,6 +80,18 @@
   font-weight: 800;
   cursor: pointer;
 }
+.islem-ilerlet-btn {
+  margin-top: 8px;
+  width: 100%;
+  background: #eaf2fc;
+  color: #003a70;
+  border: 1px solid #3569b8;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
 
 /* Görevler */
 .gorev-ekle-kutu {
