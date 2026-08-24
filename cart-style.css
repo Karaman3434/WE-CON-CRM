@@ -230,9 +230,14 @@
   color: #556170;
 }
 .sepet-toplam-deger {
-  font-size: 12px;
-  font-weight: 900;
+  background: #fdeaea;
   color: #d9182b;
+  padding: 3px 5px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 11px;
+  white-space: nowrap;
+  display: inline-block;
 }
 .sepet-sil-btn {
   background: none;
@@ -265,7 +270,7 @@
 
 .devam-buton {
   width: 100%;
-  background: #16a34a;
+  background: #e0730f;
   color: #ffffff;
   border: none;
   border-radius: 10px;

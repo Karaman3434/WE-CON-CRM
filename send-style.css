@@ -43,25 +43,27 @@
 .tip-secim {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 16px;
 }
 .tip-btn {
-  border: 2px solid #cbd5e1;
-  background: #ffffff;
-  color: #556170;
-  border-radius: 8px;
-  padding: 10px 4px;
-  font-size: 13px;
-  font-weight: 800;
+  border-radius: 10px;
+  padding: 14px 4px;
+  font-size: 12px;
+  font-weight: 900;
   cursor: pointer;
   text-align: center;
+  line-height: 1.25;
+  letter-spacing: .2px;
+  opacity: .45;
 }
-.tip-btn--secili {
-  border-color: #003a70;
-  background: #003a70;
-  color: #ffffff;
-}
+.tip-btn--secili { opacity: 1; }
+
+/* Eski uygulamanın "İşlem Türü Seçim" renkleriyle BİREBİR aynı */
+.tip-btn--numune { background: #fff6ec; border: 2.5px solid #b7601f; color: #a8590c; }
+.tip-btn--teklif { background: #f0fbf3; border: 2.5px solid #1f9d55; color: #0e6b34; }
+.tip-btn--proforma { background: #f6f0fd; border: 2.5px solid #8e44ad; color: #8e44ad; }
+.tip-btn--siparis { background: #f0f7ff; border: 2.5px solid #3569b8; color: #003a70; }
 
 .ilerlet-bilgi-kutu {
   background: #eaf2fc;
@@ -75,17 +77,22 @@
 }
 
 .fiyat-uyari-kutu {
-  background: #fff3e6;
-  border: 2px solid #f2994a;
-  border-radius: 10px;
-  padding: 12px 14px;
+  background: #fff3cd;
+  border: 3px solid #ff2d2d;
+  border-radius: 8px;
+  padding: 14px 16px;
   margin-bottom: 14px;
 }
-.fiyat-uyari-baslik {
-  font-size: 13px;
-  font-weight: 900;
-  color: #a8590c;
+.fiyat-uyari-baslik-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 8px;
+}
+.fiyat-uyari-baslik {
+  font-size: 15px;
+  font-weight: 900;
+  color: #222222;
 }
 .fiyat-uyari-satir {
   font-size: 12px;
@@ -95,7 +102,7 @@
 
 .kaydet-buton {
   width: 100%;
-  background: #16a34a;
+  background: #e0730f;
   color: #ffffff;
   border: none;
   border-radius: 10px;
