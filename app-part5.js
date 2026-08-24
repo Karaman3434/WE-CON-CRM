@@ -1744,6 +1744,26 @@ function arsivDetayKapat(){
 }
 
 /* ============================================================
+   KM MONTHLY SAVE DEBOUNCE
+   app-part4 queues changed days in kmBekleyenDegisiklikler; this
+   bridge persists only those changed days through kmGuvenliKaydet.
+============================================================ */
+var kmAylikTabloKaydetTimer = null;
+function kmAylikTabloKaydet(){
+  if(kmAylikTabloKaydetTimer) clearTimeout(kmAylikTabloKaydetTimer);
+  kmAylikTabloKaydetTimer = setTimeout(function(){
+    kmAylikTabloKaydetTimer = null;
+    var liste = Array.isArray(kmBekleyenDegisiklikler) ? kmBekleyenDegisiklikler.splice(0) : [];
+    if(liste.length===0) return;
+    if(typeof kmGuvenliKaydet==="function"){
+      kmGuvenliKaydet(liste).catch(function(e){
+        console.error("KM aylık kayıt hatası:", e);
+      });
+    }
+  }, 180);
+}
+
+/* ============================================================
    COMPATIBILITY ALIASES
    Eski önbellekte kalan typo'lu çağrılar da yeni fonksiyona düşsün.
 ============================================================ */
