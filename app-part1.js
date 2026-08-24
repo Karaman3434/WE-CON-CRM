@@ -1,4 +1,4 @@
-// WEICON ASİST VERSİYON: W230826.1939.557 — app-part1.js
+// WEICON ASİST VERSİYON: W230826.1222.550 — app-part1.js
 var globalProductCatalog = [];
 var basket = [];
 var ilerletilenSurecKaynagi = null; // {tip, ts} - açık süreç ilerletilirken kaynak kayıt, arşive kaydedince otomatik bağlanır
@@ -20,7 +20,7 @@ var hareketListesi = [];
 // metinler normal (karışık) harfle kalır, okunabilirlik için.
 // ============================================================================
 
-var APP_VERSION = "W230826.1939.557";
+var APP_VERSION = "W230826.1222.550";
 // Kart/tabela fotoğrafını okuyan VE anomali analizini yapan ortak Cloudflare Worker adresi.
 // Kurulum rehberindeki adımları tamamladıktan sonra buraya kendi Worker URL'ini yapıştır.
 // Örn: "https://weicon-ai.SENIN-KULLANICI-ADIN.workers.dev"
@@ -147,66 +147,9 @@ function debounce(fn,delay){
 }
 
 window.__APP_STARTED__=false;
-// HATA GÜVENLİK AĞI — daha önce bazı ekranlarda (özellikle Ana Sayfa) bir JS
-// hatası SESSİZCE oluşup render'ın yarıda kesilmesine yol açıyordu; hata
-// konsolda kalıyor, telefonda görünmüyordu. Artık yakalanmamış HER hata
-// ekranda kırmızı bir toast olarak gösteriliyor — bir dahaki sefere sorun
-// olursa, tam hata mesajının ekran görüntüsü teşhis için yeterli olacak.
-window.__sonHatalar = [];
-window.addEventListener("error", function(ev){
-  try{
-    var msg = "⚠️ HATA: " + (ev && ev.message ? ev.message : "bilinmeyen") +
-      (ev && ev.filename ? " (" + ev.filename.split("/").pop() + ":" + ev.lineno + ")" : "");
-    console.error("Yakalanmamış hata:", ev);
-    window.__sonHatalar.push(new Date().toLocaleTimeString()+" "+msg);
-    if(typeof showToast === "function") showToast(msg, 9000);
-    else alert(msg);
-  }catch(e){}
-});
-
-// GPU/ÇİZİM (PAINT) TAZELEME — bazı Android WebView/Chrome sürümlerinde, sekme
-// arka plana atılıp tekrar öne getirildiğinde (uygulama simgesine tekrar
-// dokunma, "son uygulamalar"dan geri dönme) ekran kartı katmanları "bayat"
-// kalıp içerik boş/eksik görünüyor — DOM ve CSS doğru olsa bile. Bunu önlemek
-// için sekme her görünür olduğunda .phone-container'ı bir anlığına gizleyip
-// tekrar göstererek tarayıcıyı zorla yeniden çizime (reflow+repaint) sokuyoruz.
-function _zorlaYenidenCiz(){
-  try{
-    var el = document.querySelector(".phone-container");
-    if(!el) return;
-    var eskiDisplay = el.style.display;
-    el.style.display = "none";
-    void el.offsetHeight; // reflow'u zorla tetikle
-    el.style.display = eskiDisplay || "";
-    // Aktif sayfayı da ayrıca tazele — özellikle Ana Sayfa'yı
-    if(typeof activeCurrentPage!=="undefined" && activeCurrentPage===8 && typeof anaSayfaRenderEt==="function"){
-      anaSayfaRenderEt();
-    }
-  }catch(e){ console.error("_zorlaYenidenCiz hata:", e); }
-}
-document.addEventListener("visibilitychange", function(){
-  if(document.visibilityState === "visible"){
-    setTimeout(_zorlaYenidenCiz, 60);
-  }
-});
-window.addEventListener("pageshow", function(ev){
-  if(ev.persisted) setTimeout(_zorlaYenidenCiz, 60);
-});
-window.addEventListener("focus", function(){
-  setTimeout(_zorlaYenidenCiz, 60);
-});
-window.addEventListener("unhandledrejection", function(ev){
-  try{
-    var msg = "⚠️ HATA (promise): " + (ev && ev.reason ? (ev.reason.message || ev.reason) : "bilinmeyen");
-    console.error("Yakalanmamış promise hatası:", ev);
-    if(typeof showToast === "function") showToast(msg, 9000);
-  }catch(e){}
-});
-
 window.onload = function(){
   if(window.__APP_STARTED__) return;
   window.__APP_STARTED__=true;
-  try{
   window.addEventListener("resize", function(){ if(typeof hareketTabloKaydirmaKontrol==="function") hareketTabloKaydirmaKontrol(); });
 
 
@@ -292,103 +235,70 @@ window.onload = function(){
   // Eski kayıtlara (kod alanı olmayan) geriye dönük benzersiz kod atama — bir kereye mahsus
   setTimeout(eskiKayitlaraKodAta, 2500);
 
-  // ============================================================================
-// VERİ BÜTÜNLÜĞÜ KÖPRÜSÜ
-// Firebase'den boş/eksik bir anlık görüntü geldiğinde cihazdaki sağlam kayıtları
-// sessizce silmek yerine iki kaynağı birleştirir. Aynı kayıt için kod/ID önceliklidir.
-// ============================================================================
-
-function weiconArsivNormalize(a){
-  a=(a&&typeof a==="object")?a:{};
-  ["siparis","teklif","proforma","numune"].forEach(function(k){ if(!Array.isArray(a[k])) a[k]=[]; });
-  return a;
-}
-function weiconArsivAnahtar(tip,k){
-  if(!k) return "";
-  if(k.kod) return tip+"|kod|"+k.kod;
-  if(k.musteriId && k.ts) return tip+"|mid|"+k.musteriId+"|"+k.ts;
-  if(k.musteri && k.ts) return tip+"|ad|"+String(k.musteri).toLocaleLowerCase("tr-TR")+"|"+k.ts;
-  return "";
-}
-function weiconArsivBirlesir(local,server){
-  local=weiconArsivNormalize(local); server=weiconArsivNormalize(server);
-  var out={siparis:[],teklif:[],proforma:[],numune:[]};
-  ["siparis","teklif","proforma","numune"].forEach(function(tip){
-    var map={};
-    (server[tip]||[]).forEach(function(k){
-      var key=weiconArsivAnahtar(tip,k);
-      if(key){ map[key]=out[tip].length; out[tip].push(k); }
-      else out[tip].push(k);
-    });
-    (local[tip]||[]).forEach(function(k){
-      var key=weiconArsivAnahtar(tip,k);
-      if(key && map[key]!==undefined) return;
-      out[tip].push(k);
-      if(key) map[key]=out[tip].length-1;
-    });
-    out[tip].sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
-  });
-  return out;
-}
-function weiconMusteriAnahtar(m){
-  if(!m) return "";
-  if(m.id) return "id|"+m.id;
-  return "ad|"+String(m.ad||"").trim().toLocaleLowerCase("tr-TR");
-}
-function weiconMusteriBirlesir(local,server){
-  var la=Array.isArray(local)?local:((local&&typeof local==="object")?Object.values(local):[]);
-  var sa=Array.isArray(server)?server:((server&&typeof server==="object")?Object.values(server):[]);
-  var out=sa.slice(), map={};
-  out.forEach(function(m,i){ var k=weiconMusteriAnahtar(m); if(k) map[k]=i; });
-  la.forEach(function(m){
-    var k=weiconMusteriAnahtar(m);
-    if(k && map[k]!==undefined) return;
-    out.push(m);
-    if(k) map[k]=out.length-1;
-  });
-  return out;
-}
-function weiconSunucuVerisiniGuvenliUygula(path,data){
-  if(path==="arsiv"){
-    var local=weiconArsivNormalize(lsGet("weicon_arsiv",{}));
-    var server=weiconArsivNormalize(data);
-    var localAnlamli=Object.keys(local).some(function(k){return local[k].length>0;});
-    var serverAnlamli=Object.keys(server).some(function(k){return server[k].length>0;});
-    var merged=weiconArsivBirlesir(local,server);
-    arsivData=merged; lsSet("weicon_arsiv",merged);
-    if(localAnlamli && (!serverAnlamli || JSON.stringify(merged)!==JSON.stringify(server))){
-      if(window.fbSet) window.fbSet("arsiv",merged).catch(function(e){console.error("Arşiv geri senkron hatası:",e);});
-    }
-    return;
-  }
-  if(path==="musteriler"){
-    var localM=Array.isArray(lsGet("weicon_musteriler",[]))?lsGet("weicon_musteriler",[]):[];
-    var serverM=Array.isArray(data)?data:((data&&typeof data==="object")?Object.values(data):[]);
-    var mergedM=weiconMusteriBirlesir(localM,serverM);
-    musteriListesi=mergedM;
-    musteriIdEksikleriTamamla();
-    lsSet("weicon_musteriler",mergedM);
-    if(localM.length>serverM.length && window.fbSet){
-      window.fbSet("musteriler",mergedM).catch(function(e){console.error("Müşteri geri senkron hatası:",e);});
-    }
-  }
-  // ui-render-fix.js de aynı güvenli veri birleştirme köprüsünü kullanabilsin.
-  window.weiconSunucuVerisiniGuvenliUygula = weiconSunucuVerisiniGuvenliUygula;
-}
-
-// Firebase hazır olunca müşteri ve arşiv verilerini çek
+  // Firebase hazır olunca müşteri ve arşiv verilerini çek
   function firebasdenYukle(){
     if(window.fbDinle){
       // Müşteri listesi - gerçek zamanlı dinle, tüm cihazlar anında güncellenir
+      // MÜŞTERİ VERİSİ — Firebase ana kaynak, localStorage yalnızca önbellek.
+      // İlk Firebase cevabı boş geldiğinde mevcut cihaz önbelleğini körlemesine
+      // silme: bu durum özellikle ilk bağlantıda / auth gecikmesinde veri kaybı
+      // gibi görünüyordu. Yerelde veri varsa yalnızca ilk boş cevapta Firebase'e
+      // bootstrap edilir; sonraki gerçek zamanlı cevaplar Firebase'i kaynak kabul eder.
+      var musteriFirebaseIlkCevap = true;
       window.fbDinle("musteriler", function(data){
-        weiconSunucuVerisiniGuvenliUygula("musteriler", data);
+        if(data){
+          if(Array.isArray(data)) musteriListesi=data;
+          else musteriListesi=Object.values(data);
+          musteriFirebaseIlkCevap = false;
+          try{ lsSet("weicon_musteriler_firebase_durum","dolu"); }catch(e){}
+        } else if(musteriFirebaseIlkCevap){
+          var yerelMusteriler = lsGet("weicon_musteriler",[]);
+          if(Array.isArray(yerelMusteriler) && yerelMusteriler.length){
+            musteriListesi = yerelMusteriler;
+            // İlk bağlantıda Firebase boşsa yerel veri kaybolmasın.
+            if(window.fbAtomicTransform){
+              // Bootstrap da atomik: bu cihazın yerel listesini ancak Firebase
+              // gerçekten boşsa yerleştir. Başka cihaz aynı anda veri yazmışsa
+              // onun verisinin üzerine çıkılmaz.
+              window.fbAtomicTransform("musteriler", function(mevcut){
+                if(mevcut){
+                  var mevcutListe = Array.isArray(mevcut) ? mevcut : Object.values(mevcut);
+                  return mevcutListe.length ? mevcutListe : yerelMusteriler;
+                }
+                return yerelMusteriler;
+              }).then(function(){
+                try{ lsSet("weicon_musteriler_firebase_durum","dolu"); }catch(e){}
+              }).catch(function(err){
+                console.warn("Müşteri bootstrap yazımı başarısız:", err);
+              });
+            }
+          } else {
+            musteriListesi=[];
+          }
+          musteriFirebaseIlkCevap = false;
+        } else {
+          musteriListesi=[];
+        }
+        musteriIdEksikleriTamamla();
+        lsSet("weicon_musteriler", musteriListesi);
         if(activeCurrentPage===7) musteriListesiniRenderEt();
+        // Müşteri verisi (dolayısıyla şehir bilgisi) güncellenince Son İşlemler
+        // tablosundaki şehir sütunu da tazelensin — önceden bu eksikti, bu yüzden
+        // tablo müşteri listesi henüz gelmeden çizildiyse şehir hep "-" kalıyordu.
         if(activeCurrentPage===6 && typeof sonIslemleriRenderEt==="function") sonIslemleriRenderEt();
       });
-      // Arşiv - gerçek zamanlı dinle; boş/eksik sunucu snapshot'ı cihazdaki
-      // sağlam arşivi ezemez, eksik kayıtlar iki kaynak arasında birleştirilir.
+      // Arşiv - gerçek zamanlı dinle
       window.fbDinle("arsiv", function(data){
-        weiconSunucuVerisiniGuvenliUygula("arsiv", data);
+        if(data){
+          arsivData=data;
+          if(!arsivData.siparis) arsivData.siparis=[];
+          if(!arsivData.proforma) arsivData.proforma=[];
+          if(!arsivData.teklif) arsivData.teklif=[];
+          if(!arsivData.numune) arsivData.numune=[];
+        } else {
+          arsivData={numune:[],teklif:[],proforma:[],siparis:[]};
+        }
+        lsSet("weicon_arsiv", arsivData);
         if(activeCurrentPage===6){ arsivSayaclariGuncelle(); if(typeof sonIslemleriRenderEt==="function") sonIslemleriRenderEt(); }
         if(activeCurrentPage===7) musteriListesiniRenderEt();
         if(activeCurrentPage===8) anaSayfaRenderEt();
@@ -433,10 +343,6 @@ function weiconSunucuVerisiniGuvenliUygula(path,data){
     firebasdenYukle();
   } else {
     window.addEventListener("firebaseHazir", firebasdenYukle);
-  }
-  }catch(e){
-    console.error("window.onload içinde hata:", e);
-    try{ showToast("⚠️ AÇILIŞ HATASI: " + (e && e.message ? e.message : e), 9000); }catch(e2){ alert("Açılış hatası: " + (e && e.message ? e.message : e)); }
   }
 };
 
@@ -803,43 +709,61 @@ function musteriListesiniKaydet(){
 // uygulayıp öyle yazıyoruz. Eskiden bu cihazdaki (bayat olabilecek) local
 // musteriListesi komple üzerine yazılıyordu ve diğer cihazın az önce yaptığı
 // değişiklik sessizce kaybolabiliyordu.
-function musteriListesiGuvenliKaydet(oncelikliMusteri, silinecekId){
-  if(!window.fbSet) return Promise.reject(new Error("firebase yok"));
-  if(!window.fbGet || (typeof navigator!=="undefined" && navigator.onLine===false)){
-    if(typeof bekleyenIslemKaydet==="function"){
+function musteriListesiGuvenliKaydet(oncelikliMusteri, silinecekId, kuyruktanMi){
+  if(!window.fbAtomicTransform) return Promise.reject(new Error("Firebase atomic işlem katmanı yok"));
+
+  // Çevrimdışı işlem: yalnızca operasyonu kuyruğa al. Kuyruk göndericisi
+  // tekrar denediğinde aynı operasyon Firebase transaction'ı üzerinden uygulanır.
+  if(typeof navigator!=="undefined" && navigator.onLine===false){
+    if(typeof bekleyenIslemKaydet==="function" && !kuyruktanMi){
       bekleyenIslemKaydet({tur:"musteri", kayit:oncelikliMusteri||null, silinecekId:silinecekId||null});
-      return Promise.resolve();
+      return Promise.resolve({onaylandi:false, kuyruklandi:true});
     }
-    return window.fbSet("musteriler", musteriListesi);
+    return Promise.reject(new Error("offline"));
   }
-  return window.fbGet("musteriler").then(function(sunucuVerisi){
-    var sunucuListe = sunucuVerisi ? (Array.isArray(sunucuVerisi)?sunucuVerisi.slice():Object.values(sunucuVerisi)) : musteriListesi.slice();
+
+  return window.fbAtomicTransform("musteriler", function(mevcut){
+    var liste = Array.isArray(mevcut)
+      ? mevcut.slice()
+      : (mevcut ? Object.values(mevcut) : []);
+
     if(silinecekId){
-      sunucuListe = sunucuListe.filter(function(m){ return m && m.id !== silinecekId; });
+      liste = liste.filter(function(m){ return !(m && m.id === silinecekId); });
     }
+
     if(oncelikliMusteri && oncelikliMusteri.id){
       var bulunduMu = false;
-      for(var i=0;i<sunucuListe.length;i++){
-        if(sunucuListe[i] && sunucuListe[i].id === oncelikliMusteri.id){ sunucuListe[i] = oncelikliMusteri; bulunduMu = true; break; }
+      for(var i=0;i<liste.length;i++){
+        if(liste[i] && liste[i].id === oncelikliMusteri.id){
+          liste[i] = oncelikliMusteri;
+          bulunduMu = true;
+          break;
+        }
       }
-      if(!bulunduMu) sunucuListe.unshift(oncelikliMusteri);
+      if(!bulunduMu) liste.unshift(oncelikliMusteri);
     }
-    return window.fbSet("musteriler", sunucuListe);
-  }).catch(function(){
-    // Sunucudan taze veri çekilemezse (yetki/ağ hatası vb.), işlemi tamamen
-    // kaybetmemek için kuyruğa alıyoruz — bir sonraki senkronda güvenli
-    // birleştirme ile tekrar denenecek (komple liste ile üzerine yazmıyoruz).
-    if(typeof bekleyenIslemKaydet==="function"){
+
+    return liste;
+  }).then(function(sonuc){
+    try{
+      if(sonuc) {
+        musteriListesi = Array.isArray(sonuc) ? sonuc : Object.values(sonuc);
+        lsSet("weicon_musteriler", musteriListesi);
+      }
+    }catch(e){}
+    return {onaylandi:true, kuyruklandi:false};
+  }).catch(function(err){
+    if(!kuyruktanMi && typeof bekleyenIslemKaydet==="function"){
       bekleyenIslemKaydet({tur:"musteri", kayit:oncelikliMusteri||null, silinecekId:silinecekId||null});
-      return Promise.resolve();
+      return {onaylandi:false, kuyruklandi:true};
     }
-    return window.fbSet("musteriler", musteriListesi);
+    throw err;
   });
 }
 
 var aktifSehirFiltre = null; // null = hepsi
 
-var tumMusterilerModuAktif = true;
+var tumMusterilerModuAktif = false;
 function musteriHepsiniGoster(){
   aktifSehirFiltre = null;
   document.getElementById("sehirFiltrePanel").style.display="none";
@@ -850,9 +774,11 @@ function musteriHepsiniGoster(){
   if(btn) btn.innerHTML = tumMusterilerModuAktif ? "🔽 Son Kayıtlara Dön" : "👥 Tüm Müşteriler";
   if(window.fbGet){
     window.fbGet("musteriler").then(function(data){
-      weiconSunucuVerisiniGuvenliUygula("musteriler", data);
+      if(data){ musteriListesi=Array.isArray(data)?data:Object.values(data); }
+      else { musteriListesi=[]; }
+      lsSet("weicon_musteriler", musteriListesi);
       musteriListesiniRenderEt();
-    }).catch(function(){ musteriListesiniRenderEt(); });
+    });
   } else { musteriListesiniRenderEt(); }
 }
 
@@ -899,9 +825,11 @@ function musteriPanelAc(panel){
     if(btnKaydet) btnKaydet.style.opacity="0.7";
     if(window.fbGet){
       window.fbGet("musteriler").then(function(data){
-        weiconSunucuVerisiniGuvenliUygula("musteriler", data);
+        if(data){ musteriListesi=Array.isArray(data)?data:Object.values(data); }
+        else { musteriListesi=[]; }
+        lsSet("weicon_musteriler", musteriListesi);
         musteriListesiniRenderEt();
-      }).catch(function(){ musteriListesiniRenderEt(); });
+      });
     } else { musteriListesiniRenderEt(); }
   } else {
     bulPanel.style.display="none";
@@ -1437,7 +1365,7 @@ function musteriKaydetGercek(){
   // (başka bir cihazın az önce eklediği müşteriyi silmemek için)
   if(window.fbGet){
     window.fbGet("musteriler").then(function(data){
-      var guncelListe = weiconMusteriBirlesir(lsGet("weicon_musteriler",[]), data);
+      var guncelListe = data ? (Array.isArray(data)?data:Object.values(data)) : [];
       kaydiTamamla(guncelListe);
     }).catch(function(){
       kaydiTamamla(lsGet("weicon_musteriler",[]));

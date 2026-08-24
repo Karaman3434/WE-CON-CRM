@@ -1,5 +1,5 @@
-// WEICON ASİST VERSİYON: W230826.1939.557 — app-part4.js
-var APP_PART4_VERSION = "W230826.1939.557";
+// WEICON ASİST VERSİYON: W230826.1222.550 — app-part4.js
+var APP_PART4_VERSION = "W230826.1222.550";
 function faturaOnizlemeHtmlOlustur(musteriAdi, musteriSehir, tarihStr, urunler, belgeTipi, tip, idx){
   var primGoster = true; // Uygulama içindeki tüm kayıt detaylarında (SİPARİŞ/TEKLİF/PROFORMA/NUMUNE) prim her zaman gösterilir. NOT: Bu popup sadece uygulama içi görünüm — Mail/WhatsApp'a giden belge (siparisResmiHtmlOlustur) zaten hiç prim sütunu içermiyor.
   var satirlarHtml = "";
@@ -1115,49 +1115,64 @@ var aktifArsivTab = "siparis";
 // arsivData komple üzerine yazılıyordu ve diğer cihazın az önce farklı bir
 // tipe/kayda yaptığı değişiklik sessizce kaybolabiliyordu.
 // degisiklikler: {tip, kayit} | {tip, silinecekKod} | {tip, silinecekTs} | dizi
-function arsivGuvenliKaydet(degisiklikler){
-  if(!window.fbSet) return Promise.reject(new Error("firebase yok"));
+function arsivGuvenliKaydet(degisiklikler, kuyruktanMi){
+  if(!window.fbAtomicTransform) return Promise.reject(new Error("Firebase atomic işlem katmanı yok"));
   if(!Array.isArray(degisiklikler)) degisiklikler = [degisiklikler];
-  if(!window.fbGet || (typeof navigator!=="undefined" && navigator.onLine===false)){
-    if(typeof bekleyenIslemKaydet==="function"){
+  degisiklikler = degisiklikler.filter(function(d){ return d && d.tip; });
+
+  if(typeof navigator!=="undefined" && navigator.onLine===false){
+    if(typeof bekleyenIslemKaydet==="function" && !kuyruktanMi){
       bekleyenIslemKaydet({tur:"arsiv", degisiklikler:degisiklikler});
-      return Promise.resolve();
+      return Promise.resolve({onaylandi:false, kuyruklandi:true});
     }
-    return window.fbSet("arsiv", arsivData);
+    return Promise.reject(new Error("offline"));
   }
-  return window.fbGet("arsiv").then(function(sunucuVerisi){
-    var sunucuArsiv = sunucuVerisi ? JSON.parse(JSON.stringify(sunucuVerisi)) : {};
+
+  return window.fbAtomicTransform("arsiv", function(mevcut){
+    var arsiv = mevcut ? JSON.parse(JSON.stringify(mevcut)) : {};
     ["siparis","teklif","proforma","numune"].forEach(function(t){
-      if(!sunucuArsiv[t]) sunucuArsiv[t] = [];
+      if(!Array.isArray(arsiv[t])) arsiv[t]=[];
     });
+
     degisiklikler.forEach(function(d){
-      if(!d || !d.tip) return;
-      var liste = sunucuArsiv[d.tip] || (sunucuArsiv[d.tip]=[]);
+      var liste = arsiv[d.tip] || (arsiv[d.tip]=[]);
       if(d.silinecekKod){
-        sunucuArsiv[d.tip] = liste.filter(function(k){ return !(k && k.kod && k.kod===d.silinecekKod); });
+        arsiv[d.tip] = liste.filter(function(k){
+          return !(k && k.kod && k.kod===d.silinecekKod);
+        });
       } else if(d.silinecekTs){
-        sunucuArsiv[d.tip] = liste.filter(function(k){ return !(k && k.ts===d.silinecekTs); });
+        arsiv[d.tip] = liste.filter(function(k){
+          return !(k && k.ts===d.silinecekTs);
+        });
       } else if(d.kayit){
         var kod = d.kayit.kod;
+        var ts = d.kayit.ts;
         var bulunduMu = false;
-        if(kod){
-          for(var i=0;i<liste.length;i++){
-            if(liste[i] && liste[i].kod===kod){ liste[i] = d.kayit; bulunduMu = true; break; }
+
+        for(var i=0;i<liste.length;i++){
+          if(!liste[i]) continue;
+          if((kod && liste[i].kod===kod) || (!kod && ts && liste[i].ts===ts)){
+            liste[i] = d.kayit;
+            bulunduMu = true;
+            break;
           }
         }
         if(!bulunduMu) liste.unshift(d.kayit);
       }
     });
-    return window.fbSet("arsiv", sunucuArsiv);
-  }).catch(function(){
-    // Sunucudan taze veri çekilemezse (yetki/ağ hatası vb.), işlemi tamamen
-    // kaybetmemek için kuyruğa alıyoruz — bir sonraki senkronda güvenli
-    // birleştirme ile tekrar denenecek (komple arşiv ile üzerine yazmıyoruz).
-    if(typeof bekleyenIslemKaydet==="function"){
-      bekleyenIslemKaydet({tur:"arsiv", degisiklikler:degisiklikler});
-      return Promise.resolve();
+    return arsiv;
+  }).then(function(sonuc){
+    if(sonuc){
+      arsivData = sonuc;
+      lsSet("weicon_arsiv", arsivData);
     }
-    return window.fbSet("arsiv", arsivData);
+    return {onaylandi:true, kuyruklandi:false};
+  }).catch(function(err){
+    if(!kuyruktanMi && typeof bekleyenIslemKaydet==="function"){
+      bekleyenIslemKaydet({tur:"arsiv", degisiklikler:degisiklikler});
+      return {onaylandi:false, kuyruklandi:true};
+    }
+    throw err;
   });
 }
 
@@ -1351,124 +1366,7 @@ function buGuneAitSiparisVerisi(){
   return {toplamEuro:toplamEuro, toplamPrim:toplamPrim, aktifMi:true};
 }
 
-// TEŞHİS ARACI — Ana Sayfa'daki gizemli boş görünüm hatasını canlı cihazda
-// yakalamak için: versiyon etiketine 5 kez art arda dokununca, o anki gerçek
-// DOM/CSS/Firebase durumunu ekrana metin olarak döker. Kullanıcı bu metni
-// kopyalayıp gönderebilir — devtools'a gerek kalmadan tam teşhis sağlar.
-var _anaSayfaTeshisSayac = 0;
-var _anaSayfaTeshisZaman = 0;
-function anaSayfaTeshisSayaciArtir(){
-  var simdi = Date.now();
-  if(simdi - _anaSayfaTeshisZaman > 2500) _anaSayfaTeshisSayac = 0;
-  _anaSayfaTeshisZaman = simdi;
-  _anaSayfaTeshisSayac++;
-  if(_anaSayfaTeshisSayac >= 5){
-    _anaSayfaTeshisSayac = 0;
-    anaSayfaTeshisGoster();
-  }
-}
-function anaSayfaTeshisGoster(){
-  var satirlar = [];
-  function ekle(k,v){ satirlar.push(k+": "+v); }
-  try{
-    ekle("Zaman", new Date().toString());
-    ekle("Versiyon", typeof APP_VERSION!=="undefined"?APP_VERSION:"?");
-    ekle("User-Agent", navigator.userAgent);
-    ekle("Ekran", window.innerWidth+"x"+window.innerHeight+" (devicePixelRatio:"+window.devicePixelRatio+")");
-    ekle("activeCurrentPage", typeof activeCurrentPage!=="undefined"?activeCurrentPage:"?");
-    ekle("firebaseHazir", !!window.firebaseHazir);
-    ekle("fbDinle var mı", typeof window.fbDinle);
-    satirlar.push("");
-    satirlar.push("--- #page8 durumu ---");
-    var p8 = document.getElementById("page8");
-    if(p8){
-      var p8cs = getComputedStyle(p8);
-      ekle("page8 var mı", "EVET");
-      ekle("page8 class", p8.className);
-      ekle("page8 display(computed)", p8cs.display);
-      ekle("page8 visibility", p8cs.visibility);
-      ekle("page8 opacity", p8cs.opacity);
-      ekle("page8 height", p8cs.height);
-      ekle("page8 çocuk sayısı", p8.children.length);
-    } else {
-      ekle("page8 var mı", "HAYIR — DOM'DA YOK!");
-    }
-    satirlar.push("");
-    satirlar.push("--- İstatistik kartı elementleri ---");
-    ["anaSayfaSatisToplam","anaSayfaPrimToplam","anaSayfaAyEtiketi1","anaSayfaKarsilama","bildirimBanner"].forEach(function(id){
-      var el = document.getElementById(id);
-      if(!el){ ekle(id, "YOK (getElementById null döndü)"); return; }
-      var cs = getComputedStyle(el);
-      ekle(id, "var | text=\""+el.textContent.slice(0,30)+"\" | display="+cs.display+" | visibility="+cs.visibility+" | opacity="+cs.opacity+" | color="+cs.color+" | bg="+cs.backgroundColor+" | h="+el.offsetHeight+"px");
-    });
-    satirlar.push("");
-    satirlar.push("--- #page8 TÜM ÇOCUK ELEMANLARI (kesilme noktasını bulmak için) ---");
-    if(p8){
-      ekle("Toplam çocuk sayısı", p8.children.length);
-      for(var ci=0; ci<p8.children.length; ci++){
-        var c = p8.children[ci];
-        var ccs = getComputedStyle(c);
-        var ozet = (c.id?"#"+c.id:"") + " " + (c.textContent||"").trim().slice(0,25).replace(/\n/g," ");
-        satirlar.push("  ["+ci+"] <"+c.tagName.toLowerCase()+"> "+ozet+" | display="+ccs.display+" | h="+c.offsetHeight+"px");
-      }
-      ekle("appVersionEtiket DOM'da var mı", !!document.getElementById("appVersionEtiket"));
-    }
-    satirlar.push("");
-    satirlar.push("--- Kart üst container (grid) ---");
-    if(p8 && p8.children.length>6){
-      var gridDiv = p8.children[6]; // 0:karşılama,1:cmt,2:banner,3:cmt,4:senkron,5:cmt,6:grid
-      if(gridDiv){
-        var gcs = getComputedStyle(gridDiv);
-        ekle("grid display", gcs.display);
-        ekle("grid height", gridDiv.offsetHeight+"px");
-        ekle("grid childCount", gridDiv.children.length);
-        for(var i=0;i<gridDiv.children.length;i++){
-          var kart = gridDiv.children[i];
-          var kcs = getComputedStyle(kart);
-          ekle("  kart["+i+"]", "bg="+kcs.backgroundColor+" | bgImage="+(kcs.backgroundImage||"none").slice(0,40)+" | display="+kcs.display+" | h="+kart.offsetHeight+"px | w="+kart.offsetWidth+"px");
-        }
-      }
-    } else {
-      ekle("grid container", "BULUNAMADI (page8 çocuk sayısı yetersiz)");
-    }
-    satirlar.push("");
-    satirlar.push("--- Veri durumu ---");
-    ekle("arsivData var mı", typeof arsivData!=="undefined" && arsivData ? "EVET" : "HAYIR/undefined");
-    if(typeof arsivData!=="undefined" && arsivData){
-      ekle("arsivData.siparis uzunluk", (arsivData.siparis||[]).length);
-      ekle("arsivData.proforma uzunluk", (arsivData.proforma||[]).length);
-    }
-    ekle("localStorage weicon_arsiv var mı", !!localStorage.getItem("weicon_arsiv"));
-    satirlar.push("");
-    satirlar.push("--- Konsol hataları (varsa son 10) ---");
-    if(window.__sonHatalar && window.__sonHatalar.length){
-      window.__sonHatalar.slice(-10).forEach(function(h){ satirlar.push("  "+h); });
-    } else {
-      satirlar.push("  (Hata kaydı yok — hiç JS hatası fırlatılmamış)");
-    }
-  }catch(e){
-    satirlar.push("TEŞHİS ARACININ KENDİSİ HATA VERDİ: "+(e&&e.message?e.message:e));
-  }
-  var metin = satirlar.join("\n");
-  var ta = document.getElementById("anaSayfaTeshisMetin");
-  if(ta) ta.value = metin;
-  var modal = document.getElementById("anaSayfaTeshisModal");
-  if(modal) modal.style.display = "block";
-}
-function anaSayfaTeshisKopyala(){
-  var ta = document.getElementById("anaSayfaTeshisMetin");
-  if(!ta) return;
-  ta.select();
-  try{
-    document.execCommand("copy");
-    if(typeof showToast==="function") showToast("📋 Kopyalandı — şimdi yapıştırıp gönderebilirsin", 3000);
-  }catch(e){
-    if(typeof showToast==="function") showToast("Kopyalanamadı, metni elle seçip kopyala", 3000);
-  }
-}
-
 function anaSayfaRenderEt(){
-  try{
   var veri = buAyinSiparisVerisi();
   var elSatis = document.getElementById("anaSayfaSatisToplam");
   var elPrim = document.getElementById("anaSayfaPrimToplam");
@@ -1507,10 +1405,6 @@ function anaSayfaRenderEt(){
   }
 
   anaSayfaKarsilamaGuncelle(gunVeri);
-  }catch(e){
-    console.error("anaSayfaRenderEt içinde hata:", e);
-    try{ showToast("⚠️ ANA SAYFA HATASI: " + (e && e.message ? e.message : e), 9000); }catch(e2){}
-  }
 }
 
 // Saat dilimine ve bugünkü performansa göre değişen, sakin bir karşılama
@@ -1594,57 +1488,46 @@ function kmDegisiklikKaydet(anahtar){
 // bellek eksik/bayat olduğunda (örn. sayfa yeni açılmışken Firebase henüz tam
 // senkron olmadan bir alana dokunulursa) diğer günlerin verisi sessizce
 // TAMAMEN kaybolabiliyordu. Bu fonksiyon tek bir günü bile asla toptan silmez.
-function kmGuvenliKaydet(degisiklikler){
+function kmGuvenliKaydet(degisiklikler, kuyruktanMi){
   if(!Array.isArray(degisiklikler)) degisiklikler = [degisiklikler];
   degisiklikler = degisiklikler.filter(function(d){ return d && d.anahtar; });
   if(degisiklikler.length===0) return Promise.resolve({onaylandi:true, kuyruklandi:false});
 
-  if(!window.fbSet){
-    if(typeof bekleyenIslemKaydet==="function") bekleyenIslemKaydet({tur:"km", degisiklikler:degisiklikler});
-    return Promise.resolve({onaylandi:false, kuyruklandi:true});
-  }
-  if(!window.fbGet || (typeof navigator!=="undefined" && navigator.onLine===false)){
-    if(typeof bekleyenIslemKaydet==="function"){
+  if(!window.fbAtomicTransform){
+    if(!kuyruktanMi && typeof bekleyenIslemKaydet==="function"){
       bekleyenIslemKaydet({tur:"km", degisiklikler:degisiklikler});
       return Promise.resolve({onaylandi:false, kuyruklandi:true});
     }
-    return window.fbSet("kmTakip", kmTakipKayitlariObj).then(function(){
-      return {onaylandi:true, kuyruklandi:false};
-    }).catch(function(){
-      return {onaylandi:false, kuyruklandi:false};
-    });
+    return Promise.reject(new Error("Firebase atomic işlem katmanı yok"));
   }
-  return window.fbGet("kmTakip").then(function(sunucuVerisi){
-    var sunucuKm = sunucuVerisi ? JSON.parse(JSON.stringify(sunucuVerisi)) : {};
+
+  if(typeof navigator!=="undefined" && navigator.onLine===false){
+    if(!kuyruktanMi && typeof bekleyenIslemKaydet==="function"){
+      bekleyenIslemKaydet({tur:"km", degisiklikler:degisiklikler});
+      return Promise.resolve({onaylandi:false, kuyruklandi:true});
+    }
+    return Promise.reject(new Error("offline"));
+  }
+
+  return window.fbAtomicTransform("kmTakip", function(mevcut){
+    var km = mevcut ? JSON.parse(JSON.stringify(mevcut)) : {};
     degisiklikler.forEach(function(d){
-      if(d.silinsinMi) delete sunucuKm[d.anahtar];
-      else if(d.kayit) sunucuKm[d.anahtar] = d.kayit;
+      if(d.silinsinMi) delete km[d.anahtar];
+      else if(d.kayit) km[d.anahtar] = d.kayit;
     });
-    // window.fbSet burada gerçek Firebase yazma isteğini gönderir ve SADECE
-    // sunucudan onay (ack) geldiğinde resolve olur — bu yüzden onaylandi:true
-    // dönmesi, verinin fiilen Firebase'e ulaştığının kanıtıdır, bir tahmin değildir.
-    return window.fbSet("kmTakip", sunucuKm).then(function(){
-      return {onaylandi:true, kuyruklandi:false};
-    });
-  }).catch(function(){
-    // Sunucudan taze veri çekilemezse (yetki/ağ hatası vb.), işlemi tamamen
-    // kaybetmemek için kuyruğa alıyoruz — bir sonraki senkronda güvenli
-    // birleştirme ile tekrar denenecek (komple ay ile üzerine yazmıyoruz).
-    if(typeof bekleyenIslemKaydet==="function"){
+    return km;
+  }).then(function(sonuc){
+    kmTakipKayitlariObj = sonuc || {};
+    lsSet("weicon_km_kayitlari", kmTakipKayitlariObj);
+    return {onaylandi:true, kuyruklandi:false};
+  }).catch(function(err){
+    if(!kuyruktanMi && typeof bekleyenIslemKaydet==="function"){
       bekleyenIslemKaydet({tur:"km", degisiklikler:degisiklikler});
       return {onaylandi:false, kuyruklandi:true};
     }
-    return window.fbSet("kmTakip", kmTakipKayitlariObj).then(function(){
-      return {onaylandi:true, kuyruklandi:false};
-    }).catch(function(){
-      return {onaylandi:false, kuyruklandi:false};
-    });
+    throw err;
   });
 }
-var kmAktifTarih = new Date();
-var kmAktifAy = new Date().getMonth();
-var kmAktifYil = new Date().getFullYear();
-var kmTakipYuklendi = false;
 
 function kmFmt(n){ n = Math.round(n||0); return n.toLocaleString("tr-TR"); }
 function kmTarihAnahtari(d){

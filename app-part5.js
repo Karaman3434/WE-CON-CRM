@@ -1,6 +1,5 @@
-// WEICON ASİST — Restored application tail / compatibility layer
-// Reconstructed from the last intact monolithic application block.
-
+// WEICON ASİST VERSİYON: W230826.1222.550 — app-part5.js
+var APP_PART5_VERSION = "W230826.1222.550";
 function kmSuAnTarihSaatDoldur(){
   var simdi = new Date();
   var gg = String(simdi.getDate()).padStart(2,"0");
@@ -15,6 +14,8 @@ function kmSuAnTarihSaatDoldur(){
   kmAlanKilitleriUygula();
 }
 
+// KM okuma tuşunu "KM Gir" (fotoğraf çek) durumundan "KM Kaydet" durumuna
+// çevirir — km başarıyla okunup alana yazıldıktan sonra çağrılır.
 function kmKmFotoBtnKaydetModunaGecir(){
   var btn = document.getElementById("kmKmFotoBtn");
   if(!btn) return;
@@ -23,6 +24,8 @@ function kmKmFotoBtnKaydetModunaGecir(){
   btn.onclick = function(){ kmTakipKaydet(); };
 }
 
+// KM okuma tuşunu tekrar "KM Gir" (fotoğraf çek) durumuna döndürür —
+// yeni bir güne geçildiğinde veya kayıt henüz yapılmamışken çağrılır.
 function kmKmFotoBtnOkumaModunaGecir(){
   var btn = document.getElementById("kmKmFotoBtn");
   if(!btn) return;
@@ -36,7 +39,6 @@ function kmTakipGunDegistir(fark){
   kmAktifTarih.setDate(kmAktifTarih.getDate()+fark);
   kmGunKayitYukle(kmAktifTarih);
 }
-
 function kmTakipBugun(){
   kmTakipKaydet(true);
   kmAktifTarih = new Date();
@@ -50,12 +52,15 @@ function kmTakipKaydet(sessiz){
   }
   var gunTipiKontrol = document.getElementById("kmGunTipiSelect").value;
   if(!sessiz && gunTipiKontrol === "normal"){
+    // SADECE Sayaçtaki KM zorunlu — Güzergah/Ziyaret/Kategori gün içinde
+    // sonradan doldurulabilir (kullanıcının istediği akış: sabah tek başına
+    // KM gir → kaydet; güzergah/ziyaret/kategori günün ilerleyen saatlerinde
+    // ayrıca girilir). Tarih/Saat zaten otomatik dolduğu için pratikte hiç
+    // eksik çıkmaz, yine de güvenlik amacıyla kontrolde tutuluyor.
     var eksikler = [];
     if(!(document.getElementById("kmBitisKmInput").value||"").trim()) eksikler.push("KM");
     if(!(document.getElementById("kmTarihGosterInput").value||"").trim()) eksikler.push("Tarih");
     if(!(document.getElementById("kmSaatInput").value||"").trim()) eksikler.push("Saat");
-    if(!(document.getElementById("kmGuzergahInput").value||"").trim()) eksikler.push("Seyir Güzergahı");
-    if(!(document.getElementById("kmKategoriSelect").value||"").trim()) eksikler.push("Kategori (İş/Özel KM)");
     if(eksikler.length){
       var mesaj = "⚠️ Eksik bilgi(ler): " + eksikler.join(", ") + " — lütfen doldurup tekrar kaydedin.";
       if(typeof showToast==="function") showToast(mesaj); else alert(mesaj);
@@ -83,13 +88,43 @@ function kmTakipKaydet(sessiz){
   else { kmTakipKayitlariObj[anahtar] = kayit; }
 
   lsSet("weicon_km_kayitlari", kmTakipKayitlariObj);
-  kmGuvenliKaydet({anahtar:anahtar, kayit:bosMu?null:kayit, silinsinMi:bosMu}).catch(function(e){ console.error("Firebase yazma hatası:", e); });
-  if(!sessiz){
-    if(typeof showToast==="function") showToast("✓ Gün kaydedildi.");
+  kmDurumCubuguGuncelle();
+  // Ana Sayfa'daki "Araç KM" kartındaki bildirimin anında güncellenmesi için —
+  // kaydettikten hemen sonra, Ana Sayfa'ya dönmeden bile doğru gösterilsin.
+  if(typeof anaSayfaRenderEt==="function") anaSayfaRenderEt();
+
+  // "Excel'e kaydedildi" mesajı ARTIK sadece Firebase'den GERÇEK yazma onayı
+  // geldikten sonra gösterilir. Buton basılır basılmaz "kaydediliyor" gösterilir;
+  // sonuç ne olursa olsun (onaylandı / kuyruğa alındı / hata) doğru durum
+  // kullanıcıya yansıtılır — asla iyimser/yanlış bir "kaydedildi" mesajı verilmez.
+  if(!sessiz) kmExcelBannerGoster("kaydediliyor");
+
+  kmGuvenliKaydet({anahtar:anahtar, kayit:bosMu?null:kayit, silinsinMi:bosMu}).then(function(sonuc){
+    sonuc = sonuc || {};
     if(!bosMu) kmFormKilitleGoster(true);
-    localStorage.removeItem("weicon_km_ertele_bitis");
-    if(typeof kmErtelemeButonuGuncelle==="function") kmErtelemeButonuGuncelle();
-  }
+    if(!sessiz){
+      if(sonuc.onaylandi){
+        var simdi = new Date();
+        var simdiSaat = ("0"+simdi.getHours()).slice(-2)+":"+("0"+simdi.getMinutes()).slice(-2);
+        kmExcelBannerGoster("onaylandi", simdiSaat+"'te doğrulandı");
+        if(typeof showToast==="function") showToast("✓ Gün kaydedildi ve Excel'e işlendi.");
+      } else if(sonuc.kuyruklandi){
+        kmExcelBannerGoster("kuyrukta");
+        if(typeof showToast==="function") showToast("⚠️ Bağlantı yok, kayıt kuyruğa alındı — Excel'e henüz işlenmedi.");
+      } else {
+        kmExcelBannerGoster("hata");
+        if(typeof showToast==="function") showToast("❌ Excel'e kaydedilemedi, tekrar deneyin.");
+      }
+      localStorage.removeItem("weicon_km_ertele_bitis");
+      if(typeof kmErtelemeButonuGuncelle==="function") kmErtelemeButonuGuncelle();
+    }
+  }).catch(function(e){
+    console.error("Firebase yazma hatası:", e);
+    if(!sessiz){
+      kmExcelBannerGoster("hata");
+      if(typeof showToast==="function") showToast("❌ Excel'e kaydedilemedi, tekrar deneyin.");
+    }
+  });
 }
 
 function kmTakipAyDegistir(fark){
@@ -99,6 +134,12 @@ function kmTakipAyDegistir(fark){
   kmTakipAylikTabloRenderEt();
 }
 
+// Aylık tablo artık Excel çıktısıyla BİREBİR AYNI 8 sütun: Tarih | Başlangıç-Bitiş
+// Saati | Seyir Güzergahı | Ziyaret Yerleri | Başlangıç KM | Bitiş KM | İş KM | Özel KM.
+// Gün Tipi seçimi Tarih hücresinin altına küçük bir kutu olarak gömülüdür (ayrı
+// sütun DEĞİL). Kategori (İş/Özel) seçimi de İş KM / Özel KM hücresine dokunularak
+// yapılır — ayrı bir Kategori sütunu yoktur. Böylece görünen sütunlar Excel ile
+// tıpatıp aynıdır; ekstra alanlar sadece hücre içi küçük kontrollerdir.
 function kmTakipAylikTabloRenderEt(){
   document.getElementById("kmAyBasligiEtiket").textContent = KM_AY_ADLARI[kmAktifAy]+" "+kmAktifYil;
   var donemInput = document.getElementById("kmDonemEtiketInput");
@@ -127,14 +168,16 @@ function kmTakipAylikTabloRenderEt(){
   }
 
   function esc(v){ return (v===undefined||v===null) ? "" : String(v).replace(/"/g,"&quot;"); }
-  // Excel/tablo görünümüyle birebir: hücreler düz görünür (görünmez kenarlıklı,
-  // saydam zeminli input), sadece odaklanınca hafif çerçeve belirir.
-  var HUCRE_STIL = "width:100%;border:none;background:transparent;font-size:15px;font-weight:600;color:#111;padding:6px 4px;box-sizing:border-box;text-align:center;outline:none;";
-  function metinKutu(anahtar, alan, deger){
-    return "<input type='text' data-anahtar='"+anahtar+"' data-alan='"+alan+"' value=\""+esc(deger)+"\" onchange=\"kmAylikHucreDegisti(this)\" style='"+HUCRE_STIL+"'>";
-  }
-  function kmKutu(anahtar, alan, deger){
-    return "<input type='number' data-anahtar='"+anahtar+"' data-alan='"+alan+"' value=\""+esc(deger)+"\" onchange=\"kmAylikHucreDegisti(this)\" style='"+HUCRE_STIL+"'>";
+  // KÖKTEN ÇÖZÜM: Hücreler artık <input> DEĞİL, düz metin. Mobil tarayıcılar
+  // font boyutu 16px altındaki bir input'a odaklanınca (dokunuşla veya
+  // JS ile .focus() çağrılarak fark etmez) OTOMATİK YAKINLAŞTIRIYOR — daha
+  // önceki "kısa dokun/uzun bas" ayrımı bunu engelleyemiyordu çünkü asıl sorun
+  // odaklanmanın KENDİSİ. Artık tabloda hiç input yok, dolayısıyla yakınlaştırma
+  // hiç tetiklenmiyor; tablo HER ZAMAN sabit boyutta kalıyor. Veri girişi tek
+  // yoldan yapılıyor: herhangi bir satıra dokununca kmGunDuzenlePopupAc açılır,
+  // tüm gün bilgileri orada elle girilir.
+  function metinGoster(deger){
+    return "<div style='width:100%;font-size:15px;font-weight:600;color:#111;padding:6px 4px;box-sizing:border-box;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+esc(deger)+"</div>";
   }
 
   var TH_STIL = "padding:8px 6px;border:1px solid #3569b8;background:#cfe2f3;color:#3569b8;font-weight:700;font-size:15px;text-align:center;";
@@ -202,13 +245,13 @@ function kmTakipAylikTabloRenderEt(){
 
     html += "<tr"+(ozelKmVarMi?" style='"+ozelKmSatirBg+"'":"")+">"
       + tarihHucre
-      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinKutu(s.anahtar,"saat",s.kayit.saat)+"</td>"
-      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinKutu(s.anahtar,"guzergah",s.kayit.guzergah)+"</td>"
-      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinKutu(s.anahtar,"ziyaretYerleri",s.kayit.ziyaretYerleri)+"</td>"
-      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+kmKutu(s.anahtar,"km",baslangicKm)+"</td>"
-      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+kmKutu(s.anahtar,"bitisKm",bitisKmDeger)+"</td>"
-      + "<td onclick=\"kmAylikKategoriSec('"+s.anahtar+"','is')\" style='"+TD_STIL+ozelKmSatirBg+"'>"+kmKutu(s.anahtar,"isKm",isKmDeger)+"</td>"
-      + "<td onclick=\"kmAylikKategoriSec('"+s.anahtar+"','ozel')\" style='"+TD_STIL+ozelKmSatirBg+"'>"+kmKutu(s.anahtar,"ozelKm",ozelKmDeger)+"</td>"
+      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinGoster(s.kayit.saat)+"</td>"
+      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinGoster(s.kayit.guzergah)+"</td>"
+      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinGoster(s.kayit.ziyaretYerleri)+"</td>"
+      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinGoster(baslangicKm)+"</td>"
+      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinGoster(bitisKmDeger)+"</td>"
+      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinGoster(isKmDeger)+"</td>"
+      + "<td style='"+TD_STIL+ozelKmSatirBg+"'>"+metinGoster(ozelKmDeger)+"</td>"
       + "</tr>";
   });
 
@@ -216,93 +259,17 @@ function kmTakipAylikTabloRenderEt(){
   tablo.innerHTML = html;
   tablo.style.borderCollapse = "collapse";
 
-  // Herhangi bir satıra BASILI TUTULURSA (500ms), o günün tüm bilgilerini tek
-  // popup'ta düzenleyebileceğimiz ekranı açar. Var olan hücre-içi düzenleme
-  // (input'a dokunup yazma) de aynen çalışmaya devam eder.
-  //
-  // ÖNEMLİ DÜZELTME: Eskiden dokunma anında tarayıcı hücreyi HEMEN odaklayıp
-  // klavyeyi açıyordu (native davranış), biz 500ms sonra popup'ı bunun ÜSTÜNE
-  // açıyorduk — bu da "popup, kutunun içine giriyor ve yanlış yazıma neden
-  // oluyor" şikayetine yol açıyordu. Artık dokunma anında native odaklanmayı
-  // BİZ engelliyoruz (preventDefault); basılı tutma tamamlanmadan parmak
-  // kalkarsa (kısa/normal dokunuş) hücreyi KENDİMİZ odaklıyoruz — yani tek
-  // dokunuşla düzenleme aynen çalışır ama klavye popup'la asla çakışmaz.
-  // Sürükleme/scroll varsa basılı tutma iptal edilir.
+  // ARTIK BASİT: Tabloda hiç input olmadığı (dolayısıyla yakınlaştırma riski
+  // taşımadığı) için, herhangi bir satıra TEK dokunuşla o günün düzenleme
+  // popup'ı açılır — eskiden gerekli olan "uzun bas/kısa dokun" ayrımına,
+  // preventDefault hilesine hiç ihtiyaç kalmadı.
   var satirElemanlari = tablo.querySelectorAll("tbody tr");
   satirElemanlari.forEach(function(trEl, i){
     var s = satirlar[i];
     if(!s) return;
-    var zamanlayici = null;
-    var dokunmaHedefi = null;
-    var baslangicX = 0, baslangicY = 0;
-    var basiliTutBaslat = function(e){
-      dokunmaHedefi = e.target;
-      if(e.touches && e.touches[0]){ baslangicX = e.touches[0].clientX; baslangicY = e.touches[0].clientY; }
-      if(e.cancelable) e.preventDefault(); // native odaklanma/klavye açılmasını erteliyoruz
-      zamanlayici = setTimeout(function(){
-        zamanlayici = null;
-        dokunmaHedefi = null;
-        kmGunDuzenlePopupAc(s.anahtar);
-      }, 500);
-    };
-    var basiliTutBirak = function(){
-      if(zamanlayici){
-        // Kısa dokunuş — popup açılmadı, normal düzenleme odaklanmasını biz tetikliyoruz.
-        clearTimeout(zamanlayici);
-        zamanlayici = null;
-        if(dokunmaHedefi && dokunmaHedefi.focus) dokunmaHedefi.focus();
-        dokunmaHedefi = null;
-      }
-    };
-    var basiliTutIptal = function(){
-      if(zamanlayici){ clearTimeout(zamanlayici); zamanlayici = null; }
-      dokunmaHedefi = null;
-    };
-    // Parmağın en ufak titremesinde (gerçek kaydırma olmadan) basılı tutma iptal
-    // OLMASIN diye 12px'lik bir eşik mesafe var — sadece bu eşiği aşan gerçek
-    // bir sürükleme/scroll hareketinde basılı tutma iptal edilir.
-    var basiliTutHareket = function(e){
-      if(!zamanlayici || !e.touches || !e.touches[0]) return;
-      var dx = e.touches[0].clientX - baslangicX;
-      var dy = e.touches[0].clientY - baslangicY;
-      if(Math.sqrt(dx*dx + dy*dy) > 12) basiliTutIptal();
-    };
-    trEl.addEventListener("touchstart", basiliTutBaslat, {passive:false});
-    trEl.addEventListener("touchend", basiliTutBirak);
-    trEl.addEventListener("touchmove", basiliTutHareket, {passive:true});
-    trEl.addEventListener("touchcancel", basiliTutIptal);
-    // Masaüstü/mouse ile test için: burada native odaklanma zaten sorun
-    // yaratmadığından preventDefault gerekmez, davranış olduğu gibi bırakıldı.
-    trEl.addEventListener("mousedown", function(e){
-      dokunmaHedefi = e.target;
-      zamanlayici = setTimeout(function(){ zamanlayici=null; dokunmaHedefi=null; kmGunDuzenlePopupAc(s.anahtar); }, 500);
-    });
-    trEl.addEventListener("mouseup", basiliTutIptal);
-    trEl.addEventListener("mouseleave", basiliTutIptal);
+    trEl.style.cursor = "pointer";
+    trEl.addEventListener("click", function(){ kmGunDuzenlePopupAc(s.anahtar); });
   });
-
-  // Düzenleme sırasında odak kaybolmasın diye, aynı hücreye tekrar odaklan
-  if(odakAnahtar && odakAlan){
-    var yeniden = tablo.querySelector("[data-anahtar='"+odakAnahtar+"'][data-alan='"+odakAlan+"']");
-    if(yeniden) yeniden.focus();
-  }
-}
-
-function kmAylikKategoriSec(anahtar, kategori){
-  var kayit = kmTakipKayitlariObj[anahtar];
-  if(!kayit){
-    var parcalar = anahtar.split("-");
-    var tarihObj = new Date(parseInt(parcalar[0]), parseInt(parcalar[1])-1, parseInt(parcalar[2]));
-    kayit = { tarih: anahtar, gunTipi: kmVarsayilanGunTipi(tarihObj) };
-  }
-  kayit.kmKategori = kategori;
-  kayit.isKm = null;
-  kayit.ozelKm = null;
-  kmTakipKayitlariObj[anahtar] = kayit;
-  kmAylikGunYenidenHesapla(anahtar);
-  kmDegisiklikKaydet(anahtar);
-  kmAylikTabloKaydet();
-  kmTakipAylikTabloRenderEt();
 }
 
 function kmAylikGunEkle(){
@@ -324,10 +291,9 @@ function kmAylikGunEkle(){
   kmTakipAylikTabloRenderEt();
   girdi.value = "";
   showToast("✓ "+("0"+gun).slice(-2)+"."+("0"+(ay+1)).slice(-2)+"."+yil+" tabloya eklendi.");
-  setTimeout(function(){
-    var hedef = document.querySelector("[data-anahtar='"+anahtar+"'][data-alan='km']");
-    if(hedef) hedef.focus();
-  }, 50);
+  // Eklenen günün bilgilerini hemen girebilsin diye, düzenleme popup'ını
+  // doğrudan açıyoruz (artık tabloda odaklanılacak bir input yok).
+  kmGunDuzenlePopupAc(anahtar);
 }
 
 function kmAylikHucreDegisti(el){
@@ -378,6 +344,29 @@ function kmAylikHucreDegisti(el){
   }
 }
 
+var kmAylikTabloKaydet = debounce(function(){
+  lsSet("weicon_km_kayitlari", kmTakipKayitlariObj);
+  // Bu genel kaydetme birden çok yerden (hücre düzenleme, gün ekleme/silme,
+  // zincirleme bitiş-KM aktarımı) çağrılıyor — hangi günlerin değiştiğini
+  // kmBekleyenDegisiklikler kuyruğu tutuyor. Kuyrukta bir şey varsa SADECE o
+  // günleri güvenli birleştirerek yazıyoruz (tüm ayı ham üzerine yazmıyoruz).
+  // Kuyruk boşsa (bilinmeyen bir çağrı yolu), son çare olarak eski davranışa
+  // (ham üzerine yazma) düşüyoruz — ama bu artık istisna, kural değil.
+  var degisiklikler = kmBekleyenDegisiklikler.slice();
+  kmBekleyenDegisiklikler = [];
+  if(degisiklikler.length>0){
+    kmGuvenliKaydet(degisiklikler).catch(function(e){ console.error("Firebase yazma hatası:", e); });
+  } else if(window.fbSet){
+    window.fbSet("kmTakip", kmTakipKayitlariObj).catch(function(e){ console.error("Firebase yazma hatası:", e); });
+  }
+  if(typeof showToast==="function") showToast("✓ Kaydedildi.", 1200);
+}, 600);
+
+// Bir güne BASILI TUTULUNCA açılan tam-detay düzenleme popup'ı — o günün TÜM
+// alanlarını (gün tipi, saat, güzergah, ziyaret yerleri, başlangıç/bitiş KM,
+// iş/özel KM, kategori) tek ekranda gösterir ve hepsini birden değiştirmeyi
+// sağlar. Geçmişe dönük herhangi bir günü (bugün olmasa bile) düzenlemek için.
+var kmGunDuzenleAktifAnahtar = null;
 function kmGunDuzenlePopupAc(anahtar){
   kmGunDuzenleAktifAnahtar = anahtar;
   var kayit = kmTakipKayitlariObj[anahtar] || {};
@@ -424,6 +413,12 @@ function kmGunDuzenleKaydet(){
     ozelKm: numara("kmGunDuzenleOzelKm")
   };
   kmTakipKayitlariObj[anahtar] = kayit;
+  // Popup'tan kaydederken de, hücre-içi düzenlemedeki AYNI zincirleme mantık
+  // uygulanmalı: bitiş KM değiştiyse yarının başlangıcına otomatik aktarılsın
+  // (araç kilometresi süreklidir). İş/Özel KM boş bırakılmışsa, tablo zaten
+  // farkı otomatik hesaplayıp gösteriyor (render fonksiyonundaki fallback).
+  kmAylikGunYenidenHesapla(anahtar);
+  kmAylikBitisKmSonrakiGuneAktar(anahtar);
   kmDegisiklikKaydet(anahtar);
   kmAylikTabloKaydet();
   kmGunDuzenleKapat();
@@ -431,6 +426,8 @@ function kmGunDuzenleKaydet(){
   if(typeof showToast==="function") showToast("✓ Gün güncellendi.");
 }
 
+// "🗑 Bu Günü Tamamen Sil" — önce net bir onay ister (kalıcı silme, geri
+// alınamaz), onaylanırsa kaydı tamamen kaldırır ve tabloyu yeniden çizer.
 function kmGunDuzenleSilOnay(){
   if(!kmGunDuzenleAktifAnahtar) return;
   var anahtar = kmGunDuzenleAktifAnahtar;
@@ -445,6 +442,7 @@ function kmGunDuzenleSilOnay(){
   if(typeof showToast==="function") showToast("🗑 "+tarihStr+" silindi.");
 }
 
+// Ana Sayfa'dan doğrudan Aylık (düzenlenebilir) tabloya geçiş
 function anaSayfadanAylikKmAc(ev){
   if(ev) ev.stopPropagation();
   window.kmSonrakiHedefGorunum = "aylik";
@@ -562,6 +560,54 @@ function kmTakipExcelIndir(){
   if(typeof showToast==="function") showToast("✓ Excel dosyası indirildi.");
 }
 
+// ============ ZİYARET TAKVİMİ ============
+var ziyaretTakvimYil, ziyaretTakvimAy; // ay: 0-11
+(function(){ var d=new Date(); ziyaretTakvimYil=d.getFullYear(); ziyaretTakvimAy=d.getMonth(); })();
+var AY_ADLARI = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+
+function anaSayfadanZiyaretTakvimiAc(){
+  switchTab(9);
+  setTimeout(function(){
+    var wrap = document.getElementById("ziyaretTakvimWrap");
+    if(wrap && wrap.style.display==="none"){
+      ziyaretTakvimiAcKapa();
+    }
+    var btn = document.getElementById("ziyaretTakvimToggleBtn");
+    if(btn) btn.scrollIntoView({behavior:"smooth", block:"start"});
+  }, 150);
+}
+
+function ziyaretTakvimiAcKapa(){
+  var wrap = document.getElementById("ziyaretTakvimWrap");
+  var btn = document.getElementById("ziyaretTakvimToggleBtn");
+  var sonIslemlerWrap = document.getElementById("sonIslemlerWrap");
+  if(!wrap || !btn) return;
+  var acik = wrap.style.display !== "none";
+  if(acik){
+    wrap.style.display = "none";
+    btn.innerHTML = "📆 Ziyaret Takvimini Göster ▾";
+    if(sonIslemlerWrap) sonIslemlerWrap.style.display = "block";
+  } else {
+    // Diğer panelleri (Aylık Özet, Ajanda) kapat
+    var digerWrap = document.getElementById("aylikOzetWrap");
+    var digerBtn = document.getElementById("aylikOzetToggleBtn");
+    if(digerWrap) digerWrap.style.display = "none";
+    if(digerBtn) digerBtn.innerHTML = "📅 Aylık Sipariş &amp; Prim Özetini Göster ▾";
+    var ajWrap = document.getElementById("ajandaWrap");
+    var ajBtn = document.getElementById("ajandaToggleBtn");
+    if(ajWrap) ajWrap.style.display = "none";
+    if(ajBtn) ajBtn.innerHTML = "📓 Günlük Ajanda Göster ▾";
+
+    wrap.style.display = "block";
+    btn.innerHTML = "📆 Ziyaret Takvimini Gizle ▴";
+    if(sonIslemlerWrap) sonIslemlerWrap.style.display = "none";
+    ziyaretTakvimiOlustur();
+  }
+}
+
+// ============ GÜNLÜK AJANDA ============
+var ajandaGosterilenTs = new Date().setHours(0,0,0,0);
+
 function ajandaAcKapa(){
   var wrap = document.getElementById("ajandaWrap");
   var btn = document.getElementById("ajandaToggleBtn");
@@ -602,63 +648,73 @@ function ajandaBugune(){
   ajandaOlustur();
 }
 
+function ajandaOlustur(){
+  var baslikEl = document.getElementById("ajandaTarihBasligi");
+  var listeEl = document.getElementById("ajandaListesi");
+  if(!baslikEl || !listeEl) return;
+  var gununBasi = new Date(ajandaGosterilenTs);
+  var GUN_ADLARI = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+  baslikEl.textContent = GUN_ADLARI[gununBasi.getDay()]+", "+("0"+gununBasi.getDate()).slice(-2)+" "+AY_ADLARI[gununBasi.getMonth()]+" "+gununBasi.getFullYear();
+
+  var tumTemaslar = tumZiyaretleriTopla();
+  var gununTemaslari = tumTemaslar.filter(function(z){
+    var d = new Date(z.ts);
+    return d.getFullYear()===gununBasi.getFullYear() && d.getMonth()===gununBasi.getMonth() && d.getDate()===gununBasi.getDate();
+  }).map(function(z){ return {tur:"temas", ts:z.ts, musteri:z.musteri, veri:z}; });
+
+  var arsiv = lsGet("weicon_arsiv",{});
+  var tipler = ["numune","teklif","proforma","siparis"];
+  var gununIslemleri = [];
+  tipler.forEach(function(tip){
+    (arsiv[tip]||[]).forEach(function(kayit){
+      var d = new Date(kayit.ts||0);
+      if(d.getFullYear()===gununBasi.getFullYear() && d.getMonth()===gununBasi.getMonth() && d.getDate()===gununBasi.getDate()){
+        gununIslemleri.push({tur:"islem", tip:tip, ts:kayit.ts||0, musteri:kayit.musteri||"-", veri:kayit});
+      }
+    });
+  });
+
+  var gununTumKayitlari = gununTemaslari.concat(gununIslemleri).sort(function(a,b){ return a.ts-b.ts; });
+
+  if(gununTumKayitlari.length===0){
+    listeEl.innerHTML = "<div style='padding:30px;text-align:center;color:#999;font-size:26px;'>Bu gün için kayıtlı temas veya işlem yok.</div>";
+    return;
+  }
+
+  var html = "";
+  gununTumKayitlari.forEach(function(kayit){
+    var saat = new Date(kayit.ts);
+    var saatStr = ("0"+saat.getHours()).slice(-2)+":"+("0"+saat.getMinutes()).slice(-2);
+    if(kayit.tur==="temas"){
+      var z = kayit.veri;
+      html += "<div onclick=\"musteriKartVeZiyaretGecmisiniAc('"+z.musteri.replace(/'/g,"\\'")+"')\" style='cursor:pointer;padding:16px 18px;border-bottom:1px dashed #ddd;display:flex;gap:14px;align-items:flex-start;'>"
+        +"<div style='flex-shrink:0;white-space:nowrap;'>"+kodHtmlOlustur(z.kod,23,14)+"</div>"
+        +"<div style='font-size:26px;color:#888;font-weight:700;min-width:60px;'>"+saatStr+"</div>"
+        +"<div style='flex:1;'><div style='font-size:29px;font-weight:800;color:#003a70;'>🏢 "+safeText(z.musteri)+"</div>"
+        +(z.kisi && z.kisi.isim ? "<div style='font-size:23px;color:#1a4d8f;font-weight:700;margin-top:1px;'>👤 "+safeText(z.kisi.isim)+"</div>" : "")
+        +(z.not ? "<div style='font-size:26px;color:#444;margin-top:2px;'>"+safeText(z.not)+"</div>" : "<div style='font-size:24px;color:#bbb;margin-top:2px;'>(not girilmemiş)</div>")
+        +"</div></div>";
+    } else {
+      var k = kayit.veri;
+      var urunSayisi = (k.urunler||[]).length;
+      var toplamEuro = 0;
+      (k.urunler||[]).forEach(function(u){ toplamEuro += u.toplamEuro||0; });
+      html += "<div onclick=\"musteriGecmisIslemDetayAc('"+kayit.tip+"',"+(arsiv[kayit.tip]||[]).indexOf(k)+")\" style='cursor:pointer;padding:16px 18px;border-bottom:1px dashed #ddd;display:flex;gap:14px;align-items:flex-start;'>"
+        +"<div style='flex-shrink:0;white-space:nowrap;'>"+kodHtmlOlustur(k.kod,23,14,k.kanal)+"</div>"
+        +"<div style='font-size:26px;color:#888;font-weight:700;min-width:60px;'>"+saatStr+"</div>"
+        +"<div style='flex:1;'><div style='font-size:29px;font-weight:800;color:#003a70;'>🏢 "+k.musteri+"</div>"
+        +"<div style='font-size:24px;color:#444;margin-top:2px;'>"+urunSayisi+" ürün · "+fmt(toplamEuro)+" €</div>"
+        +"</div></div>";
+    }
+  });
+  listeEl.innerHTML = html;
+}
+
 function musteriKartVeZiyaretGecmisiniAc(musteriAdi){
   var idx = musteriListesi.findIndex(function(m){ return m.ad===musteriAdi; });
   if(idx===-1) return;
   musteriKartIdx = idx;
   musteriZiyaretGecmisiAc();
-}
-
-// ZİYARET TAKVİMİ — tek merkezden yönetilen sayfa durumu.
-// Önceki modülerleştirmede bu global durum ve aç/kapat yönlendiricisi eksik kaldığı
-// için Ana Sayfa > Raporlar > Ziyaret Takvimi tıklaması ReferenceError üretiyordu.
-var AY_ADLARI = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-var _ziyaretTakvimNow = new Date();
-var ziyaretTakvimYil = _ziyaretTakvimNow.getFullYear();
-var ziyaretTakvimAy = _ziyaretTakvimNow.getMonth();
-
-function ziyaretTakvimiAcKapa(){
-  var wrap = document.getElementById("ziyaretTakvimWrap");
-  var btn = document.getElementById("ziyaretTakvimToggleBtn");
-  var sonIslemlerWrap = document.getElementById("sonIslemlerWrap");
-  if(!wrap || !btn) return;
-
-  var acik = wrap.style.display !== "none";
-  if(acik){
-    wrap.style.display = "none";
-    btn.innerHTML = "📆 Ziyaret Takvimini Göster ▾";
-    if(sonIslemlerWrap) sonIslemlerWrap.style.display = "block";
-    return;
-  }
-
-  // Aynı rapor ekranında yalnızca bir yardımcı panel açık kalsın.
-  var aylikWrap = document.getElementById("aylikOzetWrap");
-  var aylikBtn = document.getElementById("aylikOzetToggleBtn");
-  if(aylikWrap) aylikWrap.style.display = "none";
-  if(aylikBtn) aylikBtn.innerHTML = "📅 Aylık Sipariş &amp; Prim Özetini Göster ▾";
-
-  var ajWrap = document.getElementById("ajandaWrap");
-  var ajBtn = document.getElementById("ajandaToggleBtn");
-  if(ajWrap) ajWrap.style.display = "none";
-  if(ajBtn) ajBtn.innerHTML = "📓 Günlük Ajanda Göster ▾";
-
-  wrap.style.display = "block";
-  btn.innerHTML = "📆 Ziyaret Takvimini Gizle ▴";
-  if(sonIslemlerWrap) sonIslemlerWrap.style.display = "none";
-  ziyaretTakvimiOlustur();
-}
-
-function anaSayfadanZiyaretTakvimiAc(){
-  switchTab(9);
-  // Sayfa geçişinden sonra DOM'un yeni yüksekliğini ve üst panel ölçümünü
-  // tarayıcıya bırakıp takvimi doğrudan açık hale getir.
-  setTimeout(function(){
-    var wrap = document.getElementById("ziyaretTakvimWrap");
-    if(wrap && wrap.style.display === "none") ziyaretTakvimiAcKapa();
-    var page = document.getElementById("page9");
-    if(page) page.scrollTop = 0;
-    if(typeof ustPanelYuksekligiOlc === "function") ustPanelYuksekligiOlc();
-  }, 0);
 }
 
 function ziyaretTakvimAyDegistir(fark){
@@ -668,6 +724,7 @@ function ziyaretTakvimAyDegistir(fark){
   ziyaretTakvimiOlustur();
 }
 
+// Tüm müşterilerin ziyaretGecmisi'ni tek düz listeye toplar: {musteri, sehir, ts, not}
 function tumZiyaretleriTopla(){
   var sonuc = [];
   for(var i=0;i<musteriListesi.length;i++){
@@ -793,6 +850,8 @@ function ziyaretGunPopupAc(gun){
   if(ekleBtn) ekleBtn.setAttribute("data-gun", gun);
 }
 
+var ziyaretGunPopupGoruntulenenGun = null;
+
 function ziyaretGunKaydiSilHizli(musteriAdi, ts){
   if(!confirm(musteriAdi+" — bu ziyaret kaydını silmek istediğinize emin misiniz?")) return;
   var musteriIdx = musteriListesi.findIndex(function(m){ return m.ad===musteriAdi; });
@@ -823,23 +882,6 @@ function ziyaretGunKaydiSilHizli(musteriAdi, ts){
     guncellemeyiUygula(lsGet("weicon_musteriler",[]));
   }
 }
-
-function guncellemeyiUygula(guncelListe){
-    var hedefIdx = guncelListe.findIndex(function(m){ return m.ad===musteriAdi; });
-    if(hedefIdx===-1 || !guncelListe[hedefIdx].ziyaretGecmisi) return;
-    guncelListe[hedefIdx].ziyaretGecmisi = guncelListe[hedefIdx].ziyaretGecmisi.filter(function(z){ return z.ts!==ts; });
-    guncelListe[hedefIdx].ziyaretGecmisi.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
-    if(guncelListe[hedefIdx].ziyaretGecmisi.length>0){
-      guncelListe[hedefIdx].sonZiyaret = guncelListe[hedefIdx].ziyaretGecmisi[0].ts;
-      guncelListe[hedefIdx].sonZiyaretNot = guncelListe[hedefIdx].ziyaretGecmisi[0].not;
-    }
-    musteriListesi = guncelListe;
-    lsSet("weicon_musteriler", musteriListesi);
-    if(window.fbSet) musteriListesiGuvenliKaydet(musteriListesi[hedefIdx]).catch(function(e){ console.error("Firebase yazma hatası:", e); });
-    showToast("🗑 Ziyaret kaydı silindi.");
-    if(ziyaretGunPopupGoruntulenenGun!==null) ziyaretGunPopupAc(ziyaretGunPopupGoruntulenenGun);
-    if(typeof ziyaretTakvimiOlustur==="function") ziyaretTakvimiOlustur();
-  }
 
 function musteriKartAcAdIle(ad){
   var idx = -1;
@@ -884,28 +926,37 @@ function ayBazliMudurPrimiGuncelle(arsiv){
   }
   window._aylikOzetVeri = aylikVeri;
 
-  var genelToplam=0, genelPrim=0;
+  // Güncel EUR/TL kuru (Kur Ayarları'ndan senkronize edilen, localStorage'da
+  // tutulan değer) — Müdür Primi (EUR) bu kurla çarpılıp TL karşılığı gösterilir.
+  var guncelKur = parseFloat(localStorage.getItem("weicon_kur")) || 0;
+
+  var genelToplam=0, genelPrim=0, genelPrimTl=0;
   var satirlar="";
   for(var m=0;m<12;m++){
     var ay=aylikVeri[m];
-    genelToplam+=ay.toplam; genelPrim+=ay.prim;
+    var primTl = ay.prim * guncelKur;
+    genelToplam+=ay.toplam; genelPrim+=ay.prim; genelPrimTl+=primTl;
     satirlar += "<tr onclick=\"aySiparisleriAc("+m+")\" style='cursor:pointer;"+(m===0?"background:#cfe2f3;border-left:4px solid #3569b8;":"")+"'>"
       +"<td style='padding:6px;border:1px solid #3569b8;font-weight:bold;color:#003a70;font-size:32px;text-align:center;'>"+ay.ayAd+" "+ay.yil+"</td>"
-      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-size:44px;'>"+fmt(ay.toplam)+" €</td>"
-      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-weight:bold;color:#16a085;font-size:44px;'>"+fmt(ay.prim)+" €</td>"
+      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-size:32px;'>"+fmt(ay.toplam)+" €</td>"
+      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-weight:bold;color:#16a085;font-size:32px;'>"+fmt(ay.prim)+" €</td>"
+      +"<td style='padding:6px;border:1px solid #3569b8;text-align:center;font-weight:bold;color:#a8790a;font-size:32px;'>"+fmt(primTl)+" ₺</td>"
       +"</tr>";
   }
   var html = "<table style='width:100%;table-layout:fixed;border-collapse:collapse;font-size:32px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);'>"
     +"<thead><tr style='background:#cfe2f3;color:#3569b8;'>"
-    +"<th style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:32px;width:34%;'>AY</th>"
-    +"<th style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:32px;width:33%;'>SİPARİŞ TOPLAMI</th>"
-    +"<th style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:32px;width:33%;'>MÜDÜR PRİMİ</th>"
+    +"<th style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:28px;width:25%;'>AY</th>"
+    +"<th style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:28px;width:25%;'>SATIŞ</th>"
+    +"<th style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:28px;width:25%;'>PRİM</th>"
+    +"<th style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:28px;width:25%;'>TL PRİM</th>"
     +"</tr></thead><tbody>"+satirlar+"</tbody>"
     +"<tfoot><tr style='background:#cfe2f3;font-weight:900;border-top:2px solid #16a085;'>"
-    +"<td style='padding:7px;border:1px solid #3569b8;font-size:32px;text-align:center;'>TOPLAM (12 Ay)</td>"
-    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:44px;'>"+fmt(genelToplam)+" €</td>"
-    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;color:#16a085;font-size:44px;'>"+fmt(genelPrim)+" €</td>"
-    +"</tr></tfoot></table>";
+    +"<td style='padding:7px;border:1px solid #3569b8;font-size:26px;text-align:center;'>TOPLAM (12 Ay)</td>"
+    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;font-size:26px;'>"+fmt(genelToplam)+" €</td>"
+    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;color:#16a085;font-size:26px;'>"+fmt(genelPrim)+" €</td>"
+    +"<td style='padding:7px;border:1px solid #3569b8;text-align:center;color:#a8790a;font-size:26px;'>"+fmt(genelPrimTl)+" ₺</td>"
+    +"</tr></tfoot></table>"
+    +(guncelKur ? "<div style='text-align:center;font-size:18px;color:#8a97a6;font-weight:700;margin-top:6px;'>Kur: 1 € = "+fmt(guncelKur)+" ₺ üzerinden hesaplandı</div>" : "<div style='text-align:center;font-size:18px;color:#c0392b;font-weight:800;margin-top:6px;'>⚠️ Güncel kur bulunamadı, TL Prim hesaplanamadı</div>");
   el.innerHTML = html;
 }
 
@@ -926,31 +977,50 @@ function tarihIkiSatirFormat(tarihStr){
 function aySiparisleriAc(ayIndex){
   var ay = window._aylikOzetVeri ? window._aylikOzetVeri[ayIndex] : null;
   if(!ay || ay.kayitlar.length===0){ showToast("Bu ayda sipariş kaydı yok."); return; }
+  var ayToplam = 0;
+  ay.kayitlar.forEach(function(it){ ayToplam += it.toplam||0; });
   var satirlar="";
   for(var i=0;i<ay.kayitlar.length;i++){
     var it=ay.kayitlar[i];
     var durum = it.kayit.durum;
     var sorunluMu = durum==="iptal" || durum==="iade" || durum==="kacan";
-    var satirBg = sorunluMu ? "#fdeceb" : "#fff";
-    var yaziRengi = sorunluMu ? "#8a1a12" : "#003a70";
-    var durumEtiket = durum==="iptal" ? "🚫 İPTAL" : durum==="iade" ? "↩️ İADE" : durum==="kacan" ? ("❌ KAÇTI"+(it.kayit.kacanRakip?"<br><span style='font-size:11px;font-weight:700;'>→ "+it.kayit.kacanRakip+"</span>":"")) : "";
-    satirlar += "<tr onclick=\"document.getElementById('aySiparisleriModal').style.display='none';arsivDetayAc('siparis',"+it.idx+")\" style='cursor:pointer;background:"+satirBg+";'>"
-      +"<td style='padding:6px 3px;border:1px solid #3569b8;text-align:center;'>"+kodHtmlOlustur(it.kayit.kod,26,16,it.kayit.kanal)+(durumEtiket?"<div style='font-size:13px;font-weight:900;color:#c0392b;margin-top:2px;'>"+durumEtiket+"</div>":"")+(it.kayit.revizeZamani?"<div style='font-size:13px;font-weight:900;color:#c0392b;margin-top:2px;'>🔄 REVİZE<br>"+revizeTarihSaatFormatla(it.kayit.revizeZamani)+"</div>":"")+"</td>"
-      +"<td style='padding:6px 3px;border:1px solid #3569b8;font-weight:900;color:"+yaziRengi+";font-size:28px;text-align:center;overflow:hidden;text-overflow:ellipsis;'>"+(it.kayit.musteri||"-")+"</td>"
-      +"<td style='padding:6px 3px;border:1px solid #3569b8;font-weight:"+(sorunluMu?"900":"normal")+";color:"+yaziRengi+";font-size:24px;line-height:1.25;text-align:center;'>"+tarihIkiSatirFormat(it.kayit.tarih)+"</td>"
-      +"<td style='padding:6px 3px;border:1px solid #3569b8;text-align:center;white-space:nowrap;font-weight:"+(sorunluMu?"900":"normal")+";color:"+yaziRengi+";font-size:26px;'>"+fmt(it.toplam)+" €</td>"
-      +"<td style='padding:6px 3px;border:1px solid #3569b8;text-align:center;white-space:nowrap;font-weight:bold;color:"+(sorunluMu?yaziRengi:"#16a085")+";font-size:26px;'>"+fmt(it.prim)+" €</td>"
-      +"</tr>";
+    var harf = (it.kayit.kod||"").slice(0,3);
+    var gerisi = (it.kayit.kod||"").slice(3);
+    var renk = KOD_RENK[harf] || "#003a70";
+    var kartRenk = sorunluMu ? "#c0392b" : renk;
+    var ZEMIN_ACIK = {"#003a70":"#eef4fb,#dbe9f9","#28a745":"#f0fbf3,#dceedf","#8e44ad":"#f6f0fd,#ece0fa","#b7601f":"#fff6ec,#ffe8d1","#16a085":"#f0fbf3,#dceedf","#c0392b":"#fff1f0,#fbdbd8"};
+    var zeminGrad = ZEMIN_ACIK[kartRenk] || "#eef4fb,#dbe9f9";
+    var kanalOnEk = it.kayit.kanal==="whatsapp" ? "W-" : it.kayit.kanal==="mail" ? "M-" : "";
+
+    var durumEk = "";
+    if(durum==="iptal") durumEk = " — 🚫 İPTAL";
+    else if(durum==="iade") durumEk = " — ↩️ İADE";
+    else if(durum==="kacan") durumEk = " — ❌ KAÇTI"+(it.kayit.kacanRakip?" → "+safeText(it.kayit.kacanRakip):"");
+    if(it.kayit.revizeZamani) durumEk += " — 🔄 REVİZE "+revizeTarihSaatFormatla(it.kayit.revizeZamani);
+
+    // G TASARIMI — sıkı tek-blok satır listesi: tip+tarih küçük üst satır,
+    // müşteri+tutar·prim alt satırda büyük. Kartlar arası boşluk/yuvarlak kenar
+    // yok, ince alt çizgiyle ayrılıyor + çift satırda hafif zebra — ekrana çok
+    // daha fazla müşteri sığsın diye (tarih hâlâ HİÇ gizlenmiyor).
+    var zebra = (i%2===1) ? "background:#f7f9fc;" : "";
+    satirlar += "<div onclick=\"document.getElementById('aySiparisleriModal').style.display='none';arsivDetayAc('siparis',"+it.idx+")\" style='cursor:pointer;padding:12px 16px;border-bottom:1.5px solid #eef1f5;"+zebra+(sorunluMu?"opacity:.85;":"")+"'>"
+      +"<div style='display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:nowrap;overflow:hidden;'>"
+        +"<span style='font-size:19px;font-weight:900;padding:2px 9px;border-radius:5px;color:#fff;background:"+kartRenk+";flex-shrink:0;'>"+kanalOnEk+harf+"</span>"
+        +"<span style='font-size:20px;font-weight:800;color:#111827;flex-shrink:0;'>"+tarihKisaltTekSatir(it.kayit.tarih)+"</span>"
+        +(durumEk ? "<span style='font-size:19px;font-weight:900;color:#c0392b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+durumEk+"</span>" : "")
+      +"</div>"
+      +"<div style='display:flex;align-items:baseline;justify-content:space-between;gap:8px;'>"
+        +"<span style='font-size:33px;font-weight:900;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>"+safeText(it.kayit.musteri||"-")+"</span>"
+        +"<span style='font-size:29px;font-weight:900;flex-shrink:0;white-space:nowrap;'><span style='color:"+kartRenk+";'>"+fmt(it.toplam)+"€</span><span style='color:#374151;font-size:20px;'> · </span><span style='color:"+(sorunluMu?kartRenk:"#0e6b34")+";font-size:21px;'>"+fmt(it.prim)+"€</span></span>"
+      +"</div>"
+      +"</div>";
   }
-  var html = "<div style='font-size:32px;font-weight:bold;color:#003a70;margin-bottom:16px;'>📅 "+ay.ayAd+" "+ay.yil+" Siparişleri</div>"
-    +"<table style='width:100%;table-layout:fixed;border-collapse:collapse;font-size:26px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);'>"
-    +"<thead><tr style='background:#cfe2f3;'>"
-    +"<th style='padding:6px 2px;border:1px solid #3569b8;color:#3569b8;font-size:24px;width:20%;'>KOD</th>"
-    +"<th style='padding:6px 2px;border:1px solid #3569b8;color:#3569b8;font-size:24px;width:26%;'>MÜŞTERİ</th>"
-    +"<th style='padding:6px 2px;border:1px solid #3569b8;color:#3569b8;font-size:24px;width:20%;'>TARİH</th>"
-    +"<th style='padding:6px 2px;border:1px solid #3569b8;color:#3569b8;font-size:24px;width:17%;'>TOPLAM</th>"
-    +"<th style='padding:6px 2px;border:1px solid #3569b8;color:#3569b8;font-size:24px;width:17%;'>PRİM</th>"
-    +"</tr></thead><tbody>"+satirlar+"</tbody></table>";
+  var html = "<div style='font-size:39px;font-weight:900;color:#003a70;margin-bottom:12px;text-align:center;border-bottom:3px solid #f2994a;padding-bottom:10px;'>📅 "+ay.ayAd+" "+ay.yil+" Siparişleri</div>"
+    +"<div style='background:linear-gradient(135deg,#0a1628,#132840);border-radius:14px;padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;'>"
+      +"<span style='font-size:26px;font-weight:800;color:#7fd6ff;'>🧮 AY TOPLAMI ("+ay.kayitlar.length+" sipariş)</span>"
+      +"<span style='font-size:37px;font-weight:900;color:#00d9ff;'>"+fmt(ayToplam)+" €</span>"
+    +"</div>"
+    +"<div style='border:1.5px solid #eef1f5;border-radius:10px;overflow:hidden;'>"+satirlar+"</div>";
   document.getElementById("aySiparisleriIcerik").innerHTML = html;
   document.getElementById("aySiparisleriModal").style.display="flex";
 }
@@ -967,13 +1037,8 @@ function istatistikHesapla(){
   } else { hesapla(arsivData); }
 }
 
-function hesapla(arsiv){
-    arsiv = arsiv||{};
-    window._istatistikArsiv = arsiv;
-    ayBazliMudurPrimiGuncelle(arsiv);
-    kacanOzetRenderEt(arsiv);
-  }
-
+// ❌ Kaçan Siparişler özeti: bu ayki sayı/tutar, kaybedilme sebebi dağılımı,
+// rakip firma dağılımı ve Teklif→Sipariş dönüşüm oranı.
 function kacanOzetRenderEt(arsiv){
   var el = document.getElementById("kacanOzetKutusu");
   if(!el) return;
@@ -1000,10 +1065,6 @@ function kacanOzetRenderEt(arsiv){
     });
   });
 
-  // Kaçan siparişlerin toplam kaybedilen tutarı; render sırasında kullanılan
-  // değişkeni aynı scope içinde üret. Önceki sürümde bu değer hesaplanmadan
-  // fmt(toplamTutar) çağrıldığı için ReferenceError oluşuyordu.
-  var toplamTutar = kacanlar.reduce(function(toplam, item){ return toplam + (Number(item.tutar)||0); }, 0);
   window._kacanKayitlariBuAy = kacanlar;
 
   el.innerHTML =
@@ -1016,6 +1077,8 @@ function kacanOzetRenderEt(arsiv){
     +(kacanlar.length===0 ? "<div style='color:#888;font-size:17px;padding:6px 0;'>Bu ay kaçan işaretli kayıt yok.</div>" : "");
 }
 
+// "KAÇAN İŞLEM" kutusuna dokununca — bu ayki kaçan kayıtların listesi (sebep,
+// rakip firma, tutar dahil) ayrı bir popup'ta açılır.
 function kacanDetayAc(){
   var kacanlar = window._kacanKayitlariBuAy || [];
   var el = document.getElementById("kacanDetayIcerik");
@@ -1040,6 +1103,9 @@ function kacanDetayAc(){
   }
   document.getElementById("kacanDetayModal").style.display="flex";
 }
+
+// KAYIT DÜZENLEME — geçmişte yanlış kaydedilmiş bir işlemi manuel düzeltmek için
+var kdTip = null, kdIdx = null, kdUrunler = [];
 
 function tsToDatetimeLocal(ts){
   var d = new Date(ts||Date.now());
@@ -1125,6 +1191,55 @@ function kdUrunEkleAramaAcKapat(){
   }
 }
 
+function kdUrunEkleFiltrele(){
+  var q = document.getElementById("kdUrunEkleAramaInput").value.trim().toLocaleLowerCase("tr-TR");
+  var sonucDiv = document.getElementById("kdUrunEkleSonuclar");
+  var kelimeler = q.split(/\s+/).filter(function(k){ return k.length>0; });
+  if(!globalProductCatalog || globalProductCatalog.length===0){
+    sonucDiv.innerHTML = "<div style='color:#888;padding:14px 0;text-align:center;'>Katalog yüklenemedi.</div>";
+    return;
+  }
+  if(kelimeler.length===0){
+    sonucDiv.innerHTML = "";
+    return;
+  }
+  var eslesenler = [];
+  for(var i=0;i<globalProductCatalog.length && eslesenler.length<30;i++){
+    var item = globalProductCatalog[i];
+    var b=(item.berta||item.BERTA||"").toString().toLocaleLowerCase("tr-TR");
+    var a=(item.abas||item.ABAS||"").toString().toLocaleLowerCase("tr-TR");
+    var nn=(item.name||item.NAME||item.urun||item.URUN||"").toString().toLocaleLowerCase("tr-TR");
+    var araMetin=b+" "+a+" "+nn;
+    var eslesme=true;
+    for(var k=0;k<kelimeler.length;k++){
+      if(araMetin.indexOf(kelimeler[k])<0){ eslesme=false; break; }
+    }
+    if(eslesme) eslesenler.push(item);
+  }
+  if(eslesenler.length===0){
+    sonucDiv.innerHTML = "<div style='color:#888;padding:14px 0;text-align:center;'>Sonuç bulunamadı.</div>";
+    return;
+  }
+  var html = "";
+  for(var j=0;j<eslesenler.length;j++){
+    var it = eslesenler[j];
+    var bt=it.berta||it.BERTA||"-";
+    var at=it.abas||it.ABAS||"-";
+    var nt=it.name||it.NAME||it.urun||it.URUN||"";
+    var pt = (it.fiyat!==undefined) ? it.fiyat : (it.price!==undefined) ? it.price : (it.PRICE!==undefined) ? it.PRICE : (it.euro!==undefined) ? it.euro : (it.Euro!==undefined) ? it.Euro : 0;
+    var cp = parseFloat(String(pt).replace(",","."))||0;
+    var safeName = String(nt).replace(/'/g,"&#39;");
+    var safeBerta = String(bt).replace(/'/g,"&#39;");
+    var safeAbas = String(at).replace(/'/g,"&#39;");
+    html += "<div onclick=\"kdUrunEkle('"+safeName+"',"+cp+",'"+safeBerta+"','"+safeAbas+"')\" style='background:#f7f9fc;border:1px solid #d5dce6;border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;'>"
+      +"<div style='font-size:14px;font-weight:800;color:#444;'><span style=\"color:#003a70;\">Berta:</span> "+bt+" <span style=\"color:#e0524a;\">- Abas:</span> "+at+"</div>"
+      +"<div style='font-size:19px;font-weight:800;color:#222;margin-top:3px;'>"+nt+"</div>"
+      +"<div style='font-size:16px;font-weight:900;color:#0e7c63;margin-top:3px;'>"+fmt(cp)+" €</div>"
+      +"</div>";
+  }
+  sonucDiv.innerHTML = html;
+}
+
 function kdUrunEkle(name, listeFiyat, berta, abas){
   var yeni = {
     name: name, berta: berta, abas: abas,
@@ -1167,7 +1282,15 @@ function kayitDuzenleKaydetOrtak(){
   kayit.ts = yeniTs;
   kayit.mod = yeniTip;
   var yetkiliEl2 = document.getElementById("kdYetkiliInput");
-  if(yetkiliEl2) kayit.yetkili = yetkiliEl2.value.trim();
+  if(yetkiliEl2){
+    var yeniYetkiliMetni = yetkiliEl2.value.trim();
+    // İsim değiştiyse, gösterimde kullanılan çoklu-yetkili listesini (yetkililer)
+    // de senkron tut — aksi halde belgede eski isim(ler) görünmeye devam eder.
+    if(yeniYetkiliMetni !== (kayit.yetkili||"")){
+      kayit.yetkililer = yeniYetkiliMetni ? [{isim:yeniYetkiliMetni, telefon:"", eposta:""}] : [];
+    }
+    kayit.yetkili = yeniYetkiliMetni;
+  }
   var vadeEl2 = document.getElementById("kdVadeInput");
   if(vadeEl2) kayit.vade = vadeEl2.value.trim();
   var kargoEl2 = document.getElementById("kdKargoInput");
@@ -1388,47 +1511,6 @@ function eskiKayitlaraKodAta(){
   }
 }
 
-function isle(arsivDataYerel, musteriListesiVerisi){
-    var sayaclar = lsGet("weicon_sayaclar", {});
-    var tipler = ["siparis","teklif","proforma","numune"];
-    var degisti = false;
-    var toplamAtanan = 0;
-    tipler.forEach(function(tip){
-      var liste = (arsivDataYerel[tip]||[]).slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
-      liste.forEach(function(kayit){
-        if(!kayit.kod){
-          kayit.kod = benzersizKodUretTarihli(tip, kayit.ts, sayaclar);
-          degisti = true; toplamAtanan++;
-        }
-      });
-    });
-    (musteriListesiVerisi||[]).forEach(function(m){
-      var liste = (m.ziyaretGecmisi||[]).slice().sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
-      liste.forEach(function(z){
-        if(!z.kod){
-          z.kod = benzersizKodUretTarihli(z.tur||"ziyaret", z.ts, sayaclar);
-          degisti = true; toplamAtanan++;
-        }
-      });
-    });
-    localStorage.setItem("weicon_kod_migrasyon_v1", "1");
-    if(degisti){
-      lsSet("weicon_arsiv", arsivDataYerel);
-      lsSet("weicon_musteriler", musteriListesiVerisi);
-      lsSet("weicon_sayaclar", sayaclar);
-      musteriListesi = musteriListesiVerisi;
-      arsivData = arsivDataYerel;
-      if(window.fbSet){
-        window.fbSet("arsiv", arsivDataYerel).catch(function(e){ console.error("Firebase yazma hatası:", e); });
-        window.fbSet("musteriler", musteriListesiVerisi).catch(function(e){ console.error("Firebase yazma hatası:", e); });
-        window.fbSet("sayaclar", sayaclar).catch(function(e){ console.error("Firebase yazma hatası:", e); });
-      }
-      if(typeof sonIslemleriRenderEt==="function") sonIslemleriRenderEt();
-      if(typeof musteriGecmisRenderEt==="function") musteriGecmisRenderEt();
-      showToast("✓ "+toplamAtanan+" eski kayda kod atandı.", 4000);
-    }
-  }
-
 function benzersizKodUret(tip){
   var prefixMap = {siparis:"SIP", teklif:"TEK", proforma:"PRO", numune:"NUM", ziyaret:"ZIY", telefon:"TLF", mail:"MEL", mesaj:"MSJ", takip:"TKP"};
   var prefix = prefixMap[tip] || "GEN";
@@ -1453,7 +1535,7 @@ function benzersizKodUret(tip){
   var siraStr = ("000"+mevcut).slice(-4);
   return prefix+tarihKisim+"-"+siraStr;
 }
-
+var KOD_RENK = {SIP:"#003a70", TEK:"#28a745", PRO:"#8e44ad", NUM:"#b7601f", ZIY:"#16a085", TLF:"#003a70", MEL:"#b7601f", MSJ:"#8e44ad", TKP:"#b7601f"};
 function kodHtmlOlustur(kod, fontBuyuk, fontKucuk, kanal){
   if(!kod) return "-";
   var harf = kod.slice(0,3);
@@ -1481,6 +1563,11 @@ function _arsiveKaydetIslem(tip, kod, kanal){
   if(!arsivData.numune) arsivData.numune=[];
   var cn=getDynamicCustomerName(); var cv=getDynamicCustomerVade(); var cf=getDynamicCustomerFatura();
   var cy=getDynamicCustomerYetkili(); var ck=getDynamicCustomerKargo();
+  // Çoklu yetkili — belge kaydedildiği andaki TAM listeyi (isim+telefon+eposta)
+  // saklıyoruz, böylece bu belgeye tekrar bakıldığında hep o anki doğru kişiler görünür.
+  var cYetkililer = (typeof seciliYetkililer!=="undefined") ? JSON.parse(JSON.stringify(seciliYetkililer)) : [];
+  var cFaturaAdr = (typeof getDynamicCustomerFaturaAdresi==="function") ? getDynamicCustomerFaturaAdresi() : "";
+  var cTeslimatAdr = (typeof getDynamicCustomerTeslimatAdresi==="function") ? getDynamicCustomerTeslimatAdresi() : "";
   var bugun=new Date();
   var aylar=["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
   var saat=bugun.getHours().toString().padStart(2,"0")+":"+bugun.getMinutes().toString().padStart(2,"0");
@@ -1521,7 +1608,8 @@ function _arsiveKaydetIslem(tip, kod, kanal){
       urunSayisi: (eslesenKayit.urunler||[]).length
     });
     eslesenKayit.urunler = JSON.parse(JSON.stringify(hareketListesi));
-    eslesenKayit.vade=cv; eslesenKayit.fatura=cf; eslesenKayit.yetkili=cy; eslesenKayit.kargo=ck;
+    eslesenKayit.vade=cv; eslesenKayit.fatura=cf; eslesenKayit.yetkili=cy; eslesenKayit.yetkililer=cYetkililer; eslesenKayit.kargo=ck;
+    eslesenKayit.faturaAdresi=cFaturaAdr; eslesenKayit.teslimatAdresi=cTeslimatAdr;
     if(kanal) eslesenKayit.kanal = kanal;
     if(!eslesenKayit.musteriId && aktifMusteriId) eslesenKayit.musteriId = aktifMusteriId; // eski kayıtta ID yoksa şimdi tamamla
     eslesenKayit.revizeZamani = ts;
@@ -1531,7 +1619,8 @@ function _arsiveKaydetIslem(tip, kod, kanal){
     var kayit={
       tarih:tarih, ts:ts, kod:kod||benzersizKodUret(tip),
       musteri:cn, musteriId:(typeof seciliMusteri!=="undefined" && seciliMusteri && seciliMusteri.id) || null,
-      vade:cv, fatura:cf, yetkili:cy, kargo:ck,
+      vade:cv, fatura:cf, yetkili:cy, yetkililer:cYetkililer, kargo:ck,
+      faturaAdresi:cFaturaAdr, teslimatAdresi:cTeslimatAdr,
       mod:tip, kanal:(kanal||null),
       urunler:JSON.parse(JSON.stringify(hareketListesi))
     };
@@ -1599,22 +1688,13 @@ function arsiveKaydetSonrasiSifirla(){
 
 function arsivKayitSil(tip, idx){
   arsivData = lsGet("weicon_arsiv",{});
-  if(!arsivData[tip] || !arsivData[tip][idx]) return;
-  var kayitSilinecek = arsivData[tip][idx];
-  var silinecekKod = kayitSilinecek.kod || null;
-  var silinecekTs = kayitSilinecek.ts || null;
+  if(!arsivData[tip]) return;
   arsivData[tip].splice(idx,1);
   lsSet("weicon_arsiv", arsivData);
   renderArsiv();
   if(typeof sonIslemleriRenderEt==="function") sonIslemleriRenderEt();
   if(typeof musteriGecmisRenderEt==="function") musteriGecmisRenderEt();
-  if(window.fbSet && typeof arsivGuvenliKaydet==="function"){
-    arsivGuvenliKaydet({tip:tip, silinecekKod:silinecekKod, silinecekTs:silinecekKod?null:silinecekTs})
-      .then(function(){ showToast("✓ Kayıt silindi ve tüm cihazlarla senkronize edildi."); })
-      .catch(function(e){ showToast("⚠️ Kayıt bu cihazdan silindi; Firebase senkronu başarısız: "+((e&&e.message)||"bilinmiyor"),6000); });
-  } else {
-    showToast("Kayıt silindi.");
-  }
+  showToast("Kayıt silindi.");
 }
 
 function renderArsiv(){
@@ -1641,6 +1721,38 @@ function renderArsiv(){
     div.onclick=(function(tip,idx){ return function(){ arsivDetayAc(tip,idx); }; })(aktifArsivTab,i);
     c.appendChild(div);
   }
+}
+
+/* ============================================================
+   ARŞİV DETAY / FATURA GÖRÜNÜMÜ
+============================================================ */
+// Bir teklif/numune/proforma kaydını "düzenlenebilir" (bekleyen) halde Sepet'e taşır,
+// ürünlere dokunup gramaj/ürün değiştirilebilir, hesaplandıktan sonra hedef SİPARİŞ olarak gönderilir.
+// ============================================================
+// HAREKET SEÇ — Müşteri kartı / İşlem Geçmişi / İstatistikler'den ulaşılan
+// TEK ORTAK akış: bir kaydın (teklif/numune/proforma/sipariş) ürünlerini,
+// MEVCUT fiyat/iskonto/adediyle DOĞRUDAN hesaplanmış olarak Sepet'e yükler.
+// Hiçbir ürünü yeniden hesaplamaya zorlamaz — değişecek ürün varsa
+// kullanıcı sadece o ürüne dokunup düzenler, diğerleri olduğu gibi kalır.
+// ============================================================
+var hareketSecKaynak = null;
+
+// ORTAK YARDIMCI — Bir arşiv kaydından yeni bir işleme geçilirken (Hareket Seç,
+// Düzenle ve İlerle, İşlemi Tekrarla) müşteri kartı bağlamını (musteriKartIdx)
+// VE o kayıtta seçili olan fatura/teslimat/yetkili bilgilerini geri yükler.
+// Bu olmadan belgeBilgileriHazirlaVeKontrolEt() "müşteri kartı yok" sanıp
+// kontrolü tamamen atlar, yeni belge bu bilgiler olmadan gidebilir.
+function _belgeBaglamiGeriYukle(kayit, bulunanMusteri){
+  musteriKartIdx = null;
+  if(bulunanMusteri){
+    for(var _hi=0;_hi<musteriListesi.length;_hi++){ if(musteriListesi[_hi]===bulunanMusteri){ musteriKartIdx=_hi; break; } }
+  }
+  seciliFaturaAdresi = kayit.faturaAdresi ? {etiket:"Fatura Adresi", adres:kayit.faturaAdresi} : null;
+  localStorage.setItem("weicon_secili_fatura", JSON.stringify(seciliFaturaAdresi));
+  seciliTeslimatAdresi = kayit.teslimatAdresi ? {etiket:"Teslimat Adresi", adres:kayit.teslimatAdresi} : null;
+  localStorage.setItem("weicon_secili_teslimat", JSON.stringify(seciliTeslimatAdresi));
+  seciliYetkililer = (kayit.yetkililer && kayit.yetkililer.length) ? JSON.parse(JSON.stringify(kayit.yetkililer)) : (kayit.yetkili ? [{isim:kayit.yetkili, telefon:"", eposta:""}] : []);
+  localStorage.setItem("weicon_secili_yetkililer", JSON.stringify(seciliYetkililer));
 }
 
 function hareketSecPopupAc(tip, idx){
@@ -1670,6 +1782,7 @@ function hareketSecTuruSecildi(hedefTur){
   }
   seciliMusteri = bulunanMusteri || {ad: kayit.musteri||"-", sehir:"", vade:kayit.vade||"", fatura:kayit.fatura||"", yetkili:kayit.yetkili||"", kargo:kayit.kargo||""};
   lsSet("weicon_secili_musteri", seciliMusteri);
+  _belgeBaglamiGeriYukle(kayit, bulunanMusteri);
 
   // Ürünleri mevcut fiyat/iskonto/adediyle DOĞRUDAN HESAPLANMIŞ (yeşil) olarak yükle.
   hareketListesi = kayit.urunler.map(function(item, i){
@@ -1720,6 +1833,7 @@ function islemiDuzenleVeIlerle(tip, idx){
   }
   seciliMusteri = bulunanMusteri || {ad: kayit.musteri||"-", sehir:"", vade:kayit.vade||"", fatura:kayit.fatura||"", yetkili:kayit.yetkili||"", kargo:kayit.kargo||""};
   lsSet("weicon_secili_musteri", seciliMusteri);
+  _belgeBaglamiGeriYukle(kayit, bulunanMusteri);
 
   // Ürünleri HESAPLANMIŞ olarak değil, BEKLEYEN (sarı) olarak sepete koy —
   // böylece her ürüne dokunup "✏️ Düzenle" ile farklı bir ürün/gramaj seçilebilir.
@@ -1769,6 +1883,7 @@ function islemiTekrarla(tip, idx){
   }
   seciliMusteri = bulunanMusteri || {ad: kayit.musteri||"-", sehir:"", vade:kayit.vade||"", fatura:kayit.fatura||"", yetkili:kayit.yetkili||"", kargo:kayit.kargo||""};
   lsSet("weicon_secili_musteri", seciliMusteri);
+  _belgeBaglamiGeriYukle(kayit, bulunanMusteri);
 
   // Ürünleri hareket listesine yükle (tarih, gönderim anında otomatik bugünün tarihi olacak)
   hareketListesi = JSON.parse(JSON.stringify(kayit.urunler));
@@ -1807,31 +1922,43 @@ function arsivDetayKapat(){
   document.getElementById("istatistikPanel").style.display="block";
   istatistikHesapla();
 }
+// ============================================================================
+// VERSİYON UYUMLULUK KONTROLÜ — app-part5.js en son yüklenen dosya olduğu için
+// bu kontrol burada çalışır. Her app-partN.js kendi versiyon damgasını
+// (APP_PARTN_VERSION) taşır; hepsi APP_VERSION (app-part1.js'teki ana kaynak)
+// ile birebir aynı olmalı. Biri eksikse (dosya hiç yüklenmemiş) ya da farklıysa
+// (eski bir sürüm kalmış) — sessizce "veriler gelmiyor" gibi belirsiz bir
+// arızaya yol açmak yerine, kullanıcıya HEMEN görünür kırmızı bir uyarı verir.
+function versiyonUyumlulukKontroluYap(){
+  var ana = (typeof APP_VERSION !== "undefined") ? APP_VERSION : null;
+  var parcalar = {
+    "app-part2.js": (typeof APP_PART2_VERSION !== "undefined") ? APP_PART2_VERSION : null,
+    "app-part3.js": (typeof APP_PART3_VERSION !== "undefined") ? APP_PART3_VERSION : null,
+    "app-part4.js": (typeof APP_PART4_VERSION !== "undefined") ? APP_PART4_VERSION : null,
+    "app-part5.js": (typeof APP_PART5_VERSION !== "undefined") ? APP_PART5_VERSION : null
+  };
+  var sorunlular = [];
+  for(var dosyaAdi in parcalar){
+    var v = parcalar[dosyaAdi];
+    if(!v) sorunlular.push(dosyaAdi + " — HİÇ YÜKLENMEMİŞ");
+    else if(v !== ana) sorunlular.push(dosyaAdi + " — ESKİ SÜRÜM (" + v + ")");
+  }
+  if(!ana){
+    sorunlular.unshift("app-part1.js — HİÇ YÜKLENMEMİŞ (ana versiyon kaynağı bulunamadı)");
+  }
+  if(sorunlular.length === 0) return; // Her şey uyumlu, sessizce geç.
 
-/* ============================================================
-   KM MONTHLY SAVE DEBOUNCE
-   app-part4 queues changed days in kmBekleyenDegisiklikler; this
-   bridge persists only those changed days through kmGuvenliKaydet.
-============================================================ */
-var kmAylikTabloKaydetTimer = null;
-function kmAylikTabloKaydet(){
-  if(kmAylikTabloKaydetTimer) clearTimeout(kmAylikTabloKaydetTimer);
-  kmAylikTabloKaydetTimer = setTimeout(function(){
-    kmAylikTabloKaydetTimer = null;
-    var liste = Array.isArray(kmBekleyenDegisiklikler) ? kmBekleyenDegisiklikler.splice(0) : [];
-    if(liste.length===0) return;
-    if(typeof kmGuvenliKaydet==="function"){
-      kmGuvenliKaydet(liste).catch(function(e){
-        console.error("KM aylık kayıt hatası:", e);
-      });
-    }
-  }, 180);
+  var banner = document.createElement("div");
+  banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:14px 16px;font-family:sans-serif;font-size:14px;font-weight:800;line-height:1.5;box-shadow:0 2px 10px rgba(0,0,0,0.3);";
+  var html = "⚠️ DOSYA UYUMSUZLUĞU — Program yanlış/eksik veri gösterebilir!<br>";
+  html += "<span style='font-weight:700;font-size:12.5px;'>Ana sürüm (index.html + app-part1.js): " + (ana||"BULUNAMADI") + "</span><br>";
+  html += "<span style='font-weight:700;font-size:12.5px;'>" + sorunlular.join(" · ") + "</span><br>";
+  html += "<span style='font-weight:700;font-size:12.5px;'>Çözüm: GitHub'a TÜM dosyaları (index.html + app-part1'den 5'e kadar) aynı sette, hiç atlamadan tekrar yükleyin.</span>";
+  banner.innerHTML = html;
+  document.body.insertBefore(banner, document.body.firstChild);
 }
-
-/* ============================================================
-   COMPATIBILITY ALIASES
-   Eski önbellekte kalan typo'lu çağrılar da yeni fonksiyona düşsün.
-============================================================ */
-function kmKmFotoBtnOkumaMudunaGecir(){
-  return kmKmFotoBtnOkumaModunaGecir();
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", versiyonUyumlulukKontroluYap);
+} else {
+  versiyonUyumlulukKontroluYap();
 }
