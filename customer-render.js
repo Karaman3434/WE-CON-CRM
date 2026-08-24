@@ -70,12 +70,50 @@ function listeyiCiz(){
   }catch(e){ hataGoster("Liste çizilemedi: " + e.message); }
 }
 
+function yeniMusteriFormBagla(){
+  var form = document.getElementById("yeniMusteriForm");
+  document.getElementById("btnYeniMusteriAc").onclick = function(){
+    form.hidden = !form.hidden;
+  };
+  document.getElementById("btnYeniMusteriVazgec").onclick = function(){
+    form.hidden = true;
+  };
+  document.getElementById("btnYeniMusteriKaydet").onclick = function(){
+    var bilgi = {
+      ad: document.getElementById("yeniMusteriAdi").value,
+      sehir: document.getElementById("yeniMusteriSehir").value,
+      vade: document.getElementById("yeniMusteriVade").value,
+      fatura: document.getElementById("yeniMusteriFatura").value,
+      telefon: document.getElementById("yeniMusteriTelefon").value,
+      eposta: document.getElementById("yeniMusteriEposta").value,
+      kargo: document.getElementById("yeniMusteriKargo").value
+    };
+    var btn = document.getElementById("btnYeniMusteriKaydet");
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    CustomerData.yeniMusteriKaydet(bilgi, function(basarili, sonuc){
+      btn.disabled = false;
+      btn.textContent = "✓ Müşteriyi Kaydet";
+      if(basarili){
+        alert("✓ " + sonuc.ad + " kaydedildi.");
+        form.hidden = true;
+        ["yeniMusteriAdi","yeniMusteriSehir","yeniMusteriVade","yeniMusteriFatura","yeniMusteriTelefon","yeniMusteriEposta","yeniMusteriKargo"].forEach(function(id){
+          document.getElementById(id).value = "";
+        });
+      } else {
+        hataGoster(typeof sonuc === "string" ? sonuc : "Kaydedilemedi: " + (sonuc && sonuc.message ? sonuc.message : "bilinmeyen hata"));
+      }
+    });
+  };
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
+  yeniMusteriFormBagla();
   document.getElementById("musteriAra").addEventListener("input", listeyiCiz);
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   CustomerData.listeDegistiginde(listeyiCiz);

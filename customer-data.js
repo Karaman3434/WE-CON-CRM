@@ -99,6 +99,41 @@ var CustomerData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  function musteriIdUret(){
+    var maxNo = 0;
+    liste.forEach(function(m){
+      if(m.id && /^M-\d+$/.test(m.id)){
+        var no = parseInt(m.id.slice(2), 10);
+        if(no > maxNo) maxNo = no;
+      }
+    });
+    return "M-" + String(maxNo+1).padStart(4, "0");
+  }
+
+  function yeniMusteriKaydet(bilgi, geriBildir){
+    try{
+      if(!bilgi.ad || !bilgi.ad.trim()){ geriBildir(false, "Müşteri adı girin."); return; }
+      var yeni = {
+        id: musteriIdUret(),
+        ad: bilgi.ad.trim(),
+        sehir: (bilgi.sehir||"").trim(),
+        vade: (bilgi.vade||"").trim(),
+        fatura: (bilgi.fatura||"").trim(),
+        telefon: (bilgi.telefon||"").trim(),
+        eposta: (bilgi.eposta||"").trim(),
+        kargo: (bilgi.kargo||"").trim(),
+        ziyaretGecmisi: [],
+        iletisimler: []
+      };
+      var yeniListe = [yeni].concat(liste);
+      firebase.database().ref("musteriler").set(yeniListe).then(function(){
+        geriBildir(true, yeni);
+      }).catch(function(err){
+        geriBildir(false, err);
+      });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
@@ -108,7 +143,8 @@ var CustomerData = (function(){
     uzunluk: function(){ return liste.length; },
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,
-    gunFarkiHesapla: gunFarkiHesapla
+    gunFarkiHesapla: gunFarkiHesapla,
+    yeniMusteriKaydet: yeniMusteriKaydet
   };
 
 })();

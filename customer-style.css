@@ -51,3 +51,65 @@
   padding: 30px 0;
   font-style: italic;
 }
+
+.yeni-musteri-buton {
+  width: 100%;
+  background: #eaf2fc;
+  color: #003a70;
+  border: 2px solid #3569b8;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.yeni-musteri-form {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fafbfc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.yeni-musteri-form input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #111;
+}
+.form-satir-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.form-buton-satir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+.form-vazgec-btn {
+  background: #ffffff;
+  color: #556170;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.form-kaydet-btn {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}

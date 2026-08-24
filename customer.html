@@ -34,6 +34,26 @@
     <span class="arama-ikon">🔍</span>
   </div>
 
+  <button class="yeni-musteri-buton" id="btnYeniMusteriAc">+ Yeni Müşteri Ekle</button>
+
+  <section class="yeni-musteri-form" id="yeniMusteriForm" hidden>
+    <input type="text" id="yeniMusteriAdi" placeholder="Müşteri Adı *">
+    <input type="text" id="yeniMusteriSehir" placeholder="Şehir / İlçe">
+    <div class="form-satir-2">
+      <input type="text" id="yeniMusteriVade" placeholder="Vade (örn. 30 gün)">
+      <input type="text" id="yeniMusteriFatura" placeholder="Fatura Bilgisi">
+    </div>
+    <div class="form-satir-2">
+      <input type="tel" id="yeniMusteriTelefon" placeholder="Yetkili Telefon">
+      <input type="email" id="yeniMusteriEposta" placeholder="Yetkili E-posta">
+    </div>
+    <input type="text" id="yeniMusteriKargo" placeholder="Kargo Firması">
+    <div class="form-buton-satir">
+      <button class="form-vazgec-btn" id="btnYeniMusteriVazgec">Vazgeç</button>
+      <button class="form-kaydet-btn" id="btnYeniMusteriKaydet">✓ Müşteriyi Kaydet</button>
+    </div>
+  </section>
+
   <div id="musteriListesi"></div>
   <p class="bos-mesaj" id="musteriBosMesaj" hidden>Müşteri bulunamadı.</p>
   <p class="yukleniyor-mesaj" id="musteriYukleniyor">Müşteri listesi yükleniyor...</p>
