@@ -1,15 +1,18 @@
-const CACHE_ADI = "weicon-asist-cache-v15-ui-fix";
-const BUILD = "CG 1508261515-017";
+const CACHE_ADI = "weicon-asist-cache-v18-ui-render-fix";
+const BUILD = "CG 1508261515-018";
 const SALES_V3_SRC = '<script src="js/sales/sales-v3.js?v=' + BUILD + '"></script>';
-const PAINT_FIX_STYLE = '<style id="weicon-main-paint-fix">.phone-container{transform:none!important;-webkit-backface-visibility:visible!important;backface-visibility:visible!important;}</style>';
+const UI_FIX_SRC = '<script src="ui-render-fix.js?v=' + BUILD + '"></script>';
+const PAINT_FIX_STYLE = '<style id="weicon-main-paint-fix">html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;} .phone-container{width:100%!important;max-width:100vw!important;min-width:0!important;margin-left:auto!important;margin-right:auto!important;transform:none!important;-webkit-backface-visibility:visible!important;backface-visibility:visible!important;}</style>';
 function modularHtmlResponse(response) {
   if (!response || !response.ok) return response;
   var contentType = response.headers.get("content-type") || "";
   if (contentType.indexOf("text/html") === -1) return response;
   return response.text().then(function (html) {
     var hasSalesV3 = html.indexOf("js/sales/sales-v3.js") !== -1;
+    var hasUiFix = html.indexOf("ui-render-fix.js") !== -1;
     if (hasSalesV3) html = html.replace(/js\/sales\/sales-v3\.js(?:\?[^\"']*)?/g, "js/sales/sales-v3.js?v=" + BUILD);
     else html = html.replace(/<\/body>/i, SALES_V3_SRC + "\n</body>");
+    if (!hasUiFix) html = html.replace(/<\/body>/i, UI_FIX_SRC + "\n</body>");
     html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._ -]+/g, "WEİCON ASİST " + BUILD);
     html = html.replace(/<\/head>/i, PAINT_FIX_STYLE + "\n</head>");
     return new Response(html, {status: response.status, statusText: response.statusText, headers: response.headers});
