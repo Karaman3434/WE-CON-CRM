@@ -34,23 +34,24 @@
   function hydrate(path){
     if(!window.fbGet)return Promise.reject(new Error("Firebase okuma API hazır değil"));
     return window.fbGet(path).then(function(data){
-      if(path==="arsiv"){
+      if(typeof weiconSunucuVerisiniGuvenliUygula==="function"){
+        weiconSunucuVerisiniGuvenliUygula(path,data);
+      }else if(path==="arsiv"){
         var server=normalizeArchive(data), local=normalizeArchive(lsGet("weicon_arsiv",{}));
         if(meaningfulArchive(server)||!meaningfulArchive(local)){
           arsivData=server; lsSet("weicon_arsiv",server);
         }else{
-          arsivData=local;
+          arsivData=local; lsSet("weicon_arsiv",local);
           console.warn("WEİCON: boş Firebase arşivi nedeniyle yerel arşiv korunuyor.");
         }
-      }
-      if(path==="musteriler"){
+      }else if(path==="musteriler"){
         var serverM=asCustomerArray(data), localM=asCustomerArray(lsGet("weicon_musteriler",[]));
         if(meaningfulCustomers(serverM)||!meaningfulCustomers(localM)){
           musteriListesi=serverM;
           if(typeof musteriIdEksikleriTamamla==="function")musteriIdEksikleriTamamla();
           lsSet("weicon_musteriler",musteriListesi);
         }else{
-          musteriListesi=localM;
+          musteriListesi=localM; lsSet("weicon_musteriler",localM);
           console.warn("WEİCON: boş Firebase müşteri verisi nedeniyle yerel liste korunuyor.");
         }
       }
@@ -78,9 +79,9 @@
     style.id=STYLE_ID;
     style.textContent=[
       "html,body{width:100%!important;max-width:100%!important;height:100%!important;overflow:hidden!important;}",
-      ".phone-container{width:100%!important;max-width:100vw!important;min-width:0!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;transform:none!important;}",
-      "#ustBaslikSatiri,#ustNavGrid{flex:0 0 auto!important;position:relative!important;z-index:50000!important;isolation:isolate!important;background:#fff!important;overflow:visible!important;}",
-      ".content-page{width:100%!important;max-width:100%!important;min-width:0!important;min-height:0!important;box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;position:relative!important;z-index:1!important;flex:1 1 0!important;overscroll-behavior:contain!important;}",
+      ".phone-container{width:100%!important;max-width:100vw!important;min-width:0!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;transform:none!important;display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;align-content:stretch!important;}",
+      "#ustBaslikSatiri,#ustNavGrid{flex:none!important;position:relative!important;z-index:50000!important;isolation:isolate!important;background:#fff!important;overflow:visible!important;min-height:0!important;}",
+      ".content-page{width:100%!important;max-width:100%!important;min-width:0!important;height:100%!important;min-height:0!important;max-height:none!important;box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;position:relative!important;z-index:1!important;flex:initial!important;overscroll-behavior:contain!important;grid-row:3!important;}",
       ".content-page:not(.active){display:none!important;}",
       ".content-page.active{display:flex!important;visibility:visible!important;position:relative!important;z-index:1!important;min-height:0!important;}",
       ".content-page.active .content-page{display:none!important;}",

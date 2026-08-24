@@ -292,35 +292,103 @@ window.onload = function(){
   // Eski kayıtlara (kod alanı olmayan) geriye dönük benzersiz kod atama — bir kereye mahsus
   setTimeout(eskiKayitlaraKodAta, 2500);
 
-  // Firebase hazır olunca müşteri ve arşiv verilerini çek
+  // ============================================================================
+// VERİ BÜTÜNLÜĞÜ KÖPRÜSÜ
+// Firebase'den boş/eksik bir anlık görüntü geldiğinde cihazdaki sağlam kayıtları
+// sessizce silmek yerine iki kaynağı birleştirir. Aynı kayıt için kod/ID önceliklidir.
+// ============================================================================
+
+function weiconArsivNormalize(a){
+  a=(a&&typeof a==="object")?a:{};
+  ["siparis","teklif","proforma","numune"].forEach(function(k){ if(!Array.isArray(a[k])) a[k]=[]; });
+  return a;
+}
+function weiconArsivAnahtar(tip,k){
+  if(!k) return "";
+  if(k.kod) return tip+"|kod|"+k.kod;
+  if(k.musteriId && k.ts) return tip+"|mid|"+k.musteriId+"|"+k.ts;
+  if(k.musteri && k.ts) return tip+"|ad|"+String(k.musteri).toLocaleLowerCase("tr-TR")+"|"+k.ts;
+  return "";
+}
+function weiconArsivBirlesir(local,server){
+  local=weiconArsivNormalize(local); server=weiconArsivNormalize(server);
+  var out={siparis:[],teklif:[],proforma:[],numune:[]};
+  ["siparis","teklif","proforma","numune"].forEach(function(tip){
+    var map={};
+    (server[tip]||[]).forEach(function(k){
+      var key=weiconArsivAnahtar(tip,k);
+      if(key){ map[key]=out[tip].length; out[tip].push(k); }
+      else out[tip].push(k);
+    });
+    (local[tip]||[]).forEach(function(k){
+      var key=weiconArsivAnahtar(tip,k);
+      if(key && map[key]!==undefined) return;
+      out[tip].push(k);
+      if(key) map[key]=out[tip].length-1;
+    });
+    out[tip].sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+  });
+  return out;
+}
+function weiconMusteriAnahtar(m){
+  if(!m) return "";
+  if(m.id) return "id|"+m.id;
+  return "ad|"+String(m.ad||"").trim().toLocaleLowerCase("tr-TR");
+}
+function weiconMusteriBirlesir(local,server){
+  var la=Array.isArray(local)?local:((local&&typeof local==="object")?Object.values(local):[]);
+  var sa=Array.isArray(server)?server:((server&&typeof server==="object")?Object.values(server):[]);
+  var out=sa.slice(), map={};
+  out.forEach(function(m,i){ var k=weiconMusteriAnahtar(m); if(k) map[k]=i; });
+  la.forEach(function(m){
+    var k=weiconMusteriAnahtar(m);
+    if(k && map[k]!==undefined) return;
+    out.push(m);
+    if(k) map[k]=out.length-1;
+  });
+  return out;
+}
+function weiconSunucuVerisiniGuvenliUygula(path,data){
+  if(path==="arsiv"){
+    var local=weiconArsivNormalize(lsGet("weicon_arsiv",{}));
+    var server=weiconArsivNormalize(data);
+    var localAnlamli=Object.keys(local).some(function(k){return local[k].length>0;});
+    var serverAnlamli=Object.keys(server).some(function(k){return server[k].length>0;});
+    var merged=weiconArsivBirlesir(local,server);
+    arsivData=merged; lsSet("weicon_arsiv",merged);
+    if(localAnlamli && (!serverAnlamli || JSON.stringify(merged)!==JSON.stringify(server))){
+      if(window.fbSet) window.fbSet("arsiv",merged).catch(function(e){console.error("Arşiv geri senkron hatası:",e);});
+    }
+    return;
+  }
+  if(path==="musteriler"){
+    var localM=Array.isArray(lsGet("weicon_musteriler",[]))?lsGet("weicon_musteriler",[]):[];
+    var serverM=Array.isArray(data)?data:((data&&typeof data==="object")?Object.values(data):[]);
+    var mergedM=weiconMusteriBirlesir(localM,serverM);
+    musteriListesi=mergedM;
+    musteriIdEksikleriTamamla();
+    lsSet("weicon_musteriler",mergedM);
+    if(localM.length>serverM.length && window.fbSet){
+      window.fbSet("musteriler",mergedM).catch(function(e){console.error("Müşteri geri senkron hatası:",e);});
+    }
+  }
+  // ui-render-fix.js de aynı güvenli veri birleştirme köprüsünü kullanabilsin.
+  window.weiconSunucuVerisiniGuvenliUygula = weiconSunucuVerisiniGuvenliUygula;
+}
+
+// Firebase hazır olunca müşteri ve arşiv verilerini çek
   function firebasdenYukle(){
     if(window.fbDinle){
       // Müşteri listesi - gerçek zamanlı dinle, tüm cihazlar anında güncellenir
       window.fbDinle("musteriler", function(data){
-        if(data){
-          if(Array.isArray(data)) musteriListesi=data;
-          else musteriListesi=Object.values(data);
-        } else { musteriListesi=[]; }
-        musteriIdEksikleriTamamla();
-        lsSet("weicon_musteriler", musteriListesi);
+        weiconSunucuVerisiniGuvenliUygula("musteriler", data);
         if(activeCurrentPage===7) musteriListesiniRenderEt();
-        // Müşteri verisi (dolayısıyla şehir bilgisi) güncellenince Son İşlemler
-        // tablosundaki şehir sütunu da tazelensin — önceden bu eksikti, bu yüzden
-        // tablo müşteri listesi henüz gelmeden çizildiyse şehir hep "-" kalıyordu.
         if(activeCurrentPage===6 && typeof sonIslemleriRenderEt==="function") sonIslemleriRenderEt();
       });
-      // Arşiv - gerçek zamanlı dinle
+      // Arşiv - gerçek zamanlı dinle; boş/eksik sunucu snapshot'ı cihazdaki
+      // sağlam arşivi ezemez, eksik kayıtlar iki kaynak arasında birleştirilir.
       window.fbDinle("arsiv", function(data){
-        if(data){
-          arsivData=data;
-          if(!arsivData.siparis) arsivData.siparis=[];
-          if(!arsivData.proforma) arsivData.proforma=[];
-          if(!arsivData.teklif) arsivData.teklif=[];
-          if(!arsivData.numune) arsivData.numune=[];
-        } else {
-          arsivData={numune:[],teklif:[],proforma:[],siparis:[]};
-        }
-        lsSet("weicon_arsiv", arsivData);
+        weiconSunucuVerisiniGuvenliUygula("arsiv", data);
         if(activeCurrentPage===6){ arsivSayaclariGuncelle(); if(typeof sonIslemleriRenderEt==="function") sonIslemleriRenderEt(); }
         if(activeCurrentPage===7) musteriListesiniRenderEt();
         if(activeCurrentPage===8) anaSayfaRenderEt();
@@ -771,7 +839,7 @@ function musteriListesiGuvenliKaydet(oncelikliMusteri, silinecekId){
 
 var aktifSehirFiltre = null; // null = hepsi
 
-var tumMusterilerModuAktif = false;
+var tumMusterilerModuAktif = true;
 function musteriHepsiniGoster(){
   aktifSehirFiltre = null;
   document.getElementById("sehirFiltrePanel").style.display="none";
@@ -782,11 +850,9 @@ function musteriHepsiniGoster(){
   if(btn) btn.innerHTML = tumMusterilerModuAktif ? "🔽 Son Kayıtlara Dön" : "👥 Tüm Müşteriler";
   if(window.fbGet){
     window.fbGet("musteriler").then(function(data){
-      if(data){ musteriListesi=Array.isArray(data)?data:Object.values(data); }
-      else { musteriListesi=[]; }
-      lsSet("weicon_musteriler", musteriListesi);
+      weiconSunucuVerisiniGuvenliUygula("musteriler", data);
       musteriListesiniRenderEt();
-    });
+    }).catch(function(){ musteriListesiniRenderEt(); });
   } else { musteriListesiniRenderEt(); }
 }
 
@@ -833,11 +899,9 @@ function musteriPanelAc(panel){
     if(btnKaydet) btnKaydet.style.opacity="0.7";
     if(window.fbGet){
       window.fbGet("musteriler").then(function(data){
-        if(data){ musteriListesi=Array.isArray(data)?data:Object.values(data); }
-        else { musteriListesi=[]; }
-        lsSet("weicon_musteriler", musteriListesi);
+        weiconSunucuVerisiniGuvenliUygula("musteriler", data);
         musteriListesiniRenderEt();
-      });
+      }).catch(function(){ musteriListesiniRenderEt(); });
     } else { musteriListesiniRenderEt(); }
   } else {
     bulPanel.style.display="none";
@@ -1373,7 +1437,7 @@ function musteriKaydetGercek(){
   // (başka bir cihazın az önce eklediği müşteriyi silmemek için)
   if(window.fbGet){
     window.fbGet("musteriler").then(function(data){
-      var guncelListe = data ? (Array.isArray(data)?data:Object.values(data)) : [];
+      var guncelListe = weiconMusteriBirlesir(lsGet("weicon_musteriler",[]), data);
       kaydiTamamla(guncelListe);
     }).catch(function(){
       kaydiTamamla(lsGet("weicon_musteriler",[]));
