@@ -30,9 +30,10 @@
 
 <main class="sayfa">
 
-  <div class="sekme-secim">
+  <div class="sekme-secim sekme-secim--uc">
     <button class="sekme-btn sekme-btn--secili" data-sekme="islemler">Son İşlemler</button>
     <button class="sekme-btn" data-sekme="gorevler">Görevler</button>
+    <button class="sekme-btn" data-sekme="istatistik">İstatistik</button>
   </div>
 
   <!-- SON İŞLEMLER -->
@@ -54,6 +55,28 @@
     </div>
     <div id="gorevListesiKapsayici"></div>
     <p class="bos-mesaj" id="gorevBosMesaj" hidden>Henüz görev yok.</p>
+  </section>
+
+  <!-- İSTATİSTİK -->
+  <section id="sekmeIstatistik" class="sekme-panel" hidden>
+    <div class="istatistik-kart-grid">
+      <div class="istatistik-kart istatistik-kart--koyu">
+        <div class="istatistik-baslik">Bu Ay Toplam</div>
+        <div class="istatistik-deger" id="istBuAyToplam">0,00 EUR</div>
+        <div class="istatistik-alt" id="istBuAySiparisSayisi">0 sipariş</div>
+      </div>
+      <div class="istatistik-kart">
+        <div class="istatistik-baslik">Geçen Ay Toplam</div>
+        <div class="istatistik-deger istatistik-deger--koyu" id="istGecenAyToplam">0,00 EUR</div>
+        <div class="istatistik-alt" id="istGecenAySiparisSayisi">0 sipariş</div>
+      </div>
+    </div>
+
+    <div class="istatistik-bolum-baslik">Son 6 Ay</div>
+    <div id="istAylikListe"></div>
+
+    <div class="istatistik-bolum-baslik">En Çok Satış Yapılan Müşteriler</div>
+    <div id="istMusteriListe"></div>
   </section>
 
 </main>

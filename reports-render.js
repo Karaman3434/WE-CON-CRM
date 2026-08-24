@@ -38,8 +38,38 @@ function sekmeGecisBagla(){
       this.classList.add("sekme-btn--secili");
       document.getElementById("sekmeIslemler").hidden = hedef !== "islemler";
       document.getElementById("sekmeGorevler").hidden = hedef !== "gorevler";
+      document.getElementById("sekmeIstatistik").hidden = hedef !== "istatistik";
+      if(hedef === "istatistik") istatistikleriCiz();
     };
   });
+}
+
+function fmt(n){
+  return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function istatistikleriCiz(){
+  try{
+    var buAy = ReportsData.ayToplami(0);
+    var gecenAy = ReportsData.ayToplami(1);
+    document.getElementById("istBuAyToplam").textContent = fmt(buAy.toplam) + " EUR";
+    document.getElementById("istBuAySiparisSayisi").textContent = buAy.sayi + " sipariş";
+    document.getElementById("istGecenAyToplam").textContent = fmt(gecenAy.toplam) + " EUR";
+    document.getElementById("istGecenAySiparisSayisi").textContent = gecenAy.sayi + " sipariş";
+
+    var son6 = ReportsData.son6Ay();
+    document.getElementById("istAylikListe").innerHTML = son6.map(function(a){
+      return "<div class='istatistik-satir'><span class='istatistik-satir-ad'>" + a.ayAd + " " + a.yil + "</span><span class='istatistik-satir-deger'>" + fmt(a.toplam) + " EUR</span></div>";
+    }).join("");
+
+    var musteriler = ReportsData.enCokSatisYapilanMusteriler(5);
+    var musteriHtml = musteriler.length === 0
+      ? "<p class='bos-mesaj'>Henüz veri yok.</p>"
+      : musteriler.map(function(m){
+          return "<div class='istatistik-satir'><span class='istatistik-satir-ad'>" + htmlEsc(m.ad) + "</span><span class='istatistik-satir-deger'>" + fmt(m.toplam) + " EUR</span></div>";
+        }).join("");
+    document.getElementById("istMusteriListe").innerHTML = musteriHtml;
+  }catch(e){ hataGoster("İstatistikler çizilemedi: " + e.message); }
 }
 
 function islemleriCiz(){

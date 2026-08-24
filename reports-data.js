@@ -92,6 +92,46 @@ var ReportsData = (function(){
     try{ firebase.database().ref("gorevler").set(gorevler); }catch(e){ console.error("Görev kaydetme hatası:", e); }
   }
 
+  function tumSiparisler(){
+    return arsiv.siparis || [];
+  }
+
+  function ayToplami(ayOfset){
+    var now = new Date();
+    var hedefAy = new Date(now.getFullYear(), now.getMonth()-ayOfset, 1);
+    var aylar = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+    var ayAd = aylar[hedefAy.getMonth()];
+    var yil = hedefAy.getFullYear().toString();
+    var toplam = 0, sayi = 0;
+    tumSiparisler().forEach(function(k){
+      if(!k.tarih) return;
+      var parca = k.tarih.split(" ");
+      if((parca[1]||"")!==ayAd || (parca[2]||"")!==yil) return;
+      sayi++;
+      (k.urunler||[]).forEach(function(u){ toplam += u.toplamEuro||0; });
+    });
+    return {ayAd:ayAd, yil:yil, toplam:toplam, sayi:sayi};
+  }
+
+  function son6Ay(){
+    var sonuc = [];
+    for(var i=0;i<6;i++){ sonuc.push(ayToplami(i)); }
+    return sonuc;
+  }
+
+  function enCokSatisYapilanMusteriler(limit){
+    var haritalar = {};
+    tumSiparisler().forEach(function(k){
+      var ad = k.musteri || "Bilinmeyen";
+      if(!haritalar[ad]) haritalar[ad] = 0;
+      (k.urunler||[]).forEach(function(u){ haritalar[ad] += u.toplamEuro||0; });
+    });
+    return Object.keys(haritalar)
+      .map(function(ad){ return {ad:ad, toplam:haritalar[ad]}; })
+      .sort(function(a,b){ return b.toplam-a.toplam; })
+      .slice(0, limit||5);
+  }
+
   return {
     baslat: baslat,
     arsivDegistiginde: arsivDegistiginde,
@@ -99,7 +139,10 @@ var ReportsData = (function(){
     sonIslemler: sonIslemler,
     gorevleriGetir: gorevleriGetir,
     gorevEkle: gorevEkle,
-    gorevTamamlandiToggle: gorevTamamlandiToggle
+    gorevTamamlandiToggle: gorevTamamlandiToggle,
+    ayToplami: ayToplami,
+    son6Ay: son6Ay,
+    enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler
   };
 
 })();
