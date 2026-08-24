@@ -28,13 +28,13 @@
   text-transform: uppercase;
   letter-spacing: .3px;
 }
-.hareketler-tile--mavi {
-  background: #eaf2fc;
-  border: 3px solid #3569b8;
+.hareketler-tile--satis {
+  background: #16a34a;
+  color: #ffffff;
 }
-.hareketler-tile--mavi .hareketler-tile-baslik { color: #003a70; }
-.hareketler-tile--yesil {
-  background: #f0fbf3;
-  border: 3px solid #1f9d55;
+.hareketler-tile--satis .hareketler-tile-baslik { color: #ffffff; }
+.hareketler-tile--musteriler {
+  background: #003a70;
+  color: #ffffff;
 }
-.hareketler-tile--yesil .hareketler-tile-baslik { color: #0e6b34; }
+.hareketler-tile--musteriler .hareketler-tile-baslik { color: #ffffff; }
