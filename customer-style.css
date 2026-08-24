@@ -110,15 +110,19 @@
   gap: 8px;
   margin-top: 4px;
 }
-.form-vazgec-btn {
-  background: #ffffff;
-  color: #556170;
-  border: 2px solid #cbd5e1;
+.form-kapat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 2px solid #c0392b;
   border-radius: 8px;
   padding: 12px;
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
+  text-decoration: none;
 }
 .form-kaydet-btn {
   background: #16a34a;
@@ -129,4 +133,11 @@
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
+}
+
+.sayfa-baslik {
+  font-size: 18px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 14px;
 }

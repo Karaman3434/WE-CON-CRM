@@ -267,10 +267,10 @@
   gap: 8px;
   margin-top: 14px;
 }
-.duzenle-vazgec-btn {
-  background: #ffffff;
-  color: #556170;
-  border: 2px solid #cbd5e1;
+.duzenle-kapat-btn {
+  background: #fdeaea;
+  color: #c0392b;
+  border: 2px solid #c0392b;
   border-radius: 8px;
   padding: 12px;
   font-size: 14px;

@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — MÜŞTERİ SEÇ v2
-  ================================
-  Sepet'ten "Devam Et" ile buraya gelinir. Müşteri listesi eski uygulamayla
-  AYNI Firebase yolundan ("musteriler") okunur — ayrı veri girmeye gerek yok.
+  WEICON ASİST — MÜŞTERİ LİSTESİ v3
+  ====================================
+  SADECE liste — arama + sıralama + müşteri satırları. Yeni müşteri ekleme
+  ARTIK ayrı bir sayfa (customer-add.html). Bir müşteriye dokununca SADECE
+  o müşterinin kartı açılır (customer-detail.html), başka hiçbir şey.
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — Müşteri Seç</title>
+<title>WEICON ASİST — Müşteriler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="customer-style.css">
@@ -22,7 +23,7 @@
 </header>
 
 <nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="cart.html">Geri</a>
+  <a class="nav-btn nav-btn--geri" href="hareketler.html">Geri</a>
   <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
   <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
 </nav>
@@ -43,25 +44,7 @@
     </select>
   </div>
 
-  <button class="yeni-musteri-buton" id="btnYeniMusteriAc">+ Yeni Müşteri Ekle</button>
-
-  <section class="yeni-musteri-form" id="yeniMusteriForm" hidden>
-    <input type="text" id="yeniMusteriAdi" placeholder="Müşteri Adı *">
-    <input type="text" id="yeniMusteriSehir" placeholder="Şehir / İlçe">
-    <div class="form-satir-2">
-      <input type="text" id="yeniMusteriVade" placeholder="Vade (örn. 30 gün)">
-      <input type="text" id="yeniMusteriFatura" placeholder="Fatura Bilgisi">
-    </div>
-    <div class="form-satir-2">
-      <input type="tel" id="yeniMusteriTelefon" placeholder="Yetkili Telefon">
-      <input type="email" id="yeniMusteriEposta" placeholder="Yetkili E-posta">
-    </div>
-    <input type="text" id="yeniMusteriKargo" placeholder="Kargo Firması">
-    <div class="form-buton-satir">
-      <button class="form-vazgec-btn" id="btnYeniMusteriVazgec">Vazgeç</button>
-      <button class="form-kaydet-btn" id="btnYeniMusteriKaydet">✓ Müşteriyi Kaydet</button>
-    </div>
-  </section>
+  <a class="yeni-musteri-buton" href="customer-add.html">+ Yeni Müşteri Ekle</a>
 
   <div id="musteriListesi"></div>
   <p class="bos-mesaj" id="musteriBosMesaj" hidden>Müşteri bulunamadı.</p>

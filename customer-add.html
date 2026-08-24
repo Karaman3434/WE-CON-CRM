@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — YENİ MÜŞTERİ EKLE v3
+  ======================================
+  SADECE ekleme formu — başka müşterilerin listesi burada YOK.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Yeni Müşteri Ekle</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="customer-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="hareketler.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="sayfa-baslik">+ Yeni Müşteri Ekle</div>
+
+  <section class="yeni-musteri-form">
+    <input type="text" id="yeniMusteriAdi" placeholder="Müşteri Adı *">
+    <input type="text" id="yeniMusteriSehir" placeholder="Şehir / İlçe">
+    <div class="form-satir-2">
+      <input type="text" id="yeniMusteriVade" placeholder="Vade (örn. 30 gün)">
+      <input type="text" id="yeniMusteriFatura" placeholder="Fatura Bilgisi">
+    </div>
+    <div class="form-satir-2">
+      <input type="tel" id="yeniMusteriTelefon" placeholder="Yetkili Telefon">
+      <input type="email" id="yeniMusteriEposta" placeholder="Yetkili E-posta">
+    </div>
+    <input type="text" id="yeniMusteriKargo" placeholder="Kargo Firması">
+    <div class="form-buton-satir">
+      <a class="form-kapat-btn" href="customer.html">Kapat</a>
+      <button class="form-kaydet-btn" id="btnYeniMusteriKaydet">✓ Müşteriyi Kaydet</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="customer-data.js"></script>
+<script src="customer-add-render.js"></script>
+</body>
+</html>
