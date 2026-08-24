@@ -174,6 +174,33 @@ var ReportsData = (function(){
       .slice(0, limit||5);
   }
 
+  function kaydiSil(tip, ts, geriBildir){
+    try{
+      var db = firebase.database();
+      db.ref("arsiv/" + tip).once("value").then(function(snap){
+        var mevcut = snap.val();
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+        var yeniListe = liste.filter(function(k){ return k.ts !== ts; });
+        return db.ref("arsiv/" + tip).set(yeniListe);
+      }).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function kaydiGuncelle(tip, ts, yeniUrunler, geriBildir){
+    try{
+      var db = firebase.database();
+      db.ref("arsiv/" + tip).once("value").then(function(snap){
+        var mevcut = snap.val();
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+        var idx = liste.findIndex(function(k){ return k.ts === ts; });
+        if(idx === -1){ throw new Error("Kayıt bulunamadı"); }
+        liste[idx].urunler = yeniUrunler;
+        liste[idx].revizeZamani = Date.now();
+        return db.ref("arsiv/" + tip).set(liste);
+      }).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     arsivDegistiginde: arsivDegistiginde,
@@ -186,7 +213,9 @@ var ReportsData = (function(){
     son6Ay: son6Ay,
     enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler,
     kaydiKacanIsaretle: kaydiKacanIsaretle,
-    kacanOzetBuAy: kacanOzetBuAy
+    kacanOzetBuAy: kacanOzetBuAy,
+    kaydiSil: kaydiSil,
+    kaydiGuncelle: kaydiGuncelle
   };
 
 })();

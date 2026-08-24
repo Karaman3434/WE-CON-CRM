@@ -132,6 +132,10 @@ function islemleriCiz(){
               + ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
               + (SONRAKI_ASAMA[k.tip] ? "<button class='islem-ilerlet-btn' data-ilerlet-i='"+i+"'>▶️ İlerlet — " + TIP_ETIKET[SONRAKI_ASAMA[k.tip]] + "</button>" : "")
            )
+        + "<div class='islem-duzenle-sil-satir'>"
+        + "<button class='islem-duzenle-btn' data-duzenle-i='" + i + "'>✏️ Düzenle</button>"
+        + "<button class='islem-sil-btn' data-sil-i='" + i + "'>🗑️ Sil</button>"
+        + "</div>"
         + "</div>";
     }).join("");
 
@@ -139,6 +143,24 @@ function islemleriCiz(){
       btn.onclick = function(){
         var i = parseInt(this.getAttribute("data-ilerlet-i"), 10);
         ilerletTiklandi(liste[i]);
+      };
+    });
+
+    kapsayici.querySelectorAll(".islem-duzenle-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var i = parseInt(this.getAttribute("data-duzenle-i"), 10);
+        duzenlemeAc(liste[i]);
+      };
+    });
+
+    kapsayici.querySelectorAll(".islem-sil-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var i = parseInt(this.getAttribute("data-sil-i"), 10);
+        var k = liste[i];
+        if(!confirm(k.musteri + " — " + k.tarih + " kaydı tamamen silinsin mi? Bu geri alınamaz.")) return;
+        ReportsData.kaydiSil(k.tip, k.ts, function(basarili, err){
+          if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        });
       };
     });
 
@@ -248,6 +270,58 @@ function ziyaretleriCiz(){
   }catch(e){ hataGoster("Ziyaretler çizilemedi: " + e.message); }
 }
 
+var duzenlenenKayit = null;
+
+function duzenlemeAc(k){
+  duzenlenenKayit = k;
+  var kapsayici = document.getElementById("duzenleUrunListesi");
+  kapsayici.innerHTML = (k.urunler||[]).map(function(u, i){
+    return "<div class='duzenle-urun-satir'>"
+      + "<div class='duzenle-urun-ad'>" + htmlEsc(u.ad) + "</div>"
+      + "<div class='duzenle-alan-grid'>"
+      + "<input type='number' step='0.01' data-alan='listeFiyat' data-i='" + i + "' value='" + (u.listeFiyat||0) + "' placeholder='Liste Fiyat'>"
+      + "<input type='number' step='0.1' data-alan='iskonto' data-i='" + i + "' value='" + (u.iskonto||0) + "' placeholder='İskonto %'>"
+      + "<input type='number' step='1' data-alan='adet' data-i='" + i + "' value='" + (u.adet||1) + "' placeholder='Adet'>"
+      + "<input type='number' step='0.01' data-alan='dipFiyat' data-i='" + i + "' value='" + (u.dipFiyat||0) + "' placeholder='Dip Fiyat'>"
+      + "</div>"
+      + "</div>";
+  }).join("");
+  document.getElementById("duzenleOverlay").hidden = false;
+}
+
+function duzenlemeKaydet(){
+  try{
+    if(!duzenlenenKayit) return;
+    var yeniUrunler = (duzenlenenKayit.urunler||[]).map(function(u, i){
+      var listeFiyat = parseFloat(document.querySelector("[data-alan='listeFiyat'][data-i='"+i+"']").value)||0;
+      var iskonto = parseFloat(document.querySelector("[data-alan='iskonto'][data-i='"+i+"']").value)||0;
+      var adet = parseFloat(document.querySelector("[data-alan='adet'][data-i='"+i+"']").value)||1;
+      var dipFiyat = parseFloat(document.querySelector("[data-alan='dipFiyat'][data-i='"+i+"']").value)||0;
+      var iskontoluFiyat = listeFiyat - (listeFiyat*iskonto/100);
+      return {
+        ad: u.ad, berta: u.berta, abas: u.abas,
+        listeFiyat: listeFiyat, iskonto: iskonto, adet: adet, dipFiyat: dipFiyat,
+        iskBirim: iskontoluFiyat,
+        toplamEuro: iskontoluFiyat * adet
+      };
+    });
+    var btn = document.getElementById("btnDuzenleKaydet");
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    ReportsData.kaydiGuncelle(duzenlenenKayit.tip, duzenlenenKayit.ts, yeniUrunler, function(basarili, err){
+      btn.disabled = false;
+      btn.textContent = "Kaydet";
+      if(basarili){
+        document.getElementById("duzenleOverlay").hidden = true;
+        duzenlenenKayit = null;
+        alert("✓ Güncellendi.");
+      } else {
+        hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
+    });
+  }catch(e){ hataGoster("Düzenleme kaydedilemedi: " + e.message); }
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   sekmeGecisBagla();
@@ -257,6 +331,8 @@ document.addEventListener("DOMContentLoaded", function(){
   var bugun = new Date();
   document.getElementById("gorevTarih").value = bugun.toISOString().slice(0,10);
 
+  document.getElementById("btnDuzenleVazgec").onclick = function(){ document.getElementById("duzenleOverlay").hidden = true; duzenlenenKayit = null; };
+  document.getElementById("btnDuzenleKaydet").onclick = duzenlemeKaydet;
   ReportsData.arsivDegistiginde(islemleriCiz);
   ReportsData.gorevDegistiginde(gorevleriCiz);
 });

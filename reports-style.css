@@ -92,6 +92,104 @@
   font-weight: 800;
   cursor: pointer;
 }
+.islem-duzenle-sil-satir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+.islem-duzenle-btn {
+  background: #f5f7fa;
+  color: #556170;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.islem-sil-btn {
+  background: #fdeaea;
+  color: #c0392b;
+  border: 1px solid #f0b8b3;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.duzenle-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 9999;
+}
+.duzenle-kutu {
+  background: #ffffff;
+  border-radius: 14px 14px 0 0;
+  padding: 18px 16px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.duzenle-baslik {
+  font-size: 16px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 12px;
+}
+.duzenle-urun-satir {
+  border: 1px solid #e2e6ec;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+.duzenle-urun-ad {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 6px;
+}
+.duzenle-alan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.duzenle-alan-grid input {
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+.duzenle-buton-satir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+.duzenle-vazgec-btn {
+  background: #ffffff;
+  color: #556170;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.duzenle-kaydet-btn {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
 
 /* Görevler */
 .gorev-ekle-kutu {
