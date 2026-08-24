@@ -153,6 +153,28 @@ var CustomerData = (function(){
     return liste.find(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(ad||"").toLocaleLowerCase("tr-TR"); }) || null;
   }
 
+  function musteriAdresEkle(musteriAd, tip, etiket, adres, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
+      if(!liste[idx][alan]) liste[idx][alan] = [];
+      liste[idx][alan].push({etiket: etiket || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi"), adres: adres});
+      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function musteriAdresSil(musteriAd, tip, adresIdx, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
+      if(!liste[idx][alan]) liste[idx][alan] = [];
+      liste[idx][alan].splice(adresIdx, 1);
+      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
@@ -165,7 +187,9 @@ var CustomerData = (function(){
     gunFarkiHesapla: gunFarkiHesapla,
     yeniMusteriKaydet: yeniMusteriKaydet,
     musteriGuncelle: musteriGuncelle,
-    musteriBul: musteriBul
+    musteriBul: musteriBul,
+    musteriAdresEkle: musteriAdresEkle,
+    musteriAdresSil: musteriAdresSil
   };
 
 })();

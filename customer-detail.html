@@ -50,6 +50,26 @@
     <button class="bilgi-kaydet-buton" id="btnBilgiKaydet">Bilgileri Güncelle</button>
   </section>
 
+  <section class="adres-bolum">
+    <div class="adres-bolum-baslik">📄 Fatura Adresleri</div>
+    <div id="faturaAdresListesi"></div>
+    <div class="adres-ekle-satir">
+      <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
+      <input type="text" id="yeniFaturaAdres" placeholder="Adres">
+      <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
+    </div>
+  </section>
+
+  <section class="adres-bolum">
+    <div class="adres-bolum-baslik">🚚 Teslimat Adresleri</div>
+    <div id="teslimatAdresListesi"></div>
+    <div class="adres-ekle-satir">
+      <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
+      <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
+      <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
+    </div>
+  </section>
+
   <div class="sekme-secim">
     <button class="sekme-btn sekme-btn--secili" data-sekme="siparisler">Sipariş Geçmişi</button>
     <button class="sekme-btn" data-sekme="ziyaretler">Ziyaret Geçmişi</button>
