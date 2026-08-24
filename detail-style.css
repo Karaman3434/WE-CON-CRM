@@ -110,6 +110,40 @@
   cursor: pointer;
 }
 
+.yetkili-karti {
+  border-bottom: 1px solid #e2e6ec;
+  padding: 8px 0;
+}
+.yetkili-ust-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.yetkili-isim { font-size: 14px; font-weight: 800; color: #003a70; }
+.yetkili-gorev { font-size: 11px; color: #8a94a3; }
+.yetkili-detay { font-size: 12px; color: #556170; margin-top: 3px; }
+
+.yetkili-ekle-satir {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #cbd5e1;
+}
+.yetkili-ekle-satir input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  width: 100%;
+}
+.yetkili-ekle-satir .form-satir-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
 .gecmis-karti {
   border: 1px solid #e2e6ec;
   border-radius: 10px;

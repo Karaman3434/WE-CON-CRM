@@ -175,6 +175,59 @@ function adresEkleBagla(){
   });
 }
 
+function yetkilileriCiz(musteri){
+  try{
+    var liste = musteri.iletisimler || [];
+    var kapsayici = document.getElementById("yetkiliListesi");
+    if(liste.length === 0){
+      kapsayici.innerHTML = "<p class='bos-mesaj' style='padding:8px 0;'>Kayıtlı kişi yok.</p>";
+      return;
+    }
+    kapsayici.innerHTML = liste.map(function(k, i){
+      var detaylar = [k.telefon, k.eposta].filter(Boolean).join(" · ");
+      return "<div class='yetkili-karti'>"
+        + "<div class='yetkili-ust-satir'>"
+        + "<div><span class='yetkili-isim'>" + htmlEsc(k.isim) + "</span>" + (k.gorev?" <span class='yetkili-gorev'>("+htmlEsc(k.gorev)+")</span>":"") + "</div>"
+        + "<button class='adres-sil-btn' data-i='" + i + "'>Sil</button>"
+        + "</div>"
+        + (detaylar ? "<div class='yetkili-detay'>" + htmlEsc(detaylar) + "</div>" : "")
+        + "</div>";
+    }).join("");
+
+    kapsayici.querySelectorAll("[data-i]").forEach(function(btn){
+      btn.onclick = function(){
+        if(!confirm("Bu kişi silinsin mi?")) return;
+        var i = parseInt(this.getAttribute("data-i"), 10);
+        CustomerData.yetkiliSil(seciliMusteriAdi, i, function(basarili, err){
+          if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        });
+      };
+    });
+  }catch(e){ hataGoster("Yetkili kişiler çizilemedi: " + e.message); }
+}
+
+function yetkiliEkleBagla(){
+  document.getElementById("btnYetkiliEkle").onclick = function(){
+    var isim = document.getElementById("yeniYetkiliIsim").value.trim();
+    if(!isim){ hataGoster("İsim girin."); return; }
+    var kisi = {
+      isim: isim,
+      gorev: document.getElementById("yeniYetkiliGorev").value.trim(),
+      telefon: document.getElementById("yeniYetkiliTelefon").value.trim(),
+      eposta: document.getElementById("yeniYetkiliEposta").value.trim()
+    };
+    CustomerData.yetkiliEkle(seciliMusteriAdi, kisi, function(basarili, err){
+      if(basarili){
+        ["yeniYetkiliIsim","yeniYetkiliGorev","yeniYetkiliTelefon","yeniYetkiliEposta"].forEach(function(id){
+          document.getElementById(id).value = "";
+        });
+      } else {
+        hataGoster("Eklenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
+    });
+  };
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -193,6 +246,8 @@ document.addEventListener("DOMContentLoaded", function(){
   ustBilgiyiCiz(secili);
   adresleriCiz(secili);
   adresEkleBagla();
+  yetkilileriCiz(secili);
+  yetkiliEkleBagla();
 
   document.getElementById("btnSatisYap").onclick = function(){
     CustomerData.sec(secili);
@@ -207,6 +262,7 @@ document.addEventListener("DOMContentLoaded", function(){
       ustBilgiyiCiz(tazeMusteri);
       ziyaretGecmisiniCiz(tazeMusteri);
       adresleriCiz(tazeMusteri);
+      yetkilileriCiz(tazeMusteri);
     }
   });
   ReportsData.arsivDegistiginde(siparisGecmisiniCiz);

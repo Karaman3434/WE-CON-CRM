@@ -175,6 +175,26 @@ var CustomerData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  function yetkiliEkle(musteriAd, kisi, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      if(!liste[idx].iletisimler) liste[idx].iletisimler = [];
+      liste[idx].iletisimler.push(kisi);
+      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function yetkiliSil(musteriAd, kisiIdx, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      if(!liste[idx].iletisimler) liste[idx].iletisimler = [];
+      liste[idx].iletisimler.splice(kisiIdx, 1);
+      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
@@ -189,7 +209,9 @@ var CustomerData = (function(){
     musteriGuncelle: musteriGuncelle,
     musteriBul: musteriBul,
     musteriAdresEkle: musteriAdresEkle,
-    musteriAdresSil: musteriAdresSil
+    musteriAdresSil: musteriAdresSil,
+    yetkiliEkle: yetkiliEkle,
+    yetkiliSil: yetkiliSil
   };
 
 })();

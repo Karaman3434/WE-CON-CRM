@@ -138,13 +138,30 @@ function mesajMetniOlustur(musteri, sepet, tip, kur, kdv){
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
     document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, kur, kdv);
-    var ilkKisi = (musteri.iletisimler && musteri.iletisimler[0]) ? musteri.iletisimler[0] : {};
-    document.getElementById("gonderTelefon").value = ilkKisi.telefon || "";
-    document.getElementById("gonderEposta").value = ilkKisi.eposta || "";
+
+    var kisiler = musteri.iletisimler || [];
+    var secim = document.getElementById("gonderKisiSecim");
+    if(kisiler.length > 1){
+      secim.hidden = false;
+      secim.innerHTML = kisiler.map(function(k, i){
+        return "<option value='" + i + "'>" + htmlEsc(k.isim) + (k.gorev?" ("+htmlEsc(k.gorev)+")":"") + "</option>";
+      }).join("");
+      secim.onchange = function(){ kisiAlanlariniDoldur(kisiler[parseInt(this.value,10)]); };
+      kisiAlanlariniDoldur(kisiler[0]);
+    } else {
+      secim.hidden = true;
+      kisiAlanlariniDoldur(kisiler[0] || {});
+    }
+
     document.getElementById("gonderKutu").hidden = false;
     document.getElementById("btnKaydet").hidden = true;
     document.getElementById("tipSecim").querySelectorAll(".tip-btn").forEach(function(b){ b.disabled = true; });
   }catch(e){ hataGoster("Gönderim alanı hazırlanamadı: " + e.message); }
+}
+
+function kisiAlanlariniDoldur(kisi){
+  document.getElementById("gonderTelefon").value = (kisi && kisi.telefon) || "";
+  document.getElementById("gonderEposta").value = (kisi && kisi.eposta) || "";
 }
 
 function whatsappGonder(){
