@@ -133,6 +133,109 @@ function belgeyiCiz(kayit, musteri){
   }catch(e){ hataGoster("Belge çizilemedi: " + e.message); }
 }
 
+var TIP_ETIKET_UZUN = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
+var TIP_IKON_BELGE = {numune:"🧪", teklif:"📝", proforma:"🧾", siparis:"📦"};
+var TIP_RENK_BELGE = {numune:"#b7601f", teklif:"#1f9d55", proforma:"#8e44ad", siparis:"#003a70"};
+
+function belgeZinciriBul(kayit){
+  var hepsi = [];
+  ["numune","teklif","proforma","siparis"].forEach(function(t){
+    ReportsData.sonIslemler().filter(function(k){ return k.tip===t; }).forEach(function(k){
+      hepsi.push({
+        tip: t, ts: k.ts, musteri: k.musteri, tarih: k.tarih, kod: k.kod,
+        durum: k.durum, revizeZamani: k.revizeZamani,
+        adet: (k.urunler||[]).length,
+        bertaKodlari: (k.urunler||[]).map(function(u){ return u.berta; }).filter(Boolean)
+      });
+    });
+  });
+  var mevcut = hepsi.find(function(h){ return h.tip===kayit.tip && h.ts===kayit.ts; });
+  if(!mevcut) return [];
+
+  function bagliMi(a,b){
+    if(a.musteri !== b.musteri) return false;
+    return a.bertaKodlari.some(function(kod){ return b.bertaKodlari.indexOf(kod)>=0; });
+  }
+
+  var zincir = [mevcut];
+  var kullanildi = {}; kullanildi[mevcut.tip+"_"+mevcut.ts] = true;
+
+  var referans = mevcut;
+  while(true){
+    var enYakinOncesi = null;
+    hepsi.forEach(function(aday){
+      var anahtar = aday.tip+"_"+aday.ts;
+      if(kullanildi[anahtar]) return;
+      if(aday.ts >= referans.ts) return;
+      if(!bagliMi(referans, aday)) return;
+      if(!enYakinOncesi || aday.ts > enYakinOncesi.ts) enYakinOncesi = aday;
+    });
+    if(!enYakinOncesi) break;
+    zincir.unshift(enYakinOncesi);
+    kullanildi[enYakinOncesi.tip+"_"+enYakinOncesi.ts] = true;
+    referans = enYakinOncesi;
+  }
+
+  referans = mevcut;
+  while(true){
+    var enYakinSonrasi = null;
+    hepsi.forEach(function(aday){
+      var anahtar = aday.tip+"_"+aday.ts;
+      if(kullanildi[anahtar]) return;
+      if(aday.ts <= referans.ts) return;
+      if(!bagliMi(referans, aday)) return;
+      if(!enYakinSonrasi || aday.ts < enYakinSonrasi.ts) enYakinSonrasi = aday;
+    });
+    if(!enYakinSonrasi) break;
+    zincir.push(enYakinSonrasi);
+    kullanildi[enYakinSonrasi.tip+"_"+enYakinSonrasi.ts] = true;
+    referans = enYakinSonrasi;
+  }
+
+  return zincir;
+}
+
+function belgeGecmisiniCiz(kayit){
+  var zincir = belgeZinciriBul(kayit);
+  var kapsayici = document.getElementById("belgeGecmisiKutu");
+  if(zincir.length <= 1){
+    kapsayici.hidden = true;
+    return;
+  }
+  kapsayici.hidden = false;
+  var html = "<div class='belge-gecmis-baslik'>📜 Belge Geçmişi</div>"
+    + "<div class='belge-gecmis-alt'>" + htmlEsc(zincir[0].musteri) + " — bu iş için " + zincir.length + " belge bulundu</div>";
+  zincir.forEach(function(adim, i){
+    var renk = TIP_RENK_BELGE[adim.tip] || "#3569b8";
+    var aktifMi = (adim.tip===kayit.tip && adim.ts===kayit.ts);
+    var sonMu = (i===zincir.length-1);
+    var durumEk = adim.revizeZamani ? " · 🔄 revize edildi" : "";
+    if(adim.durum==="iptal") durumEk += " · 🚫 iptal";
+    else if(adim.durum==="iade") durumEk += " · ↩️ iade";
+    else if(adim.durum==="kacan") durumEk += " · ❌ kaçtı";
+    html += "<div class='belge-gecmis-adim" + (sonMu?"":" belge-gecmis-adim--baglantili") + "'>"
+      + "<div class='belge-gecmis-nokta' style='background:" + renk + ";'></div>"
+      + "<div class='belge-gecmis-tarih'>" + htmlEsc(adim.tarih) + "</div>"
+      + "<div class='belge-gecmis-kart' style='background:" + renk + "18;border-color:" + renk + "55;' data-tip='" + adim.tip + "' data-ts='" + adim.ts + "'>"
+      + "<div class='belge-gecmis-kart-baslik' style='color:" + renk + ";'>" + (TIP_IKON_BELGE[adim.tip]||"") + " " + TIP_ETIKET_UZUN[adim.tip]
+      + (aktifMi ? "<span class='belge-gecmis-suan'>ŞU AN BURADASIN</span>" : "")
+      + "</div>"
+      + "<div class='belge-gecmis-kart-alt' style='color:" + renk + ";'>" + htmlEsc(adim.kod||"") + " · " + adim.adet + " ürün" + durumEk + "</div>"
+      + "</div>"
+      + "</div>";
+  });
+  kapsayici.innerHTML = html;
+
+  kapsayici.querySelectorAll(".belge-gecmis-kart").forEach(function(el){
+    el.onclick = function(){
+      var t = this.getAttribute("data-tip");
+      var ts = parseFloat(this.getAttribute("data-ts"));
+      localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:t, ts:ts}));
+      window.location.reload();
+    };
+  });
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -155,6 +258,7 @@ document.addEventListener("DOMContentLoaded", function(){
     if(!kayit) return false;
     var musteri = CustomerData.musteriBul(kayit.musteri);
     belgeyiCiz(kayit, musteri);
+    belgeGecmisiniCiz(kayit);
     return true;
   }
 
