@@ -609,6 +609,58 @@ function musteriKartVeZiyaretGecmisiniAc(musteriAdi){
   musteriZiyaretGecmisiAc();
 }
 
+// ZİYARET TAKVİMİ — tek merkezden yönetilen sayfa durumu.
+// Önceki modülerleştirmede bu global durum ve aç/kapat yönlendiricisi eksik kaldığı
+// için Ana Sayfa > Raporlar > Ziyaret Takvimi tıklaması ReferenceError üretiyordu.
+var AY_ADLARI = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+var _ziyaretTakvimNow = new Date();
+var ziyaretTakvimYil = _ziyaretTakvimNow.getFullYear();
+var ziyaretTakvimAy = _ziyaretTakvimNow.getMonth();
+
+function ziyaretTakvimiAcKapa(){
+  var wrap = document.getElementById("ziyaretTakvimWrap");
+  var btn = document.getElementById("ziyaretTakvimToggleBtn");
+  var sonIslemlerWrap = document.getElementById("sonIslemlerWrap");
+  if(!wrap || !btn) return;
+
+  var acik = wrap.style.display !== "none";
+  if(acik){
+    wrap.style.display = "none";
+    btn.innerHTML = "📆 Ziyaret Takvimini Göster ▾";
+    if(sonIslemlerWrap) sonIslemlerWrap.style.display = "block";
+    return;
+  }
+
+  // Aynı rapor ekranında yalnızca bir yardımcı panel açık kalsın.
+  var aylikWrap = document.getElementById("aylikOzetWrap");
+  var aylikBtn = document.getElementById("aylikOzetToggleBtn");
+  if(aylikWrap) aylikWrap.style.display = "none";
+  if(aylikBtn) aylikBtn.innerHTML = "📅 Aylık Sipariş &amp; Prim Özetini Göster ▾";
+
+  var ajWrap = document.getElementById("ajandaWrap");
+  var ajBtn = document.getElementById("ajandaToggleBtn");
+  if(ajWrap) ajWrap.style.display = "none";
+  if(ajBtn) ajBtn.innerHTML = "📓 Günlük Ajanda Göster ▾";
+
+  wrap.style.display = "block";
+  btn.innerHTML = "📆 Ziyaret Takvimini Gizle ▴";
+  if(sonIslemlerWrap) sonIslemlerWrap.style.display = "none";
+  ziyaretTakvimiOlustur();
+}
+
+function anaSayfadanZiyaretTakvimiAc(){
+  switchTab(9);
+  // Sayfa geçişinden sonra DOM'un yeni yüksekliğini ve üst panel ölçümünü
+  // tarayıcıya bırakıp takvimi doğrudan açık hale getir.
+  setTimeout(function(){
+    var wrap = document.getElementById("ziyaretTakvimWrap");
+    if(wrap && wrap.style.display === "none") ziyaretTakvimiAcKapa();
+    var page = document.getElementById("page9");
+    if(page) page.scrollTop = 0;
+    if(typeof ustPanelYuksekligiOlc === "function") ustPanelYuksekligiOlc();
+  }, 0);
+}
+
 function ziyaretTakvimAyDegistir(fark){
   ziyaretTakvimAy += fark;
   if(ziyaretTakvimAy < 0){ ziyaretTakvimAy = 11; ziyaretTakvimYil--; }
@@ -948,6 +1000,10 @@ function kacanOzetRenderEt(arsiv){
     });
   });
 
+  // Kaçan siparişlerin toplam kaybedilen tutarı; render sırasında kullanılan
+  // değişkeni aynı scope içinde üret. Önceki sürümde bu değer hesaplanmadan
+  // fmt(toplamTutar) çağrıldığı için ReferenceError oluşuyordu.
+  var toplamTutar = kacanlar.reduce(function(toplam, item){ return toplam + (Number(item.tutar)||0); }, 0);
   window._kacanKayitlariBuAy = kacanlar;
 
   el.innerHTML =
