@@ -45,6 +45,27 @@ function ayarlariKaydet(){
   }catch(e){ hataGoster("Ayarlar kaydedilemedi: " + e.message); }
 }
 
+function sablonlariDoldur(){
+  try{
+    var s = {};
+    try{ s = JSON.parse(localStorage.getItem("weicon_mesaj_sablonlari")||"{}"); }catch(e){}
+    document.getElementById("sablonMailMetni").value = s.mail || "";
+    document.getElementById("sablonWhatsappMetni").value = s.whatsapp || "";
+  }catch(e){ hataGoster("Şablonlar okunamadı: " + e.message); }
+}
+
+function sablonlariKaydet(){
+  try{
+    var s = {
+      mail: document.getElementById("sablonMailMetni").value.trim(),
+      whatsapp: document.getElementById("sablonWhatsappMetni").value.trim()
+    };
+    localStorage.setItem("weicon_mesaj_sablonlari", JSON.stringify(s));
+    try{ firebase.database().ref("mesajSablonlari").set(s); }catch(e){}
+    alert("✓ Şablonlar kaydedildi.");
+  }catch(e){ hataGoster("Şablonlar kaydedilemedi: " + e.message); }
+}
+
 function pinDegistirTiklandi(){
   var mevcut = prompt("Mevcut PIN'i girin (ilk kez ayarlıyorsan varsayılan: 1234):");
   if(mevcut === null) return;
@@ -71,7 +92,9 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   ayarlariDoldur();
+  sablonlariDoldur();
   document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
+  document.getElementById("btnSablonKaydet").onclick = sablonlariKaydet;
   document.getElementById("btnPinDegistir").onclick = pinDegistirTiklandi;
   document.getElementById("btnMenuAktif").onclick = function(){};
   document.getElementById("btnCikis").onclick = function(){

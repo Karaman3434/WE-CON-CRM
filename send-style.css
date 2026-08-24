@@ -147,6 +147,21 @@
 }
 .gonder-btn--whatsapp { background: #25d366; }
 .gonder-btn--eposta { background: #2563eb; }
+.sablon-link-satir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.sablon-link-btn {
+  background: none;
+  border: none;
+  color: #556170;
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+}
 .gonder-bitir-buton {
   width: 100%;
   background: #ffffff;

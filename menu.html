@@ -48,6 +48,17 @@
     <button class="pin-degistir-buton" id="btnPinDegistir">PIN Belirle / Değiştir</button>
   </section>
 
+  <section class="ayar-kutu">
+    <label>✉️ Mesaj Şablonu ({URUN}, {BELGE}, {FIRMA} yer tutucuları kullanılabilir)</label>
+    <textarea id="sablonMailMetni" rows="3" placeholder="Örn: {FIRMA} için {BELGE} göndermenizi rica ederim."></textarea>
+  </section>
+
+  <section class="ayar-kutu">
+    <label>📱 WhatsApp Şablonu</label>
+    <textarea id="sablonWhatsappMetni" rows="3" placeholder="Örn: İstediğiniz {URUN} için fiyat bilgisini paylaştım."></textarea>
+  </section>
+  <button class="kaydet-buton" id="btnSablonKaydet">Şablonları Kaydet</button>
+
   <hr class="ayrac">
 
   <div class="kullanici-bilgi" id="kullaniciBilgi"></div>

@@ -22,6 +22,16 @@
   color: #003a70;
 }
 .ayar-kutu input:focus { outline: none; border-color: #003a70; }
+.ayar-kutu textarea {
+  width: 100%;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+.ayar-kutu textarea:focus { outline: none; border-color: #003a70; }
 
 .kaydet-buton {
   width: 100%;

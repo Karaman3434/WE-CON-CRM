@@ -117,11 +117,30 @@ function kaydetTiklandi(){
   }catch(e){ hataGoster("Kaydet işlemi başarısız: " + e.message); }
 }
 
-function mesajMetniOlustur(musteri, sepet, tip, kur, kdv){
+function sablonOku(kanal){
+  try{
+    var s = JSON.parse(localStorage.getItem("weicon_mesaj_sablonlari")||"{}");
+    return (s && s[kanal]) ? s[kanal].trim() : "";
+  }catch(e){ return ""; }
+}
+
+function sablonUygula(sablon, urunKelimesi, belgeAdi, firmaAdi){
+  return sablon.split("{URUN}").join(urunKelimesi).split("{BELGE}").join(belgeAdi).split("{FIRMA}").join(firmaAdi||"");
+}
+
+function mesajMetniOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
   var satirlar = [];
-  satirlar.push("WEICON " + TIP_ETIKET[tip]);
-  satirlar.push("Sayın " + musteri.ad + ",");
+
+  var sablon = kanal ? sablonOku(kanal) : "";
+  if(sablon){
+    var urunKelimesi = sepet.length===1 ? "ürün" : "ürünler";
+    satirlar.push("Merhaba,");
+    satirlar.push(sablonUygula(sablon, urunKelimesi, TIP_ETIKET[tip], musteri.ad));
+  } else {
+    satirlar.push("WEICON " + TIP_ETIKET[tip]);
+    satirlar.push("Sayın " + musteri.ad + ",");
+  }
   satirlar.push("");
   sepet.forEach(function(u){
     var h = CartData.hesapla(u, kur, kdv);
@@ -135,9 +154,12 @@ function mesajMetniOlustur(musteri, sepet, tip, kur, kdv){
   return satirlar.join("\n");
 }
 
+var gonderBaglam = null;
+
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
-    document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, kur, kdv);
+    gonderBaglam = {musteri:musteri, sepet:sepet, tip:tip, kur:kur, kdv:kdv};
+    document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, kur, kdv, null);
 
     var kisiler = musteri.iletisimler || [];
     var secim = document.getElementById("gonderKisiSecim");
@@ -162,6 +184,12 @@ function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
 function kisiAlanlariniDoldur(kisi){
   document.getElementById("gonderTelefon").value = (kisi && kisi.telefon) || "";
   document.getElementById("gonderEposta").value = (kisi && kisi.eposta) || "";
+}
+
+function sablonuUygulaTiklandi(kanal){
+  if(!gonderBaglam) return;
+  var g = gonderBaglam;
+  document.getElementById("gonderMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, kanal);
 }
 
 function whatsappGonder(){
@@ -210,6 +238,8 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnKaydet").onclick = kaydetTiklandi;
   document.getElementById("btnWhatsapp").onclick = whatsappGonder;
   document.getElementById("btnEposta").onclick = epostaGonder;
+  document.getElementById("btnWhatsappSablon").onclick = function(){ sablonuUygulaTiklandi("whatsapp"); };
+  document.getElementById("btnEpostaSablon").onclick = function(){ sablonuUygulaTiklandi("mail"); };
   document.getElementById("btnGonderBitir").onclick = function(){ window.location.href = "home.html"; };
   ozetiCiz();
 });
