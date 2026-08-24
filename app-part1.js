@@ -837,7 +837,7 @@ function musteriListesiGuvenliKaydet(oncelikliMusteri, silinecekId){
 
 var aktifSehirFiltre = null; // null = hepsi
 
-var tumMusterilerModuAktif = false;
+var tumMusterilerModuAktif = true;
 function musteriHepsiniGoster(){
   aktifSehirFiltre = null;
   document.getElementById("sehirFiltrePanel").style.display="none";
@@ -848,11 +848,9 @@ function musteriHepsiniGoster(){
   if(btn) btn.innerHTML = tumMusterilerModuAktif ? "🔽 Son Kayıtlara Dön" : "👥 Tüm Müşteriler";
   if(window.fbGet){
     window.fbGet("musteriler").then(function(data){
-      if(data){ musteriListesi=Array.isArray(data)?data:Object.values(data); }
-      else { musteriListesi=[]; }
-      lsSet("weicon_musteriler", musteriListesi);
+      weiconSunucuVerisiniGuvenliUygula("musteriler", data);
       musteriListesiniRenderEt();
-    });
+    }).catch(function(){ musteriListesiniRenderEt(); });
   } else { musteriListesiniRenderEt(); }
 }
 
@@ -899,11 +897,9 @@ function musteriPanelAc(panel){
     if(btnKaydet) btnKaydet.style.opacity="0.7";
     if(window.fbGet){
       window.fbGet("musteriler").then(function(data){
-        if(data){ musteriListesi=Array.isArray(data)?data:Object.values(data); }
-        else { musteriListesi=[]; }
-        lsSet("weicon_musteriler", musteriListesi);
+        weiconSunucuVerisiniGuvenliUygula("musteriler", data);
         musteriListesiniRenderEt();
-      });
+      }).catch(function(){ musteriListesiniRenderEt(); });
     } else { musteriListesiniRenderEt(); }
   } else {
     bulPanel.style.display="none";
