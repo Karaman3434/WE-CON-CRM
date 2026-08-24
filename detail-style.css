@@ -1,0 +1,108 @@
+/* detail-style.css — aynı kural: gradyan/gölge yığılması yok. */
+
+.detay-ust-kutu {
+  background: #eaf2fc;
+  border: 2px solid #3569b8;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.detay-ad { font-size: 20px; font-weight: 900; color: #003a70; }
+.detay-sehir { font-size: 13px; color: #556170; margin-top: 2px; margin-bottom: 12px; }
+
+.satis-yap-buton {
+  width: 100%;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.detay-bilgi-form {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  background: #fafbfc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.detay-bilgi-form input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
+}
+.bilgi-kaydet-buton {
+  background: #003a70;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.gecmis-karti {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: #fafbfc;
+}
+.gecmis-ust-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.gecmis-tip {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+.gecmis-tip--numune { background: #eef2f8; color: #556170; }
+.gecmis-tip--teklif { background: #fff3e6; color: #a8590c; }
+.gecmis-tip--proforma { background: #eaf2fc; color: #2563eb; }
+.gecmis-tip--siparis { background: #e9f7ee; color: #16a34a; }
+.gecmis-tarih { font-size: 12px; color: #8a94a3; }
+.gecmis-toplam { font-size: 14px; font-weight: 900; color: #003a70; }
+.gecmis-not { font-size: 13px; color: #333; margin-top: 4px; }
+
+.sekme-secim {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.sekme-btn {
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #556170;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.sekme-btn--secili {
+  border-color: #003a70;
+  background: #003a70;
+  color: #ffffff;
+}
+.bos-mesaj {
+  text-align: center;
+  color: #8a94a3;
+  font-size: 14px;
+  padding: 30px 0;
+  font-style: italic;
+}

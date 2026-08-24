@@ -64,7 +64,11 @@ function listeyiCiz(){
     kapsayici.querySelectorAll(".musteri-karti").forEach(function(kart, i){
       kart.onclick = function(){
         CustomerData.sec(sonuclar[i]);
-        window.location.href = "send.html";
+        // Sepette ürün varsa (satış akışının ortasındaysak) doğrudan Kaydet'e
+        // geç; sepet boşsa (müşteriyi incelemeye gelinmiş) Müşteri Kartı'na git.
+        var sepetDoluMu = false;
+        try{ sepetDoluMu = JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0; }catch(e){}
+        window.location.href = sepetDoluMu ? "send.html" : "customer-detail.html";
       };
     });
   }catch(e){ hataGoster("Liste çizilemedi: " + e.message); }

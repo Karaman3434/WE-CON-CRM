@@ -134,6 +134,25 @@ var CustomerData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  function musteriGuncelle(musteriAd, guncelBilgi, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      liste[idx].vade = guncelBilgi.vade;
+      liste[idx].fatura = guncelBilgi.fatura;
+      liste[idx].telefon = guncelBilgi.telefon;
+      liste[idx].eposta = guncelBilgi.eposta;
+      liste[idx].kargo = guncelBilgi.kargo;
+      firebase.database().ref("musteriler").set(liste).then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function musteriBul(ad){
+    return liste.find(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(ad||"").toLocaleLowerCase("tr-TR"); }) || null;
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
@@ -144,7 +163,9 @@ var CustomerData = (function(){
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,
     gunFarkiHesapla: gunFarkiHesapla,
-    yeniMusteriKaydet: yeniMusteriKaydet
+    yeniMusteriKaydet: yeniMusteriKaydet,
+    musteriGuncelle: musteriGuncelle,
+    musteriBul: musteriBul
   };
 
 })();

@@ -82,6 +82,7 @@ function kaydetTiklandi(){
     SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, function(basarili, sonuc, revizeMi){
       if(basarili){
         try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+        try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
         if(revizeMi){
           document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
         }

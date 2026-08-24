@@ -132,6 +132,12 @@ document.addEventListener("DOMContentLoaded", function(){
     sayfayiCiz();
   });
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-  document.getElementById("btnDevamEt").onclick = function(){ window.location.href = "customer.html"; };
+  document.getElementById("btnDevamEt").onclick = function(){
+    // Müşteri Kartı'ndan "Satış Yap" ile gelindiyse müşteri zaten seçili —
+    // tekrar seçtirmeye gerek yok, doğrudan Kaydet ekranına geç.
+    var onceSecilmisMi = false;
+    try{ onceSecilmisMi = !!JSON.parse(localStorage.getItem("weicon_secili_musteri")||"null"); }catch(e){}
+    window.location.href = onceSecilmisMi ? "send.html" : "customer.html";
+  };
   sayfayiCiz();
 });

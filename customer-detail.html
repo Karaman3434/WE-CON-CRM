@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — MÜŞTERİ KARTI v2
+  ===================================
+  Bir müşterinin profili: iletişim/vade/fatura bilgisi (düzenlenebilir),
+  ziyaret geçmişi, sipariş/teklif geçmişi. customer.html'den seçilen
+  müşteri "weicon_secili_musteri" üzerinden buraya taşınır.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Müşteri Kartı</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="customer-style.css">
+<link rel="stylesheet" href="detail-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="customer.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <section class="detay-ust-kutu">
+    <div class="detay-ad" id="detayAd">—</div>
+    <div class="detay-sehir" id="detaySehir"></div>
+    <button class="satis-yap-buton" id="btnSatisYap">🛒 Bu Müşteriye Satış Yap</button>
+  </section>
+
+  <section class="detay-bilgi-form" id="detayBilgiForm">
+    <div class="form-satir-2">
+      <input type="text" id="detayVade" placeholder="Vade">
+      <input type="text" id="detayFatura" placeholder="Fatura Bilgisi">
+    </div>
+    <div class="form-satir-2">
+      <input type="tel" id="detayTelefon" placeholder="Yetkili Telefon">
+      <input type="email" id="detayEposta" placeholder="Yetkili E-posta">
+    </div>
+    <input type="text" id="detayKargo" placeholder="Kargo Firması">
+    <button class="bilgi-kaydet-buton" id="btnBilgiKaydet">Bilgileri Güncelle</button>
+  </section>
+
+  <div class="sekme-secim">
+    <button class="sekme-btn sekme-btn--secili" data-sekme="siparisler">Sipariş Geçmişi</button>
+    <button class="sekme-btn" data-sekme="ziyaretler">Ziyaret Geçmişi</button>
+  </div>
+
+  <section id="sekmeSiparisler" class="sekme-panel">
+    <div id="detaySiparisListesi"></div>
+    <p class="bos-mesaj" id="detaySiparisBos" hidden>Bu müşteriye ait kayıt yok.</p>
+  </section>
+
+  <section id="sekmeZiyaretler" class="sekme-panel" hidden>
+    <div id="detayZiyaretListesi"></div>
+    <p class="bos-mesaj" id="detayZiyaretBos" hidden>Ziyaret kaydı yok.</p>
+  </section>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="customer-data.js"></script>
+<script src="reports-data.js"></script>
+<script src="detail-render.js"></script>
+</body>
+</html>
