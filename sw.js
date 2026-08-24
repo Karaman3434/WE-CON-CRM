@@ -1,6 +1,7 @@
-const CACHE_ADI = "weicon-asist-cache-v14";
+const CACHE_ADI = "weicon-asist-cache-v15-ui-fix";
 const BUILD = "CG 1508261515-017";
 const SALES_V3_SRC = '<script src="js/sales/sales-v3.js?v=' + BUILD + '"></script>';
+const PAINT_FIX_STYLE = '<style id="weicon-main-paint-fix">.phone-container{transform:none!important;-webkit-backface-visibility:visible!important;backface-visibility:visible!important;}</style>';
 function modularHtmlResponse(response) {
   if (!response || !response.ok) return response;
   var contentType = response.headers.get("content-type") || "";
@@ -10,6 +11,7 @@ function modularHtmlResponse(response) {
     if (hasSalesV3) html = html.replace(/js\/sales\/sales-v3\.js(?:\?[^\"']*)?/g, "js/sales/sales-v3.js?v=" + BUILD);
     else html = html.replace(/<\/body>/i, SALES_V3_SRC + "\n</body>");
     html = html.replace(/WE[İI]CON AS[İI]ST V[0-9A-Za-z._ -]+/g, "WEİCON ASİST " + BUILD);
+    html = html.replace(/<\/head>/i, PAINT_FIX_STYLE + "\n</head>");
     return new Response(html, {status: response.status, statusText: response.statusText, headers: response.headers});
   });
 }
