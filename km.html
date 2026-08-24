@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — ARAÇ KM TAKİP v2
+  WEICON ASİST — ARAÇ KM TAKİP v3
   ==================================
-  Eski uygulamayla AYNI Firebase yolları: "kmTakip" (günlük kayıtlar,
-  anahtar "YYYY-MM-DD") ve "kmTakipAyarlari" (ad-soyad, plaka).
-  Basitleştirme: otomatik "önceki günün bitişi = bu günün başlangıcı"
-  kuralı korunuyor; İş/Özel kategori ayrımı korunuyor. Fotoğraf okuma
-  (AI) ve kilitleme mekanizması bu ilk sürümde YOK — doğrudan manuel giriş.
+  Eski uygulamanın GERÇEK mantığı: günde TEK kilometre girişi ("fotoğraflanan
+  KM"). Bu tek değer, o günün başlangıcı VE bir önceki günün bitişi olarak
+  kullanılır (km-data.js'teki gununKmGir() bkz.).
 -->
 <html lang="tr">
 <head>
@@ -39,61 +37,61 @@
     </div>
   </section>
 
+  <!-- EN ÜST: dünün özet satırı (başlangıç → bitiş = mesafe) -->
+  <div class="km-dun-ozet" id="kmDunOzet">Dünkü kayıt henüz yok.</div>
+
   <section class="km-form-kutu">
-    <div class="km-form-baslik">Bugünün Kaydı — <span id="kmBugunTarih"></span></div>
+    <div class="km-form-baslik">Bugünün Kilometresi — <span id="kmBugunTarih"></span></div>
 
-    <!-- ADIM 1: Sadece günün başlangıç KM'sini gir ve kaydet -->
-    <div id="kmAdim1" class="km-adim">
-      <div class="hesap-alan">
-        <label>Başlangıç KM (önceki günün bitişi otomatik önerilir)</label>
-        <input type="number" id="kmBaslangic" placeholder="örn. 45200">
-      </div>
-      <div class="hesap-alan-grid">
-        <div class="hesap-alan">
-          <label>Başlangıç Saati</label>
-          <input type="text" id="kmSaat" placeholder="örn. 08:30">
-        </div>
-        <div class="hesap-alan">
-          <label>Seyir Güzergahı</label>
-          <input type="text" id="kmGuzergah" placeholder="örn. Ankara - Kazan">
-        </div>
-      </div>
-      <div class="kategori-secim">
-        <button class="kategori-btn kategori-btn--secili" data-kategori="is">İş</button>
-        <button class="kategori-btn" data-kategori="ozel">Özel</button>
-      </div>
-      <button class="km-kaydet-buton" id="btnKmBaslangicKaydet">✓ Günü Başlat (Başlangıç KM'sini Kaydet)</button>
+    <div class="hesap-alan">
+      <label>Bugünün Kilometresi</label>
+      <input type="number" id="kmBugun" placeholder="örn. 113340">
     </div>
 
-    <!-- ADIM 2: Gün başlatıldıktan sonra — bitiş KM'sini gir -->
-    <div id="kmAdim2" class="km-adim" hidden>
-      <div class="km-baslangic-ozet">
-        Bugün <strong id="kmOzetBaslangic">-</strong> km'den başladın<span id="kmOzetSaat"></span>.
+    <div class="hesap-alan-grid">
+      <div class="hesap-alan">
+        <label>Saat</label>
+        <input type="text" id="kmSaat" placeholder="örn. 09:00">
       </div>
       <div class="hesap-alan">
-        <label>Bitiş KM</label>
-        <input type="number" id="kmBitis" placeholder="örn. 45340">
+        <label>Tarih</label>
+        <input type="text" id="kmTarihGoster" readonly>
       </div>
-      <div class="hesap-alan">
-        <label>Ziyaret Yerleri</label>
-        <input type="text" id="kmZiyaretYerleri" placeholder="örn. Atlas Dry, Argesim Teknoloji">
-      </div>
-      <div class="km-fark-kutu">
-        <span>Günlük Mesafe</span>
-        <strong id="kmFarkGoster">0 km</strong>
-      </div>
-      <button class="km-kaydet-buton" id="btnKmBitisKaydet">✓ Günü Bitir (Bitiş KM'sini Kaydet)</button>
-      <button class="km-duzenle-buton" id="btnKmDuzenle">✏️ Başlangıç Bilgisini Düzenle</button>
     </div>
 
+    <div class="hesap-alan">
+      <label>Seyir Güzergahı</label>
+      <input type="text" id="kmGuzergah" placeholder="örn. Ankara - Kazan">
+    </div>
+
+    <div class="hesap-alan">
+      <label>Ziyaret Edilen Yerler</label>
+      <input type="text" id="kmZiyaretYerleri" placeholder="örn. Atlas Dry, Argesim Teknoloji">
+    </div>
+
+    <div class="kategori-secim">
+      <button class="kategori-btn kategori-btn--secili" data-kategori="is">İş</button>
+      <button class="kategori-btn" data-kategori="ozel">Özel</button>
+    </div>
+
+    <button class="km-kaydet-buton" id="btnKmKaydet">✓ Günü Kaydet</button>
   </section>
 
-  <section class="km-tablo-kutu">
+  <button class="km-tablo-goster-buton" id="btnTabloGoster">📋 Bu Ayın Kayıtlarını Tablo Olarak Göster</button>
+
+  <section class="km-tablo-bolum" id="kmTabloBolum" hidden>
     <div class="km-tablo-baslik-satir">
       <div class="km-tablo-baslik">Bu Ayın Kayıtları</div>
       <button class="excel-buton" id="btnExcel">📊 Excel'e Aktar</button>
     </div>
-    <div id="kmTablo"></div>
+    <div class="data-table-container">
+      <table class="data-table km-veri-tablo">
+        <thead><tr>
+          <th>Tarih</th><th>Saat</th><th>Başl.</th><th>Bitiş</th><th>Güzergah</th><th>Ziyaret</th><th>İş</th><th>Özel</th>
+        </tr></thead>
+        <tbody id="kmTabloGovde"></tbody>
+      </table>
+    </div>
     <div class="km-ay-toplam">
       <span>Aylık Toplam (İş)</span>
       <strong id="kmAyToplamIs">0 km</strong>

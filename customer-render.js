@@ -147,4 +147,10 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   CustomerData.listeDegistiginde(listeyiCiz);
   listeyiCiz();
+
+  // Hareketler ekranından "+ Yeni Müşteri Ekle" ile gelindiyse formu otomatik aç.
+  if(new URLSearchParams(window.location.search).get("yeni") === "1"){
+    document.getElementById("yeniMusteriForm").hidden = false;
+    document.getElementById("yeniMusteriAdi").focus();
+  }
 });

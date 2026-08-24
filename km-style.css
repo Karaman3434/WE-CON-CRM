@@ -36,16 +36,18 @@
 .hesap-alan--tek { margin-bottom: 10px; }
 .hesap-alan--tek input { width: 100%; }
 
-.km-adim { display: flex; flex-direction: column; gap: 10px; }
-.km-baslangic-ozet {
-  background: #eaf2fc;
-  border: 1px solid #3569b8;
+.km-dun-ozet {
+  background: #eef2f8;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 13px;
-  color: #003a70;
+  color: #556170;
   font-weight: 700;
+  margin-bottom: 12px;
 }
+.km-dun-ozet strong { color: #003a70; }
+
 .km-duzenle-buton {
   width: 100%;
   background: none;
@@ -145,18 +147,60 @@
   font-weight: 800;
   color: #556170;
 }
-.km-tablo-satir {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e2e6ec;
-  padding: 10px 4px;
+
+.km-tablo-goster-buton {
+  width: 100%;
+  background: #eaf2fc;
+  color: #003a70;
+  border: 2px solid #3569b8;
+  border-radius: 8px;
+  padding: 12px;
   font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  margin: 16px 0;
 }
-.km-tablo-tarih { font-weight: 800; color: #111; }
-.km-tablo-detay { color: #8a94a3; font-size: 11px; margin-top: 2px; }
-.km-tablo-fark { font-weight: 900; color: #003a70; }
-.km-tablo-fark.ozel { color: #b7601f; }
+.km-tablo-bolum {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  background: #fafbfc;
+}
+
+/* Gerçek KM tablosu — Ürün Bul'daki data-table ile aynı desen */
+.data-table-container {
+  overflow-x: auto;
+  width: 100%;
+  border: 1px solid #3569b8;
+  border-radius: 8px;
+}
+.km-veri-tablo {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.km-veri-tablo th {
+  background: #cfe2f3;
+  color: #3569b8;
+  font-weight: 900;
+  padding: 6px 3px;
+  text-align: center;
+  border-bottom: 2px solid #3569b8;
+  white-space: nowrap;
+}
+.km-veri-tablo td {
+  padding: 6px 3px;
+  border-bottom: 1px solid #e2e6ec;
+  text-align: center;
+  white-space: nowrap;
+}
+.km-veri-tablo td.km-td-metin {
+  text-align: left;
+  white-space: normal;
+  max-width: 70px;
+}
+.km-veri-tablo .km-td-ozel { color: #b7601f; font-weight: 800; }
+.km-veri-tablo .km-td-is { color: #003a70; font-weight: 800; }
 
 .km-ay-toplam {
   display: flex;

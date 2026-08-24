@@ -1,9 +1,17 @@
 /*
   km-data.js
   ==========
-  TEK görevi: Firebase "kmTakip" yolundan günlük kayıtları okumak/yazmak.
-  Formüller (fark hesaplama, önceki günün bitişinin bu günün başlangıcı
-  olması) eski app-part4.js'ten birebir taşındı.
+  Eski uygulamanın GERÇEK mantığı: her gün TEK bir kilometre okuması girilir
+  ("fotoğraflanan KM"). Bu değer aynı anda hem O GÜNÜN başlangıcı, hem de
+  BİR ÖNCEKİ GÜNÜN bitişidir. Yani iki ayrı "başlangıç/bitiş" alanı YOKTUR —
+  art arda gelen günlerin tek okumaları arasındaki fark, önceki günün kat
+  ettiği mesafedir.
+
+  gununKmGir() çağrıldığında:
+    1) Bugünün kaydına bu KM değeri + saat/güzergah/kategori yazılır.
+    2) DÜNÜN kaydı varsa, dünün "bitisKm"si bu değere eşitlenir ve dünün
+       mesafesi (bitisKm - km) hesaplanıp dünün kategorisine yazılır.
+  Ziyaret Edilen Yerler, gün içinde ayrıca (KM girmeden) eklenip güncellenebilir.
 */
 
 var KmData = (function(){
@@ -44,20 +52,13 @@ var KmData = (function(){
 
   function bugunAnahtari(){ return tarihAnahtari(new Date()); }
 
-  function kaydiOku(anahtar){ return kayitlar[anahtar] || null; }
-
-  // Önceki günün bitiş KM'sini bul (bugünün başlangıcı için otomatik öneri)
-  function oncekiBitisKmBul(anahtarHaric){
-    var enYakinAnahtar = null;
-    Object.keys(kayitlar).forEach(function(k){
-      if(k >= anahtarHaric) return;
-      var kayit = kayitlar[k];
-      if(kayit && kayit.bitisKm!==undefined && kayit.bitisKm!==null && kayit.bitisKm!==""){
-        if(!enYakinAnahtar || k > enYakinAnahtar) enYakinAnahtar = k;
-      }
-    });
-    return enYakinAnahtar ? kayitlar[enYakinAnahtar].bitisKm : null;
+  function dunAnahtari(){
+    var d = new Date();
+    d.setDate(d.getDate()-1);
+    return tarihAnahtari(d);
   }
+
+  function kaydiOku(anahtar){ return kayitlar[anahtar] || null; }
 
   function farkHesapla(bitis, baslangic){
     if(bitis===undefined||bitis===null||bitis===""||baslangic===undefined||baslangic===null||baslangic==="") return null;
@@ -67,64 +68,73 @@ var KmData = (function(){
     return f<0 ? 0 : f;
   }
 
-  function baslangiciKaydet(anahtar, baslangicKm, kategori, saat, guzergah, geriBildir){
-    try{
-      var kayit = {
-        km: baslangicKm,
-        kmKategori: kategori,
-        saat: saat || "", guzergah: guzergah || ""
-      };
-      var db = firebase.database();
-      db.ref("kmTakip/" + anahtar).set(kayit).then(function(){
-        geriBildir(true);
-      }).catch(function(err){
-        console.error("KM başlangıç kaydetme hatası:", err);
-        geriBildir(false, err);
-      });
-    }catch(e){ geriBildir(false, e); }
+  // Dünün özet bilgisi: [önceki günün KM'si] → [dünün KM'si] = mesafe.
+  // Sadece görüntüleme/referans amaçlı, bugünün girişine bağımlı DEĞİL.
+  function dunOzeti(){
+    var dun = dunAnahtari();
+    var dunKaydi = kayitlar[dun];
+    if(!dunKaydi || dunKaydi.km===undefined || dunKaydi.km===null || dunKaydi.km===""){
+      return null;
+    }
+    var oncekiAnahtar = null;
+    Object.keys(kayitlar).forEach(function(k){
+      if(k >= dun) return;
+      if(kayitlar[k] && kayitlar[k].km!==undefined && kayitlar[k].km!==null && kayitlar[k].km!==""){
+        if(!oncekiAnahtar || k > oncekiAnahtar) oncekiAnahtar = k;
+      }
+    });
+    var baslangic = oncekiAnahtar ? kayitlar[oncekiAnahtar].km : null;
+    var bitis = dunKaydi.km;
+    var mesafe = farkHesapla(bitis, baslangic);
+    return {baslangic:baslangic, bitis:bitis, mesafe:mesafe};
   }
 
-  function bitisiKaydet(anahtar, bitisKm, ziyaretYerleri, geriBildir){
+  function gununKmGir(bugunkuKm, kategori, saat, guzergah, geriBildir){
     try{
-      var mevcut = kayitlar[anahtar] || {};
-      var fark = farkHesapla(bitisKm, mevcut.km);
-      var kategori = mevcut.kmKategori || "is";
-      var kayit = Object.assign({}, mevcut, {
-        bitisKm: bitisKm,
-        ziyaretYerleri: ziyaretYerleri || "",
-        isKm: kategori==="is" ? fark : null,
-        ozelKm: kategori==="ozel" ? fark : null
-      });
       var db = firebase.database();
-      db.ref("kmTakip/" + anahtar).set(kayit).then(function(){
-        geriBildir(true);
-      }).catch(function(err){
-        console.error("KM bitiş kaydetme hatası:", err);
-        geriBildir(false, err);
-      });
-    }catch(e){ geriBildir(false, e); }
-  }
+      var bugun = bugunAnahtari();
+      var dun = dunAnahtari();
 
-  function kaydet(anahtar, baslangicKm, bitisKm, kategori, saat, guzergah, ziyaretYerleri, geriBildir){
-    try{
-      var fark = farkHesapla(bitisKm, baslangicKm);
-      var kayit = {
-        km: baslangicKm, bitisKm: bitisKm,
+      var bugunKaydi = Object.assign({}, kayitlar[bugun]||{}, {
+        km: bugunkuKm,
         kmKategori: kategori,
-        isKm: kategori==="is" ? fark : null,
-        ozelKm: kategori==="ozel" ? fark : null,
-        saat: saat || "", guzergah: guzergah || "", ziyaretYerleri: ziyaretYerleri || ""
-      };
-      var db = firebase.database();
-      db.ref("kmTakip/" + anahtar).set(kayit).then(function(){
+        saat: saat || "",
+        guzergah: guzergah || ""
+      });
+
+      var guncellemeler = {};
+      guncellemeler["kmTakip/" + bugun] = bugunKaydi;
+
+      var dunKaydi = kayitlar[dun];
+      if(dunKaydi && dunKaydi.km!==undefined && dunKaydi.km!==null && dunKaydi.km!==""){
+        var fark = farkHesapla(bugunkuKm, dunKaydi.km);
+        var dunKategori = dunKaydi.kmKategori || "is";
+        var yeniDunKaydi = Object.assign({}, dunKaydi, {
+          bitisKm: bugunkuKm,
+          isKm: dunKategori==="is" ? fark : null,
+          ozelKm: dunKategori==="ozel" ? fark : null
+        });
+        guncellemeler["kmTakip/" + dun] = yeniDunKaydi;
+      }
+
+      db.ref().update(guncellemeler).then(function(){
         geriBildir(true);
       }).catch(function(err){
         console.error("KM kaydetme hatası:", err);
         geriBildir(false, err);
       });
-    }catch(e){
-      geriBildir(false, e);
-    }
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function ziyaretYerleriniKaydet(anahtar, ziyaretYerleri, geriBildir){
+    try{
+      var mevcut = kayitlar[anahtar];
+      if(!mevcut){ geriBildir(false, "Önce günün kilometresini girin."); return; }
+      var db = firebase.database();
+      db.ref("kmTakip/" + anahtar + "/ziyaretYerleri").set(ziyaretYerleri || "").then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
   }
 
   function buAyinKayitlari(){
@@ -158,12 +168,12 @@ var KmData = (function(){
     degistiginde: degistiginde,
     tarihAnahtari: tarihAnahtari,
     bugunAnahtari: bugunAnahtari,
+    dunAnahtari: dunAnahtari,
     kaydiOku: kaydiOku,
-    oncekiBitisKmBul: oncekiBitisKmBul,
     farkHesapla: farkHesapla,
-    kaydet: kaydet,
-    baslangiciKaydet: baslangiciKaydet,
-    bitisiKaydet: bitisiKaydet,
+    dunOzeti: dunOzeti,
+    gununKmGir: gununKmGir,
+    ziyaretYerleriniKaydet: ziyaretYerleriniKaydet,
     buAyinKayitlari: buAyinKayitlari,
     ayarlarOku: ayarlarOku,
     ayarlarKaydet: ayarlarKaydet

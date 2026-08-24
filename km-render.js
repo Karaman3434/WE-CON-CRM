@@ -1,8 +1,9 @@
 /*
   km-render.js
   ============
-  Formu doldurur (bugünkü kayıt varsa gösterir, yoksa önceki günün bitişini
-  başlangıç olarak önerir), anlık fark hesabını gösterir, tabloyu çizer.
+  Tek form: bugünün KM'sini + saat/güzergah/ziyaret/kategori girip
+  "Günü Kaydet" ile kaydeder. Üstte dünün özet satırı, altta "Bu Ayın
+  Kayıtları" gerçek tablo olarak açılıp kapanabilir + Excel'e aktarılabilir.
 */
 
 function hataGoster(mesaj){
@@ -14,16 +15,23 @@ function hataGoster(mesaj){
   setTimeout(function(){ kutu.remove(); }, 8000);
 }
 
+var GUNLER = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+var AYLAR = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+var AYLAR_KISA = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+
 function tarihiGuncelle(){
   try{
     var el = document.getElementById("gunTarihi");
-    if(!el) return;
-    var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
-    var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
     var d = new Date();
-    el.textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
+    if(el) el.textContent = GUNLER[d.getDay()] + ", " + d.getDate() + " " + AYLAR[d.getMonth()] + " " + d.getFullYear();
     var el2 = document.getElementById("kmBugunTarih");
-    if(el2) el2.textContent = d.getDate() + " " + aylar[d.getMonth()];
+    if(el2) el2.textContent = d.getDate() + " " + AYLAR[d.getMonth()];
+    var el3 = document.getElementById("kmTarihGoster");
+    if(el3) el3.value = ("0"+d.getDate()).slice(-2) + "." + ("0"+(d.getMonth()+1)).slice(-2) + "." + d.getFullYear();
+    var saatEl = document.getElementById("kmSaat");
+    if(saatEl && !saatEl.value){
+      saatEl.value = ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2);
+    }
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
@@ -39,123 +47,102 @@ function kategoriSecimBagla(){
   });
 }
 
-function farkiGuncelle(){
-  var anahtar = KmData.bugunAnahtari();
-  var kayit = KmData.kaydiOku(anahtar);
-  var b = kayit ? kayit.km : null;
-  var s = document.getElementById("kmBitis").value;
-  var fark = KmData.farkHesapla(s, b);
-  document.getElementById("kmFarkGoster").textContent = (fark===null ? "0" : fark) + " km";
+function dunOzetiniCiz(){
+  try{
+    var ozet = KmData.dunOzeti();
+    var el = document.getElementById("kmDunOzet");
+    if(!ozet){
+      el.innerHTML = "Dünkü kayıt henüz yok.";
+      return;
+    }
+    el.innerHTML = "Dün: <strong>" + (ozet.baslangic!=null?ozet.baslangic:"-") + " km</strong> → <strong>" + ozet.bitis + " km</strong>"
+      + " = <strong>" + (ozet.mesafe!=null?ozet.mesafe:"-") + " km</strong> yapıldı";
+  }catch(e){ hataGoster("Dün özeti çizilemedi: " + e.message); }
 }
 
-// Güne göre iki hâlden biri gösterilir:
-//  ADIM 1 — bugün için hiç kayıt yoksa: sadece Başlangıç KM girişi.
-//  ADIM 2 — bugün başlangıç girilmiş ama bitiş girilmemişse: Bitiş KM girişi.
-// (Bitiş de girilmişse ADIM 2 düzenlenebilir hâlde kalır — gün içinde tekrar
-// güncellenebilsin diye.)
 function formuDoldur(){
   try{
     var anahtar = KmData.bugunAnahtari();
     var kayit = KmData.kaydiOku(anahtar);
-    var adim1 = document.getElementById("kmAdim1");
-    var adim2 = document.getElementById("kmAdim2");
-
-    if(!kayit || kayit.km===undefined || kayit.km===null || kayit.km===""){
-      // ADIM 1: henüz başlangıç girilmemiş.
-      adim1.hidden = false;
-      adim2.hidden = true;
-      var onerilen = KmData.oncekiBitisKmBul(anahtar);
-      var baslangicInput = document.getElementById("kmBaslangic");
-      if(onerilen!==null && !baslangicInput.value) baslangicInput.value = onerilen;
-    } else {
-      // ADIM 2: başlangıç zaten kayıtlı, bitişi gir/güncelle.
-      adim1.hidden = true;
-      adim2.hidden = false;
-      document.getElementById("kmOzetBaslangic").textContent = kayit.km;
-      document.getElementById("kmOzetSaat").textContent = kayit.saat ? (" (saat " + kayit.saat + ")") : "";
-      document.getElementById("kmBitis").value = kayit.bitisKm || "";
-      document.getElementById("kmZiyaretYerleri").value = kayit.ziyaretYerleri || "";
-      farkiGuncelle();
+    if(kayit){
+      if(kayit.km!==undefined && kayit.km!==null) document.getElementById("kmBugun").value = kayit.km;
+      if(kayit.saat) document.getElementById("kmSaat").value = kayit.saat;
+      if(kayit.guzergah) document.getElementById("kmGuzergah").value = kayit.guzergah;
+      if(kayit.ziyaretYerleri) document.getElementById("kmZiyaretYerleri").value = kayit.ziyaretYerleri;
+      secilenKategori = kayit.kmKategori || "is";
+      document.querySelectorAll(".kategori-btn").forEach(function(b){
+        b.classList.toggle("kategori-btn--secili", b.getAttribute("data-kategori")===secilenKategori);
+      });
     }
+    dunOzetiniCiz();
   }catch(e){ hataGoster("Form doldurulamadı: " + e.message); }
 }
 
 function tabloyuCiz(){
   try{
     var kayitlar = KmData.buAyinKayitlari();
-    var kapsayici = document.getElementById("kmTablo");
-    var aylar = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+    var govde = document.getElementById("kmTabloGovde");
 
     if(kayitlar.length === 0){
-      kapsayici.innerHTML = "<p style='text-align:center;color:#8a94a3;font-size:13px;padding:16px 0;'>Bu ay henüz kayıt yok.</p>";
+      govde.innerHTML = "<tr><td colspan='8' style='text-align:center;color:#8a94a3;padding:16px 0;'>Bu ay henüz kayıt yok.</td></tr>";
       document.getElementById("kmAyToplamIs").textContent = "0 km";
       document.getElementById("kmAyToplamOzel").textContent = "0 km";
       return;
     }
 
     var toplamIs = 0, toplamOzel = 0;
-    var html = kayitlar.map(function(k){
+    govde.innerHTML = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
-      var etiket = parseInt(parca[2],10) + " " + aylar[parseInt(parca[1],10)-1];
-      var fark = k.isKm!=null ? k.isKm : (k.ozelKm!=null ? k.ozelKm : 0);
+      var etiket = parseInt(parca[2],10) + " " + AYLAR_KISA[parseInt(parca[1],10)-1];
       if(k.isKm!=null) toplamIs += k.isKm;
       if(k.ozelKm!=null) toplamOzel += k.ozelKm;
-      var kategoriSinif = k.kmKategori === "ozel" ? "ozel" : "";
-      return "<div class='km-tablo-satir'>"
-        + "<div><div class='km-tablo-tarih'>" + etiket + "</div><div class='km-tablo-detay'>" + (k.km||"-") + " → " + (k.bitisKm||"-") + " km" + (k.ziyaretYerleri?" · "+k.ziyaretYerleri:"") + "</div></div>"
-        + "<div class='km-tablo-fark " + kategoriSinif + "'>" + fark + " km</div>"
-        + "</div>";
+      return "<tr>"
+        + "<td>" + etiket + "</td>"
+        + "<td>" + (k.saat||"-") + "</td>"
+        + "<td>" + (k.km!=null?k.km:"-") + "</td>"
+        + "<td>" + (k.bitisKm!=null?k.bitisKm:"-") + "</td>"
+        + "<td class='km-td-metin'>" + (k.guzergah||"-") + "</td>"
+        + "<td class='km-td-metin'>" + (k.ziyaretYerleri||"-") + "</td>"
+        + "<td class='km-td-is'>" + (k.isKm!=null?k.isKm:"-") + "</td>"
+        + "<td class='km-td-ozel'>" + (k.ozelKm!=null?k.ozelKm:"-") + "</td>"
+        + "</tr>";
     }).join("");
 
-    kapsayici.innerHTML = html;
     document.getElementById("kmAyToplamIs").textContent = toplamIs + " km";
     document.getElementById("kmAyToplamOzel").textContent = toplamOzel + " km";
   }catch(e){ hataGoster("Tablo çizilemedi: " + e.message); }
 }
 
-function kmBaslangicKaydetTiklandi(){
+function kmKaydetTiklandi(){
   try{
-    var b = document.getElementById("kmBaslangic").value;
-    if(!b){
-      hataGoster("Başlangıç KM girin.");
+    var deger = document.getElementById("kmBugun").value;
+    if(!deger){
+      hataGoster("Bugünün kilometresini girin.");
       return;
     }
-    var btn = document.getElementById("btnKmBaslangicKaydet");
+    var btn = document.getElementById("btnKmKaydet");
     btn.disabled = true;
     btn.textContent = "Kaydediliyor...";
     var saat = document.getElementById("kmSaat").value.trim();
     var guzergah = document.getElementById("kmGuzergah").value.trim();
-    KmData.baslangiciKaydet(KmData.bugunAnahtari(), parseFloat(b), secilenKategori, saat, guzergah, function(basarili, err){
-      btn.disabled = false;
-      btn.textContent = "✓ Günü Başlat (Başlangıç KM'sini Kaydet)";
-      if(basarili){
-        alert("✓ Gün başlatıldı. Bitiş KM'sini gün içinde veya akşam girebilirsin.");
-      } else {
-        hataGoster("Kaydetme başarısız: " + (err && err.message ? err.message : "bilinmeyen hata"));
-      }
-    });
-  }catch(e){ hataGoster("Kaydet işlemi başarısız: " + e.message); }
-}
-
-function kmBitisKaydetTiklandi(){
-  try{
-    var s = document.getElementById("kmBitis").value;
-    if(!s){
-      hataGoster("Bitiş KM girin.");
-      return;
-    }
-    var btn = document.getElementById("btnKmBitisKaydet");
-    btn.disabled = true;
-    btn.textContent = "Kaydediliyor...";
     var ziyaretYerleri = document.getElementById("kmZiyaretYerleri").value.trim();
-    KmData.bitisiKaydet(KmData.bugunAnahtari(), parseFloat(s), ziyaretYerleri, function(basarili, err){
-      btn.disabled = false;
-      btn.textContent = "✓ Günü Bitir (Bitiş KM'sini Kaydet)";
-      if(basarili){
-        alert("✓ Kayıt tamamlandı.");
-      } else {
+
+    KmData.gununKmGir(parseFloat(deger), secilenKategori, saat, guzergah, function(basarili, err){
+      if(!basarili){
+        btn.disabled = false;
+        btn.textContent = "✓ Günü Kaydet";
         hataGoster("Kaydetme başarısız: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        return;
       }
+      // Ziyaret yerlerini de aynı kayda yaz (ayrı bir çağrı — küçük bir gecikmeyle
+      // "kayıtlar" nesnesinin Firebase'den taze hâliyle güncellenmesini bekliyoruz).
+      setTimeout(function(){
+        KmData.ziyaretYerleriniKaydet(KmData.bugunAnahtari(), ziyaretYerleri, function(){
+          btn.disabled = false;
+          btn.textContent = "✓ Günü Kaydet";
+          alert("✓ Kayıt tamamlandı.");
+        });
+      }, 300);
     });
   }catch(e){ hataGoster("Kaydet işlemi başarısız: " + e.message); }
 }
@@ -166,7 +153,7 @@ function excelAktar(){
       hataGoster("Excel kütüphanesi yüklenemedi, internet bağlantınızı kontrol edin.");
       return;
     }
-    var kayitlar = KmData.buAyinKayitlari().slice().reverse(); // eskiden yeniye
+    var kayitlar = KmData.buAyinKayitlari().slice().reverse();
     if(kayitlar.length === 0){
       alert("Bu ay henüz kayıt yok, aktarılacak veri bulunamadı.");
       return;
@@ -174,16 +161,14 @@ function excelAktar(){
     var adSoyad = document.getElementById("kmAdSoyad").value || "";
     var plaka = document.getElementById("kmPlaka").value || "";
     var now = new Date();
-    var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-    var donemEtiket = aylar[now.getMonth()] + " " + now.getFullYear();
+    var donemEtiket = AYLAR[now.getMonth()] + " " + now.getFullYear();
 
-    var basliklar = ["Tarih","Başlangıç-Bitiş Saati","Seyir Güzergahı","Ziyaret Yerleri","Başlangıç KM","Bitiş KM","İş KM","Özel KM"];
+    var basliklar = ["Tarih","Saat","Başlangıç KM","Bitiş KM","Seyir Güzergahı","Ziyaret Edilen Yerler","İş KM","Özel KM"];
     var veriSatirlari = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
       var d = new Date(parseInt(parca[0]), parseInt(parca[1])-1, parseInt(parca[2]));
-      var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
-      var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+" "+gunler[d.getDay()];
-      return [tarihStr, k.saat||"", k.guzergah||"", k.ziyaretYerleri||"", k.km||"", k.bitisKm||"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
+      var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+" "+GUNLER[d.getDay()];
+      return [tarihStr, k.saat||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", k.guzergah||"", k.ziyaretYerleri||"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
     });
 
     var aoa = [
@@ -193,7 +178,7 @@ function excelAktar(){
     ].concat(veriSatirlari);
 
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = [{wch:20},{wch:16},{wch:22},{wch:26},{wch:12},{wch:12},{wch:9},{wch:9}];
+    ws["!cols"] = [{wch:20},{wch:10},{wch:12},{wch:12},{wch:22},{wch:26},{wch:9},{wch:9}];
 
     var INCE_KENAR = { style:"thin", color:{rgb:"3569B8"} };
     var TUM_KENAR = { top:INCE_KENAR, bottom:INCE_KENAR, left:INCE_KENAR, right:INCE_KENAR };
@@ -213,7 +198,7 @@ function excelAktar(){
         var vAdr = XLSX.utils.encode_cell({r:BAS_SATIR+vr, c:vc});
         if(!ws[vAdr]) ws[vAdr] = {t:"s", v:""};
         ws[vAdr].s = {
-          alignment: {horizontal: (vc===0?"left":"center"), vertical:"center"},
+          alignment: {horizontal: (vc===0||vc===4||vc===5?"left":"center"), vertical:"center"},
           border: TUM_KENAR
         };
       }
@@ -233,19 +218,15 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   kategoriSecimBagla();
-  document.getElementById("kmBitis").addEventListener("input", farkiGuncelle);
-  document.getElementById("btnKmBaslangicKaydet").onclick = kmBaslangicKaydetTiklandi;
-  document.getElementById("btnKmBitisKaydet").onclick = kmBitisKaydetTiklandi;
-  document.getElementById("btnKmDuzenle").onclick = function(){
-    // Başlangıç bilgisini elle düzeltmek istersen — kaydı sil, Adım 1'e dön.
-    if(!confirm("Bugünün başlangıç bilgisini silip yeniden mi gireceksin?")) return;
-    var db = firebase.database();
-    db.ref("kmTakip/" + KmData.bugunAnahtari()).remove().then(function(){
-      document.getElementById("kmBaslangic").value = "";
-    });
-  };
+  document.getElementById("btnKmKaydet").onclick = kmKaydetTiklandi;
   document.getElementById("btnExcel").onclick = excelAktar;
+  document.getElementById("btnTabloGoster").onclick = function(){
+    var bolum = document.getElementById("kmTabloBolum");
+    bolum.hidden = !bolum.hidden;
+    if(!bolum.hidden) tabloyuCiz();
+  };
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+
   KmData.ayarlarOku(function(ayarlar){
     document.getElementById("kmAdSoyad").value = ayarlar.adSoyad || "";
     document.getElementById("kmPlaka").value = ayarlar.plaka || "";
@@ -255,9 +236,10 @@ document.addEventListener("DOMContentLoaded", function(){
       KmData.ayarlarKaydet(document.getElementById("kmAdSoyad").value, document.getElementById("kmPlaka").value);
     });
   });
-  KmData.degistiginde(function(){ formuDoldur(); tabloyuCiz(); });
-  // Firebase verisi sayfa tam yüklenmeden önce gelmiş olabilir — bir kez de
-  // hemen elle çiziyoruz (dinleyici ilk anlık görüntüyü kaçırmış olabilir).
+
+  KmData.degistiginde(function(){
+    formuDoldur();
+    if(!document.getElementById("kmTabloBolum").hidden) tabloyuCiz();
+  });
   formuDoldur();
-  tabloyuCiz();
 });
