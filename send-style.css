@@ -152,23 +152,41 @@
   padding: 10px 12px;
   font-size: 13px;
 }
-.gonder-buton-satir {
+.gonder-tile-satir {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 10px;
 }
-.gonder-btn {
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 900;
+.gonder-tile {
   cursor: pointer;
-  color: #ffffff;
+  border-radius: 12px;
+  padding: 18px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 100px;
+  text-align: center;
 }
-.gonder-btn--whatsapp { background: #25d366; }
-.gonder-btn--eposta { background: #2563eb; }
+.gonder-tile-ikon { font-size: 32px; }
+.gonder-tile-baslik {
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.gonder-tile--mail {
+  background: #fff6ec;
+  border: 3px solid #b7601f;
+}
+.gonder-tile--mail .gonder-tile-baslik { color: #a8590c; }
+.gonder-tile--whatsapp {
+  background: #f0fbf3;
+  border: 3px solid #1f9d55;
+}
+.gonder-tile--whatsapp .gonder-tile-baslik { color: #0e6b34; }
 .sablon-link-satir {
   display: grid;
   grid-template-columns: 1fr 1fr;
