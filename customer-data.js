@@ -59,13 +59,56 @@ var CustomerData = (function(){
     }catch(e){ return null; }
   }
 
+  // ---- Ziyaret takibi: eski uygulamayla AYNI veri yapısı (ziyaretGecmisi
+  // dizisi, her müşteri kaydının içinde) ----
+  function gunFarkiHesapla(ts){
+    return Math.floor((Date.now() - ts) / 86400000);
+  }
+
+  function ziyaretHatirlatmalari(){
+    var sonuc = [];
+    liste.forEach(function(m){
+      var gecmis = m.ziyaretGecmisi || [];
+      var enSonTs = gecmis.length ? Math.max.apply(null, gecmis.map(function(z){ return z.ts||0; })) : null;
+      var gun = enSonTs ? gunFarkiHesapla(enSonTs) : null;
+      sonuc.push({musteri:m.ad, sehir:m.sehir||"", gun:gun, hicZiyaretYok: gecmis.length===0});
+    });
+    sonuc.sort(function(a,b){
+      if(a.hicZiyaretYok !== b.hicZiyaretYok) return a.hicZiyaretYok ? -1 : 1;
+      return (b.gun||0)-(a.gun||0);
+    });
+    return sonuc;
+  }
+
+  function ziyaretEkle(musteriAd, not, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      if(!liste[idx].ziyaretGecmisi) liste[idx].ziyaretGecmisi = [];
+      var kayit = {ts:Date.now(), not: not || "Ziyaret edildi, not girilmedi.", tur:"ziyaret"};
+      liste[idx].ziyaretGecmisi.push(kayit);
+      liste[idx].ziyaretGecmisi.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+      liste[idx].sonZiyaret = liste[idx].ziyaretGecmisi[0].ts;
+      liste[idx].sonZiyaretNot = liste[idx].ziyaretGecmisi[0].not;
+
+      firebase.database().ref("musteriler").set(liste).then(function(){
+        geriBildir(true);
+      }).catch(function(err){
+        geriBildir(false, err);
+      });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
     ara: ara,
     sec: sec,
     seciliyiOku: seciliyiOku,
-    uzunluk: function(){ return liste.length; }
+    uzunluk: function(){ return liste.length; },
+    ziyaretHatirlatmalari: ziyaretHatirlatmalari,
+    ziyaretEkle: ziyaretEkle,
+    gunFarkiHesapla: gunFarkiHesapla
   };
 
 })();

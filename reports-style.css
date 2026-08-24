@@ -125,6 +125,8 @@
 }
 
 .sekme-secim--uc { grid-template-columns: 1fr 1fr 1fr; }
+.sekme-secim--dort { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.sekme-secim--dort .sekme-btn { font-size: 11px; padding: 10px 2px; }
 
 .bos-mesaj {
   text-align: center;
@@ -174,3 +176,63 @@
 }
 .istatistik-satir-ad { font-weight: 700; color: #111; }
 .istatistik-satir-deger { font-weight: 900; color: #003a70; }
+
+/* Ziyaret Takvimi */
+.ziyaret-aciklama {
+  font-size: 12px;
+  color: #8a94a3;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.ziyaret-karti {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: #fafbfc;
+}
+.ziyaret-karti--kritik {
+  background: #fdeaea;
+  border-color: #e0524a;
+}
+.ziyaret-karti--uyari {
+  background: #fff3e6;
+  border-color: #f2994a;
+}
+.ziyaret-ust-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.ziyaret-musteri { font-size: 15px; font-weight: 800; color: #003a70; }
+.ziyaret-gun-etiket {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+.ziyaret-sehir { font-size: 12px; color: #8a94a3; margin-bottom: 8px; }
+.ziyaret-not-input {
+  display: flex;
+  gap: 6px;
+}
+.ziyaret-not-input input {
+  flex: 1;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.ziyaret-ekle-btn {
+  background: #1f9d55;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}

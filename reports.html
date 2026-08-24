@@ -30,10 +30,11 @@
 
 <main class="sayfa">
 
-  <div class="sekme-secim sekme-secim--uc">
+  <div class="sekme-secim sekme-secim--dort">
     <button class="sekme-btn sekme-btn--secili" data-sekme="islemler">Son İşlemler</button>
     <button class="sekme-btn" data-sekme="gorevler">Görevler</button>
     <button class="sekme-btn" data-sekme="istatistik">İstatistik</button>
+    <button class="sekme-btn" data-sekme="ziyaret">Ziyaret</button>
   </div>
 
   <!-- SON İŞLEMLER -->
@@ -79,12 +80,19 @@
     <div id="istMusteriListe"></div>
   </section>
 
+  <!-- ZİYARET TAKVİMİ -->
+  <section id="sekmeZiyaret" class="sekme-panel" hidden>
+    <p class="ziyaret-aciklama">15 gündür ziyaret edilmeyen (veya hiç ziyaret edilmemiş) müşteriler en üstte listelenir.</p>
+    <div id="ziyaretListesi"></div>
+  </section>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="auth.js"></script>
+<script src="customer-data.js"></script>
 <script src="reports-data.js"></script>
 <script src="reports-render.js"></script>
 </body>

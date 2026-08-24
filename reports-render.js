@@ -39,7 +39,9 @@ function sekmeGecisBagla(){
       document.getElementById("sekmeIslemler").hidden = hedef !== "islemler";
       document.getElementById("sekmeGorevler").hidden = hedef !== "gorevler";
       document.getElementById("sekmeIstatistik").hidden = hedef !== "istatistik";
+      document.getElementById("sekmeZiyaret").hidden = hedef !== "ziyaret";
       if(hedef === "istatistik") istatistikleriCiz();
+      if(hedef === "ziyaret") ziyaretleriCiz();
     };
   });
 }
@@ -150,6 +152,45 @@ function gorevEkleTiklandi(){
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
+
+function ziyaretleriCiz(){
+  try{
+    var liste = CustomerData.ziyaretHatirlatmalari();
+    var kapsayici = document.getElementById("ziyaretListesi");
+    if(liste.length === 0){
+      kapsayici.innerHTML = "<p class='bos-mesaj'>Müşteri listesi boş.</p>";
+      return;
+    }
+    kapsayici.innerHTML = liste.map(function(z, i){
+      var gunMetin = z.hicZiyaretYok ? "Hiç ziyaret yok" : z.gun + " gündür yok";
+      var kritikSinif = "";
+      if(z.hicZiyaretYok || z.gun >= 30) kritikSinif = "ziyaret-karti--kritik";
+      else if(z.gun >= 15) kritikSinif = "ziyaret-karti--uyari";
+      return "<div class='ziyaret-karti " + kritikSinif + "' data-i='" + i + "'>"
+        + "<div class='ziyaret-ust-satir'><span class='ziyaret-musteri'>" + htmlEsc(z.musteri) + "</span><span class='ziyaret-gun-etiket'>" + gunMetin + "</span></div>"
+        + "<div class='ziyaret-sehir'>" + htmlEsc(z.sehir||"-") + "</div>"
+        + "<div class='ziyaret-not-input'><input type='text' placeholder='Ziyaret notu (opsiyonel)' data-not='" + i + "'><button class='ziyaret-ekle-btn' data-ekle='" + i + "'>✓ Ziyaret Ekle</button></div>"
+        + "</div>";
+    }).join("");
+
+    kapsayici.querySelectorAll("[data-ekle]").forEach(function(btn, i){
+      btn.onclick = function(){
+        var not = kapsayici.querySelector("[data-not='" + i + "']").value;
+        btn.disabled = true;
+        btn.textContent = "Kaydediliyor...";
+        CustomerData.ziyaretEkle(liste[i].musteri, not, function(basarili, err){
+          if(basarili){
+            alert("✓ Ziyaret kaydedildi.");
+          } else {
+            hataGoster("Ziyaret kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+            btn.disabled = false;
+            btn.textContent = "✓ Ziyaret Ekle";
+          }
+        });
+      };
+    });
+  }catch(e){ hataGoster("Ziyaretler çizilemedi: " + e.message); }
+}
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
