@@ -44,6 +44,37 @@ var SendData = (function(){
     return (urunler||[]).map(function(u){ return (u.berta||"")+"|"+(u.abas||""); }).sort().join(",");
   }
 
+  function fiyatGecmisiKontrolEt(musteri, sepet, geriBildir){
+    try{
+      var db = firebase.database();
+      db.ref("arsiv").once("value").then(function(snap){
+        var arsiv = snap.val() || {};
+        var uyarilar = [];
+        ["teklif","proforma","siparis"].forEach(function(tip){
+          var liste = arsiv[tip];
+          if(!liste) return;
+          liste = Array.isArray(liste) ? liste : Object.values(liste);
+          liste.forEach(function(kayit){
+            if((kayit.musteri||"").trim().toLocaleLowerCase("tr-TR") !== (musteri.ad||"").trim().toLocaleLowerCase("tr-TR")) return;
+            (kayit.urunler||[]).forEach(function(u){
+              sepet.forEach(function(su){
+                if(!su.berta && !su.abas) return;
+                if(u.berta !== su.berta || u.abas !== su.abas) return;
+                var eskiFiyat = u.iskBirim || 0;
+                var yeniFiyat = parseFloat(su.listeFiyat)||0;
+                var yeniIskontolu = yeniFiyat - (yeniFiyat*(parseFloat(su.iskonto)||0)/100);
+                if(yeniIskontolu < eskiFiyat){
+                  uyarilar.push({urun:su.ad, eskiFiyat:eskiFiyat, yeniFiyat:yeniIskontolu, eskiTarih:kayit.tarih});
+                }
+              });
+            });
+          });
+        });
+        geriBildir(uyarilar);
+      }).catch(function(){ geriBildir([]); });
+    }catch(e){ geriBildir([]); }
+  }
+
   function ayniGunMu(ts1, ts2){
     var d1 = new Date(ts1), d2 = new Date(ts2);
     return d1.getFullYear()===d2.getFullYear() && d1.getMonth()===d2.getMonth() && d1.getDate()===d2.getDate();
@@ -136,7 +167,7 @@ var SendData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
-  return { baslat: baslat, kaydet: kaydet, kaynakSil: kaynakSil };
+  return { baslat: baslat, kaydet: kaydet, kaynakSil: kaynakSil, fiyatGecmisiKontrolEt: fiyatGecmisiKontrolEt };
 
 })();
 

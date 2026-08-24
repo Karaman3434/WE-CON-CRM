@@ -26,6 +26,10 @@ function tarihiGuncelle(){
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
+function htmlEsc(s){
+  return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
 var secilenTip = "siparis";
 
 function ozetiCiz(){
@@ -53,6 +57,16 @@ function ozetiCiz(){
     document.getElementById("ozetUrunSayisi").textContent = sepet.length;
     document.getElementById("ozetToplamEuro").textContent = CartData.fmt(t.toplamEuro) + " EUR";
     document.getElementById("ozetToplamPrim").textContent = CartData.fmt(t.toplamPrim) + " EUR";
+
+    SendData.fiyatGecmisiKontrolEt(musteri, sepet, function(uyarilar){
+      var kutu = document.getElementById("fiyatUyariKutu");
+      if(uyarilar.length === 0){ kutu.hidden = true; return; }
+      kutu.hidden = false;
+      kutu.innerHTML = "<div class='fiyat-uyari-baslik'>⚠️ Bu müşteriye daha önce daha yüksek fiyata satılmış ürünler var</div>"
+        + uyarilar.map(function(u){
+            return "<div class='fiyat-uyari-satir'>• " + htmlEsc(u.urun) + ": önceki " + CartData.fmt(u.eskiFiyat) + " EUR (" + htmlEsc(u.eskiTarih) + ") → şimdi " + CartData.fmt(u.yeniFiyat) + " EUR</div>";
+          }).join("");
+    });
   }catch(e){ hataGoster("Özet çizilemedi: " + e.message); }
 }
 
