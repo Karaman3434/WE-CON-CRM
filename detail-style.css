@@ -1,15 +1,98 @@
-/* detail-style.css — aynı kural: gradyan/gölge yığılması yok. */
+/* detail-style.css — eski uygulamanın "MÜŞTERİ BİLGİLERİ" kartıyla AYNI
+   düzen: navy başlık şeridi, isim, ID·Şehir alt satırı, VADE/FATURA/KARGO
+   ikon kutuları, sonra Fatura/Teslimat Adresleri, Yetkililer. */
 
-.detay-ust-kutu {
-  background: #eaf2fc;
-  border: 2px solid #3569b8;
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 14px;
-  text-align: center;
+.musteri-bilgileri-serit {
+  background: #003a70;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px 10px 0 0;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: .3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
 }
-.detay-ad { font-size: 20px; font-weight: 900; color: #003a70; }
-.detay-sehir { font-size: 13px; color: #556170; margin-top: 2px; margin-bottom: 12px; }
+.musteri-bilgileri-etiket {
+  font-size: 12px;
+  font-weight: 800;
+  opacity: .8;
+}
+
+.detay-ad {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-top: none;
+  padding: 12px 14px 2px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #1a2a3a;
+}
+.detay-alt-baslik {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-top: none;
+  padding: 0 14px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #7ea6d6;
+}
+
+.ozet-satir-3 {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 0 14px 14px;
+  margin-bottom: 14px;
+}
+.ozet-alan {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.ozet-ikon {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: #003a70;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.ozet-metin { min-width: 0; }
+.ozet-baslik { font-size: 10px; font-weight: 900; color: #c0392b; }
+.ozet-deger {
+  font-size: 13px;
+  font-weight: 800;
+  color: #222;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.duzenle-ac-buton {
+  width: 100%;
+  background: #f5f7fa;
+  color: #556170;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
 
 .detay-ciro-kutu {
   background: #0e2038;
@@ -33,6 +116,7 @@
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
+  margin-bottom: 14px;
 }
 
 .detay-bilgi-form {
@@ -66,14 +150,15 @@
   border: 1px solid #e2e6ec;
   border-radius: 10px;
   padding: 14px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   background: #fafbfc;
 }
 .adres-bolum-baslik {
   font-size: 13px;
-  font-weight: 800;
-  color: #556170;
-  margin-bottom: 10px;
+  font-weight: 900;
+  color: #8a94a3;
+  letter-spacing: .3px;
+  margin-bottom: 8px;
 }
 .adres-satir {
   display: flex;

@@ -36,6 +36,27 @@
 .hesap-alan--tek { margin-bottom: 10px; }
 .hesap-alan--tek input { width: 100%; }
 
+.km-adim { display: flex; flex-direction: column; gap: 10px; }
+.km-baslangic-ozet {
+  background: #eaf2fc;
+  border: 1px solid #3569b8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #003a70;
+  font-weight: 700;
+}
+.km-duzenle-buton {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #556170;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+}
+
 .kategori-secim {
   display: grid;
   grid-template-columns: 1fr 1fr;

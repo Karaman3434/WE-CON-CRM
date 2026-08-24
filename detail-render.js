@@ -34,11 +34,17 @@ var seciliMusteriAdi = null;
 
 function ustBilgiyiCiz(musteri){
   document.getElementById("detayAd").textContent = musteri.ad;
-  document.getElementById("detaySehir").textContent = musteri.sehir || "";
+  var altBaslikParcalar = [];
+  if(musteri.id) altBaslikParcalar.push("🏷 " + musteri.id);
+  if(musteri.sehir) altBaslikParcalar.push(musteri.sehir);
+  document.getElementById("detayAltBaslik").textContent = altBaslikParcalar.join(" · ") || "-";
+
+  document.getElementById("cariVade").textContent = musteri.vade || "-";
+  document.getElementById("cariFatura").textContent = musteri.fatura || "-";
+  document.getElementById("cariKargo").textContent = musteri.kargo || "-";
+
   document.getElementById("detayVade").value = musteri.vade || "";
   document.getElementById("detayFatura").value = musteri.fatura || "";
-  document.getElementById("detayTelefon").value = musteri.telefon || "";
-  document.getElementById("detayEposta").value = musteri.eposta || "";
   document.getElementById("detayKargo").value = musteri.kargo || "";
 }
 
@@ -113,8 +119,6 @@ function bilgileriKaydetTiklandi(){
     var guncelBilgi = {
       vade: document.getElementById("detayVade").value,
       fatura: document.getElementById("detayFatura").value,
-      telefon: document.getElementById("detayTelefon").value,
-      eposta: document.getElementById("detayEposta").value,
       kargo: document.getElementById("detayKargo").value
     };
     var btn = document.getElementById("btnBilgiKaydet");
@@ -135,7 +139,10 @@ function adresleriCiz(musteri){
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       var liste = musteri[alan] || [];
       var kapsayiciId = tip==="fatura" ? "faturaAdresListesi" : "teslimatAdresListesi";
+      var sayacId = tip==="fatura" ? "faturaAdresSayisi" : "teslimatAdresSayisi";
       var kapsayici = document.getElementById(kapsayiciId);
+      var sayacEl = document.getElementById(sayacId);
+      if(sayacEl) sayacEl.textContent = liste.length;
 
       if(liste.length === 0){
         kapsayici.innerHTML = "<p class='bos-mesaj' style='padding:8px 0;'>Kayıtlı adres yok.</p>";
@@ -187,6 +194,8 @@ function yetkilileriCiz(musteri){
   try{
     var liste = musteri.iletisimler || [];
     var kapsayici = document.getElementById("yetkiliListesi");
+    var sayacEl = document.getElementById("yetkiliSayisi");
+    if(sayacEl) sayacEl.textContent = liste.length;
     if(liste.length === 0){
       kapsayici.innerHTML = "<p class='bos-mesaj' style='padding:8px 0;'>Kayıtlı kişi yok.</p>";
       return;
@@ -262,6 +271,10 @@ document.addEventListener("DOMContentLoaded", function(){
     window.location.href = "product.html";
   };
   document.getElementById("btnBilgiKaydet").onclick = bilgileriKaydetTiklandi;
+  document.getElementById("btnDuzenleAc").onclick = function(){
+    var form = document.getElementById("detayBilgiForm");
+    form.hidden = !form.hidden;
+  };
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
   CustomerData.listeDegistiginde(function(){

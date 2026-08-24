@@ -153,8 +153,6 @@ var CustomerData = (function(){
       if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
       liste[idx].vade = guncelBilgi.vade;
       liste[idx].fatura = guncelBilgi.fatura;
-      liste[idx].telefon = guncelBilgi.telefon;
-      liste[idx].eposta = guncelBilgi.eposta;
       liste[idx].kargo = guncelBilgi.kargo;
       firebase.database().ref("musteriler").set(liste).then(function(){
         geriBildir(true);

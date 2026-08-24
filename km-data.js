@@ -67,6 +67,44 @@ var KmData = (function(){
     return f<0 ? 0 : f;
   }
 
+  function baslangiciKaydet(anahtar, baslangicKm, kategori, saat, guzergah, geriBildir){
+    try{
+      var kayit = {
+        km: baslangicKm,
+        kmKategori: kategori,
+        saat: saat || "", guzergah: guzergah || ""
+      };
+      var db = firebase.database();
+      db.ref("kmTakip/" + anahtar).set(kayit).then(function(){
+        geriBildir(true);
+      }).catch(function(err){
+        console.error("KM başlangıç kaydetme hatası:", err);
+        geriBildir(false, err);
+      });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function bitisiKaydet(anahtar, bitisKm, ziyaretYerleri, geriBildir){
+    try{
+      var mevcut = kayitlar[anahtar] || {};
+      var fark = farkHesapla(bitisKm, mevcut.km);
+      var kategori = mevcut.kmKategori || "is";
+      var kayit = Object.assign({}, mevcut, {
+        bitisKm: bitisKm,
+        ziyaretYerleri: ziyaretYerleri || "",
+        isKm: kategori==="is" ? fark : null,
+        ozelKm: kategori==="ozel" ? fark : null
+      });
+      var db = firebase.database();
+      db.ref("kmTakip/" + anahtar).set(kayit).then(function(){
+        geriBildir(true);
+      }).catch(function(err){
+        console.error("KM bitiş kaydetme hatası:", err);
+        geriBildir(false, err);
+      });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   function kaydet(anahtar, baslangicKm, bitisKm, kategori, saat, guzergah, ziyaretYerleri, geriBildir){
     try{
       var fark = farkHesapla(bitisKm, baslangicKm);
@@ -124,6 +162,8 @@ var KmData = (function(){
     oncekiBitisKmBul: oncekiBitisKmBul,
     farkHesapla: farkHesapla,
     kaydet: kaydet,
+    baslangiciKaydet: baslangiciKaydet,
+    bitisiKaydet: bitisiKaydet,
     buAyinKayitlari: buAyinKayitlari,
     ayarlarOku: ayarlarOku,
     ayarlarKaydet: ayarlarKaydet

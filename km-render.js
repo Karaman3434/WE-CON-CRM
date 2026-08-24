@@ -35,40 +35,48 @@ function kategoriSecimBagla(){
       document.querySelectorAll(".kategori-btn").forEach(function(b){ b.classList.remove("kategori-btn--secili"); });
       this.classList.add("kategori-btn--secili");
       secilenKategori = this.getAttribute("data-kategori");
-      farkiGuncelle();
     };
   });
 }
 
 function farkiGuncelle(){
-  var b = document.getElementById("kmBaslangic").value;
+  var anahtar = KmData.bugunAnahtari();
+  var kayit = KmData.kaydiOku(anahtar);
+  var b = kayit ? kayit.km : null;
   var s = document.getElementById("kmBitis").value;
   var fark = KmData.farkHesapla(s, b);
   document.getElementById("kmFarkGoster").textContent = (fark===null ? "0" : fark) + " km";
 }
 
+// Güne göre iki hâlden biri gösterilir:
+//  ADIM 1 — bugün için hiç kayıt yoksa: sadece Başlangıç KM girişi.
+//  ADIM 2 — bugün başlangıç girilmiş ama bitiş girilmemişse: Bitiş KM girişi.
+// (Bitiş de girilmişse ADIM 2 düzenlenebilir hâlde kalır — gün içinde tekrar
+// güncellenebilsin diye.)
 function formuDoldur(){
   try{
     var anahtar = KmData.bugunAnahtari();
     var kayit = KmData.kaydiOku(anahtar);
-    var baslangicInput = document.getElementById("kmBaslangic");
-    var bitisInput = document.getElementById("kmBitis");
+    var adim1 = document.getElementById("kmAdim1");
+    var adim2 = document.getElementById("kmAdim2");
 
-    if(kayit){
-      baslangicInput.value = kayit.km || "";
-      bitisInput.value = kayit.bitisKm || "";
-      document.getElementById("kmSaat").value = kayit.saat || "";
-      document.getElementById("kmGuzergah").value = kayit.guzergah || "";
-      document.getElementById("kmZiyaretYerleri").value = kayit.ziyaretYerleri || "";
-      secilenKategori = kayit.kmKategori || "is";
-      document.querySelectorAll(".kategori-btn").forEach(function(b){
-        b.classList.toggle("kategori-btn--secili", b.getAttribute("data-kategori")===secilenKategori);
-      });
-    } else {
+    if(!kayit || kayit.km===undefined || kayit.km===null || kayit.km===""){
+      // ADIM 1: henüz başlangıç girilmemiş.
+      adim1.hidden = false;
+      adim2.hidden = true;
       var onerilen = KmData.oncekiBitisKmBul(anahtar);
-      if(onerilen!==null) baslangicInput.value = onerilen;
+      var baslangicInput = document.getElementById("kmBaslangic");
+      if(onerilen!==null && !baslangicInput.value) baslangicInput.value = onerilen;
+    } else {
+      // ADIM 2: başlangıç zaten kayıtlı, bitişi gir/güncelle.
+      adim1.hidden = true;
+      adim2.hidden = false;
+      document.getElementById("kmOzetBaslangic").textContent = kayit.km;
+      document.getElementById("kmOzetSaat").textContent = kayit.saat ? (" (saat " + kayit.saat + ")") : "";
+      document.getElementById("kmBitis").value = kayit.bitisKm || "";
+      document.getElementById("kmZiyaretYerleri").value = kayit.ziyaretYerleri || "";
+      farkiGuncelle();
     }
-    farkiGuncelle();
   }catch(e){ hataGoster("Form doldurulamadı: " + e.message); }
 }
 
@@ -105,23 +113,44 @@ function tabloyuCiz(){
   }catch(e){ hataGoster("Tablo çizilemedi: " + e.message); }
 }
 
-function kmKaydetTiklandi(){
+function kmBaslangicKaydetTiklandi(){
   try{
     var b = document.getElementById("kmBaslangic").value;
-    var s = document.getElementById("kmBitis").value;
-    if(!b || !s){
-      hataGoster("Başlangıç ve Bitiş KM girin.");
+    if(!b){
+      hataGoster("Başlangıç KM girin.");
       return;
     }
-    var btn = document.getElementById("btnKmKaydet");
+    var btn = document.getElementById("btnKmBaslangicKaydet");
     btn.disabled = true;
     btn.textContent = "Kaydediliyor...";
     var saat = document.getElementById("kmSaat").value.trim();
     var guzergah = document.getElementById("kmGuzergah").value.trim();
-    var ziyaretYerleri = document.getElementById("kmZiyaretYerleri").value.trim();
-    KmData.kaydet(KmData.bugunAnahtari(), parseFloat(b), parseFloat(s), secilenKategori, saat, guzergah, ziyaretYerleri, function(basarili, err){
+    KmData.baslangiciKaydet(KmData.bugunAnahtari(), parseFloat(b), secilenKategori, saat, guzergah, function(basarili, err){
       btn.disabled = false;
-      btn.textContent = "✓ Günü Kaydet";
+      btn.textContent = "✓ Günü Başlat (Başlangıç KM'sini Kaydet)";
+      if(basarili){
+        alert("✓ Gün başlatıldı. Bitiş KM'sini gün içinde veya akşam girebilirsin.");
+      } else {
+        hataGoster("Kaydetme başarısız: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
+    });
+  }catch(e){ hataGoster("Kaydet işlemi başarısız: " + e.message); }
+}
+
+function kmBitisKaydetTiklandi(){
+  try{
+    var s = document.getElementById("kmBitis").value;
+    if(!s){
+      hataGoster("Bitiş KM girin.");
+      return;
+    }
+    var btn = document.getElementById("btnKmBitisKaydet");
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    var ziyaretYerleri = document.getElementById("kmZiyaretYerleri").value.trim();
+    KmData.bitisiKaydet(KmData.bugunAnahtari(), parseFloat(s), ziyaretYerleri, function(basarili, err){
+      btn.disabled = false;
+      btn.textContent = "✓ Günü Bitir (Bitiş KM'sini Kaydet)";
       if(basarili){
         alert("✓ Kayıt tamamlandı.");
       } else {
@@ -204,9 +233,17 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   kategoriSecimBagla();
-  document.getElementById("kmBaslangic").addEventListener("input", farkiGuncelle);
   document.getElementById("kmBitis").addEventListener("input", farkiGuncelle);
-  document.getElementById("btnKmKaydet").onclick = kmKaydetTiklandi;
+  document.getElementById("btnKmBaslangicKaydet").onclick = kmBaslangicKaydetTiklandi;
+  document.getElementById("btnKmBitisKaydet").onclick = kmBitisKaydetTiklandi;
+  document.getElementById("btnKmDuzenle").onclick = function(){
+    // Başlangıç bilgisini elle düzeltmek istersen — kaydı sil, Adım 1'e dön.
+    if(!confirm("Bugünün başlangıç bilgisini silip yeniden mi gireceksin?")) return;
+    var db = firebase.database();
+    db.ref("kmTakip/" + KmData.bugunAnahtari()).remove().then(function(){
+      document.getElementById("kmBaslangic").value = "";
+    });
+  };
   document.getElementById("btnExcel").onclick = excelAktar;
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   KmData.ayarlarOku(function(ayarlar){

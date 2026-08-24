@@ -42,44 +42,50 @@
   <section class="km-form-kutu">
     <div class="km-form-baslik">Bugünün Kaydı — <span id="kmBugunTarih"></span></div>
 
-    <div class="hesap-alan-grid">
+    <!-- ADIM 1: Sadece günün başlangıç KM'sini gir ve kaydet -->
+    <div id="kmAdim1" class="km-adim">
       <div class="hesap-alan">
-        <label>Başlangıç KM</label>
+        <label>Başlangıç KM (önceki günün bitişi otomatik önerilir)</label>
         <input type="number" id="kmBaslangic" placeholder="örn. 45200">
+      </div>
+      <div class="hesap-alan-grid">
+        <div class="hesap-alan">
+          <label>Başlangıç Saati</label>
+          <input type="text" id="kmSaat" placeholder="örn. 08:30">
+        </div>
+        <div class="hesap-alan">
+          <label>Seyir Güzergahı</label>
+          <input type="text" id="kmGuzergah" placeholder="örn. Ankara - Kazan">
+        </div>
+      </div>
+      <div class="kategori-secim">
+        <button class="kategori-btn kategori-btn--secili" data-kategori="is">İş</button>
+        <button class="kategori-btn" data-kategori="ozel">Özel</button>
+      </div>
+      <button class="km-kaydet-buton" id="btnKmBaslangicKaydet">✓ Günü Başlat (Başlangıç KM'sini Kaydet)</button>
+    </div>
+
+    <!-- ADIM 2: Gün başlatıldıktan sonra — bitiş KM'sini gir -->
+    <div id="kmAdim2" class="km-adim" hidden>
+      <div class="km-baslangic-ozet">
+        Bugün <strong id="kmOzetBaslangic">-</strong> km'den başladın<span id="kmOzetSaat"></span>.
       </div>
       <div class="hesap-alan">
         <label>Bitiş KM</label>
         <input type="number" id="kmBitis" placeholder="örn. 45340">
       </div>
-    </div>
-
-    <div class="hesap-alan-grid">
       <div class="hesap-alan">
-        <label>Başlangıç-Bitiş Saati</label>
-        <input type="text" id="kmSaat" placeholder="örn. 08:30 - 17:00">
+        <label>Ziyaret Yerleri</label>
+        <input type="text" id="kmZiyaretYerleri" placeholder="örn. Atlas Dry, Argesim Teknoloji">
       </div>
-      <div class="hesap-alan">
-        <label>Seyir Güzergahı</label>
-        <input type="text" id="kmGuzergah" placeholder="örn. Ankara - Kazan">
+      <div class="km-fark-kutu">
+        <span>Günlük Mesafe</span>
+        <strong id="kmFarkGoster">0 km</strong>
       </div>
+      <button class="km-kaydet-buton" id="btnKmBitisKaydet">✓ Günü Bitir (Bitiş KM'sini Kaydet)</button>
+      <button class="km-duzenle-buton" id="btnKmDuzenle">✏️ Başlangıç Bilgisini Düzenle</button>
     </div>
 
-    <div class="hesap-alan hesap-alan--tek">
-      <label>Ziyaret Yerleri</label>
-      <input type="text" id="kmZiyaretYerleri" placeholder="örn. Atlas Dry, Argesim Teknoloji">
-    </div>
-
-    <div class="kategori-secim">
-      <button class="kategori-btn kategori-btn--secili" data-kategori="is">İş</button>
-      <button class="kategori-btn" data-kategori="ozel">Özel</button>
-    </div>
-
-    <div class="km-fark-kutu">
-      <span>Günlük Mesafe</span>
-      <strong id="kmFarkGoster">0 km</strong>
-    </div>
-
-    <button class="km-kaydet-buton" id="btnKmKaydet">✓ Günü Kaydet</button>
   </section>
 
   <section class="km-tablo-kutu">

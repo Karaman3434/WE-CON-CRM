@@ -31,31 +31,68 @@
 
 <main class="sayfa">
 
-  <section class="detay-ust-kutu">
-    <div class="detay-ad" id="detayAd">—</div>
-    <div class="detay-sehir" id="detaySehir"></div>
-    <div class="detay-ciro-kutu">
-      <span class="detay-ciro-etiket">Toplam Ciro (Sipariş)</span>
-      <span class="detay-ciro-deger" id="detayToplamCiro">0,00 EUR</span>
-    </div>
-    <button class="satis-yap-buton" id="btnSatisYap">🛒 Bu Müşteriye Satış Yap</button>
-  </section>
+  <div class="musteri-bilgileri-serit">
+    <span>MÜŞTERİ BİLGİLERİ</span>
+    <span class="musteri-bilgileri-etiket">Müşteri Kartı</span>
+  </div>
 
-  <section class="detay-bilgi-form" id="detayBilgiForm">
+  <div class="detay-ad" id="detayAd">—</div>
+  <div class="detay-alt-baslik" id="detayAltBaslik">—</div>
+
+  <div class="ozet-satir-3">
+    <div class="ozet-alan">
+      <div class="ozet-ikon">📅</div>
+      <div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="cariVade">-</div></div>
+    </div>
+    <div class="ozet-alan">
+      <div class="ozet-ikon">📄</div>
+      <div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="cariFatura">-</div></div>
+    </div>
+    <div class="ozet-alan">
+      <div class="ozet-ikon">🚚</div>
+      <div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="cariKargo">-</div></div>
+    </div>
+  </div>
+
+  <div class="detay-ciro-kutu">
+    <span class="detay-ciro-etiket">Toplam Ciro (Sipariş)</span>
+    <span class="detay-ciro-deger" id="detayToplamCiro">0,00 EUR</span>
+  </div>
+  <button class="satis-yap-buton" id="btnSatisYap">🛒 Bu Müşteriye Satış Yap</button>
+
+  <button class="duzenle-ac-buton" id="btnDuzenleAc">✏️ Bilgileri Düzenle</button>
+
+  <section class="detay-bilgi-form" id="detayBilgiForm" hidden>
     <div class="form-satir-2">
       <input type="text" id="detayVade" placeholder="Vade">
       <input type="text" id="detayFatura" placeholder="Fatura Bilgisi">
-    </div>
-    <div class="form-satir-2">
-      <input type="tel" id="detayTelefon" placeholder="Yetkili Telefon">
-      <input type="email" id="detayEposta" placeholder="Yetkili E-posta">
     </div>
     <input type="text" id="detayKargo" placeholder="Kargo Firması">
     <button class="bilgi-kaydet-buton" id="btnBilgiKaydet">Bilgileri Güncelle</button>
   </section>
 
+  <div class="adres-bolum-baslik">🧾 FATURA ADRESLERİ (<span id="faturaAdresSayisi">0</span>)</div>
   <section class="adres-bolum">
-    <div class="adres-bolum-baslik">👤 Yetkili Kişiler</div>
+    <div id="faturaAdresListesi"></div>
+    <div class="adres-ekle-satir">
+      <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
+      <input type="text" id="yeniFaturaAdres" placeholder="Adres">
+      <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
+    </div>
+  </section>
+
+  <div class="adres-bolum-baslik">🚚 TESLİMAT ADRESLERİ (<span id="teslimatAdresSayisi">0</span>)</div>
+  <section class="adres-bolum">
+    <div id="teslimatAdresListesi"></div>
+    <div class="adres-ekle-satir">
+      <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
+      <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
+      <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
+    </div>
+  </section>
+
+  <div class="adres-bolum-baslik">👥 YETKİLİLER (<span id="yetkiliSayisi">0</span>)</div>
+  <section class="adres-bolum">
     <div id="yetkiliListesi"></div>
     <div class="yetkili-ekle-satir">
       <input type="text" id="yeniYetkiliIsim" placeholder="İsim *">
@@ -65,26 +102,6 @@
         <input type="email" id="yeniYetkiliEposta" placeholder="E-posta">
       </div>
       <button class="adres-ekle-btn" id="btnYetkiliEkle">+ Kişi Ekle</button>
-    </div>
-  </section>
-
-  <section class="adres-bolum">
-    <div class="adres-bolum-baslik">📄 Fatura Adresleri</div>
-    <div id="faturaAdresListesi"></div>
-    <div class="adres-ekle-satir">
-      <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
-      <input type="text" id="yeniFaturaAdres" placeholder="Adres">
-      <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
-    </div>
-  </section>
-
-  <section class="adres-bolum">
-    <div class="adres-bolum-baslik">🚚 Teslimat Adresleri</div>
-    <div id="teslimatAdresListesi"></div>
-    <div class="adres-ekle-satir">
-      <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
-      <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
-      <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
     </div>
   </section>
 
