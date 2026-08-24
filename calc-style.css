@@ -4,6 +4,33 @@
 
 .sonuc-listesi { max-height: 240px; overflow-y: auto; margin-bottom: 8px; }
 
+/* Hızlı Hesapla'nın kendi arama sonucu kartları (Ürün Bul'un tablo
+   görünümünden farklı, burada basit arama önerisi listesi yeterli). */
+.hesapla-arama-karti {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: #fafbfc;
+  cursor: pointer;
+}
+.hesapla-arama-bilgi { flex: 1; min-width: 0; }
+.hesapla-arama-kod { font-size: 11px; color: #8a94a3; }
+.hesapla-arama-ad { font-size: 13px; font-weight: 700; color: #111; }
+.hesapla-arama-fiyat {
+  font-size: 12px;
+  font-weight: 800;
+  color: #d9182b;
+  background: #fdeaea;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .secili-urun-kutu {
   display: flex;
   justify-content: space-between;

@@ -60,19 +60,19 @@ function sonuclariCiz(){
       var idx = sonuclar[i].idx;
       var bilgi = ProductData.urunBilgisi(sonuclar[i].item);
       var eklendi = ProductData.sepetteMi(idx);
-      html += "<div class='urun-karti'>"
-        + "<div class='urun-bilgi'>"
-        + "<div class='urun-kod'>Berta: " + htmlEsc(bilgi.berta||"-") + " · Abas: " + htmlEsc(bilgi.abas||"-") + "</div>"
-        + "<div class='urun-ad'>" + htmlEsc(bilgi.ad) + "</div>"
-        + "</div>"
-        + "<div class='urun-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</div>"
-        + "<button class='urun-ekle-btn" + (eklendi?" eklendi":"") + "' data-idx='" + idx + "'>" + (eklendi?"Eklendi":"Seç") + "</button>"
-        + "</div>";
+      html += "<tr>"
+        + "<td class='product-cell'>"
+        + "<div class='tablo-kod'><span class='tablo-kod-b'>Berta:</span> " + htmlEsc(bilgi.berta||"-") + " <span class='tablo-kod-a'>- Abas:</span> " + htmlEsc(bilgi.abas||"-") + "</div>"
+        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + "</div>"
+        + "</td>"
+        + "<td><span class='tablo-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
+        + "<td><button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"Seç") + "</button></td>"
+        + "</tr>";
     }
     liste.innerHTML = html;
 
     // Buton olayları — HTML string'e onclick gömmek yerine burada bağlanıyor
-    var butonlar = liste.querySelectorAll(".urun-ekle-btn");
+    var butonlar = liste.querySelectorAll(".btn-add");
     butonlar.forEach(function(btn){
       btn.onclick = function(){
         var idx = parseInt(this.getAttribute("data-idx"), 10);

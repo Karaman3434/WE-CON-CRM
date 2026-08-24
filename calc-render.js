@@ -38,13 +38,13 @@ function aramaSonuclariniCiz(){
     var sonuclar = ProductData.ara(q).slice(0, 15);
     liste.innerHTML = sonuclar.map(function(s){
       var bilgi = ProductData.urunBilgisi(s.item);
-      return "<div class='urun-karti' data-idx='" + s.idx + "' style='cursor:pointer;'>"
-        + "<div class='urun-bilgi'><div class='urun-kod'>Berta: " + htmlEsc(bilgi.berta||"-") + "</div><div class='urun-ad'>" + htmlEsc(bilgi.ad) + "</div></div>"
-        + "<div class='urun-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</div>"
+      return "<div class='hesapla-arama-karti' data-idx='" + s.idx + "'>"
+        + "<div class='hesapla-arama-bilgi'><div class='hesapla-arama-kod'>Berta: " + htmlEsc(bilgi.berta||"-") + "</div><div class='hesapla-arama-ad'>" + htmlEsc(bilgi.ad) + "</div></div>"
+        + "<div class='hesapla-arama-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</div>"
         + "</div>";
     }).join("");
 
-    liste.querySelectorAll(".urun-karti").forEach(function(kart, i){
+    liste.querySelectorAll(".hesapla-arama-karti").forEach(function(kart, i){
       kart.onclick = function(){
         var bilgi = ProductData.urunBilgisi(sonuclar[i].item);
         urunSec(bilgi);
