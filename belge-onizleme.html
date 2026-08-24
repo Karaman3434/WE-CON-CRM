@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — BELGE ÖNİZLEME v1
+  ====================================
+  Eski uygulamanın faturaOnizlemeHtmlOlustur() fonksiyonunun BİREBİR tasarımı:
+  WEICON logo + belge başlığı, MÜŞTERİ BİLGİLERİ şeridi (VADE/FATURA/KARGO,
+  yetkili, teslimat adresi), ürün tablosu (SIRA|ÜRÜN|ADET|LİSTE|İSK|NET|
+  TOPLAM|PRİM), GENEL TOPLAM ve MÜDÜR PRİMİ şeritleri.
+  Raporlar → Son İşlemler'den bir kayda "📄 Belgeyi Görüntüle" ile gelinir.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Belge Önizleme</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="belge-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="reports.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+  <div id="belgeIcerik"></div>
+  <button class="belge-yazdir-buton" id="btnYazdir">🖨 Yazdır</button>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="customer-data.js"></script>
+<script src="reports-data.js"></script>
+<script src="belge-render.js"></script>
+</body>
+</html>

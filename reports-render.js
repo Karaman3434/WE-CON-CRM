@@ -150,6 +150,7 @@ function islemleriCiz(){
         + "<div class='islem-detay islem-tiklanabilir' data-ac-i='" + i + "'>" + (k.urunler||[]).length + " ürün <span class='islem-ac-ikon'>▾</span></div>"
         + "<div class='islem-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</div>"
         + "<div class='urun-detay-kutu' id='urunDetay-" + i + "' hidden>" + urunDetayHtml + "</div>"
+        + "<button class='islem-belge-btn' data-belge-i='" + i + "'>📄 Belgeyi Görüntüle</button>"
         + (!kacanMi
               ? ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
               + (SONRAKI_ASAMA[k.tip] ? "<button class='islem-ilerlet-btn' data-ilerlet-i='"+i+"'>▶️ İlerlet — " + TIP_ETIKET[SONRAKI_ASAMA[k.tip]] + "</button>" : "")
@@ -161,6 +162,15 @@ function islemleriCiz(){
         + "</div>"
         + "</div>";
     }).join("");
+
+    kapsayici.querySelectorAll(".islem-belge-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var i = parseInt(this.getAttribute("data-belge-i"), 10);
+        var k = liste[i];
+        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
+        window.location.href = "belge-onizleme.html";
+      };
+    });
 
     kapsayici.querySelectorAll(".islem-tiklanabilir").forEach(function(el){
       el.onclick = function(){
