@@ -10,6 +10,21 @@ document.addEventListener("DOMContentLoaded", function(){
   var btn = document.getElementById("girisBtn");
   var hataEl = document.getElementById("girisHata");
 
+  window.addEventListener("error", function(ev){
+    console.error("Sayfa hatası:", ev);
+    hataEl.textContent = "Sayfa hatası: " + ev.message;
+    hataEl.hidden = false;
+    btn.disabled = false;
+    btn.textContent = "Giriş Yap";
+  });
+  window.addEventListener("unhandledrejection", function(ev){
+    console.error("Yakalanmamış promise hatası:", ev);
+    hataEl.textContent = "Hata: " + (ev.reason && ev.reason.message ? ev.reason.message : ev.reason);
+    hataEl.hidden = false;
+    btn.disabled = false;
+    btn.textContent = "Giriş Yap";
+  });
+
   function girisYap(){
     var email = document.getElementById("girisEmail").value.trim();
     var sifre = document.getElementById("girisSifre").value;
@@ -21,13 +36,25 @@ document.addEventListener("DOMContentLoaded", function(){
     }
     btn.disabled = true;
     btn.textContent = "Giriş yapılıyor...";
-    firebase.auth().signInWithEmailAndPassword(email, sifre).catch(function(e){
-      hataEl.textContent = "Giriş başarısız: e-posta veya şifre hatalı.";
+    try{
+      firebase.auth().signInWithEmailAndPassword(email, sifre).then(function(){
+        // Başarılı — auth.js'teki onAuthStateChanged otomatik yönlendirecek.
+        // Buton metnini kasıtlı olarak SIFIRLAMIYORUZ; yönlendirme birkaç yüz
+        // ms sürebilir, o sırada "Giriş yapılıyor..." görünmesi doğru bir geri bildirim.
+      }).catch(function(e){
+        console.error("Firebase giriş hatası:", e);
+        hataEl.textContent = "Giriş başarısız: " + (e && e.code ? e.code : (e && e.message ? e.message : "bilinmeyen hata"));
+        hataEl.hidden = false;
+        btn.disabled = false;
+        btn.textContent = "Giriş Yap";
+      });
+    }catch(e){
+      console.error("Giriş işlemi başlatılamadı:", e);
+      hataEl.textContent = "Giriş başlatılamadı: " + (e && e.message ? e.message : e);
       hataEl.hidden = false;
-    }).finally(function(){
       btn.disabled = false;
       btn.textContent = "Giriş Yap";
-    });
+    }
   }
 
   btn.onclick = girisYap;
