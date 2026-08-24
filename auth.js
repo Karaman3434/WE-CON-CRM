@@ -45,6 +45,30 @@
     }catch(e){ return 0; }
   }
 
+  // ÇEVRİMDIŞI FARKINDALIK BANNER'I — Firebase Realtime Database yazma
+  // işlemlerini bağlantı kesikken de otomatik kuyruğa alıp bağlantı gelince
+  // gönderir (SDK'nın kendi varsayılan davranışı), ama kullanıcı bunun
+  // farkında olmalı — aksi hâlde "kaydettim ama gitti mi gitmedi mi" belirsizliği
+  // yaşanır. Bu yüzden basit bir banner ile durumu her sayfada gösteriyoruz.
+  function cevrimdisiBannerOlustur(){
+    if(document.getElementById("cevrimdisiBanner")) return;
+    var b = document.createElement("div");
+    b.id = "cevrimdisiBanner";
+    b.textContent = "📴 Çevrimdışısın — kayıtların bağlantı gelince otomatik gönderilecek.";
+    b.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;background:#f2994a;color:#fff;text-align:center;padding:8px 12px;font-size:12px;font-weight:800;z-index:99998;";
+    document.body.insertBefore(b, document.body.firstChild);
+  }
+
+  function cevrimdisiDurumGuncelle(){
+    cevrimdisiBannerOlustur();
+    var b = document.getElementById("cevrimdisiBanner");
+    if(b) b.style.display = navigator.onLine ? "none" : "block";
+  }
+
+  window.addEventListener("online", cevrimdisiDurumGuncelle);
+  window.addEventListener("offline", cevrimdisiDurumGuncelle);
+  document.addEventListener("DOMContentLoaded", cevrimdisiDurumGuncelle);
+
   firebase.auth().onAuthStateChanged(function(user){
     if(user){
       var durum = gecenSureDurumu();
