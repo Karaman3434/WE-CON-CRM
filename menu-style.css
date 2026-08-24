@@ -36,6 +36,18 @@
   margin-top: 4px;
 }
 
+.pin-degistir-buton {
+  width: 100%;
+  background: #eaf2fc;
+  color: #003a70;
+  border: 2px solid #3569b8;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .ayrac {
   border: none;
   border-top: 1px solid #e2e6ec;

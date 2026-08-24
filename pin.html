@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — PIN KİLİDİ v2
+  ===============================
+  auth.js, 30 dakika hareketsizlik sonrası kullanıcıyı buraya yönlendirir.
+  Firebase oturumu HÂLÂ AÇIK — bu sadece hızlı bir uygulama kilidi, tam
+  giriş değil. Doğru PIN girilince home.html'e dönülür.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — PIN</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="login-style.css">
+<link rel="stylesheet" href="pin-style.css">
+</head>
+<body>
+
+<main class="giris-kutu">
+  <div class="logo">WEICON</div>
+  <h1>🔒 PIN Girin</h1>
+
+  <div class="pin-noktalar" id="pinNoktalar">
+    <span class="pin-nokta"></span>
+    <span class="pin-nokta"></span>
+    <span class="pin-nokta"></span>
+    <span class="pin-nokta"></span>
+  </div>
+
+  <input type="tel" id="pinGizliInput" class="pin-gizli-input" maxlength="4" inputmode="numeric" autocomplete="off">
+
+  <p class="giris-hata" id="pinHata" hidden>PIN hatalı, tekrar deneyin.</p>
+
+  <div class="pin-tus-grid" id="pinTusGrid"></div>
+
+  <button class="pin-tam-giris-buton" id="btnTamGiris">E-posta/Şifre ile Giriş Yap</button>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="auth.js"></script>
+<script src="pin-utils.js"></script>
+<script src="pin-render.js"></script>
+</body>
+</html>

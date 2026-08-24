@@ -45,6 +45,25 @@ function ayarlariKaydet(){
   }catch(e){ hataGoster("Ayarlar kaydedilemedi: " + e.message); }
 }
 
+function pinDegistirTiklandi(){
+  var mevcut = prompt("Mevcut PIN'i girin (ilk kez ayarlıyorsan varsayılan: 1234):");
+  if(mevcut === null) return;
+  pinDogrula(mevcut.trim()).then(function(dogruMu){
+    if(!dogruMu){ alert("Mevcut PIN hatalı."); return; }
+    var yeni = prompt("Yeni 4 haneli PIN girin:");
+    if(yeni === null) return;
+    yeni = yeni.trim();
+    if(!/^[0-9]{4}$/.test(yeni)){ alert("PIN 4 haneli rakamlardan oluşmalı."); return; }
+    var tekrar = prompt("Yeni PIN'i tekrar girin:");
+    if(tekrar === null) return;
+    if(tekrar.trim() !== yeni){ alert("PIN'ler eşleşmiyor."); return; }
+    pinHashHesapla(yeni).then(function(yeniHash){
+      pinYeniHashKaydet(yeniHash);
+      alert("✓ PIN güncellendi.");
+    });
+  });
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -53,6 +72,7 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   ayarlariDoldur();
   document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
+  document.getElementById("btnPinDegistir").onclick = pinDegistirTiklandi;
   document.getElementById("btnMenuAktif").onclick = function(){};
   document.getElementById("btnCikis").onclick = function(){
     if(!confirm("Çıkış yapmak istediğinize emin misiniz?")) return;

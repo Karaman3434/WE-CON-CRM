@@ -1,0 +1,64 @@
+/* pin-style.css — login-style.css'in üzerine eklenir. */
+
+.giris-kutu { text-align: center; }
+
+.pin-noktalar {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 24px 0;
+}
+.pin-nokta {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  display: inline-block;
+}
+.pin-nokta.dolu {
+  background: #003a70;
+  border-color: #003a70;
+}
+
+.pin-gizli-input {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.pin-tus-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 20px 0;
+}
+.pin-tus {
+  background: #f5f7fa;
+  border: none;
+  border-radius: 10px;
+  padding: 18px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #003a70;
+  cursor: pointer;
+}
+.pin-tus--sil {
+  background: #fdeaea;
+  color: #c0392b;
+  font-size: 16px;
+}
+.pin-tus--bos { visibility: hidden; }
+
+.pin-tam-giris-buton {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #556170;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 10px;
+}

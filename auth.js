@@ -23,19 +23,47 @@
 
   if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
 
-  var buSayfaLogin = window.location.pathname.indexOf("login.html") >= 0;
+  var PIN_KILIT_ESIK_MS = 30*60*1000;   // 30 dakika hareketsizlik -> PIN ekranı
+  var TAM_GIRIS_ESIK_MS = 3*60*60*1000; // 3 saat hareketsizlik -> tam e-posta/şifre girişi
+
+  var yol = window.location.pathname;
+  var buSayfaLogin = yol.indexOf("login.html") >= 0;
+  var buSayfaPin = yol.indexOf("pin.html") >= 0;
+
+  function aktiviteZamaniniGuncelle(){
+    try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
+  }
+
+  function gecenSureDurumu(){
+    try{
+      var son = parseInt(localStorage.getItem("weicon_son_aktivite")||"0", 10);
+      if(!son) return 0;
+      var fark = Date.now() - son;
+      if(fark > TAM_GIRIS_ESIK_MS) return 2;
+      if(fark > PIN_KILIT_ESIK_MS) return 1;
+      return 0;
+    }catch(e){ return 0; }
+  }
 
   firebase.auth().onAuthStateChanged(function(user){
     if(user){
-      // Oturum açık — login sayfasındaysak ana sayfaya gönder, değilsek içeriği göster.
+      var durum = gecenSureDurumu();
+      if(durum === 2){
+        firebase.auth().signOut();
+        return; // signOut tekrar tetikleyecek (user=null dalı çalışacak)
+      }
+      if(durum === 1 && !buSayfaPin){
+        window.location.href = "pin.html";
+        return;
+      }
       if(buSayfaLogin){
         window.location.href = "home.html";
       } else {
         document.documentElement.style.visibility = "visible";
+        if(!buSayfaPin) aktiviteZamaniniGuncelle();
         window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
       }
     } else {
-      // Oturum yok — login sayfasında değilsek oraya gönder.
       if(!buSayfaLogin){
         window.location.href = "login.html";
       } else {
