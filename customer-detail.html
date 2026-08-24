@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — MÜŞTERİ KARTI v2
-  ===================================
-  Bir müşterinin profili: iletişim/vade/fatura bilgisi (düzenlenebilir),
-  ziyaret geçmişi, sipariş/teklif geçmişi. customer.html'den seçilen
-  müşteri "weicon_secili_musteri" üzerinden buraya taşınır.
+  WEICON ASİST — MÜŞTERİ KARTI / İŞLEMLER v4
+  ==============================================
+  Eski uygulamanın musteriKartModal'ıyla BİREBİR aynı yapı: "⚡ İŞLEMLER"
+  başlığı, navy müşteri adı şeridi, tek satır özet (şehir · vade · yetkili),
+  4 büyük eylem kutucuğu (📍 Temas, 🔍 Ürün Bul, 🕐 İşlem Geçmişi,
+  📋 Görevlerim), alt satırda Sil + Kapat.
+  "🔍 Ürün Bul" — eski uygulamanın "TEK ROTA" sadeleştirmesiyle AYNI: hiç
+  soru sormadan direkt Ürün Bul'a götürür, müşteri arka planda seçili kalır.
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — Müşteri Kartı</title>
+<title>WEICON ASİST — İşlemler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="customer-style.css">
@@ -18,49 +21,90 @@
 </head>
 <body>
 
-<header class="app-header">
-  <div class="logo">WEICON</div>
-  <div class="tarih" id="gunTarihi"></div>
-</header>
+<div class="islemler-baslik-serit">⚡ İŞLEMLER</div>
 
-<nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="customer.html">Geri</a>
-  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
-  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
-</nav>
+<div class="islemler-musteri-serit">
+  <div class="islemler-musteri-ad" id="detayAd">—</div>
+  <div class="islemler-musteri-kod" id="detayKod"></div>
+</div>
 
 <main class="sayfa">
 
-  <div class="musteri-bilgileri-serit">
-    <span>MÜŞTERİ BİLGİLERİ</span>
-    <span class="musteri-bilgileri-etiket">Müşteri Kartı</span>
-  </div>
+  <div class="islemler-ozet-satir" id="detayOzetSatir"></div>
 
-  <div class="detay-ad" id="detayAd">—</div>
-  <div class="detay-alt-baslik" id="detayAltBaslik">—</div>
-
-  <div class="ozet-satir-3">
-    <div class="ozet-alan">
-      <div class="ozet-ikon">📅</div>
-      <div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="cariVade">-</div></div>
+  <div class="islemler-tile" id="tileTemas">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--mor">📍 Temas</div>
+      <div class="islemler-tile-alt" id="temasAlt"></div>
     </div>
-    <div class="ozet-alan">
-      <div class="ozet-ikon">📄</div>
-      <div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="cariFatura">-</div></div>
-    </div>
-    <div class="ozet-alan">
-      <div class="ozet-ikon">🚚</div>
-      <div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="cariKargo">-</div></div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-rozet islemler-rozet--mor" id="badgeZiyaret">0</span>
+      <span class="islemler-ok islemler-ok--mor">›</span>
     </div>
   </div>
 
-  <div class="detay-ciro-kutu">
-    <span class="detay-ciro-etiket">Toplam Ciro (Sipariş)</span>
-    <span class="detay-ciro-deger" id="detayToplamCiro">0,00 EUR</span>
-  </div>
-  <button class="satis-yap-buton" id="btnSatisYap">🛒 Bu Müşteriye Satış Yap</button>
+  <a class="islemler-tile" id="tileUrunBul" href="product.html">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--mavi">🔍 Ürün Bul</div>
+      <div class="islemler-tile-alt">Katalogda ara, teklif hazırla</div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-ok islemler-ok--mavi">›</span>
+    </div>
+  </a>
 
-  <button class="duzenle-ac-buton" id="btnDuzenleAc">✏️ Bilgileri Düzenle</button>
+  <div class="islemler-tile" id="tileGecmis">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--gri">🕐 İşlem Geçmişi</div>
+      <div class="islemler-tile-alt" id="gecmisAlt"></div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-rozet islemler-rozet--gri" id="badgeGecmis">0</span>
+      <span class="islemler-ok islemler-ok--gri">›</span>
+    </div>
+  </div>
+
+  <div class="islemler-tile" id="tileGorevler">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--gri">📋 Görevlerim</div>
+      <div class="islemler-tile-alt" id="gorevlerAlt"></div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-rozet islemler-rozet--gri" id="badgeGorevler">0</span>
+      <span class="islemler-ok islemler-ok--gri">›</span>
+    </div>
+  </div>
+
+  <div class="islemler-alt-buton-satir">
+    <button class="islemler-sil-btn" id="btnMusteriSil">🗑 Sil</button>
+    <a class="islemler-kapat-btn" href="customer.html">Kapat</a>
+  </div>
+
+  <!-- TEMAS (Ziyaret Geçmişi) — açılır bölüm -->
+  <section class="acilir-bolum" id="bolumTemas" hidden>
+    <div class="acilir-baslik">📍 Temas Geçmişi</div>
+    <div id="detayZiyaretListesi"></div>
+    <p class="bos-mesaj" id="detayZiyaretBos" hidden>Temas kaydı yok.</p>
+  </section>
+
+  <!-- İŞLEM GEÇMİŞİ — açılır bölüm, gerçek tablo -->
+  <section class="acilir-bolum" id="bolumGecmis" hidden>
+    <div class="acilir-baslik">🕘 İşlem Geçmişi</div>
+    <div id="detaySiparisListesi"></div>
+    <p class="bos-mesaj" id="detaySiparisBos" hidden>Bu müşteriye ait kayıt yok.</p>
+  </section>
+
+  <!-- GÖREVLERİM (bu müşteriyle ilgili) — açılır bölüm -->
+  <section class="acilir-bolum" id="bolumGorevler" hidden>
+    <div class="acilir-baslik">📋 Bu Müşteriyle İlgili Görevler</div>
+    <div id="detayGorevListesi"></div>
+    <p class="bos-mesaj" id="detayGorevBos" hidden>Görev yok.</p>
+  </section>
+
+  <!-- Ek bilgiler: adres/yetkili/vade yönetimi — eski uygulamada belge
+       hazırlarken arkaplanda kullanılan bilgiler, burada tek yerden
+       yönetilebiliyor. -->
+  <button class="duzenle-ac-buton" id="btnDuzenleAc">✏️ Vade / Fatura / Kargo / Adres / Yetkili Bilgilerini Düzenle</button>
 
   <section class="detay-bilgi-form" id="detayBilgiForm" hidden>
     <div class="form-satir-2">
@@ -71,53 +115,40 @@
     <button class="bilgi-kaydet-buton" id="btnBilgiKaydet">Bilgileri Güncelle</button>
   </section>
 
-  <div class="adres-bolum-baslik">🧾 FATURA ADRESLERİ (<span id="faturaAdresSayisi">0</span>)</div>
-  <section class="adres-bolum">
-    <div id="faturaAdresListesi"></div>
-    <div class="adres-ekle-satir">
-      <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
-      <input type="text" id="yeniFaturaAdres" placeholder="Adres">
-      <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
-    </div>
-  </section>
-
-  <div class="adres-bolum-baslik">🚚 TESLİMAT ADRESLERİ (<span id="teslimatAdresSayisi">0</span>)</div>
-  <section class="adres-bolum">
-    <div id="teslimatAdresListesi"></div>
-    <div class="adres-ekle-satir">
-      <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
-      <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
-      <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
-    </div>
-  </section>
-
-  <div class="adres-bolum-baslik">👥 YETKİLİLER (<span id="yetkiliSayisi">0</span>)</div>
-  <section class="adres-bolum">
-    <div id="yetkiliListesi"></div>
-    <div class="yetkili-ekle-satir">
-      <input type="text" id="yeniYetkiliIsim" placeholder="İsim *">
-      <input type="text" id="yeniYetkiliGorev" placeholder="Görev (örn. Satın Alma)">
-      <div class="form-satir-2">
-        <input type="tel" id="yeniYetkiliTelefon" placeholder="Telefon">
-        <input type="email" id="yeniYetkiliEposta" placeholder="E-posta">
+  <section class="acilir-bolum" id="bolumAdresYetkili" hidden>
+    <div class="adres-bolum-baslik">🧾 FATURA ADRESLERİ (<span id="faturaAdresSayisi">0</span>)</div>
+    <section class="adres-bolum">
+      <div id="faturaAdresListesi"></div>
+      <div class="adres-ekle-satir">
+        <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
+        <input type="text" id="yeniFaturaAdres" placeholder="Adres">
+        <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
       </div>
-      <button class="adres-ekle-btn" id="btnYetkiliEkle">+ Kişi Ekle</button>
-    </div>
-  </section>
+    </section>
 
-  <div class="sekme-secim">
-    <button class="sekme-btn sekme-btn--secili" data-sekme="siparisler">Sipariş Geçmişi</button>
-    <button class="sekme-btn" data-sekme="ziyaretler">Ziyaret Geçmişi</button>
-  </div>
+    <div class="adres-bolum-baslik">🚚 TESLİMAT ADRESLERİ (<span id="teslimatAdresSayisi">0</span>)</div>
+    <section class="adres-bolum">
+      <div id="teslimatAdresListesi"></div>
+      <div class="adres-ekle-satir">
+        <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
+        <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
+        <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
+      </div>
+    </section>
 
-  <section id="sekmeSiparisler" class="sekme-panel">
-    <div id="detaySiparisListesi"></div>
-    <p class="bos-mesaj" id="detaySiparisBos" hidden>Bu müşteriye ait kayıt yok.</p>
-  </section>
-
-  <section id="sekmeZiyaretler" class="sekme-panel" hidden>
-    <div id="detayZiyaretListesi"></div>
-    <p class="bos-mesaj" id="detayZiyaretBos" hidden>Ziyaret kaydı yok.</p>
+    <div class="adres-bolum-baslik">👥 YETKİLİLER (<span id="yetkiliSayisi">0</span>)</div>
+    <section class="adres-bolum">
+      <div id="yetkiliListesi"></div>
+      <div class="yetkili-ekle-satir">
+        <input type="text" id="yeniYetkiliIsim" placeholder="İsim *">
+        <input type="text" id="yeniYetkiliGorev" placeholder="Görev (örn. Satın Alma)">
+        <div class="form-satir-2">
+          <input type="tel" id="yeniYetkiliTelefon" placeholder="Telefon">
+          <input type="email" id="yeniYetkiliEposta" placeholder="E-posta">
+        </div>
+        <button class="adres-ekle-btn" id="btnYetkiliEkle">+ Kişi Ekle</button>
+      </div>
+    </section>
   </section>
 
 </main>

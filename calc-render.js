@@ -78,15 +78,13 @@ function hesaplaVeGoster(){
     var kdv = CartData.kdvOku();
     var h = CartData.hesapla(urun, kur, kdv);
 
-    document.getElementById("hesapSonuc").innerHTML =
-        "<div class='satir'><span class='lbl'>İskontolu Fiyat</span><span class='val'>" + CartData.fmt(h.iskontoluFiyat) + " EUR</span></div>"
-      + "<div class='satir'><span class='lbl'>TL Birim Fiyat</span><span class='val'>" + CartData.fmt(h.tlBirimFiyat) + " TL</span></div>"
-      + "<div class='satir'><span class='lbl'>Toplam</span><span class='val'>" + CartData.fmt(h.toplamEuro) + " EUR</span></div>"
-      + "<div class='satir'><span class='lbl'>Fatura Toplam (KDV dahil)</span><span class='val'>" + CartData.fmt(h.faturaToplam) + " TL</span></div>"
-      + "<div class='satir'><span class='lbl'>Prim</span><span class='val'>" + (h.mudurPrim<0 ? "Prim yok" : CartData.fmt(h.mudurPrim)+" EUR") + "</span></div>"
-      + "<div class='satir'><span class='lbl'>Birim Kâr</span><span class='val'>" + CartData.fmt(h.maliyetKar) + " EUR</span></div>";
-
-    document.getElementById("btnHesapSepeteEkle").hidden = listeFiyat <= 0;
+    document.getElementById("rIskontoluFiyat").textContent = CartData.fmt(h.iskontoluFiyat) + " €";
+    document.getElementById("rTlBirimFiyat").textContent = CartData.fmt(h.tlBirimFiyat) + " TL";
+    document.getElementById("rToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " €";
+    document.getElementById("rFaturaToplam").textContent = CartData.fmt(h.faturaToplam) + " TL";
+    document.getElementById("rPrimEuro").textContent = (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim)+" €");
+    var kur2 = kur||0;
+    document.getElementById("rPrimTL").textContent = (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim*kur2)+" TL");
   }catch(e){ hataGoster("Hesaplama yapılamadı: " + e.message); }
 }
 
@@ -127,6 +125,15 @@ document.addEventListener("DOMContentLoaded", function(){
     seciliUrunBilgi = null;
   };
   document.getElementById("btnHesapSepeteEkle").onclick = sepeteEkleTiklandi;
+  document.getElementById("btnTemizle").onclick = function(){
+    document.getElementById("hesListeFiyat").value = 0;
+    document.getElementById("hesDipFiyat").value = 0;
+    document.getElementById("hesIskonto").value = 0;
+    document.getElementById("hesAdet").value = 1;
+    document.getElementById("seciliUrunKutu").hidden = true;
+    seciliUrunBilgi = null;
+    hesaplaVeGoster();
+  };
   ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet","kurInput"].forEach(function(id){
     document.getElementById(id).addEventListener("input", function(){
       if(id==="kurInput") CartData.kurKaydet(parseFloat(this.value)||0);

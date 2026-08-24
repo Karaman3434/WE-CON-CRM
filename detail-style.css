@@ -1,84 +1,125 @@
-/* detail-style.css — eski uygulamanın "MÜŞTERİ BİLGİLERİ" kartıyla AYNI
-   düzen: navy başlık şeridi, isim, ID·Şehir alt satırı, VADE/FATURA/KARGO
-   ikon kutuları, sonra Fatura/Teslimat Adresleri, Yetkililer. */
+/* detail-style.css — eski uygulamanın "musteriKartModal" (İŞLEMLER)
+   ekranıyla BİREBİR aynı: ortalı başlık şeridi, navy müşteri adı şeridi,
+   tek satır özet, 4 büyük eylem kutucuğu, alt Sil/Kapat. */
 
-.musteri-bilgileri-serit {
+.islemler-baslik-serit {
+  padding: 14px 18px;
+  text-align: center;
+  border-bottom: 2px solid #003a70;
+  font-size: 18px;
+  font-weight: 900;
+  color: #003a70;
+  letter-spacing: .3px;
+}
+
+.islemler-musteri-serit {
   background: #003a70;
   color: #ffffff;
-  padding: 10px 14px;
-  border-radius: 10px 10px 0 0;
-  font-size: 15px;
-  font-weight: 900;
-  letter-spacing: .3px;
+  padding: 14px 18px;
+}
+.islemler-musteri-ad { font-size: 20px; font-weight: 900; }
+.islemler-musteri-kod { font-size: 13px; font-weight: 700; opacity: .85; margin-top: 4px; }
+
+.islemler-ozet-satir {
+  font-size: 13px;
+  color: #666666;
+  padding: 4px 0 14px;
+}
+
+.islemler-tile {
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
+  text-decoration: none;
+  min-height: 60px;
 }
-.musteri-bilgileri-etiket {
+.islemler-tile-icerik { min-width: 0; flex: 1; }
+.islemler-tile-baslik { font-size: 16px; font-weight: 900; }
+.islemler-tile-baslik--mor { color: #6a1b9a; }
+.islemler-tile-baslik--mavi { color: #1a4d9e; }
+.islemler-tile-baslik--gri { color: #333333; }
+.islemler-tile-alt {
   font-size: 12px;
-  font-weight: 800;
-  opacity: .8;
-}
-
-.detay-ad {
-  background: #ffffff;
-  border: 1px solid #e2e6ec;
-  border-top: none;
-  padding: 12px 14px 2px;
-  font-size: 20px;
-  font-weight: 900;
-  color: #1a2a3a;
-}
-.detay-alt-baslik {
-  background: #ffffff;
-  border: 1px solid #e2e6ec;
-  border-top: none;
-  padding: 0 14px 10px;
-  font-size: 13px;
-  font-weight: 800;
-  color: #7ea6d6;
-}
-
-.ozet-satir-3 {
-  background: #ffffff;
-  border: 1px solid #e2e6ec;
-  border-top: none;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  padding: 0 14px 14px;
-  margin-bottom: 14px;
-}
-.ozet-alan {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-.ozet-ikon {
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  background: #003a70;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.ozet-metin { min-width: 0; }
-.ozet-baslik { font-size: 10px; font-weight: 900; color: #c0392b; }
-.ozet-deger {
-  font-size: 13px;
-  font-weight: 800;
-  color: #222;
+  margin-top: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+#tileTemas { background: #f6f0fd; border: 2.5px solid #8e44ad; }
+#tileTemas .islemler-tile-alt { color: #8a6bb0; }
+#tileUrunBul { background: #f0f7ff; border: 2.5px solid #3569b8; }
+#tileUrunBul .islemler-tile-alt { color: #6a8fc9; }
+#tileGecmis, #tileGorevler { background: #f4f5f6; border: 2.5px solid #556170; }
+#tileGecmis .islemler-tile-alt, #tileGorevler .islemler-tile-alt { color: #8a94a3; }
+
+.islemler-tile-sag { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.islemler-rozet {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+.islemler-rozet--mor { background: #8e44ad; }
+.islemler-rozet--gri { background: #37474f; }
+.islemler-ok { font-size: 18px; }
+.islemler-ok--mor { color: #8e44ad; }
+.islemler-ok--mavi { color: #2563eb; }
+.islemler-ok--gri { color: #556170; }
+
+.islemler-alt-buton-satir {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.islemler-sil-btn {
+  flex: 1;
+  background: #fdeceb;
+  color: #c0392b;
+  border: 2px solid #e0a49e;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.islemler-kapat-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fdeaea;
+  color: #c0392b;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.acilir-bolum {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #fafbfc;
+}
+.acilir-baslik {
+  font-size: 15px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 10px;
 }
 
 .duzenle-ac-buton {
@@ -88,33 +129,8 @@
   border: 2px solid #cbd5e1;
   border-radius: 8px;
   padding: 10px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
-  cursor: pointer;
-  margin-bottom: 14px;
-}
-
-.detay-ciro-kutu {
-  background: #0e2038;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.detay-ciro-etiket { font-size: 11px; font-weight: 700; color: #7fd6ff; }
-.detay-ciro-deger { font-size: 18px; font-weight: 900; color: #00d9ff; }
-
-.satis-yap-buton {
-  width: 100%;
-  background: #e0730f;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 900;
   cursor: pointer;
   margin-bottom: 14px;
 }
@@ -330,6 +346,18 @@
   margin-bottom: 8px;
   background: #fafbfc;
 }
+
+.gorev-karti {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #ffffff;
+}
+.gorev-karti.tamamlandi { opacity: .55; }
+.gorev-aciklama { font-size: 13px; font-weight: 700; color: #111827; }
+.gorev-karti.tamamlandi .gorev-aciklama { text-decoration: line-through; }
+.gorev-zaman { font-size: 11px; color: #8a94a3; margin-top: 2px; }
 
 .sekme-secim {
   display: grid;

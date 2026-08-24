@@ -38,14 +38,18 @@ var seciliMusteriAdi = null;
 
 function ustBilgiyiCiz(musteri){
   document.getElementById("detayAd").textContent = musteri.ad;
-  var altBaslikParcalar = [];
-  if(musteri.id) altBaslikParcalar.push("🏷 " + musteri.id);
-  if(musteri.sehir) altBaslikParcalar.push(musteri.sehir);
-  document.getElementById("detayAltBaslik").textContent = altBaslikParcalar.join(" · ") || "-";
+  document.getElementById("detayKod").textContent = musteri.id ? ("🏷 Müşteri Kodu: " + musteri.id) : "";
 
-  document.getElementById("cariVade").textContent = musteri.vade || "-";
-  document.getElementById("cariFatura").textContent = musteri.fatura || "-";
-  document.getElementById("cariKargo").textContent = musteri.kargo || "-";
+  var bilgiParcalar = [];
+  if(musteri.sehir) bilgiParcalar.push(musteri.sehir);
+  if(musteri.vade) bilgiParcalar.push(musteri.vade + " vade");
+  var ilkYetkili = (musteri.iletisimler && musteri.iletisimler[0]) ? musteri.iletisimler[0].isim : null;
+  if(ilkYetkili) bilgiParcalar.push(ilkYetkili);
+  document.getElementById("detayOzetSatir").textContent = bilgiParcalar.join(" · ");
+
+  var ziyaretSayisi = (musteri.ziyaretGecmisi||[]).length;
+  document.getElementById("badgeZiyaret").textContent = ziyaretSayisi;
+  document.getElementById("temasAlt").textContent = ziyaretSayisi>0 ? (ziyaretSayisi + " kayıtlı temas") : "Henüz temas kaydı yok";
 
   document.getElementById("detayVade").value = musteri.vade || "";
   document.getElementById("detayFatura").value = musteri.fatura || "";
@@ -59,11 +63,8 @@ function siparisGecmisiniCiz(){
     var kapsayici = document.getElementById("detaySiparisListesi");
     var bos = document.getElementById("detaySiparisBos");
 
-    var toplamCiro = bunaAit
-      .filter(function(k){ return k.tip === "siparis"; })
-      .reduce(function(s,k){ return s + (k.urunler||[]).reduce(function(s2,u){ return s2+(u.toplamEuro||0); }, 0); }, 0);
-    var ciroEl = document.getElementById("detayToplamCiro");
-    if(ciroEl) ciroEl.textContent = toplamCiro.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR";
+    document.getElementById("badgeGecmis").textContent = bunaAit.length;
+    document.getElementById("gecmisAlt").textContent = bunaAit.length>0 ? (bunaAit.length + " kayıtlı işlem") : "Henüz kayıt yok";
 
     if(bunaAit.length === 0){
       kapsayici.innerHTML = "";
@@ -136,16 +137,55 @@ function ziyaretGecmisiniCiz(musteri){
   }catch(e){ hataGoster("Ziyaret geçmişi çizilemedi: " + e.message); }
 }
 
-function sekmeGecisBagla(){
-  document.querySelectorAll(".sekme-btn").forEach(function(btn){
-    btn.onclick = function(){
-      var hedef = this.getAttribute("data-sekme");
-      document.querySelectorAll(".sekme-btn").forEach(function(b){ b.classList.remove("sekme-btn--secili"); });
-      this.classList.add("sekme-btn--secili");
-      document.getElementById("sekmeSiparisler").hidden = hedef !== "siparisler";
-      document.getElementById("sekmeZiyaretler").hidden = hedef !== "ziyaretler";
-    };
-  });
+function tilelariBagla(){
+  document.getElementById("tileTemas").onclick = function(){
+    var bolum = document.getElementById("bolumTemas");
+    bolum.hidden = !bolum.hidden;
+    if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  document.getElementById("tileGecmis").onclick = function(){
+    var bolum = document.getElementById("bolumGecmis");
+    bolum.hidden = !bolum.hidden;
+    if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  document.getElementById("tileGorevler").onclick = function(){
+    var bolum = document.getElementById("bolumGorevler");
+    bolum.hidden = !bolum.hidden;
+    if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  // "Ürün Bul" kutucuğu — TEK ROTA: hiç soru sormadan direkt gider, müşteri
+  // zaten CustomerData.sec() ile arka planda seçili tutuluyor.
+  document.getElementById("tileUrunBul").onclick = function(){
+    CustomerData.sec(CustomerData.musteriBul(seciliMusteriAdi) || {ad:seciliMusteriAdi});
+  };
+}
+
+function musteriGorevleriniCiz(){
+  try{
+    var tumu = ReportsData.gorevleriGetir();
+    var bunaAit = tumu.filter(function(g){
+      return (g.musteriAd||"").toLocaleLowerCase("tr-TR").indexOf((seciliMusteriAdi||"").toLocaleLowerCase("tr-TR")) >= 0;
+    });
+    document.getElementById("badgeGorevler").textContent = bunaAit.length;
+    document.getElementById("gorevlerAlt").textContent = bunaAit.length>0 ? (bunaAit.length + " görev") : "Görev yok";
+
+    var kapsayici = document.getElementById("detayGorevListesi");
+    var bos = document.getElementById("detayGorevBos");
+    if(bunaAit.length === 0){
+      kapsayici.innerHTML = "";
+      bos.hidden = false;
+      return;
+    }
+    bos.hidden = true;
+    kapsayici.innerHTML = bunaAit.map(function(g){
+      return "<div class='gorev-karti" + (g.tamamlandi?" tamamlandi":"") + "'>"
+        + "<div class='gorev-bilgi'>"
+        + "<div class='gorev-aciklama'>" + htmlEsc(g.aciklama) + "</div>"
+        + "<div class='gorev-zaman'>" + htmlEsc(g.tarih||"") + " " + htmlEsc(g.saat||"") + "</div>"
+        + "</div>"
+        + "</div>";
+    }).join("");
+  }catch(e){ hataGoster("Görevler çizilemedi: " + e.message); }
 }
 
 function bilgileriKaydetTiklandi(){
@@ -381,7 +421,7 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  sekmeGecisBagla();
+  tilelariBagla();
 
   var secili = CustomerData.seciliyiOku();
   if(!secili){
@@ -396,16 +436,23 @@ document.addEventListener("DOMContentLoaded", function(){
   yetkilileriCiz(secili);
   yetkiliEkleBagla();
 
-  document.getElementById("btnSatisYap").onclick = function(){
-    CustomerData.sec(secili);
-    window.location.href = "product.html";
-  };
   document.getElementById("btnBilgiKaydet").onclick = bilgileriKaydetTiklandi;
   document.getElementById("btnDuzenleAc").onclick = function(){
-    var form = document.getElementById("detayBilgiForm");
-    form.hidden = !form.hidden;
+    document.getElementById("detayBilgiForm").hidden = !document.getElementById("detayBilgiForm").hidden;
+    document.getElementById("bolumAdresYetkili").hidden = !document.getElementById("bolumAdresYetkili").hidden;
   };
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  document.getElementById("btnMusteriSil").onclick = function(){
+    if(!confirm(seciliMusteriAdi + " müşterisini kalıcı olarak silmek istediğinize emin misiniz? Bu geri alınamaz.")) return;
+    if(!confirm("Bu işlem geri alınamaz. Onaylıyor musunuz?")) return;
+    CustomerData.musteriSil(seciliMusteriAdi, function(basarili, err){
+      if(basarili){
+        alert("✓ Müşteri silindi.");
+        window.location.href = "customer.html";
+      } else {
+        hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
+    });
+  };
 
   CustomerData.listeDegistiginde(function(){
     var tazeMusteri = CustomerData.musteriBul(seciliMusteriAdi);
@@ -417,8 +464,10 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   });
   ReportsData.arsivDegistiginde(siparisGecmisiniCiz);
+  ReportsData.gorevDegistiginde(musteriGorevleriniCiz);
   ziyaretGecmisiniCiz(secili);
   siparisGecmisiniCiz();
+  musteriGorevleriniCiz();
   // Firebase müşteri listesi (dolayısıyla yetkili/adres bilgileri) sayfa tam
   // yüklenmeden önce gelmiş olabilir — dinleyici bu ilk anlık görüntüyü
   // kaçırmış olabilir. Zaten yüklenmişse hemen taze veriyle güncelle.

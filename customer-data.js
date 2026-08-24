@@ -239,6 +239,14 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
+  function musteriSil(musteriAd, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      tazeListe.splice(idx, 1);
+    }, geriBildir);
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
@@ -258,7 +266,8 @@ var CustomerData = (function(){
     musteriAdresGuncelle: musteriAdresGuncelle,
     yetkiliEkle: yetkiliEkle,
     yetkiliSil: yetkiliSil,
-    yetkiliGuncelle: yetkiliGuncelle
+    yetkiliGuncelle: yetkiliGuncelle,
+    musteriSil: musteriSil
   };
 
 })();
