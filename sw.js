@@ -1,5 +1,5 @@
-const CACHE_ADI = "weicon-asist-cache-v21-ui-navigation-fix";
-const BUILD = "20260824-2230-001";
+const CACHE_ADI = "weicon-asist-cache-v22-deep-ui-data-integrity";
+const BUILD = "20260824-2310-002";
 const SALES_V3_SRC = '<script src="js/sales/sales-v3.js?v=' + BUILD + '"></script>';
 const UI_FIX_SRC = '<script src="ui-render-fix.js?v=' + BUILD + '"></script>';
 const PAINT_FIX_STYLE = '<style id="weicon-main-paint-fix">html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;} .phone-container{width:100%!important;max-width:100vw!important;min-width:0!important;margin-left:auto!important;margin-right:auto!important;transform:none!important;-webkit-backface-visibility:visible!important;backface-visibility:visible!important;}</style>';
