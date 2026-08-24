@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — MENÜ v2
+  WEICON ASİST — MENÜ v3
   =========================
-  Kur ve KDV oranı ayarları (eski uygulamayla PAYLAŞILAN localStorage
-  anahtarları) + çıkış yap.
+  Eski uygulamanın "ustMenuAcKapat" açılır listesiyle BİREBİR aynı: 6 satır,
+  her biri kendi rengiyle, alt çizgili liste. Ayarlar/Şablonlar artık ayrı
+  sayfalar — burada sadece PIN Değiştir ve Çıkış Yap doğrudan aksiyon.
 -->
 <html lang="tr">
 <head>
@@ -29,41 +30,16 @@
 
 <main class="sayfa">
 
-  <section class="ayar-kutu">
-    <label>Güncel Kur (EUR → TL)</label>
-    <input type="number" id="kurInput" step="0.0001">
-  </section>
-
-  <section class="ayar-kutu">
-    <label>KDV Oranı (%)</label>
-    <input type="number" id="kdvInput" step="1">
-  </section>
-
-  <button class="kaydet-buton" id="btnAyarKaydet">Ayarları Kaydet</button>
-
-  <hr class="ayrac">
-
-  <section class="ayar-kutu">
-    <label>🔒 PIN Kilidi</label>
-    <button class="pin-degistir-buton" id="btnPinDegistir">PIN Belirle / Değiştir</button>
-  </section>
-
-  <section class="ayar-kutu">
-    <label>✉️ Mesaj Şablonu ({URUN}, {BELGE}, {FIRMA} yer tutucuları kullanılabilir)</label>
-    <textarea id="sablonMailMetni" rows="3" placeholder="Örn: {FIRMA} için {BELGE} göndermenizi rica ederim."></textarea>
-  </section>
-
-  <section class="ayar-kutu">
-    <label>📱 WhatsApp Şablonu</label>
-    <textarea id="sablonWhatsappMetni" rows="3" placeholder="Örn: İstediğiniz {URUN} için fiyat bilgisini paylaştım."></textarea>
-  </section>
-  <button class="kaydet-buton" id="btnSablonKaydet">Şablonları Kaydet</button>
-
-  <hr class="ayrac">
+  <div class="menu-liste">
+    <a class="menu-satir menu-satir--veri" href="veri.html">📁 Veri</a>
+    <button class="menu-satir menu-satir--pin" id="btnPinDegistir">🔐 PIN Değiştir</button>
+    <button class="menu-satir menu-satir--yedek" id="btnYedekle">💾 Yedekle</button>
+    <a class="menu-satir menu-satir--sablon" href="mesaj-sablonlari.html">✉️ Mesaj Şablonları</a>
+    <a class="menu-satir menu-satir--ayarlar" href="ayarlar.html">⚙️ Ayarlar</a>
+    <button class="menu-satir menu-satir--cikis" id="btnCikis">🔒 Çıkış Yap</button>
+  </div>
 
   <div class="kullanici-bilgi" id="kullaniciBilgi"></div>
-
-  <button class="cikis-buton" id="btnCikis">Çıkış Yap</button>
 
 </main>
 
@@ -72,6 +48,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="auth.js"></script>
 <script src="pin-utils.js"></script>
+<script src="customer-data.js"></script>
+<script src="reports-data.js"></script>
 <script src="menu-render.js"></script>
 </body>
 </html>

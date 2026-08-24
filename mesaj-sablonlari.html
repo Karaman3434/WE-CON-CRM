@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Mesaj Şablonları</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="ayarlar-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="menu.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+  <div class="sayfa-baslik">✉️ Mesaj Şablonları</div>
+
+  <section class="ayar-kutu">
+    <label>E-posta Şablonu ({URUN}, {BELGE}, {FIRMA} yer tutucuları kullanılabilir)</label>
+    <textarea id="sablonMailMetni" rows="4" placeholder="Örn: {FIRMA} için hazırladığımız {BELGE}'i ekte bulabilirsiniz."></textarea>
+  </section>
+
+  <section class="ayar-kutu">
+    <label>📱 WhatsApp Şablonu</label>
+    <textarea id="sablonWhatsappMetni" rows="4" placeholder="Örn: İstediğiniz {URUN} için fiyat bilgisini paylaştım."></textarea>
+  </section>
+
+  <button class="kaydet-buton" id="btnSablonKaydet">Şablonları Kaydet</button>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="mesaj-sablonlari-render.js"></script>
+</body>
+</html>

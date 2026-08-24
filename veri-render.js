@@ -1,10 +1,3 @@
-/*
-  menu-render.js
-  ==============
-  Menü artık sadece liste + 2 doğrudan aksiyon (PIN Değiştir, Yedekle,
-  Çıkış Yap). Ayarlar/Şablonlar/Veri kendi sayfalarında.
-*/
-
 function hataGoster(mesaj){
   console.error(mesaj);
   var kutu = document.createElement("div");
@@ -25,28 +18,6 @@ function tarihiGuncelle(){
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
-function pinDegistirTiklandi(){
-  var mevcut = prompt("Mevcut PIN'i girin (ilk kez ayarlıyorsan varsayılan: 1234):");
-  if(mevcut === null) return;
-  pinDogrula(mevcut.trim()).then(function(dogruMu){
-    if(!dogruMu){ alert("Mevcut PIN hatalı."); return; }
-    var yeni = prompt("Yeni 4 haneli PIN girin:");
-    if(yeni === null) return;
-    yeni = yeni.trim();
-    if(!/^[0-9]{4}$/.test(yeni)){ alert("PIN 4 haneli rakamlardan oluşmalı."); return; }
-    var tekrar = prompt("Yeni PIN'i tekrar girin:");
-    if(tekrar === null) return;
-    if(tekrar.trim() !== yeni){ alert("PIN'ler eşleşmiyor."); return; }
-    pinHashHesapla(yeni).then(function(yeniHash){
-      pinYeniHashKaydet(yeniHash);
-      alert("✓ PIN güncellendi.");
-    });
-  });
-}
-
-// Eski uygulamanın tumVeriyiYedekle() fonksiyonuyla AYNI yapıda JSON indirir:
-// {yedekTarihi, kdvOrani, musteriler, arsiv}. Firebase'den canlı veriyi okuyup
-// indirir.
 function yedekleTiklandi(){
   try{
     var db = firebase.database();
@@ -85,24 +56,51 @@ function yedekleTiklandi(){
   }catch(e){ hataGoster("Yedekleme başlatılamadı: " + e.message); }
 }
 
+function jsonDosyasiSecildi(dosya){
+  if(!dosya) return;
+  var okuyucu = new FileReader();
+  okuyucu.onload = function(){
+    try{
+      var yedek = JSON.parse(okuyucu.result);
+      if(!yedek.musteriler || !yedek.arsiv){
+        hataGoster("Geçersiz yedek dosyası — musteriler/arsiv alanları bulunamadı.");
+        return;
+      }
+      var mesaj = "Bu dosyadan geri yüklenecek:\n"
+        + "• " + yedek.musteriler.length + " müşteri\n"
+        + "• " + ((yedek.arsiv.siparis||[]).length + (yedek.arsiv.teklif||[]).length + (yedek.arsiv.proforma||[]).length + (yedek.arsiv.numune||[]).length) + " işlem kaydı\n"
+        + (yedek.yedekTarihi ? "Yedek tarihi: " + new Date(yedek.yedekTarihi).toLocaleString("tr-TR") + "\n" : "")
+        + "\nMEVCUT verilerin ÜZERİNE YAZILACAK. Devam edilsin mi?";
+      if(!confirm(mesaj)) return;
+
+      var db = firebase.database();
+      Promise.all([
+        db.ref("musteriler").set(yedek.musteriler),
+        db.ref("arsiv").set(yedek.arsiv)
+      ]).then(function(){
+        if(yedek.kdvOrani) localStorage.setItem("weicon_kdv_orani", yedek.kdvOrani);
+        alert("✓ Geri yükleme tamamlandı.");
+      }).catch(function(err){
+        hataGoster("Geri yükleme başarısız: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      });
+    }catch(e){
+      hataGoster("Dosya okunamadı: geçerli bir JSON değil.");
+    }
+  };
+  okuyucu.readAsText(dosya);
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("btnPinDegistir").onclick = pinDegistirTiklandi;
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnYedekle").onclick = yedekleTiklandi;
-  document.getElementById("btnMenuAktif").onclick = function(){};
-  document.getElementById("btnCikis").onclick = function(){
-    if(!confirm("Çıkış yapmak istediğinize emin misiniz?")) return;
-    firebase.auth().signOut().then(function(){
-      window.location.href = "login.html";
-    });
-  };
-
-  window.addEventListener("weiconAuthHazir", function(ev){
-    var el = document.getElementById("kullaniciBilgi");
-    if(el && ev.detail && ev.detail.user) el.textContent = ev.detail.user.email;
+  document.getElementById("btnJsonYukle").onclick = function(){ document.getElementById("jsonFileInput").click(); };
+  document.getElementById("jsonFileInput").addEventListener("change", function(){
+    jsonDosyasiSecildi(this.files[0]);
+    this.value = "";
   });
 });

@@ -1,0 +1,44 @@
+.sayfa { padding: 8px 14px 24px; }
+.sayfa-baslik { font-size: 18px; font-weight: 900; color: #003a70; margin-bottom: 16px; }
+
+.ayar-kutu { margin-bottom: 14px; }
+.ayar-kutu label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #556170;
+  margin-bottom: 6px;
+}
+.ayar-kutu input {
+  width: 100%;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #003a70;
+}
+.ayar-kutu input:focus { outline: none; border-color: #003a70; }
+.ayar-kutu textarea {
+  width: 100%;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+.ayar-kutu textarea:focus { outline: none; border-color: #003a70; }
+
+.kaydet-buton {
+  width: 100%;
+  background: #e0730f;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: 4px;
+}
