@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — RAPORLAR MENÜSÜ v2
+  =====================================
+  Eski uygulamadaki raporlarMenusuModal'ın BİREBİR aynısı: 3 kutucuk —
+  İSTATİSTİKLER (lacivert), GÖREVLERİM (yeşil), ZİYARET TAKVİMİ (yeşil, geniş).
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Raporlar</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="hareketler-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="hareketler-tile-satir">
+    <a class="hareketler-tile hareketler-tile--musteriler" href="reports.html">
+      <span class="hareketler-tile-ikon">📊</span>
+      <span class="hareketler-tile-baslik">İSTATİSTİKLER</span>
+    </a>
+    <a class="hareketler-tile hareketler-tile--satis" href="gorevler.html">
+      <span class="hareketler-tile-ikon">📌</span>
+      <span class="hareketler-tile-baslik">GÖREVLERİM</span>
+    </a>
+  </div>
+  <a class="hareketler-tile hareketler-tile--satis hareketler-tile--genis" href="ziyaret.html">
+    <span class="hareketler-tile-ikon">📆</span>
+    <span class="hareketler-tile-baslik">ZİYARET TAKVİMİ</span>
+  </a>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+  var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+  var d = new Date();
+  document.getElementById("gunTarihi").textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+});
+</script>
+</body>
+</html>

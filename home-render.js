@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function(){
   WeiconData.veriDegistiginde(kartlariGuncelle);
   WeiconData.bildirimDegistiginde(bildirimBanneriGuncelle);
   WeiconData.bildirimVerisiDinlemeyeBasla();
-  document.getElementById("bildirimBanner").onclick = function(){ window.location.href = "reports.html"; };
+  document.getElementById("bildirimBanner").onclick = function(){ window.location.href = "raporlar.html"; };
   // Firebase verisi henüz gelmemiş olabilir; ilk anda da bir kez dene.
   kartlariGuncelle();
 });

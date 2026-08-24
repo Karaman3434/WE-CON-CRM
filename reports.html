@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — RAPORLAR v2
-  =============================
-  İki bölüm: Son İşlemler (arşivden okunan geçmiş kayıtlar) ve Görevler
-  (Firebase "gorevler" yolu — eski uygulamayla AYNI). İstatistikler ve
-  Ziyaret Takvimi bu ilk sürümde YOK, sonraki pakette eklenecek.
+  WEICON ASİST — İSTATİSTİKLER v3
+  ===================================
+  Eski uygulamayla AYNI sıra: istatistik kartları → kaçan özet → 
+  "🕘 Son İşlemler" (AYRI bir sayfa DEĞİL, bu sayfanın alt bölümü).
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — Raporlar</title>
+<title>WEICON ASİST — İstatistikler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="reports-style.css">
@@ -23,36 +22,61 @@
 </header>
 
 <nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--geri" href="raporlar.html">Geri</a>
   <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
   <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
 </nav>
 
 <main class="sayfa">
 
-  <div class="sekme-secim sekme-secim--dort">
-    <button class="sekme-btn sekme-btn--secili" data-sekme="islemler">Son İşlemler</button>
-    <button class="sekme-btn" data-sekme="gorevler">Görevler</button>
-    <button class="sekme-btn" data-sekme="istatistik">İstatistik</button>
-    <button class="sekme-btn" data-sekme="ziyaret">Ziyaret</button>
+  <div class="istatistik-kart-grid">
+    <div class="istatistik-kart istatistik-kart--koyu">
+      <div class="istatistik-baslik">Bu Ay Toplam</div>
+      <div class="istatistik-deger" id="istBuAyToplam">0,00 EUR</div>
+      <div class="istatistik-alt" id="istBuAySiparisSayisi">0 sipariş</div>
+    </div>
+    <div class="istatistik-kart">
+      <div class="istatistik-baslik">Geçen Ay Toplam</div>
+      <div class="istatistik-deger istatistik-deger--koyu" id="istGecenAyToplam">0,00 EUR</div>
+      <div class="istatistik-alt" id="istGecenAySiparisSayisi">0 sipariş</div>
+    </div>
   </div>
 
-  <!-- SON İŞLEMLER -->
-  <section id="sekmeIslemler" class="sekme-panel">
-    <div class="islem-filtre-satiri">
-      <input type="text" id="islemAra" placeholder="Müşteri adıyla ara..." autocomplete="off">
-      <select id="islemTipFiltre">
-        <option value="">Tüm Türler</option>
-        <option value="numune">Numune</option>
-        <option value="teklif">Teklif</option>
-        <option value="proforma">Proforma</option>
-        <option value="siparis">Sipariş</option>
-      </select>
+  <div class="istatistik-bolum-baslik">Son 6 Ay</div>
+  <div id="istAylikListe"></div>
+
+  <div class="istatistik-bolum-baslik">En Çok Satış Yapılan Müşteriler</div>
+  <div id="istMusteriListe"></div>
+
+  <div class="istatistik-bolum-baslik">❌ Kaçan Siparişler (Bu Ay)</div>
+  <div class="kacan-ozet-grid">
+    <div class="kacan-ozet-kart">
+      <div class="kacan-ozet-baslik">Kaçan İşlem</div>
+      <div class="kacan-ozet-deger" id="istKacanSayi">0</div>
     </div>
-    <button class="excel-buton islem-excel-buton" id="btnIslemlerExcel">📊 Listeyi Excel'e Aktar</button>
-    <div id="islemlerListesi"></div>
-    <p class="bos-mesaj" id="islemlerBosMesaj" hidden>Henüz kayıt yok.</p>
-  </section>
+    <div class="kacan-ozet-kart">
+      <div class="kacan-ozet-baslik">Kaybedilen Tutar</div>
+      <div class="kacan-ozet-deger" id="istKacanTutar">0,00 EUR</div>
+    </div>
+  </div>
+  <div id="istKacanListe"></div>
+
+  <!-- SON İŞLEMLER — eski uygulamadaki gibi bu sayfanın alt bölümü -->
+  <div class="son-islemler-baslik">🕘 Son İşlemler</div>
+
+  <div class="islem-filtre-satiri">
+    <input type="text" id="islemAra" placeholder="Müşteri adıyla ara..." autocomplete="off">
+    <select id="islemTipFiltre">
+      <option value="">Tüm Türler</option>
+      <option value="numune">Numune</option>
+      <option value="teklif">Teklif</option>
+      <option value="proforma">Proforma</option>
+      <option value="siparis">Sipariş</option>
+    </select>
+  </div>
+  <button class="excel-buton islem-excel-buton" id="btnIslemlerExcel">📊 Listeyi Excel'e Aktar</button>
+  <div id="islemlerListesi"></div>
+  <p class="bos-mesaj" id="islemlerBosMesaj" hidden>Henüz kayıt yok.</p>
 
   <div class="duzenle-overlay" id="duzenleOverlay" hidden>
     <div class="duzenle-kutu">
@@ -64,65 +88,6 @@
       </div>
     </div>
   </div>
-
-  <!-- GÖREVLER -->
-  <section id="sekmeGorevler" class="sekme-panel" hidden>
-    <div class="gorev-ekle-kutu">
-      <input type="text" id="gorevMusteri" placeholder="Müşteri / konu">
-      <input type="text" id="gorevAciklama" placeholder="Görev açıklaması">
-      <div class="gorev-tarih-satir">
-        <input type="date" id="gorevTarih">
-        <input type="time" id="gorevSaat">
-      </div>
-      <button class="gorev-ekle-buton" id="btnGorevEkle">+ Görev Ekle</button>
-    </div>
-    <div class="gorev-arama-kutusu">
-      <input type="text" id="gorevAra" placeholder="Görevlerde ara (müşteri/açıklama)..." autocomplete="off">
-    </div>
-    <div id="gorevListesiKapsayici"></div>
-    <p class="bos-mesaj" id="gorevBosMesaj" hidden>Henüz görev yok.</p>
-  </section>
-
-  <!-- İSTATİSTİK -->
-  <section id="sekmeIstatistik" class="sekme-panel" hidden>
-    <div class="istatistik-kart-grid">
-      <div class="istatistik-kart istatistik-kart--koyu">
-        <div class="istatistik-baslik">Bu Ay Toplam</div>
-        <div class="istatistik-deger" id="istBuAyToplam">0,00 EUR</div>
-        <div class="istatistik-alt" id="istBuAySiparisSayisi">0 sipariş</div>
-      </div>
-      <div class="istatistik-kart">
-        <div class="istatistik-baslik">Geçen Ay Toplam</div>
-        <div class="istatistik-deger istatistik-deger--koyu" id="istGecenAyToplam">0,00 EUR</div>
-        <div class="istatistik-alt" id="istGecenAySiparisSayisi">0 sipariş</div>
-      </div>
-    </div>
-
-    <div class="istatistik-bolum-baslik">Son 6 Ay</div>
-    <div id="istAylikListe"></div>
-
-    <div class="istatistik-bolum-baslik">En Çok Satış Yapılan Müşteriler</div>
-    <div id="istMusteriListe"></div>
-
-    <div class="istatistik-bolum-baslik">❌ Kaçan Siparişler (Bu Ay)</div>
-    <div class="kacan-ozet-grid">
-      <div class="kacan-ozet-kart">
-        <div class="kacan-ozet-baslik">Kaçan İşlem</div>
-        <div class="kacan-ozet-deger" id="istKacanSayi">0</div>
-      </div>
-      <div class="kacan-ozet-kart">
-        <div class="kacan-ozet-baslik">Kaybedilen Tutar</div>
-        <div class="kacan-ozet-deger" id="istKacanTutar">0,00 EUR</div>
-      </div>
-    </div>
-    <div id="istKacanListe"></div>
-  </section>
-
-  <!-- ZİYARET TAKVİMİ -->
-  <section id="sekmeZiyaret" class="sekme-panel" hidden>
-    <p class="ziyaret-aciklama">15 gündür ziyaret edilmeyen (veya hiç ziyaret edilmemiş) müşteriler en üstte listelenir.</p>
-    <div id="ziyaretListesi"></div>
-  </section>
 
 </main>
 
