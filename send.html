@@ -61,6 +61,20 @@
 
   <button class="kaydet-buton" id="btnKaydet">✓ Kaydet</button>
 
+  <section class="gonder-kutu" id="gonderKutu" hidden>
+    <div class="gonder-baslik">✓ Kaydedildi — İstersen müşteriye gönder</div>
+    <textarea id="gonderMetin" rows="6"></textarea>
+    <div class="gonder-alan-grid">
+      <input type="tel" id="gonderTelefon" placeholder="Telefon (WhatsApp için)">
+      <input type="email" id="gonderEposta" placeholder="E-posta">
+    </div>
+    <div class="gonder-buton-satir">
+      <button class="gonder-btn gonder-btn--whatsapp" id="btnWhatsapp">📱 WhatsApp</button>
+      <button class="gonder-btn gonder-btn--eposta" id="btnEposta">✉️ E-posta</button>
+    </div>
+    <button class="gonder-bitir-buton" id="btnGonderBitir">Ana Sayfa'ya Dön</button>
+  </section>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>

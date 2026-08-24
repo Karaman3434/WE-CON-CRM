@@ -82,8 +82,7 @@ function kaydetTiklandi(){
     SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, function(basarili, sonuc){
       if(basarili){
         try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
-        alert("✓ Kaydedildi: " + sonuc.kod);
-        window.location.href = "home.html";
+        gonderKutusunuGoster(musteri, sepet, secilenTip, kur, kdv);
       } else {
         btn.disabled = false;
         btn.textContent = "✓ Kaydet";
@@ -91,6 +90,50 @@ function kaydetTiklandi(){
       }
     });
   }catch(e){ hataGoster("Kaydet işlemi başarısız: " + e.message); }
+}
+
+function mesajMetniOlustur(musteri, sepet, tip, kur, kdv){
+  var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
+  var satirlar = [];
+  satirlar.push("WEICON " + TIP_ETIKET[tip]);
+  satirlar.push("Sayın " + musteri.ad + ",");
+  satirlar.push("");
+  sepet.forEach(function(u){
+    var h = CartData.hesapla(u, kur, kdv);
+    satirlar.push("• " + u.ad + " — " + u.adet + " adet x " + CartData.fmt(h.iskontoluFiyat) + " EUR = " + CartData.fmt(h.toplamEuro) + " EUR");
+  });
+  satirlar.push("");
+  var t = CartData.genelToplam(kur, kdv);
+  satirlar.push("Toplam: " + CartData.fmt(t.toplamEuro) + " EUR");
+  satirlar.push("");
+  satirlar.push("İyi çalışmalar dileriz.");
+  return satirlar.join("\n");
+}
+
+function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
+  try{
+    document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, kur, kdv);
+    var ilkKisi = (musteri.iletisimler && musteri.iletisimler[0]) ? musteri.iletisimler[0] : {};
+    document.getElementById("gonderTelefon").value = ilkKisi.telefon || "";
+    document.getElementById("gonderEposta").value = ilkKisi.eposta || "";
+    document.getElementById("gonderKutu").hidden = false;
+    document.getElementById("btnKaydet").hidden = true;
+    document.getElementById("tipSecim").querySelectorAll(".tip-btn").forEach(function(b){ b.disabled = true; });
+  }catch(e){ hataGoster("Gönderim alanı hazırlanamadı: " + e.message); }
+}
+
+function whatsappGonder(){
+  var metin = document.getElementById("gonderMetin").value;
+  var telefon = document.getElementById("gonderTelefon").value.replace(/[^0-9]/g,"");
+  var url = telefon ? ("https://wa.me/"+telefon+"?text="+encodeURIComponent(metin)) : ("https://api.whatsapp.com/send?text="+encodeURIComponent(metin));
+  window.open(url, "_blank");
+}
+
+function epostaGonder(){
+  var metin = document.getElementById("gonderMetin").value;
+  var eposta = document.getElementById("gonderEposta").value.trim();
+  var url = "mailto:"+encodeURIComponent(eposta)+"?subject="+encodeURIComponent("WEICON")+"&body="+encodeURIComponent(metin);
+  window.open(url, "_blank");
 }
 
 window.addEventListener("error", function(ev){
@@ -102,5 +145,8 @@ document.addEventListener("DOMContentLoaded", function(){
   tipSecimBagla();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKaydet").onclick = kaydetTiklandi;
+  document.getElementById("btnWhatsapp").onclick = whatsappGonder;
+  document.getElementById("btnEposta").onclick = epostaGonder;
+  document.getElementById("btnGonderBitir").onclick = function(){ window.location.href = "home.html"; };
   ozetiCiz();
 });

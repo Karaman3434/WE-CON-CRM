@@ -56,3 +56,67 @@
   background: #cbd5e1;
   cursor: not-allowed;
 }
+
+.gonder-kutu {
+  margin-top: 20px;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: 16px;
+  background: #f0fbf3;
+}
+.gonder-baslik {
+  font-size: 15px;
+  font-weight: 900;
+  color: #0e6b34;
+  margin-bottom: 10px;
+}
+.gonder-kutu textarea {
+  width: 100%;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+.gonder-alan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.gonder-alan-grid input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.gonder-buton-satir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.gonder-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  color: #ffffff;
+}
+.gonder-btn--whatsapp { background: #25d366; }
+.gonder-btn--eposta { background: #2563eb; }
+.gonder-bitir-buton {
+  width: 100%;
+  background: #ffffff;
+  color: #556170;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
