@@ -38,9 +38,13 @@ document.addEventListener("DOMContentLoaded", function(){
     btn.textContent = "Giriş yapılıyor...";
     try{
       firebase.auth().signInWithEmailAndPassword(email, sifre).then(function(){
+        // Başarılı giriş — auth.js'teki "3 saat hareketsizlik" kontrolü eski/
+        // bayat bir "weicon_son_aktivite" değeri yüzünden bu YENİ girişi bile
+        // "hareketsiz" sanıp anında tekrar çıkış yaptırabiliyordu. Bunu önlemek
+        // için aktivite zamanını, auth.js'in kontrolü çalışmadan HEMEN ÖNCE
+        // burada tazeliyoruz.
+        try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
         // Başarılı — auth.js'teki onAuthStateChanged otomatik yönlendirecek.
-        // Buton metnini kasıtlı olarak SIFIRLAMIYORUZ; yönlendirme birkaç yüz
-        // ms sürebilir, o sırada "Giriş yapılıyor..." görünmesi doğru bir geri bildirim.
       }).catch(function(e){
         console.error("Firebase giriş hatası:", e);
         hataEl.textContent = "Giriş başarısız: " + (e && e.code ? e.code : (e && e.message ? e.message : "bilinmeyen hata"));

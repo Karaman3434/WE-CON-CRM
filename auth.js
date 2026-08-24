@@ -74,6 +74,15 @@
 
   firebase.auth().onAuthStateChanged(function(user){
     if(user){
+      // Giriş sayfasındaysak (yeni tamamlanmış bir giriş demektir), bayat
+      // "son aktivite" zaman damgası yüzünden yanlışlıkla anında çıkışa
+      // zorlamayı önlemek için aktiviteyi HEMEN tazeleyip durum kontrolünü
+      // hiç uygulamadan doğrudan Ana Sayfa'ya geç.
+      if(buSayfaLogin){
+        aktiviteZamaniniGuncelle();
+        window.location.href = "home.html";
+        return;
+      }
       var durum = gecenSureDurumu();
       if(durum === 2){
         firebase.auth().signOut();
@@ -83,13 +92,9 @@
         window.location.href = "pin.html";
         return;
       }
-      if(buSayfaLogin){
-        window.location.href = "home.html";
-      } else {
-        document.documentElement.style.visibility = "visible";
-        if(!buSayfaPin) aktiviteZamaniniGuncelle();
-        window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
-      }
+      document.documentElement.style.visibility = "visible";
+      if(!buSayfaPin) aktiviteZamaniniGuncelle();
+      window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
     } else {
       if(!buSayfaLogin){
         window.location.href = "login.html";
