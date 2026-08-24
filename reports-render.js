@@ -126,13 +126,17 @@ function islemleriCiz(){
     kapsayici.innerHTML = liste.map(function(k, i){
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
       var kacanMi = k.durum === "kacan";
+      var urunDetayHtml = (k.urunler||[]).map(function(u){
+        return "<div class='urun-detay-satir'><span>" + htmlEsc(u.ad) + " (" + (u.adet||1) + " adet)</span><span>" + (u.toplamEuro||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</span></div>";
+      }).join("");
       return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
-        + "<div class='islem-ust-satir'>"
+        + "<div class='islem-ust-satir islem-tiklanabilir' data-ac-i='" + i + "'>"
         + "<span class='islem-musteri'>" + htmlEsc(k.musteri) + "</span>"
         + "<span class='islem-tip islem-tip--" + k.tip + "'>" + TIP_ETIKET[k.tip] + "</span>"
         + "</div>"
-        + "<div class='islem-detay'>" + htmlEsc(k.tarih) + " · " + (k.urunler||[]).length + " ürün · " + htmlEsc(k.sehir||"") + "</div>"
+        + "<div class='islem-detay islem-tiklanabilir' data-ac-i='" + i + "'>" + htmlEsc(k.tarih) + " · " + (k.urunler||[]).length + " ürün · " + htmlEsc(k.sehir||"") + " <span class='islem-ac-ikon'>▾</span></div>"
         + "<div class='islem-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</div>"
+        + "<div class='urun-detay-kutu' id='urunDetay-" + i + "' hidden>" + urunDetayHtml + "</div>"
         + (kacanMi
             ? "<div class='islem-kacan-etiket'>❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"") + (k.kacanSebep?" ("+htmlEsc(k.kacanSebep)+")":"") + "</div>"
             : ""
@@ -145,6 +149,14 @@ function islemleriCiz(){
         + "</div>"
         + "</div>";
     }).join("");
+
+    kapsayici.querySelectorAll(".islem-tiklanabilir").forEach(function(el){
+      el.onclick = function(){
+        var i = this.getAttribute("data-ac-i");
+        var detay = document.getElementById("urunDetay-" + i);
+        if(detay) detay.hidden = !detay.hidden;
+      };
+    });
 
     kapsayici.querySelectorAll(".islem-ilerlet-btn").forEach(function(btn){
       btn.onclick = function(){

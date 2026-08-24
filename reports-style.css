@@ -81,6 +81,23 @@
   color: #003a70;
   margin-top: 4px;
 }
+.islem-tiklanabilir { cursor: pointer; }
+.islem-ac-ikon { font-size: 10px; color: #8a94a3; }
+.urun-detay-kutu {
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 6px;
+}
+.urun-detay-satir {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #333;
+  padding: 4px 0;
+  border-bottom: 1px solid #e2e6ec;
+}
+.urun-detay-satir:last-child { border-bottom: none; }
 .islem-karti--kacan { opacity: .8; }
 .islem-kacan-etiket {
   font-size: 12px;
