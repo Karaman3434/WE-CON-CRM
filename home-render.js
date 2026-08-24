@@ -76,6 +76,22 @@ function butonlariBagla(){
   }catch(e){ hataGoster("Butonlar bağlanamadı: " + e.message); }
 }
 
+function bildirimBanneriGuncelle(){
+  try{
+    var ozet = WeiconData.bildirimOzetiHesapla();
+    var banner = document.getElementById("bildirimBanner");
+    if(ozet.toplam === 0){
+      banner.hidden = true;
+      return;
+    }
+    banner.hidden = false;
+    var parcalar = [];
+    if(ozet.acikSurecSayisi > 0) parcalar.push(ozet.acikSurecSayisi + " açık süreç (15+ gün)");
+    if(ozet.gecikmisGorevSayisi > 0) parcalar.push(ozet.gecikmisGorevSayisi + " gecikmiş görev");
+    document.getElementById("bildirimBannerAlt").textContent = parcalar.join(" · ");
+  }catch(e){ hataGoster("Bildirim banner'ı güncellenemedi: " + e.message); }
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -84,6 +100,9 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   butonlariBagla();
   WeiconData.veriDegistiginde(kartlariGuncelle);
+  WeiconData.bildirimDegistiginde(bildirimBanneriGuncelle);
+  WeiconData.bildirimVerisiDinlemeyeBasla();
+  document.getElementById("bildirimBanner").onclick = function(){ window.location.href = "reports.html"; };
   // Firebase verisi henüz gelmemiş olabilir; ilk anda da bir kez dene.
   kartlariGuncelle();
 });

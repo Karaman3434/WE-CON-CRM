@@ -113,6 +113,16 @@ var CustomerData = (function(){
     return "M-" + String(maxNo+1).padStart(4, "0");
   }
 
+  function benzerMusterileriBul(ad){
+    var q = (ad||"").trim().toLocaleLowerCase("tr-TR");
+    if(!q) return [];
+    return liste.filter(function(m){
+      var mevcut = (m.ad||"").trim().toLocaleLowerCase("tr-TR");
+      if(!mevcut) return false;
+      return mevcut === q || mevcut.indexOf(q) >= 0 || q.indexOf(mevcut) >= 0;
+    });
+  }
+
   function yeniMusteriKaydet(bilgi, geriBildir){
     try{
       if(!bilgi.ad || !bilgi.ad.trim()){ geriBildir(false, "Müşteri adı girin."); return; }
@@ -209,6 +219,7 @@ var CustomerData = (function(){
     ziyaretEkle: ziyaretEkle,
     gunFarkiHesapla: gunFarkiHesapla,
     yeniMusteriKaydet: yeniMusteriKaydet,
+    benzerMusterileriBul: benzerMusterileriBul,
     musteriGuncelle: musteriGuncelle,
     musteriBul: musteriBul,
     musteriAdresEkle: musteriAdresEkle,

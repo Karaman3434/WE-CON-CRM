@@ -91,6 +91,7 @@ body {
   padding: 14px 16px;
   margin-bottom: 12px;
   color: #ffffff;
+  cursor: pointer;
 }
 .banner--kirmizi { background: #c0392b; }
 .banner-baslik { font-size: 16px; font-weight: 900; }

@@ -92,6 +92,15 @@ function yeniMusteriFormBagla(){
       eposta: document.getElementById("yeniMusteriEposta").value,
       kargo: document.getElementById("yeniMusteriKargo").value
     };
+
+    // Mükerrer kayıt önleme: benzer isimli müşteri varsa önce onay iste.
+    var benzerler = CustomerData.benzerMusterileriBul(bilgi.ad);
+    if(benzerler.length > 0){
+      var isimler = benzerler.map(function(m){ return m.ad + (m.sehir?" ("+m.sehir+")":""); }).join("\n");
+      var devamEt = confirm("Benzer isimli müşteri(ler) zaten kayıtlı:\n\n" + isimler + "\n\nYine de yeni bir müşteri olarak eklemek istiyor musunuz?");
+      if(!devamEt) return;
+    }
+
     var btn = document.getElementById("btnYeniMusteriKaydet");
     btn.disabled = true;
     btn.textContent = "Kaydediliyor...";

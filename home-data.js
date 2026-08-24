@@ -114,13 +114,61 @@ var WeiconData = (function(){
     return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
   }
 
+  // --- Bildirim Banner: 15+ gündür ilerlemeyen açık süreçler + gecikmiş görevler ---
+  var arsivHamData = {numune:[], teklif:[], proforma:[], siparis:[]};
+  var gorevHamData = [];
+  var bildirimDinleyicileri = [];
+
+  function bildirimVerisiDinlemeyeBasla(){
+    try{
+      var db = firebase.database();
+      db.ref("arsiv").on("value", function(snap){
+        var data = snap.val() || {};
+        ["numune","teklif","proforma"].forEach(function(t){
+          var liste = data[t];
+          arsivHamData[t] = liste ? (Array.isArray(liste) ? liste.filter(Boolean) : Object.values(liste)) : [];
+        });
+        bildirimDinleyicileri.forEach(function(fn){ fn(); });
+      });
+      db.ref("gorevler").on("value", function(snap){
+        var data = snap.val();
+        gorevHamData = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+        bildirimDinleyicileri.forEach(function(fn){ fn(); });
+      });
+    }catch(e){ console.error("Bildirim verisi dinlenemedi:", e); }
+  }
+
+  function bildirimOzetiHesapla(){
+    var bugun = Date.now();
+    var acikSurecSayisi = 0;
+    ["numune","teklif","proforma"].forEach(function(t){
+      arsivHamData[t].forEach(function(k){
+        if(!k.ts) return;
+        var gunFarki = Math.floor((bugun - (k.revizeZamani||k.ts)) / 86400000);
+        if(gunFarki >= 15) acikSurecSayisi++;
+      });
+    });
+    var gecikmisGorevSayisi = 0;
+    var bugunTarihStr = new Date().toISOString().slice(0,10);
+    gorevHamData.forEach(function(g){
+      if(g.tamamlandi) return;
+      if(g.tarih && g.tarih < bugunTarihStr) gecikmisGorevSayisi++;
+    });
+    return {acikSurecSayisi:acikSurecSayisi, gecikmisGorevSayisi:gecikmisGorevSayisi, toplam:acikSurecSayisi+gecikmisGorevSayisi};
+  }
+
+  function bildirimDegistiginde(fn){ bildirimDinleyicileri.push(fn); }
+
   return {
     baslat: baslat,
     veriDegistiginde: veriDegistiginde,
     buAyinVerisi: buAyinVerisi,
     bugununVerisi: bugununVerisi,
     fmt: fmt,
-    hazirMi: function(){ return hazir; }
+    hazirMi: function(){ return hazir; },
+    bildirimVerisiDinlemeyeBasla: bildirimVerisiDinlemeyeBasla,
+    bildirimOzetiHesapla: bildirimOzetiHesapla,
+    bildirimDegistiginde: bildirimDegistiginde
   };
 
 })();
