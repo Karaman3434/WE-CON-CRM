@@ -149,19 +149,64 @@ function adresleriCiz(musteri){
         return;
       }
       kapsayici.innerHTML = liste.map(function(a, i){
-        return "<div class='adres-satir'>"
+        return "<div class='adres-satir' id='adresSatir-" + tip + "-" + i + "'>"
+          + "<div class='adres-goruntu'>"
           + "<div><div class='adres-etiket'>" + htmlEsc(a.etiket) + "</div><div class='adres-metin'>" + htmlEsc(a.adres) + "</div></div>"
-          + "<button class='adres-sil-btn' data-tip='" + tip + "' data-i='" + i + "'>Sil</button>"
+          + "<div class='satir-buton-grubu'>"
+          + "<button class='satir-duzenle-btn' data-tip='" + tip + "' data-i='" + i + "'>Düzenle</button>"
+          + "<button class='satir-sil-btn' data-tip='" + tip + "' data-i='" + i + "'>Sil</button>"
+          + "</div>"
+          + "</div>"
+          + "<div class='adres-duzenle-form' hidden>"
+          + "<input type='text' class='adres-duzenle-etiket' value=\"" + htmlEsc(a.etiket) + "\" placeholder='Etiket'>"
+          + "<input type='text' class='adres-duzenle-adres' value=\"" + htmlEsc(a.adres) + "\" placeholder='Adres'>"
+          + "<div class='form-buton-satir'>"
+          + "<button class='duzenle-kapat-btn-kucuk' data-tip='" + tip + "' data-i='" + i + "'>Kapat</button>"
+          + "<button class='duzenle-kaydet-btn-kucuk' data-tip='" + tip + "' data-i='" + i + "'>Kaydet</button>"
+          + "</div>"
+          + "</div>"
           + "</div>";
       }).join("");
 
-      kapsayici.querySelectorAll(".adres-sil-btn").forEach(function(btn){
+      kapsayici.querySelectorAll(".satir-sil-btn").forEach(function(btn){
         btn.onclick = function(){
           if(!confirm("Bu adres silinsin mi?")) return;
           var t = this.getAttribute("data-tip");
           var i = parseInt(this.getAttribute("data-i"), 10);
           CustomerData.musteriAdresSil(seciliMusteriAdi, t, i, function(basarili, err){
             if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+          });
+        };
+      });
+
+      kapsayici.querySelectorAll(".satir-duzenle-btn").forEach(function(btn){
+        btn.onclick = function(){
+          var t = this.getAttribute("data-tip");
+          var i = this.getAttribute("data-i");
+          var satir = document.getElementById("adresSatir-" + t + "-" + i);
+          satir.querySelector(".adres-goruntu").hidden = true;
+          satir.querySelector(".adres-duzenle-form").hidden = false;
+        };
+      });
+      kapsayici.querySelectorAll(".duzenle-kapat-btn-kucuk").forEach(function(btn){
+        btn.onclick = function(){
+          var t = this.getAttribute("data-tip");
+          var i = this.getAttribute("data-i");
+          var satir = document.getElementById("adresSatir-" + t + "-" + i);
+          satir.querySelector(".adres-goruntu").hidden = false;
+          satir.querySelector(".adres-duzenle-form").hidden = true;
+        };
+      });
+      kapsayici.querySelectorAll(".duzenle-kaydet-btn-kucuk").forEach(function(btn){
+        btn.onclick = function(){
+          var t = this.getAttribute("data-tip");
+          var i = parseInt(this.getAttribute("data-i"), 10);
+          var satir = document.getElementById("adresSatir-" + t + "-" + i);
+          var yeniEtiket = satir.querySelector(".adres-duzenle-etiket").value.trim();
+          var yeniAdres = satir.querySelector(".adres-duzenle-adres").value.trim();
+          if(!yeniAdres){ hataGoster("Adres boş olamaz."); return; }
+          CustomerData.musteriAdresGuncelle(seciliMusteriAdi, t, i, yeniEtiket, yeniAdres, function(basarili, err){
+            if(!basarili) hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
           });
         };
       });
@@ -202,21 +247,72 @@ function yetkilileriCiz(musteri){
     }
     kapsayici.innerHTML = liste.map(function(k, i){
       var detaylar = [k.telefon, k.eposta].filter(Boolean).join(" · ");
-      return "<div class='yetkili-karti'>"
+      return "<div class='yetkili-karti' id='yetkiliSatir-" + i + "'>"
+        + "<div class='yetkili-goruntu'>"
         + "<div class='yetkili-ust-satir'>"
         + "<div><span class='yetkili-isim'>" + htmlEsc(k.isim) + "</span>" + (k.gorev?" <span class='yetkili-gorev'>("+htmlEsc(k.gorev)+")</span>":"") + "</div>"
-        + "<button class='adres-sil-btn' data-i='" + i + "'>Sil</button>"
+        + "<div class='satir-buton-grubu'>"
+        + "<button class='satir-duzenle-btn' data-i='" + i + "'>Düzenle</button>"
+        + "<button class='satir-sil-btn' data-i='" + i + "'>Sil</button>"
+        + "</div>"
         + "</div>"
         + (detaylar ? "<div class='yetkili-detay'>" + htmlEsc(detaylar) + "</div>" : "")
+        + "</div>"
+        + "<div class='yetkili-duzenle-form' hidden>"
+        + "<input type='text' class='yd-isim' value=\"" + htmlEsc(k.isim) + "\" placeholder='İsim'>"
+        + "<input type='text' class='yd-gorev' value=\"" + htmlEsc(k.gorev||"") + "\" placeholder='Görev'>"
+        + "<div class='form-satir-2'>"
+        + "<input type='tel' class='yd-telefon' value=\"" + htmlEsc(k.telefon||"") + "\" placeholder='Telefon'>"
+        + "<input type='email' class='yd-eposta' value=\"" + htmlEsc(k.eposta||"") + "\" placeholder='E-posta'>"
+        + "</div>"
+        + "<div class='form-buton-satir'>"
+        + "<button class='duzenle-kapat-btn-kucuk' data-i='" + i + "'>Kapat</button>"
+        + "<button class='duzenle-kaydet-btn-kucuk' data-i='" + i + "'>Kaydet</button>"
+        + "</div>"
+        + "</div>"
         + "</div>";
     }).join("");
 
-    kapsayici.querySelectorAll("[data-i]").forEach(function(btn){
+    kapsayici.querySelectorAll(".satir-sil-btn").forEach(function(btn){
       btn.onclick = function(){
         if(!confirm("Bu kişi silinsin mi?")) return;
         var i = parseInt(this.getAttribute("data-i"), 10);
         CustomerData.yetkiliSil(seciliMusteriAdi, i, function(basarili, err){
           if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        });
+      };
+    });
+
+    kapsayici.querySelectorAll(".satir-duzenle-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var i = this.getAttribute("data-i");
+        var satir = document.getElementById("yetkiliSatir-" + i);
+        satir.querySelector(".yetkili-goruntu").hidden = true;
+        satir.querySelector(".yetkili-duzenle-form").hidden = false;
+      };
+    });
+    kapsayici.querySelectorAll(".duzenle-kapat-btn-kucuk").forEach(function(btn){
+      btn.onclick = function(){
+        var i = this.getAttribute("data-i");
+        var satir = document.getElementById("yetkiliSatir-" + i);
+        satir.querySelector(".yetkili-goruntu").hidden = false;
+        satir.querySelector(".yetkili-duzenle-form").hidden = true;
+      };
+    });
+    kapsayici.querySelectorAll(".duzenle-kaydet-btn-kucuk").forEach(function(btn){
+      btn.onclick = function(){
+        var i = parseInt(this.getAttribute("data-i"), 10);
+        var satir = document.getElementById("yetkiliSatir-" + i);
+        var isim = satir.querySelector(".yd-isim").value.trim();
+        if(!isim){ hataGoster("İsim boş olamaz."); return; }
+        var yeniKisi = {
+          isim: isim,
+          gorev: satir.querySelector(".yd-gorev").value.trim(),
+          telefon: satir.querySelector(".yd-telefon").value.trim(),
+          eposta: satir.querySelector(".yd-eposta").value.trim()
+        };
+        CustomerData.yetkiliGuncelle(seciliMusteriAdi, i, yeniKisi, function(basarili, err){
+          if(!basarili) hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
         });
       };
     });

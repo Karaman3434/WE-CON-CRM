@@ -186,6 +186,17 @@ var CustomerData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  function musteriAdresGuncelle(musteriAd, tip, adresIdx, etiket, adres, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
+      if(!liste[idx][alan] || !liste[idx][alan][adresIdx]){ geriBildir(false, "Adres bulunamadı"); return; }
+      liste[idx][alan][adresIdx] = {etiket: etiket, adres: adres};
+      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   function yetkiliEkle(musteriAd, kisi, geriBildir){
     try{
       var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
@@ -206,6 +217,16 @@ var CustomerData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  function yetkiliGuncelle(musteriAd, kisiIdx, kisi, geriBildir){
+    try{
+      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+      if(!liste[idx].iletisimler || !liste[idx].iletisimler[kisiIdx]){ geriBildir(false, "Kişi bulunamadı"); return; }
+      liste[idx].iletisimler[kisiIdx] = kisi;
+      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
@@ -222,8 +243,10 @@ var CustomerData = (function(){
     musteriBul: musteriBul,
     musteriAdresEkle: musteriAdresEkle,
     musteriAdresSil: musteriAdresSil,
+    musteriAdresGuncelle: musteriAdresGuncelle,
     yetkiliEkle: yetkiliEkle,
-    yetkiliSil: yetkiliSil
+    yetkiliSil: yetkiliSil,
+    yetkiliGuncelle: yetkiliGuncelle
   };
 
 })();
