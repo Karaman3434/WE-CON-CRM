@@ -422,4 +422,8 @@ document.addEventListener("DOMContentLoaded", function(){
   ReportsData.arsivDegistiginde(islemleriCiz);
   document.getElementById("gorevAra").addEventListener("input", gorevleriCiz);
   ReportsData.gorevDegistiginde(gorevleriCiz);
+  // Firebase verisi sayfa tam yüklenmeden önce gelmiş olabilir (dinleyici
+  // kaçırmış olabilir) — bu yüzden ilk anda da bir kez elle çiziyoruz.
+  islemleriCiz();
+  gorevleriCiz();
 });

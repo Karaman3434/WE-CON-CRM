@@ -219,4 +219,8 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   });
   KmData.degistiginde(function(){ formuDoldur(); tabloyuCiz(); });
+  // Firebase verisi sayfa tam yüklenmeden önce gelmiş olabilir — bir kez de
+  // hemen elle çiziyoruz (dinleyici ilk anlık görüntüyü kaçırmış olabilir).
+  formuDoldur();
+  tabloyuCiz();
 });

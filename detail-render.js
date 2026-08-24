@@ -276,4 +276,13 @@ document.addEventListener("DOMContentLoaded", function(){
   ReportsData.arsivDegistiginde(siparisGecmisiniCiz);
   ziyaretGecmisiniCiz(secili);
   siparisGecmisiniCiz();
+  // Firebase müşteri listesi (dolayısıyla yetkili/adres bilgileri) sayfa tam
+  // yüklenmeden önce gelmiş olabilir — dinleyici bu ilk anlık görüntüyü
+  // kaçırmış olabilir. Zaten yüklenmişse hemen taze veriyle güncelle.
+  var tazeMusteriIlk = CustomerData.musteriBul(seciliMusteriAdi);
+  if(tazeMusteriIlk){
+    ustBilgiyiCiz(tazeMusteriIlk);
+    adresleriCiz(tazeMusteriIlk);
+    yetkilileriCiz(tazeMusteriIlk);
+  }
 });
