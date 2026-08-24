@@ -79,9 +79,12 @@ function kaydetTiklandi(){
     var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
 
-    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, function(basarili, sonuc){
+    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, function(basarili, sonuc, revizeMi){
       if(basarili){
         try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+        if(revizeMi){
+          document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
+        }
         gonderKutusunuGoster(musteri, sepet, secilenTip, kur, kdv);
       } else {
         btn.disabled = false;

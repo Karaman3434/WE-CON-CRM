@@ -40,6 +40,15 @@ var SendData = (function(){
     return onEk + "-" + d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0") + "-" + Math.floor(Math.random()*9000+1000);
   }
 
+  function urunSetiImzaOlustur(urunler){
+    return (urunler||[]).map(function(u){ return (u.berta||"")+"|"+(u.abas||""); }).sort().join(",");
+  }
+
+  function ayniGunMu(ts1, ts2){
+    var d1 = new Date(ts1), d2 = new Date(ts2);
+    return d1.getFullYear()===d2.getFullYear() && d1.getMonth()===d2.getMonth() && d1.getDate()===d2.getDate();
+  }
+
   function kaydet(tip, musteri, sepetUrunleri, kur, kdv, geriBildir){
     try{
       var urunlerKaydi = sepetUrunleri.map(function(u){
@@ -47,30 +56,60 @@ var SendData = (function(){
         return {
           ad: u.ad, berta: u.berta, abas: u.abas,
           listeFiyat: u.listeFiyat, dipFiyat: u.dipFiyat, iskonto: u.iskonto, adet: u.adet,
-          iskBirim: h.iskontoluFiyat, // eski uygulamayla aynı alan adı — prim hesabı bunu okuyor
+          iskBirim: h.iskontoluFiyat,
           toplamEuro: h.toplamEuro
         };
       });
-
-      var kayit = {
-        tarih: tarihStr(),
-        ts: Date.now(),
-        kod: kodUret(tip),
-        musteri: musteri.ad,
-        musteriId: musteri.id || null,
-        sehir: musteri.sehir || "",
-        mod: tip,
-        urunler: urunlerKaydi
-      };
+      var yeniImza = urunSetiImzaOlustur(urunlerKaydi);
+      var simdi = Date.now();
 
       var db = firebase.database();
       db.ref("arsiv/" + tip).once("value").then(function(snap){
         var mevcut = snap.val();
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
-        liste.unshift(kayit);
-        return db.ref("arsiv/" + tip).set(liste);
-      }).then(function(){
-        geriBildir(true, kayit);
+
+        // AYNI GÜN + AYNI MÜŞTERİ + BİREBİR AYNI ÜRÜN SETİ (Berta/Abas) varsa,
+        // yeni kayıt açmak yerine mevcut kaydı REVİZE olarak güncelle.
+        var eslesenIdx = -1;
+        for(var i=0;i<liste.length;i++){
+          var aday = liste[i];
+          if(!aday || !aday.ts) continue;
+          var ayniMusteriMi = musteri.id && aday.musteriId ? (aday.musteriId===musteri.id) : (aday.musteri===musteri.ad);
+          if(!ayniMusteriMi) continue;
+          if(!ayniGunMu(aday.ts, simdi)) continue;
+          if(urunSetiImzaOlustur(aday.urunler) !== yeniImza) continue;
+          eslesenIdx = i;
+          break;
+        }
+
+        var otomatikRevizeMi = false;
+        var kaydedilenKayit;
+
+        if(eslesenIdx >= 0){
+          var eskiKayit = liste[eslesenIdx];
+          var eskiToplam = (eskiKayit.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+          if(!eskiKayit.revizeGecmisi) eskiKayit.revizeGecmisi = [];
+          eskiKayit.revizeGecmisi.push({ts: eskiKayit.revizeZamani||eskiKayit.ts, toplamEuro:eskiToplam, urunSayisi:(eskiKayit.urunler||[]).length});
+          eskiKayit.urunler = urunlerKaydi;
+          eskiKayit.revizeZamani = simdi;
+          if(!eskiKayit.musteriId && musteri.id) eskiKayit.musteriId = musteri.id;
+          otomatikRevizeMi = true;
+          kaydedilenKayit = eskiKayit;
+        } else {
+          kaydedilenKayit = {
+            tarih: tarihStr(), ts: simdi, kod: kodUret(tip),
+            musteri: musteri.ad, musteriId: musteri.id || null, sehir: musteri.sehir || "",
+            mod: tip, urunler: urunlerKaydi
+          };
+          liste.unshift(kaydedilenKayit);
+        }
+
+        liste.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+        return db.ref("arsiv/" + tip).set(liste).then(function(){
+          return {kayit: kaydedilenKayit, revizeMi: otomatikRevizeMi};
+        });
+      }).then(function(sonuc){
+        geriBildir(true, sonuc.kayit, sonuc.revizeMi);
       }).catch(function(err){
         console.error("Arşive kaydetme hatası:", err);
         geriBildir(false, err);
