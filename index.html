@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST VERSİYON: 20260824-2215-020 — index.html -->
+<!-- WEICON ASİST VERSİYON: 20260824-2230-001 — index.html -->
 <html lang="tr" style="width:100%;">
 <head>
 <meta charset="UTF-8">
@@ -1395,18 +1395,20 @@ function rafUpdate(fn){
 // sabit bir piksel yazmak yerine, panel her yüklendiğinde/boyut değiştiğinde
 // gerçek yüksekliği ölçülüp --ust-panel-h CSS değişkenine yazılıyor.
 (function(){
-  function ustPanelYuksekligiOlc(){
-    var panel = document.getElementById("ustNavGrid");
-    if(!panel) return;
-    var yukseklik = Math.ceil(panel.getBoundingClientRect().bottom);
-    if(yukseklik > 0){
-      document.documentElement.style.setProperty("--ust-panel-h", yukseklik+"px");
+  window.ustPanelYuksekligiOlc = function(){
+    var header = document.getElementById("ustBaslikSatiri");
+    var nav = document.getElementById("ustNavGrid");
+    var bottom = 0;
+    if(header) bottom = Math.max(bottom, Math.ceil(header.getBoundingClientRect().bottom));
+    if(nav) bottom = Math.max(bottom, Math.ceil(nav.getBoundingClientRect().bottom));
+    if(bottom > 0){
+      document.documentElement.style.setProperty("--ust-panel-h", bottom+"px");
     }
-  }
-  ustPanelYuksekligiOlc();
-  window.addEventListener("load", ustPanelYuksekligiOlc);
-  window.addEventListener("resize", ustPanelYuksekligiOlc);
-  window.addEventListener("orientationchange", function(){ setTimeout(ustPanelYuksekligiOlc, 200); });
+  };
+  window.ustPanelYuksekligiOlc();
+  window.addEventListener("load", window.ustPanelYuksekligiOlc);
+  window.addEventListener("resize", window.ustPanelYuksekligiOlc);
+  window.addEventListener("orientationchange", function(){ setTimeout(window.ustPanelYuksekligiOlc, 200); });
 })();
 </script>
 
@@ -2902,11 +2904,12 @@ function rafUpdate(fn){
 
 
 
-<script src="app-part1.js?v=20260824-2215-020"></script>
-<script src="app-part2.js?v=20260824-2215-020"></script>
-<script src="app-part3.js?v=20260824-2215-020"></script>
-<script src="app-part4.js?v=20260824-2215-020"></script>
-<script src="app-part5.js?v=20260824-2215-020"></script>
+<script src="app-part1.js?v=20260824-2230-001"></script>
+<script src="app-part2.js?v=20260824-2230-001"></script>
+<script src="app-part3.js?v=20260824-2230-001"></script>
+<script src="app-part4.js?v=20260824-2230-001"></script>
+<script src="app-part5.js?v=20260824-2230-001"></script>
+<script src="ui-render-fix.js?v=20260824-2230-001"></script>
 
 <script>
 window.addEventListener("touchstart", function(){}, {passive:true});
