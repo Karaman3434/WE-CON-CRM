@@ -83,7 +83,7 @@ var SendData = (function(){
     return d1.getFullYear()===d2.getFullYear() && d1.getMonth()===d2.getMonth() && d1.getDate()===d2.getDate();
   }
 
-  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, geriBildir){
+  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, geriBildir){
     try{
       var urunlerKaydi = sepetUrunleri.map(function(u){
         var h = CartData.hesapla(u, kur, kdv);
@@ -126,6 +126,8 @@ var SendData = (function(){
           eskiKayit.revizeGecmisi.push({ts: eskiKayit.revizeZamani||eskiKayit.ts, toplamEuro:eskiToplam, urunSayisi:(eskiKayit.urunler||[]).length});
           eskiKayit.urunler = urunlerKaydi;
           eskiKayit.revizeZamani = simdi;
+          if(adresler && adresler.faturaAdresi) eskiKayit.faturaAdresi = adresler.faturaAdresi;
+          if(adresler && adresler.teslimatAdresi) eskiKayit.teslimatAdresi = adresler.teslimatAdresi;
           if(!eskiKayit.musteriId && musteri.id) eskiKayit.musteriId = musteri.id;
           otomatikRevizeMi = true;
           kaydedilenKayit = eskiKayit;
@@ -133,7 +135,9 @@ var SendData = (function(){
           kaydedilenKayit = {
             tarih: tarihStr(), ts: simdi, kod: kodUret(tip),
             musteri: musteri.ad, musteriId: musteri.id || null, sehir: musteri.sehir || "",
-            mod: tip, urunler: urunlerKaydi
+            mod: tip, urunler: urunlerKaydi,
+            faturaAdresi: (adresler && adresler.faturaAdresi) || null,
+            teslimatAdresi: (adresler && adresler.teslimatAdresi) || null
           };
           liste.unshift(kaydedilenKayit);
         }

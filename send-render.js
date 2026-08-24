@@ -42,6 +42,7 @@ function ozetiCiz(){
     }
     document.getElementById("ozetMusteriAd").textContent = musteri.ad;
     document.getElementById("ozetMusteriSehir").textContent = musteri.sehir || "";
+    adresSecimleriniDoldur(musteri);
 
     var sepet = CartData.liste();
     if(sepet.length === 0){
@@ -93,7 +94,8 @@ function kaydetTiklandi(){
     var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
 
-    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, function(basarili, sonuc, revizeMi){
+    var adresler = seciliAdresleriTopla(musteri);
+    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, adresler, function(basarili, sonuc, revizeMi){
       if(basarili){
         try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
         try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
@@ -209,6 +211,43 @@ function epostaGonder(){
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
+
+function adresSecimleriniDoldur(musteri){
+  try{
+    var faturaListe = musteri.faturaAdresleri || [];
+    var teslimatListe = musteri.teslimatAdresleri || [];
+    var grid = document.getElementById("adresSecimGrid");
+
+    if(faturaListe.length === 0 && teslimatListe.length === 0){
+      grid.hidden = true;
+      return;
+    }
+    grid.hidden = false;
+
+    var faturaSel = document.getElementById("faturaAdresSecim");
+    faturaSel.innerHTML = "<option value=''>Seçilmedi</option>" + faturaListe.map(function(a, i){
+      return "<option value='" + i + "'>" + htmlEsc(a.etiket) + "</option>";
+    }).join("");
+
+    var teslimatSel = document.getElementById("teslimatAdresSecim");
+    teslimatSel.innerHTML = "<option value=''>Seçilmedi</option>" + teslimatListe.map(function(a, i){
+      return "<option value='" + i + "'>" + htmlEsc(a.etiket) + "</option>";
+    }).join("");
+
+    // Tek adres varsa otomatik seçili gelsin (kullanıcı her seferinde seçmek zorunda kalmasın)
+    if(faturaListe.length === 1) faturaSel.value = "0";
+    if(teslimatListe.length === 1) teslimatSel.value = "0";
+  }catch(e){ hataGoster("Adres seçimleri doldurulamadı: " + e.message); }
+}
+
+function seciliAdresleriTopla(musteri){
+  var faturaIdx = document.getElementById("faturaAdresSecim").value;
+  var teslimatIdx = document.getElementById("teslimatAdresSecim").value;
+  var sonuc = {};
+  if(faturaIdx !== "" && musteri.faturaAdresleri) sonuc.faturaAdresi = musteri.faturaAdresleri[parseInt(faturaIdx,10)];
+  if(teslimatIdx !== "" && musteri.teslimatAdresleri) sonuc.teslimatAdresi = musteri.teslimatAdresleri[parseInt(teslimatIdx,10)];
+  return sonuc;
+}
 
 function ilerletKaynagiOku(){
   try{
