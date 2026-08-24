@@ -105,7 +105,14 @@ function istatistikleriCiz(){
 
 function islemleriCiz(){
   try{
-    var liste = ReportsData.sonIslemler(50);
+    var q = (document.getElementById("islemAra").value||"").trim().toLocaleLowerCase("tr-TR");
+    var tipFiltre = document.getElementById("islemTipFiltre").value;
+
+    var liste = ReportsData.sonIslemler();
+    if(tipFiltre) liste = liste.filter(function(k){ return k.tip === tipFiltre; });
+    if(q) liste = liste.filter(function(k){ return (k.musteri||"").toLocaleLowerCase("tr-TR").indexOf(q) >= 0; });
+    liste = liste.slice(0, 100);
+
     var kapsayici = document.getElementById("islemlerListesi");
     var bos = document.getElementById("islemlerBosMesaj");
 
@@ -333,6 +340,8 @@ document.addEventListener("DOMContentLoaded", function(){
 
   document.getElementById("btnDuzenleVazgec").onclick = function(){ document.getElementById("duzenleOverlay").hidden = true; duzenlenenKayit = null; };
   document.getElementById("btnDuzenleKaydet").onclick = duzenlemeKaydet;
+  document.getElementById("islemAra").addEventListener("input", islemleriCiz);
+  document.getElementById("islemTipFiltre").addEventListener("change", islemleriCiz);
   ReportsData.arsivDegistiginde(islemleriCiz);
   ReportsData.gorevDegistiginde(gorevleriCiz);
 });

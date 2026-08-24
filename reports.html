@@ -39,6 +39,16 @@
 
   <!-- SON İŞLEMLER -->
   <section id="sekmeIslemler" class="sekme-panel">
+    <div class="islem-filtre-satiri">
+      <input type="text" id="islemAra" placeholder="Müşteri adıyla ara..." autocomplete="off">
+      <select id="islemTipFiltre">
+        <option value="">Tüm Türler</option>
+        <option value="numune">Numune</option>
+        <option value="teklif">Teklif</option>
+        <option value="proforma">Proforma</option>
+        <option value="siparis">Sipariş</option>
+      </select>
+    </div>
     <div id="islemlerListesi"></div>
     <p class="bos-mesaj" id="islemlerBosMesaj" hidden>Henüz kayıt yok.</p>
   </section>

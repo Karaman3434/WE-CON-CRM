@@ -25,6 +25,26 @@
 }
 
 /* Son İşlemler */
+.islem-filtre-satiri {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.islem-filtre-satiri input {
+  flex: 1;
+  border: 2px solid #3569b8;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.islem-filtre-satiri select {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 12px;
+  color: #556170;
+}
+
 .islem-karti {
   border: 1px solid #e2e6ec;
   border-radius: 10px;
