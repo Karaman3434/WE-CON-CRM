@@ -33,16 +33,6 @@
     (document.head || document.documentElement).appendChild(style);
   }
 
-  function ustPanelYuksekligiOlc() {
-    var header = document.getElementById("ustBaslikSatiri");
-    var nav = document.getElementById("ustNavGrid");
-    var bottom = 0;
-    if(header) bottom = Math.max(bottom, Math.ceil(header.getBoundingClientRect().bottom));
-    if(nav) bottom = Math.max(bottom, Math.ceil(nav.getBoundingClientRect().bottom));
-    if(bottom > 0) document.documentElement.style.setProperty("--ust-panel-h", bottom + "px");
-  }
-  window.ustPanelYuksekligiOlc = ustPanelYuksekligiOlc;
-
   function normalizePages() {
     var pages = Array.prototype.slice.call(document.querySelectorAll(".content-page"));
     if (!pages.length) return;
