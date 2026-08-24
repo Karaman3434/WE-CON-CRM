@@ -1,9 +1,17 @@
 /*
   customer-data.js
   ================
-  TEK görevi: müşteri listesini Firebase'in "musteriler" yolundan çekmek
-  (eski uygulamayla AYNI yol) ve seçilen müşteriyi (bir sonraki sayfaya
-  geçirmek üzere) localStorage'a yazmak.
+  Müşteri listesini Firebase'in "musteriler" yolundan okur/yazar.
+
+  GÜVENLİ YAZMA DESENİ — ÇOK ÖNEMLİ:
+  Eski uygulama, geçmişte TAM olarak bu hataya düşmüştü: cihazın belleğindeki
+  (muhtemelen bayat) tüm müşteri dizisini doğrudan Firebase'in üzerine
+  yazıyordu. Sayfa yeni açılmışken ya da başka bir cihaz/sekme bir değişiklik
+  yaptıysa, bu bayat veri sunucudaki GÜNCEL veriyi SESSİZCE silebiliyordu.
+  Bunu tekrarlamamak için: her yazma işleminden HEMEN ÖNCE sunucudan TAZE
+  veri okunur, değişiklik SADECE o taze veri üzerine uygulanır, sonra öyle
+  yazılır. Yerel önbellek (liste) SADECE okuma/görüntüleme için kullanılır,
+  YAZMA için asla doğrudan kullanılmaz.
 */
 
 var CustomerData = (function(){
@@ -18,7 +26,7 @@ var CustomerData = (function(){
     appId: "1:673730415323:web:29c817e05a281261a61afe"
   };
 
-  var SECILI_MUSTERI_KEY = "weicon_secili_musteri"; // eski uygulamayla PAYLAŞILAN anahtar
+  var SECILI_MUSTERI_KEY = "weicon_secili_musteri";
 
   var liste = [];
   var dinleyiciler = [];
@@ -62,8 +70,33 @@ var CustomerData = (function(){
     }catch(e){ return null; }
   }
 
-  // ---- Ziyaret takibi: eski uygulamayla AYNI veri yapısı (ziyaretGecmisi
-  // dizisi, her müşteri kaydının içinde) ----
+  function musteriBul(ad){
+    return liste.find(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(ad||"").toLocaleLowerCase("tr-TR"); }) || null;
+  }
+
+  // ---- GÜVENLİ YAZMA ÇEKİRDEĞİ ----
+  function guvenliYaz(mutateFn, geriBildir){
+    try{
+      var db = firebase.database();
+      db.ref("musteriler").once("value").then(function(snap){
+        var data = snap.val();
+        var tazeListe = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+        var sonuc = mutateFn(tazeListe);
+        var yazilacak = (sonuc !== undefined) ? sonuc : tazeListe;
+        return db.ref("musteriler").set(yazilacak).then(function(){ return sonuc; });
+      }).then(function(sonuc){
+        geriBildir(true, sonuc);
+      }).catch(function(err){
+        console.error("Müşteri yazma hatası:", err);
+        geriBildir(false, err);
+      });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  function musteriIndexBul(tazeListe, musteriAd){
+    return tazeListe.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
+  }
+
   function gunFarkiHesapla(ts){
     return Math.floor((Date.now() - ts) / 86400000);
   }
@@ -84,27 +117,21 @@ var CustomerData = (function(){
   }
 
   function ziyaretEkle(musteriAd, not, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
-      if(!liste[idx].ziyaretGecmisi) liste[idx].ziyaretGecmisi = [];
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      if(!tazeListe[idx].ziyaretGecmisi) tazeListe[idx].ziyaretGecmisi = [];
       var kayit = {ts:Date.now(), not: not || "Ziyaret edildi, not girilmedi.", tur:"ziyaret"};
-      liste[idx].ziyaretGecmisi.push(kayit);
-      liste[idx].ziyaretGecmisi.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
-      liste[idx].sonZiyaret = liste[idx].ziyaretGecmisi[0].ts;
-      liste[idx].sonZiyaretNot = liste[idx].ziyaretGecmisi[0].not;
-
-      firebase.database().ref("musteriler").set(liste).then(function(){
-        geriBildir(true);
-      }).catch(function(err){
-        geriBildir(false, err);
-      });
-    }catch(e){ geriBildir(false, e); }
+      tazeListe[idx].ziyaretGecmisi.push(kayit);
+      tazeListe[idx].ziyaretGecmisi.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+      tazeListe[idx].sonZiyaret = tazeListe[idx].ziyaretGecmisi[0].ts;
+      tazeListe[idx].sonZiyaretNot = tazeListe[idx].ziyaretGecmisi[0].not;
+    }, geriBildir);
   }
 
-  function musteriIdUret(){
+  function musteriIdUret(tazeListe){
     var maxNo = 0;
-    liste.forEach(function(m){
+    tazeListe.forEach(function(m){
       if(m.id && /^M-\d+$/.test(m.id)){
         var no = parseInt(m.id.slice(2), 10);
         if(no > maxNo) maxNo = no;
@@ -124,10 +151,11 @@ var CustomerData = (function(){
   }
 
   function yeniMusteriKaydet(bilgi, geriBildir){
-    try{
-      if(!bilgi.ad || !bilgi.ad.trim()){ geriBildir(false, "Müşteri adı girin."); return; }
-      var yeni = {
-        id: musteriIdUret(),
+    if(!bilgi.ad || !bilgi.ad.trim()){ geriBildir(false, "Müşteri adı girin."); return; }
+    var yeniKayit = null;
+    guvenliYaz(function(tazeListe){
+      yeniKayit = {
+        id: musteriIdUret(tazeListe),
         ad: bilgi.ad.trim(),
         sehir: (bilgi.sehir||"").trim(),
         vade: (bilgi.vade||"").trim(),
@@ -138,93 +166,77 @@ var CustomerData = (function(){
         ziyaretGecmisi: [],
         iletisimler: []
       };
-      var yeniListe = [yeni].concat(liste);
-      firebase.database().ref("musteriler").set(yeniListe).then(function(){
-        geriBildir(true, yeni);
-      }).catch(function(err){
-        geriBildir(false, err);
-      });
-    }catch(e){ geriBildir(false, e); }
+      tazeListe.unshift(yeniKayit);
+    }, function(basarili, err){
+      geriBildir(basarili, basarili ? yeniKayit : err);
+    });
   }
 
   function musteriGuncelle(musteriAd, guncelBilgi, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
-      liste[idx].vade = guncelBilgi.vade;
-      liste[idx].fatura = guncelBilgi.fatura;
-      liste[idx].kargo = guncelBilgi.kargo;
-      firebase.database().ref("musteriler").set(liste).then(function(){
-        geriBildir(true);
-      }).catch(function(err){ geriBildir(false, err); });
-    }catch(e){ geriBildir(false, e); }
-  }
-
-  function musteriBul(ad){
-    return liste.find(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(ad||"").toLocaleLowerCase("tr-TR"); }) || null;
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      tazeListe[idx].vade = guncelBilgi.vade;
+      tazeListe[idx].fatura = guncelBilgi.fatura;
+      tazeListe[idx].kargo = guncelBilgi.kargo;
+    }, geriBildir);
   }
 
   function musteriAdresEkle(musteriAd, tip, etiket, adres, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
-      if(!liste[idx][alan]) liste[idx][alan] = [];
-      liste[idx][alan].push({etiket: etiket || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi"), adres: adres});
-      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
-    }catch(e){ geriBildir(false, e); }
+      if(!tazeListe[idx][alan]) tazeListe[idx][alan] = [];
+      tazeListe[idx][alan].push({etiket: etiket || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi"), adres: adres});
+    }, geriBildir);
   }
 
   function musteriAdresSil(musteriAd, tip, adresIdx, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
-      if(!liste[idx][alan]) liste[idx][alan] = [];
-      liste[idx][alan].splice(adresIdx, 1);
-      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
-    }catch(e){ geriBildir(false, e); }
+      if(!tazeListe[idx][alan]) tazeListe[idx][alan] = [];
+      tazeListe[idx][alan].splice(adresIdx, 1);
+    }, geriBildir);
   }
 
   function musteriAdresGuncelle(musteriAd, tip, adresIdx, etiket, adres, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
-      if(!liste[idx][alan] || !liste[idx][alan][adresIdx]){ geriBildir(false, "Adres bulunamadı"); return; }
-      liste[idx][alan][adresIdx] = {etiket: etiket, adres: adres};
-      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
-    }catch(e){ geriBildir(false, e); }
+      if(!tazeListe[idx][alan] || !tazeListe[idx][alan][adresIdx]) throw new Error("Adres bulunamadı");
+      tazeListe[idx][alan][adresIdx] = {etiket: etiket, adres: adres};
+    }, geriBildir);
   }
 
   function yetkiliEkle(musteriAd, kisi, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
-      if(!liste[idx].iletisimler) liste[idx].iletisimler = [];
-      liste[idx].iletisimler.push(kisi);
-      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
-    }catch(e){ geriBildir(false, e); }
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      if(!tazeListe[idx].iletisimler) tazeListe[idx].iletisimler = [];
+      tazeListe[idx].iletisimler.push(kisi);
+    }, geriBildir);
   }
 
   function yetkiliSil(musteriAd, kisiIdx, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
-      if(!liste[idx].iletisimler) liste[idx].iletisimler = [];
-      liste[idx].iletisimler.splice(kisiIdx, 1);
-      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
-    }catch(e){ geriBildir(false, e); }
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      if(!tazeListe[idx].iletisimler) tazeListe[idx].iletisimler = [];
+      tazeListe[idx].iletisimler.splice(kisiIdx, 1);
+    }, geriBildir);
   }
 
   function yetkiliGuncelle(musteriAd, kisiIdx, kisi, geriBildir){
-    try{
-      var idx = liste.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
-      if(idx===-1){ geriBildir(false, "Müşteri bulunamadı"); return; }
-      if(!liste[idx].iletisimler || !liste[idx].iletisimler[kisiIdx]){ geriBildir(false, "Kişi bulunamadı"); return; }
-      liste[idx].iletisimler[kisiIdx] = kisi;
-      firebase.database().ref("musteriler").set(liste).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
-    }catch(e){ geriBildir(false, e); }
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      if(!tazeListe[idx].iletisimler || !tazeListe[idx].iletisimler[kisiIdx]) throw new Error("Kişi bulunamadı");
+      tazeListe[idx].iletisimler[kisiIdx] = kisi;
+    }, geriBildir);
   }
 
   return {

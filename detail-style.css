@@ -295,6 +295,34 @@
   gap: 6px;
 }
 
+.data-table-container { overflow-x: auto; width: 100%; border: 1px solid #3569b8; border-radius: 8px; }
+.gecmis-urun-tablo { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; }
+.gecmis-urun-tablo th {
+  background: #cfe2f3;
+  color: #111827;
+  border: 1px solid #3569b8;
+  padding: 5px 2px;
+  text-align: center;
+  font-size: 9px;
+}
+.gecmis-urun-tablo td {
+  border: 1px solid #3569b8;
+  padding: 5px 2px;
+  text-align: center;
+  vertical-align: middle;
+}
+.gecmis-tablo-satir { cursor: pointer; }
+.gecmis-kod-mini { font-size: 10px; font-weight: 900; color: #111827; }
+.gecmis-durum-mini { font-size: 8px; font-weight: 900; color: #c0392b; margin-top: 2px; }
+.gecmis-td-urun { text-align: left; }
+.gecmis-td-kod { font-size: 9px; color: #556170; line-height: 1.3; }
+.gecmis-td-kod .kb { color: #003a70; font-weight: 800; }
+.gecmis-td-kod .ka { color: #e0524a; font-weight: 800; }
+.gecmis-td-ad { font-weight: 900; color: #111827; margin-top: 2px; font-size: 10px; line-height: 1.2; }
+.gecmis-td-isk { color: #c0392b; font-weight: 900; }
+.gecmis-td-toplam { color: #0e6b34; font-weight: 900; }
+.gecmis-td-prim { color: #0e7c63; font-size: 9px; font-weight: 800; }
+.gecmis-not { font-size: 13px; color: #333; margin-top: 4px; }
 .gecmis-karti {
   border: 1px solid #e2e6ec;
   border-radius: 10px;
@@ -302,26 +330,6 @@
   margin-bottom: 8px;
   background: #fafbfc;
 }
-.gecmis-ust-satir {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-.gecmis-tip {
-  font-size: 10px;
-  font-weight: 900;
-  padding: 3px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-}
-.gecmis-tip--numune { background: #eef2f8; color: #556170; }
-.gecmis-tip--teklif { background: #fff3e6; color: #a8590c; }
-.gecmis-tip--proforma { background: #eaf2fc; color: #2563eb; }
-.gecmis-tip--siparis { background: #e9f7ee; color: #16a34a; }
-.gecmis-tarih { font-size: 12px; color: #8a94a3; }
-.gecmis-toplam { font-size: 14px; font-weight: 900; color: #003a70; }
-.gecmis-not { font-size: 13px; color: #333; margin-top: 4px; }
 
 .sekme-secim {
   display: grid;

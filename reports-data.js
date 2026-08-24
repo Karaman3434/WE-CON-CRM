@@ -79,20 +79,30 @@ var ReportsData = (function(){
       tamamlandi: false, tamamlanmaZamani: null,
       olusturmaZamani: Date.now()
     };
-    gorevler.push(yeni);
-    kaydet();
+    guvenliGorevYaz(function(tazeGorevler){ tazeGorevler.push(yeni); });
   }
 
   function gorevTamamlandiToggle(id){
-    var g = gorevler.find(function(x){ return x.id===id; });
-    if(!g) return;
-    g.tamamlandi = !g.tamamlandi;
-    g.tamamlanmaZamani = g.tamamlandi ? Date.now() : null;
-    kaydet();
+    guvenliGorevYaz(function(tazeGorevler){
+      var g = tazeGorevler.find(function(x){ return x.id===id; });
+      if(!g) return;
+      g.tamamlandi = !g.tamamlandi;
+      g.tamamlanmaZamani = g.tamamlandi ? Date.now() : null;
+    });
   }
 
-  function kaydet(){
-    try{ firebase.database().ref("gorevler").set(gorevler); }catch(e){ console.error("Görev kaydetme hatası:", e); }
+  // Görevler için de GÜVENLİ YAZMA DESENİ: yazmadan hemen önce sunucudan taze
+  // veri okunur, değişiklik sadece o taze veri üzerine uygulanır.
+  function guvenliGorevYaz(mutateFn){
+    try{
+      var db = firebase.database();
+      db.ref("gorevler").once("value").then(function(snap){
+        var data = snap.val();
+        var tazeGorevler = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+        mutateFn(tazeGorevler);
+        return db.ref("gorevler").set(tazeGorevler);
+      }).catch(function(err){ console.error("Görev kaydetme hatası:", err); });
+    }catch(e){ console.error("Görev kaydetme hatası:", e); }
   }
 
   function tumSiparisler(){

@@ -30,6 +30,10 @@ function htmlEsc(s){
 }
 
 var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
+
+function fmtG(n){
+  return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 var seciliMusteriAdi = null;
 
 function ustBilgiyiCiz(musteri){
@@ -55,8 +59,6 @@ function siparisGecmisiniCiz(){
     var kapsayici = document.getElementById("detaySiparisListesi");
     var bos = document.getElementById("detaySiparisBos");
 
-    // Toplam ciro: sadece gerçekleşmiş satış sayılan Sipariş kayıtları üzerinden
-    // (Numune/Teklif/Proforma henüz kesinleşmemiş olabilir, ciroya dahil edilmiyor).
     var toplamCiro = bunaAit
       .filter(function(k){ return k.tip === "siparis"; })
       .reduce(function(s,k){ return s + (k.urunler||[]).reduce(function(s2,u){ return s2+(u.toplamEuro||0); }, 0); }, 0);
@@ -69,13 +71,45 @@ function siparisGecmisiniCiz(){
       return;
     }
     bos.hidden = true;
-    kapsayici.innerHTML = bunaAit.map(function(k){
-      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
-      return "<div class='gecmis-karti'>"
-        + "<div class='gecmis-ust-satir'><span class='gecmis-tip gecmis-tip--" + k.tip + "'>" + TIP_ETIKET[k.tip] + "</span><span class='gecmis-tarih'>" + htmlEsc(k.tarih) + "</span></div>"
-        + "<div class='gecmis-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR — " + (k.urunler||[]).length + " ürün</div>"
-        + "</div>";
-    }).join("");
+
+    var TIP_KOD_GECMIS = {numune:"NUM", teklif:"TEK", proforma:"PRO", siparis:"SIP"};
+    var TIP_ZEMIN_GECMIS = {siparis:"#dbe9f9", teklif:"#cdf3de", proforma:"#e5cdf7", numune:"#ffe3bf"};
+    var TIP_RENK_GECMIS = {siparis:"#003a70", teklif:"#0e6b34", proforma:"#6a1b9a", numune:"#a8590c"};
+
+    var satirlar = "";
+    bunaAit.forEach(function(k){
+      var kacanMi = k.durum === "kacan";
+      (k.urunler||[]).forEach(function(u, j){
+        var mk = (u.iskBirim||0)-(u.dipFiyat||0);
+        var prim = mk*(u.adet||0)*0.22;
+        if(prim<0) prim = 0;
+        var satirBg = kacanMi ? "#fac9c5" : (TIP_ZEMIN_GECMIS[k.tip]||"#ffffff");
+        satirlar += "<tr class='gecmis-tablo-satir' data-tip='" + k.tip + "' data-ts='" + k.ts + "' style='background:" + satirBg + ";'>"
+          + "<td>" + (j===0 ? "<span class='gecmis-kod-mini'>" + TIP_KOD_GECMIS[k.tip] + "</span>" + (kacanMi?"<div class='gecmis-durum-mini'>❌ KAÇTI</div>":"") : "") + "</td>"
+          + "<td>" + (j===0 ? htmlEsc(k.tarih.split(" ").slice(0,2).join(" ")) : "") + "</td>"
+          + "<td class='gecmis-td-urun'><div class='gecmis-td-kod'><span class='kb'>B:</span>" + htmlEsc(u.berta||"-") + " <span class='ka'>A:</span>" + htmlEsc(u.abas||"-") + "</div><div class='gecmis-td-ad'>" + htmlEsc(u.ad) + "</div></td>"
+          + "<td>" + (u.adet||0) + "</td>"
+          + "<td>" + fmtG(u.listeFiyat||0) + "€</td>"
+          + "<td class='gecmis-td-isk'>%" + (u.iskonto||0) + "</td>"
+          + "<td style='color:" + TIP_RENK_GECMIS[k.tip] + ";'>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</td>"
+          + "<td class='gecmis-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
+          + "<td class='gecmis-td-prim'>" + fmtG(prim) + "€</td>"
+          + "</tr>";
+      });
+    });
+
+    kapsayici.innerHTML = "<div class='data-table-container'><table class='gecmis-urun-tablo'>"
+      + "<thead><tr><th>KOD</th><th>TARİH</th><th>ÜRÜN İSMİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
+      + "<tbody>" + satirlar + "</tbody></table></div>";
+
+    kapsayici.querySelectorAll(".gecmis-tablo-satir").forEach(function(tr){
+      tr.onclick = function(){
+        var t = this.getAttribute("data-tip");
+        var ts = this.getAttribute("data-ts");
+        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:t, ts:parseFloat(ts)}));
+        window.location.href = "belge-onizleme.html";
+      };
+    });
   }catch(e){ hataGoster("Sipariş geçmişi çizilemedi: " + e.message); }
 }
 
