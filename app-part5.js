@@ -1599,13 +1599,22 @@ function arsiveKaydetSonrasiSifirla(){
 
 function arsivKayitSil(tip, idx){
   arsivData = lsGet("weicon_arsiv",{});
-  if(!arsivData[tip]) return;
+  if(!arsivData[tip] || !arsivData[tip][idx]) return;
+  var kayitSilinecek = arsivData[tip][idx];
+  var silinecekKod = kayitSilinecek.kod || null;
+  var silinecekTs = kayitSilinecek.ts || null;
   arsivData[tip].splice(idx,1);
   lsSet("weicon_arsiv", arsivData);
   renderArsiv();
   if(typeof sonIslemleriRenderEt==="function") sonIslemleriRenderEt();
   if(typeof musteriGecmisRenderEt==="function") musteriGecmisRenderEt();
-  showToast("Kayıt silindi.");
+  if(window.fbSet && typeof arsivGuvenliKaydet==="function"){
+    arsivGuvenliKaydet({tip:tip, silinecekKod:silinecekKod, silinecekTs:silinecekKod?null:silinecekTs})
+      .then(function(){ showToast("✓ Kayıt silindi ve tüm cihazlarla senkronize edildi."); })
+      .catch(function(e){ showToast("⚠️ Kayıt bu cihazdan silindi; Firebase senkronu başarısız: "+((e&&e.message)||"bilinmiyor"),6000); });
+  } else {
+    showToast("Kayıt silindi.");
+  }
 }
 
 function renderArsiv(){
