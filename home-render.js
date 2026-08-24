@@ -28,22 +28,6 @@ function tarihiGuncelle(){
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
-function karsilamaGuncelle(bugunVerisi){
-  try{
-    var el = document.getElementById("anaSayfaKarsilama");
-    if(!el) return;
-    var saat = new Date().getHours();
-    var varMi = bugunVerisi && bugunVerisi.toplamEuro > 0;
-    var mesaj;
-    if(saat < 10) mesaj = varMi ? "Günaydın! Erken bir başlangıç yapmışsın bile." : "Günaydın! Güzel bir gün seni bekliyor.";
-    else if(saat < 13) mesaj = varMi ? "Öğlene doğru güzel gidiyor, devam." : "Öğleye kadar bir fırsat daha var.";
-    else if(saat < 18) mesaj = varMi ? "Bugün iyi iş çıkarıyorsun." : "Öğleden sonra hâlâ zaman var.";
-    else if(saat < 21) mesaj = varMi ? "Günü güzel kapatıyorsun." : "Gün yavaş yavaş kapanıyor — yarın yeni bir fırsat.";
-    else mesaj = "Günün sonu — dinlenmeyi hak ettin.";
-    el.textContent = mesaj;
-  }catch(e){ hataGoster("Karşılama güncellenemedi: " + e.message); }
-}
-
 function kartlariGuncelle(){
   try{
     var ay = WeiconData.buAyinVerisi();
@@ -56,7 +40,6 @@ function kartlariGuncelle(){
     setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro));
     setText("anaSayfaBugunPrim", WeiconData.fmt(bugun.toplamPrim));
 
-    karsilamaGuncelle(bugun);
   }catch(e){ hataGoster("Kartlar güncellenemedi: " + e.message); }
 }
 

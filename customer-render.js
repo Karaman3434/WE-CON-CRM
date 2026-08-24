@@ -1,11 +1,12 @@
 /*
   customer-render.js
   ==================
-  SADECE müşteri listesini ekrana basar, arama/sıralama kutularını dinler,
-  bir müşteriye dokununca (satış akışının ortasındaysak send.html'e, değilse
-  SADECE o müşterinin kartına — customer-detail.html) yönlendirir.
-  Yeni müşteri ekleme artık AYRI bir sayfada (customer-add.html + 
-  customer-add-render.js) — burada değil.
+  Eski uygulamanın musteriListesiniRenderEt() mantığıyla BİREBİR aynı:
+  - Arama yokken: sadece en son eklenen 12 müşteri (dizinin başı, çünkü yeni
+    kayıtlar unshift ile başa ekleniyor), + "Tüm Müşterileri Göster" butonu.
+  - Arama aktifken: TÜM eşleşenler, en son görüntülenene göre sıralı.
+  - Her satır: isim + (varsa) ziyaret rozeti üstte; müşteri kodu + şehir altta.
+    Zebra desenli (bir alt, bir üst renk).
 */
 
 function hataGoster(mesaj){
@@ -32,38 +33,52 @@ function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+var tumMusterilerModuAktif = false;
+
 function listeyiCiz(){
   try{
     var q = document.getElementById("musteriAra").value;
     var kapsayici = document.getElementById("musteriListesi");
     var bos = document.getElementById("musteriBosMesaj");
     var yukleniyor = document.getElementById("musteriYukleniyor");
+    var bilgiNotuEl = document.getElementById("listeBilgiNotu");
+    var tumBtn = document.getElementById("btnTumMusteriler");
 
     if(CustomerData.uzunluk() === 0){
       kapsayici.innerHTML = "";
       bos.hidden = true;
       yukleniyor.hidden = false;
+      tumBtn.hidden = true;
+      bilgiNotuEl.hidden = true;
       return;
     }
     yukleniyor.hidden = true;
 
     var sonuclar = CustomerData.ara(q);
+    var aramaAktif = q.trim().length > 0;
+    bilgiNotuEl.hidden = true;
+    bilgiNotuEl.className = "liste-bilgi-notu";
 
-    var siralama = document.getElementById("musteriSiralama").value;
-    sonuclar = sonuclar.slice();
-    if(siralama === "sehir"){
-      sonuclar.sort(function(a,b){ return (a.sehir||"").localeCompare(b.sehir||"", "tr-TR"); });
-    } else if(siralama === "sonZiyaret"){
-      sonuclar.sort(function(a,b){
-        var aTs = (a.ziyaretGecmisi&&a.ziyaretGecmisi.length) ? Math.max.apply(null, a.ziyaretGecmisi.map(function(z){return z.ts||0;})) : 0;
-        var bTs = (b.ziyaretGecmisi&&b.ziyaretGecmisi.length) ? Math.max.apply(null, b.ziyaretGecmisi.map(function(z){return z.ts||0;})) : 0;
-        return bTs - aTs;
-      });
+    if(aramaAktif){
+      sonuclar = sonuclar.slice().sort(function(a,b){ return (b.sonGoruntuleme||0)-(a.sonGoruntuleme||0); });
+      tumBtn.hidden = true;
+    } else if(tumMusterilerModuAktif){
+      sonuclar = sonuclar.slice().sort(function(a,b){ return (a.ad||"").localeCompare(b.ad||"", "tr-TR"); });
+      bilgiNotuEl.hidden = false;
+      bilgiNotuEl.className = "liste-bilgi-notu liste-bilgi-notu--yesil";
+      bilgiNotuEl.textContent = "👥 Tüm müşteriler (toplam " + sonuclar.length + ") — alfabetik sırayla.";
+      tumBtn.hidden = true;
     } else {
-      sonuclar.sort(function(a,b){ return (a.ad||"").localeCompare(b.ad||"", "tr-TR"); });
+      var toplamSayi = sonuclar.length;
+      sonuclar = sonuclar.slice(0, 12);
+      if(toplamSayi > 12){
+        bilgiNotuEl.hidden = false;
+        bilgiNotuEl.textContent = "En son kayıt edilen 12 müşteri gösteriliyor · toplam " + toplamSayi + " müşteri sistemde kayıtlı.";
+        tumBtn.hidden = false;
+      } else {
+        tumBtn.hidden = true;
+      }
     }
-
-    if(q.trim().length === 0) sonuclar = sonuclar.slice(0, 40);
 
     if(sonuclar.length === 0){
       kapsayici.innerHTML = "";
@@ -72,19 +87,27 @@ function listeyiCiz(){
     }
     bos.hidden = true;
 
-    kapsayici.innerHTML = sonuclar.map(function(m, i){
-      return "<div class='musteri-karti' data-i='" + i + "'>"
-        + "<div><div class='musteri-ad'>" + htmlEsc(m.ad) + "</div><div class='musteri-sehir'>" + htmlEsc(m.sehir||"-") + "</div></div>"
-        + "<span class='musteri-git'>→</span>"
+    kapsayici.innerHTML = "<div class='musteri-liste-kutu'>" + sonuclar.map(function(m, i){
+      var zebraSinif = (i%2===1) ? "musteri-karti--alt" : "musteri-karti--ust";
+      var ziyaretRozetHtml = "";
+      if(m.sonZiyaret){
+        var gun = Math.floor((Date.now()-m.sonZiyaret)/86400000);
+        if(gun > 30) ziyaretRozetHtml = "<span class='musteri-ziyaret-rozet musteri-ziyaret-rozet--uyari'>⚠️ " + gun + " gün ziyaret yok</span>";
+        else ziyaretRozetHtml = "<span class='musteri-ziyaret-rozet musteri-ziyaret-rozet--iyi'>✓ " + gun + " gün önce</span>";
+      }
+      return "<div class='musteri-karti " + zebraSinif + "' data-i='" + i + "'>"
+        + "<div class='musteri-ust-satir'><span class='musteri-ad'>" + htmlEsc(m.ad) + "</span>" + ziyaretRozetHtml + "</div>"
+        + "<div class='musteri-alt-satir'>"
+        + "<span class='musteri-kod'>" + (m.id ? "🏷 " + htmlEsc(m.id) : "") + "</span>"
+        + "<span class='musteri-sehir'>" + htmlEsc(m.sehir||"-") + "</span>"
+        + "</div>"
         + "</div>";
-    }).join("");
+    }).join("") + "</div>";
 
     kapsayici.querySelectorAll(".musteri-karti").forEach(function(kart, i){
       kart.onclick = function(){
         CustomerData.sec(sonuclar[i]);
-        // Sepette ürün varsa (satış akışının ortasındaysak) doğrudan Kaydet'e
-        // geç; sepet boşsa (müşteriyi incelemeye gelinmiş) SADECE o müşterinin
-        // Kartı'na git — başka müşteri listesi/başka içerik gösterilmez.
+        CustomerData.sonGoruntulendi(sonuclar[i].ad);
         var sepetDoluMu = false;
         try{ sepetDoluMu = JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0; }catch(e){}
         window.location.href = sepetDoluMu ? "send.html" : "customer-detail.html";
@@ -100,7 +123,10 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("musteriAra").addEventListener("input", listeyiCiz);
-  document.getElementById("musteriSiralama").addEventListener("change", listeyiCiz);
+  document.getElementById("btnTumMusteriler").onclick = function(){
+    tumMusterilerModuAktif = true;
+    listeyiCiz();
+  };
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   CustomerData.listeDegistiginde(listeyiCiz);
   listeyiCiz();

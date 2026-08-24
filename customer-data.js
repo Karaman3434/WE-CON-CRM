@@ -158,13 +158,18 @@ var CustomerData = (function(){
         id: musteriIdUret(tazeListe),
         ad: bilgi.ad.trim(),
         sehir: (bilgi.sehir||"").trim(),
+        acikAdres: (bilgi.acikAdres||"").trim(),
         vade: (bilgi.vade||"").trim(),
         fatura: (bilgi.fatura||"").trim(),
         telefon: (bilgi.telefon||"").trim(),
         eposta: (bilgi.eposta||"").trim(),
         kargo: (bilgi.kargo||"").trim(),
         ziyaretGecmisi: [],
-        iletisimler: []
+        iletisimler: [],
+        faturaAdresleri: [],
+        teslimatAdresleri: (bilgi.teslimatAdresi && bilgi.teslimatAdresi.trim())
+          ? [{etiket:"Teslimat Adresi", adres: bilgi.teslimatAdresi.trim()}]
+          : []
       };
       tazeListe.unshift(yeniKayit);
     }, function(basarili, err){
@@ -247,6 +252,16 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
+  // Bir müşteri kartı açıldığında çağrılır — eski uygulamayla aynı: arama
+  // sonuçlarını "en son görüntülenen üstte" sıralayabilmek için.
+  function sonGoruntulendi(musteriAd){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) return;
+      tazeListe[idx].sonGoruntuleme = Date.now();
+    }, function(){});
+  }
+
   return {
     baslat: baslat,
     listeDegistiginde: listeDegistiginde,
@@ -267,7 +282,8 @@ var CustomerData = (function(){
     yetkiliEkle: yetkiliEkle,
     yetkiliSil: yetkiliSil,
     yetkiliGuncelle: yetkiliGuncelle,
-    musteriSil: musteriSil
+    musteriSil: musteriSil,
+    sonGoruntulendi: sonGoruntulendi
   };
 
 })();

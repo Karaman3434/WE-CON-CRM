@@ -28,24 +28,33 @@
 
 <main class="sayfa">
 
-  <div class="sayfa-baslik">+ Yeni Müşteri Ekle</div>
+  <div class="yeni-musteri-baslik">YENİ MÜŞTERİ KAYDET</div>
 
   <section class="yeni-musteri-form">
     <input type="text" id="yeniMusteriAdi" placeholder="Müşteri Adı *">
-    <input type="text" id="yeniMusteriSehir" placeholder="Şehir / İlçe">
-    <div class="form-satir-2">
-      <input type="text" id="yeniMusteriVade" placeholder="Vade (örn. 30 gün)">
-      <input type="text" id="yeniMusteriFatura" placeholder="Fatura Bilgisi">
+    <input type="text" id="yeniMusteriSehir" placeholder="Şehir">
+    <input type="text" id="yeniMusteriAcikAdres" placeholder="📍 Açık Adres (varsa, opsiyonel)">
+    <div class="form-satir-3">
+      <input type="text" id="yeniMusteriVade" placeholder="Vade">
+      <input type="text" id="yeniMusteriFatura" placeholder="Fatura">
+      <input type="text" id="yeniMusteriKargo" placeholder="Kargo">
     </div>
-    <div class="form-satir-2">
-      <input type="tel" id="yeniMusteriTelefon" placeholder="Yetkili Telefon">
-      <input type="email" id="yeniMusteriEposta" placeholder="Yetkili E-posta">
+
+    <div class="ic-kutu">
+      <div class="ic-kutu-baslik">📞 İletişim Bilgileri</div>
+      <div class="form-satir-2">
+        <input type="tel" id="yeniMusteriTelefon" placeholder="Telefon">
+        <input type="email" id="yeniMusteriEposta" placeholder="E-posta">
+      </div>
     </div>
-    <input type="text" id="yeniMusteriKargo" placeholder="Kargo Firması">
-    <div class="form-buton-satir">
-      <a class="form-kapat-btn" href="customer.html">Kapat</a>
-      <button class="form-kaydet-btn" id="btnYeniMusteriKaydet">✓ Müşteriyi Kaydet</button>
+    <div class="yardim-notu">💡 Belirli bir kişi (isim) eklemek isterseniz, kaydettikten sonra müşteri kartından "Yetkili Kişi Ekle" ile ekleyebilirsiniz.</div>
+
+    <div class="ic-kutu">
+      <div class="ic-kutu-baslik">🚚 Teslimat Adresi (varsa, opsiyonel)</div>
+      <textarea id="yeniMusteriTeslimatAdresi" placeholder="Teslimat adresi" rows="2"></textarea>
     </div>
+
+    <button class="form-kaydet-btn form-kaydet-btn--buyuk" id="btnYeniMusteriKaydet">YENİ MÜŞTERİ BİLGİLERİNİ KAYDET</button>
   </section>
 
 </main>

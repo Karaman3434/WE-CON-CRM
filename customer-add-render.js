@@ -37,11 +37,13 @@ document.addEventListener("DOMContentLoaded", function(){
     var bilgi = {
       ad: document.getElementById("yeniMusteriAdi").value,
       sehir: document.getElementById("yeniMusteriSehir").value,
+      acikAdres: document.getElementById("yeniMusteriAcikAdres").value,
       vade: document.getElementById("yeniMusteriVade").value,
       fatura: document.getElementById("yeniMusteriFatura").value,
       telefon: document.getElementById("yeniMusteriTelefon").value,
       eposta: document.getElementById("yeniMusteriEposta").value,
-      kargo: document.getElementById("yeniMusteriKargo").value
+      kargo: document.getElementById("yeniMusteriKargo").value,
+      teslimatAdresi: document.getElementById("yeniMusteriTeslimatAdresi").value
     };
 
     var benzerler = CustomerData.benzerMusterileriBul(bilgi.ad);
@@ -56,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function(){
     btn.textContent = "Kaydediliyor...";
     CustomerData.yeniMusteriKaydet(bilgi, function(basarili, sonuc){
       btn.disabled = false;
-      btn.textContent = "✓ Müşteriyi Kaydet";
+      btn.textContent = "YENİ MÜŞTERİ BİLGİLERİNİ KAYDET";
       if(basarili){
         alert("✓ " + sonuc.ad + " kaydedildi.");
         window.location.href = "customer.html";
