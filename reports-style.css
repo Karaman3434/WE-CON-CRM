@@ -45,6 +45,22 @@
   color: #556170;
 }
 
+.excel-buton {
+  background: #e9f7ee;
+  color: #16a34a;
+  border: 1px solid #1f9d55;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.islem-excel-buton {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
 .islem-karti {
   border: 1px solid #e2e6ec;
   border-radius: 10px;

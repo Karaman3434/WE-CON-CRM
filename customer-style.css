@@ -65,6 +65,23 @@
   margin-bottom: 14px;
 }
 
+.siralama-satiri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #556170;
+}
+.siralama-satiri select {
+  flex: 1;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
+  color: #003a70;
+}
+
 .yeni-musteri-form {
   border: 1px solid #e2e6ec;
   border-radius: 10px;

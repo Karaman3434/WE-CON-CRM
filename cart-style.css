@@ -98,6 +98,29 @@
   border-color: #003a70;
 }
 
+.adet-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.adet-stepper input {
+  text-align: center;
+  flex: 1;
+}
+.adet-azalt-btn, .adet-artir-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #3569b8;
+  background: #eaf2fc;
+  color: #003a70;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  line-height: 1;
+}
+
 .hesap-sonuc {
   background: #003a70;
   border-radius: 8px;

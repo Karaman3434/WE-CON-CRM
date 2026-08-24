@@ -42,7 +42,11 @@ function urunKartiHtml(u){
     + "<div class='hesap-alan'><label>Liste Fiyat (EUR)</label><input type='number' step='0.01' data-alan='listeFiyat' data-idx='" + u.idx + "' value='" + (u.listeFiyat||0) + "'></div>"
     + "<div class='hesap-alan'><label>Dip Fiyat (EUR)</label><input type='number' step='0.01' data-alan='dipFiyat' data-idx='" + u.idx + "' value='" + (u.dipFiyat||0) + "'></div>"
     + "<div class='hesap-alan'><label>İskonto (%)</label><input type='number' step='0.1' data-alan='iskonto' data-idx='" + u.idx + "' value='" + (u.iskonto||0) + "'></div>"
-    + "<div class='hesap-alan'><label>Adet</label><input type='number' step='1' min='1' data-alan='adet' data-idx='" + u.idx + "' value='" + (u.adet||1) + "'></div>"
+    + "<div class='hesap-alan'><label>Adet</label><div class='adet-stepper'>"
+    + "<button class='adet-azalt-btn' data-adet-azalt='" + u.idx + "'>−</button>"
+    + "<input type='number' step='1' min='1' data-alan='adet' data-idx='" + u.idx + "' value='" + (u.adet||1) + "'>"
+    + "<button class='adet-artir-btn' data-adet-artir='" + u.idx + "'>+</button>"
+    + "</div></div>"
     + "</div>"
     + "<div class='hesap-sonuc' id='sonuc-" + u.idx + "'></div>"
     + "</div>";
@@ -105,6 +109,24 @@ function sayfayiCiz(){
         CartData.sil(idx);
         sayfayiCiz();
       };
+    });
+
+    // Adet +/- hızlı butonları
+    function adetiDegistir(idx, fark){
+      var input = kapsayici.querySelector("input[data-alan='adet'][data-idx='" + idx + "']");
+      if(!input) return;
+      var yeni = Math.max(1, (parseInt(input.value,10)||1) + fark);
+      input.value = yeni;
+      CartData.alaniGuncelle(idx, "adet", yeni);
+      var u = CartData.liste().find(function(x){ return x.idx===idx; });
+      if(u) sonucKutusuGuncelle(u, CartData.kurOku(), CartData.kdvOku());
+      genelToplamiGuncelle();
+    }
+    kapsayici.querySelectorAll("[data-adet-artir]").forEach(function(btn){
+      btn.onclick = function(){ adetiDegistir(parseInt(this.getAttribute("data-adet-artir"),10), 1); };
+    });
+    kapsayici.querySelectorAll("[data-adet-azalt]").forEach(function(btn){
+      btn.onclick = function(){ adetiDegistir(parseInt(this.getAttribute("data-adet-azalt"),10), -1); };
     });
   }catch(e){ hataGoster("Sepet çizilemedi: " + e.message); }
 }

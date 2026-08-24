@@ -253,6 +253,42 @@ function gorevEkleTiklandi(){
   }catch(e){ hataGoster("Görev eklenemedi: " + e.message); }
 }
 
+function islemlerExcelAktar(){
+  try{
+    if(typeof XLSX === "undefined"){
+      hataGoster("Excel kütüphanesi yüklenemedi, internet bağlantınızı kontrol edin.");
+      return;
+    }
+    var q = (document.getElementById("islemAra").value||"").trim().toLocaleLowerCase("tr-TR");
+    var tipFiltre = document.getElementById("islemTipFiltre").value;
+    var liste = ReportsData.sonIslemler();
+    if(tipFiltre) liste = liste.filter(function(k){ return k.tip === tipFiltre; });
+    if(q) liste = liste.filter(function(k){ return (k.musteri||"").toLocaleLowerCase("tr-TR").indexOf(q) >= 0; });
+
+    if(liste.length === 0){
+      alert("Aktarılacak kayıt bulunamadı.");
+      return;
+    }
+
+    var basliklar = ["Tarih","Müşteri","Şehir","Tür","Ürün Sayısı","Toplam (EUR)","Durum"];
+    var veriSatirlari = liste.map(function(k){
+      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+      var durum = k.durum === "kacan" ? "Kaçtı" : "";
+      return [k.tarih||"", k.musteri||"", k.sehir||"", TIP_ETIKET[k.tip]||k.tip, (k.urunler||[]).length, toplam, durum];
+    });
+
+    var aoa = [basliklar].concat(veriSatirlari);
+    var ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = [{wch:18},{wch:22},{wch:16},{wch:10},{wch:10},{wch:12},{wch:10}];
+
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Son İşlemler");
+    var now = new Date();
+    var dosyaAdi = "Son_Islemler_" + now.getFullYear() + String(now.getMonth()+1).padStart(2,"0") + String(now.getDate()).padStart(2,"0") + ".xlsx";
+    XLSX.writeFile(wb, dosyaAdi);
+  }catch(e){ hataGoster("Excel oluşturulamadı: " + e.message); }
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -382,6 +418,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnDuzenleKaydet").onclick = duzenlemeKaydet;
   document.getElementById("islemAra").addEventListener("input", islemleriCiz);
   document.getElementById("islemTipFiltre").addEventListener("change", islemleriCiz);
+  document.getElementById("btnIslemlerExcel").onclick = islemlerExcelAktar;
   ReportsData.arsivDegistiginde(islemleriCiz);
   document.getElementById("gorevAra").addEventListener("input", gorevleriCiz);
   ReportsData.gorevDegistiginde(gorevleriCiz);

@@ -45,6 +45,21 @@ function listeyiCiz(){
     yukleniyor.hidden = true;
 
     var sonuclar = CustomerData.ara(q);
+
+    var siralama = document.getElementById("musteriSiralama").value;
+    sonuclar = sonuclar.slice(); // orijinal listeyi bozmadan sırala
+    if(siralama === "sehir"){
+      sonuclar.sort(function(a,b){ return (a.sehir||"").localeCompare(b.sehir||"", "tr-TR"); });
+    } else if(siralama === "sonZiyaret"){
+      sonuclar.sort(function(a,b){
+        var aTs = (a.ziyaretGecmisi&&a.ziyaretGecmisi.length) ? Math.max.apply(null, a.ziyaretGecmisi.map(function(z){return z.ts||0;})) : 0;
+        var bTs = (b.ziyaretGecmisi&&b.ziyaretGecmisi.length) ? Math.max.apply(null, b.ziyaretGecmisi.map(function(z){return z.ts||0;})) : 0;
+        return bTs - aTs; // en yakın ziyaret üstte
+      });
+    } else {
+      sonuclar.sort(function(a,b){ return (a.ad||"").localeCompare(b.ad||"", "tr-TR"); });
+    }
+
     if(q.trim().length === 0) sonuclar = sonuclar.slice(0, 40);
 
     if(sonuclar.length === 0){
@@ -128,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   yeniMusteriFormBagla();
   document.getElementById("musteriAra").addEventListener("input", listeyiCiz);
+  document.getElementById("musteriSiralama").addEventListener("change", listeyiCiz);
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   CustomerData.listeDegistiginde(listeyiCiz);
   listeyiCiz();
