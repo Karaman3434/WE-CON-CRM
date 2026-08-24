@@ -29,104 +29,78 @@ function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-function urunKartiHtml(u){
-  return "<div class='sepet-urun' data-idx='" + u.idx + "'>"
-    + "<div class='sepet-urun-baslik'>"
-    + "<div>"
+function urunSatiriHtml(u){
+  return "<tr data-idx='" + u.idx + "'>"
+    + "<td class='sepet-urun-hucre'>"
     + "<div class='sepet-urun-ad'>" + htmlEsc(u.ad) + "</div>"
     + "<div class='sepet-urun-kod'>Berta: " + htmlEsc(u.berta||"-") + " · Abas: " + htmlEsc(u.abas||"-") + "</div>"
-    + "</div>"
-    + "<button class='sepet-sil-btn' data-sil='" + u.idx + "'>Sil</button>"
-    + "</div>"
-    + "<div class='hesap-alan-grid'>"
-    + "<div class='hesap-alan'><label>Liste Fiyat (EUR)</label><input type='number' step='0.01' data-alan='listeFiyat' data-idx='" + u.idx + "' value='" + (u.listeFiyat||0) + "'></div>"
-    + "<div class='hesap-alan'><label>Dip Fiyat (EUR)</label><input type='number' step='0.01' data-alan='dipFiyat' data-idx='" + u.idx + "' value='" + (u.dipFiyat||0) + "'></div>"
-    + "<div class='hesap-alan'><label>İskonto (%)</label><input type='number' step='0.1' data-alan='iskonto' data-idx='" + u.idx + "' value='" + (u.iskonto||0) + "'></div>"
-    + "<div class='hesap-alan'><label>Adet</label><div class='adet-stepper'>"
-    + "<button class='adet-azalt-btn' data-adet-azalt='" + u.idx + "'>−</button>"
-    + "<input type='number' step='1' min='1' data-alan='adet' data-idx='" + u.idx + "' value='" + (u.adet||1) + "'>"
-    + "<button class='adet-artir-btn' data-adet-artir='" + u.idx + "'>+</button>"
-    + "</div></div>"
-    + "</div>"
-    + "<div class='hesap-sonuc' id='sonuc-" + u.idx + "'></div>"
-    + "</div>";
+    + "<div class='sepet-dip-satiri'><label>Dip:</label> <input type='number' step='0.01' data-alan='dipFiyat' data-idx='" + u.idx + "' value='" + (u.dipFiyat||0) + "'></div>"
+    + "</td>"
+    + "<td><input type='number' step='1' min='1' data-alan='adet' data-idx='" + u.idx + "' value='" + (u.adet||1) + "'></td>"
+    + "<td><input type='number' step='0.01' data-alan='listeFiyat' data-idx='" + u.idx + "' value='" + (u.listeFiyat||0) + "'></td>"
+    + "<td><input type='number' step='0.1' data-alan='iskonto' data-idx='" + u.idx + "' value='" + (u.iskonto||0) + "'></td>"
+    + "<td class='sepet-net-deger' id='net-" + u.idx + "'>0,00</td>"
+    + "<td class='sepet-toplam-deger' id='toplam-" + u.idx + "'>0,00</td>"
+    + "<td><button class='sepet-sil-btn' data-sil='" + u.idx + "'>🗑️</button></td>"
+    + "</tr>";
 }
 
-function sonucKutusuGuncelle(u, kur, kdv){
+function satirSonucGuncelle(u, kur, kdv){
   var h = CartData.hesapla(u, kur, kdv);
-  var el = document.getElementById("sonuc-" + u.idx);
-  if(!el) return;
-  el.innerHTML =
-      "<div class='hesap-sonuc-satir'><span class='lbl'>İskontolu Fiyat</span><span class='val'>" + CartData.fmt(h.iskontoluFiyat) + " EUR</span></div>"
-    + "<div class='hesap-sonuc-satir'><span class='lbl'>TL Birim Fiyat</span><span class='val'>" + CartData.fmt(h.tlBirimFiyat) + " TL</span></div>"
-    + "<div class='hesap-sonuc-satir'><span class='lbl'>Satır Toplamı</span><span class='val'>" + CartData.fmt(h.toplamEuro) + " EUR</span></div>"
-    + "<div class='hesap-sonuc-satir'><span class='lbl'>Prim</span><span class='val'>" + (h.mudurPrim<0 ? "Prim yok" : CartData.fmt(h.mudurPrim)+" EUR") + "</span></div>";
+  var netEl = document.getElementById("net-" + u.idx);
+  var toplamEl = document.getElementById("toplam-" + u.idx);
+  if(netEl) netEl.textContent = CartData.fmt(h.iskontoluFiyat);
+  if(toplamEl) toplamEl.textContent = CartData.fmt(h.toplamEuro);
 }
 
 function sayfayiCiz(){
   try{
     var liste = CartData.liste();
-    var kapsayici = document.getElementById("sepetListesi");
+    var tabloAlani = document.getElementById("sepetListesi");
+    var govde = document.getElementById("sepetTabloGovde");
     var bosMesaj = document.getElementById("sepetBosMesaj");
     var toplamKutu = document.getElementById("toplamKutu");
     var devamBtn = document.getElementById("btnDevamEt");
 
     if(liste.length === 0){
-      kapsayici.innerHTML = "";
+      tabloAlani.hidden = true;
       bosMesaj.hidden = false;
       toplamKutu.hidden = true;
       devamBtn.hidden = true;
       return;
     }
+    tabloAlani.hidden = false;
     bosMesaj.hidden = true;
     toplamKutu.hidden = false;
     devamBtn.hidden = false;
 
-    kapsayici.innerHTML = liste.map(urunKartiHtml).join("");
+    govde.innerHTML = liste.map(urunSatiriHtml).join("");
 
     var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
-    liste.forEach(function(u){ sonucKutusuGuncelle(u, kur, kdv); });
+    liste.forEach(function(u){ satirSonucGuncelle(u, kur, kdv); });
     genelToplamiGuncelle();
 
     // Alan değişikliklerini dinle
-    kapsayici.querySelectorAll("input[data-alan]").forEach(function(input){
+    govde.querySelectorAll("input[data-alan]").forEach(function(input){
       input.addEventListener("input", function(){
         var idx = parseInt(this.getAttribute("data-idx"), 10);
         var alan = this.getAttribute("data-alan");
         var deger = parseFloat(this.value) || 0;
         CartData.alaniGuncelle(idx, alan, deger);
         var u = CartData.liste().find(function(x){ return x.idx===idx; });
-        if(u) sonucKutusuGuncelle(u, CartData.kurOku(), CartData.kdvOku());
+        if(u) satirSonucGuncelle(u, CartData.kurOku(), CartData.kdvOku());
         genelToplamiGuncelle();
       });
     });
 
     // Sil butonları
-    kapsayici.querySelectorAll("[data-sil]").forEach(function(btn){
+    govde.querySelectorAll("[data-sil]").forEach(function(btn){
       btn.onclick = function(){
         var idx = parseInt(this.getAttribute("data-sil"), 10);
         CartData.sil(idx);
         sayfayiCiz();
       };
-    });
-
-    // Adet +/- hızlı butonları
-    function adetiDegistir(idx, fark){
-      var input = kapsayici.querySelector("input[data-alan='adet'][data-idx='" + idx + "']");
-      if(!input) return;
-      var yeni = Math.max(1, (parseInt(input.value,10)||1) + fark);
-      input.value = yeni;
-      CartData.alaniGuncelle(idx, "adet", yeni);
-      var u = CartData.liste().find(function(x){ return x.idx===idx; });
-      if(u) sonucKutusuGuncelle(u, CartData.kurOku(), CartData.kdvOku());
-      genelToplamiGuncelle();
-    }
-    kapsayici.querySelectorAll("[data-adet-artir]").forEach(function(btn){
-      btn.onclick = function(){ adetiDegistir(parseInt(this.getAttribute("data-adet-artir"),10), 1); };
-    });
-    kapsayici.querySelectorAll("[data-adet-azalt]").forEach(function(btn){
-      btn.onclick = function(){ adetiDegistir(parseInt(this.getAttribute("data-adet-azalt"),10), -1); };
     });
   }catch(e){ hataGoster("Sepet çizilemedi: " + e.message); }
 }

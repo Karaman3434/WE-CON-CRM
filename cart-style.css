@@ -152,6 +152,97 @@
   font-style: italic;
 }
 
+/* ---------- Sepet tablosu — eski uygulamanın ÜRÜN İSMİ/ADET/LİSTE/İSK/
+   NET/TOPLAM tablosuyla AYNI yapı. ---------- */
+.data-table-container {
+  overflow-x: auto;
+  width: 100%;
+  border: 1px solid #3569b8;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.sepet-tablo { width: 100%; border-collapse: collapse; }
+.sepet-tablo th {
+  background: #cfe2f3;
+  color: #3569b8;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 8px 4px;
+  text-align: center;
+  border-bottom: 2px solid #3569b8;
+  white-space: nowrap;
+}
+.sepet-tablo td {
+  padding: 8px 4px;
+  border-bottom: 1px solid #e2e6ec;
+  vertical-align: middle;
+  text-align: center;
+}
+.col-urun { text-align: left !important; width: auto; }
+.col-dar { width: 58px; }
+.col-orta { width: 72px; }
+.col-ikon { width: 30px; }
+
+.sepet-urun-hucre { text-align: left; }
+.sepet-urun-ad {
+  font-size: 12px;
+  font-weight: 800;
+  color: #111;
+  line-height: 1.25;
+}
+.sepet-urun-kod {
+  font-size: 9px;
+  color: #8a94a3;
+  margin-top: 1px;
+}
+.sepet-dip-satiri {
+  margin-top: 3px;
+}
+.sepet-dip-satiri input {
+  width: 62px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 10px;
+}
+.sepet-dip-satiri label {
+  font-size: 9px;
+  color: #8a94a3;
+}
+
+.sepet-tablo input[type=number] {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 5px 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #003a70;
+  text-align: center;
+}
+.sepet-tablo input[type=number]:focus {
+  outline: none;
+  border-color: #003a70;
+}
+.sepet-net-deger {
+  font-size: 11px;
+  font-weight: 800;
+  color: #556170;
+}
+.sepet-toplam-deger {
+  font-size: 12px;
+  font-weight: 900;
+  color: #d9182b;
+}
+.sepet-sil-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+}
+
 .toplam-kutu {
   background: #0e2038;
   border-radius: 10px;

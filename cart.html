@@ -35,7 +35,21 @@
     <input type="number" id="kurInput" step="0.0001" placeholder="örn. 34.50">
   </div>
 
-  <div id="sepetListesi"></div>
+  <div id="sepetListesi">
+    <div class="data-table-container">
+      <table class="data-table sepet-tablo">
+        <thead><tr>
+          <th class="col-urun">ÜRÜN İSMİ</th>
+          <th class="col-dar">ADET</th>
+          <th class="col-dar">LİSTE</th>
+          <th class="col-dar">İSK%</th>
+          <th class="col-orta">TOPLAM</th>
+          <th class="col-ikon"></th>
+        </tr></thead>
+        <tbody id="sepetTabloGovde"></tbody>
+      </table>
+    </div>
+  </div>
 
   <p class="bos-mesaj" id="sepetBosMesaj" hidden>Sepetiniz boş. Önce Ürün Bul'dan ürün seçin.</p>
 
