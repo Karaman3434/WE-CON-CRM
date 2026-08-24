@@ -1437,7 +1437,7 @@ function musteriKaydetGercek(){
   // (başka bir cihazın az önce eklediği müşteriyi silmemek için)
   if(window.fbGet){
     window.fbGet("musteriler").then(function(data){
-      var guncelListe = data ? (Array.isArray(data)?data:Object.values(data)) : [];
+      var guncelListe = weiconMusteriBirlesir(lsGet("weicon_musteriler",[]), data);
       kaydiTamamla(guncelListe);
     }).catch(function(){
       kaydiTamamla(lsGet("weicon_musteriler",[]));
