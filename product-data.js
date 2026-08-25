@@ -132,7 +132,7 @@ var ProductData = (function(){
       return false; // çıkarıldı
     }
     var bilgi = urunBilgisi(katalog[idx]);
-    sepet.push({idx:idx, ad:bilgi.ad, berta:bilgi.berta, abas:bilgi.abas, listeFiyat:bilgi.fiyat, dipFiyat:0, iskonto:0, adet:1});
+    sepet.push({idx:idx, ad:bilgi.ad, berta:bilgi.berta, abas:bilgi.abas, listeFiyat:bilgi.fiyat, dipFiyat:0, iskonto:0, adet:1, hesaplandi:false});
     sepetiKaydet();
     return true; // eklendi
   }

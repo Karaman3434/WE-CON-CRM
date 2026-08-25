@@ -32,7 +32,13 @@ var CartData = (function(){
 
   function alaniGuncelle(idx, alan, deger){
     var u = sepet.find(function(u){ return u.idx === idx; });
-    if(u){ u[alan] = deger; kaydet(); }
+    if(u){
+      u[alan] = deger;
+      // Eski uygulamanın HESAPLANACAK (sarı) / HESAPLANDI (yeşil) ayrımıyla
+      // aynı: dip fiyat veya iskonto girildiği an ürün "hesaplandı" sayılır.
+      if((alan==="dipFiyat" || alan==="iskonto") && deger>0) u.hesaplandi = true;
+      kaydet();
+    }
   }
 
   function kurOku(){

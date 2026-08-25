@@ -29,8 +29,9 @@ function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-function urunSatiriHtml(u){
-  return "<tr data-idx='" + u.idx + "'>"
+function urunSatiriHtml(u, grup){
+  var grupSinifi = grup==="sarı" ? " sepet-satir--sari" : (grup==="yeşil" ? " sepet-satir--yesil" : "");
+  return "<tr data-idx='" + u.idx + "' class='" + grupSinifi.trim() + "'>"
     + "<td class='sepet-urun-hucre'>"
     + "<div class='sepet-urun-ad'>" + htmlEsc(u.ad) + "</div>"
     + "<div class='sepet-urun-kod'>Berta: " + htmlEsc(u.berta||"-") + " · Abas: " + htmlEsc(u.abas||"-") + "</div>"
@@ -74,14 +75,28 @@ function sayfayiCiz(){
     toplamKutu.hidden = false;
     devamBtn.hidden = false;
 
-    govde.innerHTML = liste.map(urunSatiriHtml).join("");
+    // Eski uygulamanın "HESAPLANACAK" (sarı, henüz dip/iskonto girilmemiş) /
+    // "HESAPLANDI" (yeşil, girilmiş) ayrımıyla AYNI: iki ayrı grup halinde göster.
+    var bekleyenler = liste.filter(function(u){ return !u.hesaplandi; });
+    var hesaplananlar = liste.filter(function(u){ return u.hesaplandi; });
+    var html = "";
+    if(bekleyenler.length){
+      html += "<tr class='sepet-grup-baslik-satir'><td colspan='7' class='sepet-grup-baslik sepet-grup-baslik--sari'>HESAPLANACAK</td></tr>";
+      html += bekleyenler.map(function(u){ return urunSatiriHtml(u, "sarı"); }).join("");
+    }
+    if(hesaplananlar.length){
+      html += "<tr class='sepet-grup-baslik-satir'><td colspan='7' class='sepet-grup-baslik sepet-grup-baslik--yesil'>HESAPLANDI</td></tr>";
+      html += hesaplananlar.map(function(u){ return urunSatiriHtml(u, "yeşil"); }).join("");
+    }
+    govde.innerHTML = html;
 
     var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
     liste.forEach(function(u){ satirSonucGuncelle(u, kur, kdv); });
     genelToplamiGuncelle();
 
-    // Alan değişikliklerini dinle
+    // Alan değişikliklerini dinle — "input" anlık hesap için, "change" (odak
+    // kaybı) ise sarı→yeşil grup geçişini yansıtmak için tam yeniden çizer.
     govde.querySelectorAll("input[data-alan]").forEach(function(input){
       input.addEventListener("input", function(){
         var idx = parseInt(this.getAttribute("data-idx"), 10);
@@ -91,6 +106,11 @@ function sayfayiCiz(){
         var u = CartData.liste().find(function(x){ return x.idx===idx; });
         if(u) satirSonucGuncelle(u, CartData.kurOku(), CartData.kdvOku());
         genelToplamiGuncelle();
+      });
+      input.addEventListener("change", function(){
+        var idx = parseInt(this.getAttribute("data-idx"), 10);
+        var u = CartData.liste().find(function(x){ return x.idx===idx; });
+        if(u && u.hesaplandi) sayfayiCiz(); // grup değiştiyse (sarı→yeşil) yeniden çiz
       });
     });
 

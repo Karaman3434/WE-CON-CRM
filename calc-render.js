@@ -100,7 +100,8 @@ function sepeteEkleTiklandi(){
       listeFiyat: parseFloat(document.getElementById("hesListeFiyat").value)||0,
       dipFiyat: parseFloat(document.getElementById("hesDipFiyat").value)||0,
       iskonto: parseFloat(document.getElementById("hesIskonto").value)||0,
-      adet: parseFloat(document.getElementById("hesAdet").value)||1
+      adet: parseFloat(document.getElementById("hesAdet").value)||1,
+      hesaplandi: true
     };
     var mevcutSepet = [];
     try{ mevcutSepet = JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]"); }catch(e){}
