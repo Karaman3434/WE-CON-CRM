@@ -164,22 +164,15 @@ function tilelariBagla(){
     bolum.hidden = !bolum.hidden;
     if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
   };
-  // "Ürün Bul" kutucuğu — önce belge türü (Numune/Teklif/Proforma/Sipariş)
-  // seçilir, sonra Ürün Bul'a gidilir. Müşteri CustomerData.sec() ile arka
-  // planda seçili tutuluyor.
+  // "İşlem Yap" kutucuğu — artık doğrudan ürün aramaya gitmiyor, önce
+  // Cari Kart'a gidip vade/fatura/kargo/adres/yetkili bilgilerini gözden
+  // geçirme fırsatı veriyor. Cari Kart'ta "İşleme Devam Et" tuşu (sadece bu
+  // akıştan gelindiyse görünür) tıklanınca belge türü seçimi açılır.
   document.getElementById("tileUrunBul").onclick = function(){
     CustomerData.sec(CustomerData.musteriBul(seciliMusteriAdi) || {ad:seciliMusteriAdi});
-    document.getElementById("tipSecimOverlay").hidden = false;
+    localStorage.setItem("weiconv2_islem_yap_akisi", "1");
+    window.location.href = "customer-cari-kart.html";
   };
-  document.getElementById("btnTipSecimVazgec").onclick = function(){
-    document.getElementById("tipSecimOverlay").hidden = true;
-  };
-  document.getElementById("tipSecimOverlay").querySelectorAll(".tip-btn").forEach(function(btn){
-    btn.onclick = function(){
-      localStorage.setItem("weiconv2_onceden_secilen_tip", this.getAttribute("data-tip"));
-      window.location.href = "product.html";
-    };
-  });
 }
 
 function musteriGorevleriniCiz(){

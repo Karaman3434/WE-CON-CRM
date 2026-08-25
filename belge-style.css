@@ -154,6 +154,16 @@
 .belge-td-toplam { color: #16a085; font-weight: 900; }
 .belge-td-prim { font-size: 9px; }
 
+.hareket-grup-etiket {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .3px;
+  padding: 8px 10px;
+  border-radius: 8px 8px 0 0;
+}
+.hareket-satir--sari { background: #fffdf0; }
+.hareket-satir--yesil { background: #f6fdf9; }
+
 .belge-genel-toplam-serit {
   background: #3569b8;
   color: #ffffff;

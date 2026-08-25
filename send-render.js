@@ -1,9 +1,10 @@
 /*
   send-render.js
   ==============
-  Müşteri/sepet özetini gösterir, belge türü seçimini yönetir, "Kaydet"
-  butonuna basılınca SendData.kaydet() çağırır, başarılıysa sepeti
-  boşaltıp Ana Sayfa'ya döner.
+  Müşteri + hareket tablosunu gösterir (belge türü ve müşteri artık BURADA
+  seçilmiyor — İşlem Yap akışından seçili gelir). Kaydet/Gönder ikisi de
+  SendData.kaydet() çağırır; kaydedilince "Formu Görüntüle" ile tam
+  önizleme + "Geri" ile Sepet'e dönüp düzeltme imkânı sunar.
 */
 
 function hataGoster(mesaj){
@@ -30,7 +31,29 @@ function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+var TIP_ETIKET_ROZET = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
 var secilenTip = "siparis";
+var seciliAdresler = {}; // {faturaAdresi, teslimatAdresi} — otomatik ilk adres
+
+function adresleriBelirle(musteri){
+  seciliAdresler = {};
+  if(musteri.faturaAdresleri && musteri.faturaAdresleri.length) seciliAdresler.faturaAdresi = musteri.faturaAdresleri[0];
+  if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length) seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[0];
+}
+
+function hareketTablosunuCiz(){
+  var sepet = CartData.liste();
+  var kur = CartData.kurOku();
+  var kdv = CartData.kdvOku();
+  var t = CartData.genelToplam(kur, kdv);
+  document.getElementById("hareketTabloAlani").innerHTML = HareketTablo.grupHtml({
+    etiket: "🟢 HAREKET — " + (TIP_ETIKET_ROZET[secilenTip]||""),
+    urunler: sepet,
+    hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
+    zeminSinifi: "hareket-satir--yesil",
+    genelToplam: t.toplamEuro
+  });
+}
 
 function ozetiCiz(){
   try{
@@ -38,37 +61,23 @@ function ozetiCiz(){
     if(!musteri){
       hataGoster("Önce bir müşteri seçmelisiniz.");
       document.getElementById("btnKaydet").disabled = true;
+      document.getElementById("btnGonder").disabled = true;
       return;
     }
     document.getElementById("ozetMusteriAd").textContent = musteri.ad;
     document.getElementById("ozetMusteriSehir").textContent = musteri.sehir || "";
-    adresSecimleriniDoldur(musteri);
+    document.getElementById("ozetTipRozet").textContent = TIP_ETIKET_ROZET[secilenTip] || "";
+    adresleriBelirle(musteri);
 
     var sepet = CartData.liste();
     if(sepet.length === 0){
       hataGoster("Sepetiniz boş, önce Ürün Bul'dan ürün seçin.");
       document.getElementById("btnKaydet").disabled = true;
+      document.getElementById("btnGonder").disabled = true;
       return;
     }
-
-    var kur = CartData.kurOku();
-    var kdv = CartData.kdvOku();
-    var t = CartData.genelToplam(kur, kdv);
-
-    document.getElementById("ozetUrunSayisi").textContent = sepet.length;
-    document.getElementById("ozetToplamEuro").textContent = CartData.fmt(t.toplamEuro) + " EUR";
-    document.getElementById("ozetToplamPrim").textContent = CartData.fmt(t.toplamPrim) + " EUR";
+    hareketTablosunuCiz();
   }catch(e){ hataGoster("Özet çizilemedi: " + e.message); }
-}
-
-function tipSecimBagla(){
-  document.querySelectorAll(".tip-btn").forEach(function(btn){
-    btn.onclick = function(){
-      document.querySelectorAll(".tip-btn").forEach(function(b){ b.classList.remove("tip-btn--secili"); });
-      this.classList.add("tip-btn--secili");
-      secilenTip = this.getAttribute("data-tip");
-    };
-  });
 }
 
 function anomaliUyarilariniTopla(sepet, kur, kdv){
@@ -94,38 +103,33 @@ function kaydetTiklandi(){
     var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
 
-    // Eski uygulamanın anomali kontrolüyle AYNI mantık: aşırı iskonto veya
-    // zararına satış varsa, kaydetmeden önce uyar (durdurmaz, sadece onay ister).
     var uyarilar = anomaliUyarilariniTopla(sepet, kur, kdv);
     if(uyarilar.length > 0){
       var devamMi = confirm("⚠️ Anomali Uyarısı\n\n" + uyarilar.join("\n\n") + "\n\nYine de kaydetmek istiyor musunuz?");
       if(!devamMi) return;
     }
 
-    var btn = document.getElementById("btnKaydet");
-    btn.disabled = true;
-    btn.textContent = "Kaydediliyor...";
+    document.getElementById("btnKaydet").disabled = true;
+    document.getElementById("btnGonder").disabled = true;
+    document.getElementById("btnKaydet").textContent = "Kaydediliyor...";
 
-    var adresler = seciliAdresleriTopla(musteri);
-    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, adresler, function(basarili, sonuc, revizeMi){
+    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, seciliAdresler, function(basarili, sonuc, revizeMi){
       if(basarili){
         sonKaydedilenBelge = {kayit: sonuc, musteri: musteri};
-        try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
-        try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
         if(revizeMi){
           document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
         }
-        // İlerletme akışıysa (Numune→Teklif gibi), eski aşamanın kaydını sil —
-        // artık iki ayrı kayıt değil, tek kayıt yeni türe dönüşmüş olsun.
         var kaynak = ilerletKaynagiOku();
         if(kaynak){
           SendData.kaynakSil(kaynak.tip, kaynak.ts, function(){});
           localStorage.removeItem("weiconv2_ilerlet_kaynak");
         }
+        document.getElementById("onKaydetButonSatiri").hidden = true;
         gonderKutusunuGoster(musteri, sepet, secilenTip, kur, kdv);
       } else {
-        btn.disabled = false;
-        btn.textContent = "✓ Kaydet";
+        document.getElementById("btnKaydet").disabled = false;
+        document.getElementById("btnGonder").disabled = false;
+        document.getElementById("btnKaydet").textContent = "✓ Kaydet";
         hataGoster("Kaydetme başarısız: " + (sonuc && sonuc.message ? sonuc.message : "bilinmeyen hata"));
       }
     });
@@ -143,9 +147,6 @@ function sablonUygula(sablon, urunKelimesi, belgeAdi, firmaAdi){
   return sablon.split("{URUN}").join(urunKelimesi).split("{BELGE}").join(belgeAdi).split("{FIRMA}").join(firmaAdi||"");
 }
 
-// Eski uygulamanın buildEmailBody()/buildWhatsAppBody() ile AYNI mantık:
-// kısa bir "kapak notu" — ürün detayları artık METİNDE değil, PAYLAŞILAN
-// GÖRSELDE (PNG belge) olduğu için mesaj metni kısa tutuluyor.
 function mesajMetniOlustur(musteri, sepet, tip, kanal){
   var sablon = kanal ? sablonOku(kanal) : "";
   if(sablon){
@@ -170,7 +171,35 @@ function mesajMetniOlustur(musteri, sepet, tip, kanal){
 }
 
 var gonderBaglam = null;
-var sonKaydedilenBelge = null; // {kayit, musteri} — görsel oluşturmak için
+var sonKaydedilenBelge = null;
+
+function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
+  var vade = musteri.vade || "";
+  var faturaTuru = musteri.fatura || "";
+  var kargo = musteri.kargo || "";
+  var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";
+  var teslimatAdr = seciliAdresler.teslimatAdresi ? (seciliAdresler.teslimatAdresi.adres||"") : "";
+  var yetkililer = musteri.iletisimler || [];
+  var t = CartData.genelToplam(kur, kdv);
+
+  var html = "<div class='belge-musteri-baslik'>MÜŞTERİ BİLGİLERİ</div>"
+    + "<div class='belge-musteri-govde'>"
+    + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
+    + (faturaAdr ? "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + htmlEsc(faturaAdr) + "</div>" : "")
+    + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
+    + yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("")
+    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
+    + "</div>";
+
+  html += HareketTablo.grupHtml({
+    etiket: (TIP_ETIKET_ROZET[tip]||""),
+    urunler: sepet,
+    hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
+    zeminSinifi: "hareket-satir--yesil",
+    genelToplam: t.toplamEuro
+  });
+  return html;
+}
 
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
@@ -192,8 +221,6 @@ function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
     }
 
     document.getElementById("gonderKutu").hidden = false;
-    document.getElementById("btnKaydet").hidden = true;
-    document.getElementById("tipSecim").querySelectorAll(".tip-btn").forEach(function(b){ b.disabled = true; });
   }catch(e){ hataGoster("Gönderim alanı hazırlanamadı: " + e.message); }
 }
 
@@ -208,9 +235,6 @@ function sablonuUygulaTiklandi(kanal){
   document.getElementById("gonderMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, kanal);
 }
 
-// ---- Belgeyi PNG görsele çevirme (eski uygulamanın siparisResmiCanvasOlustur
-// mantığıyla aynı: belge-style.css sınıflarını kullanan bir HTML üretir,
-// html2canvas ile PNG'ye çevirir). ----
 var TIP_ETIKET_BELGE_G = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
 
 function fmtG2(n){
@@ -289,7 +313,6 @@ function gonderTiklandi(kanal){
 
     belgeGorseliniOlustur(function(canvas){
       if(!canvas){
-        // Görsel oluşturulamadıysa, en son çare: eski metin-tabanlı yöntem.
         metinTabanliGonder(kanal);
         return;
       }
@@ -303,7 +326,6 @@ function gonderTiklandi(kanal){
             if(err && err.name!=="AbortError") hataGoster("Paylaşım penceresi kapatıldı.");
           });
         } else {
-          // Native paylaşım desteklenmiyor: PNG'yi indir + metin linkini aç.
           var url = URL.createObjectURL(blob);
           var a = document.createElement("a");
           a.href = url; a.download = dosyaAdi;
@@ -334,43 +356,6 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
-function adresSecimleriniDoldur(musteri){
-  try{
-    var faturaListe = musteri.faturaAdresleri || [];
-    var teslimatListe = musteri.teslimatAdresleri || [];
-    var grid = document.getElementById("adresSecimGrid");
-
-    if(faturaListe.length === 0 && teslimatListe.length === 0){
-      grid.hidden = true;
-      return;
-    }
-    grid.hidden = false;
-
-    var faturaSel = document.getElementById("faturaAdresSecim");
-    faturaSel.innerHTML = "<option value=''>Seçilmedi</option>" + faturaListe.map(function(a, i){
-      return "<option value='" + i + "'>" + htmlEsc(a.etiket) + "</option>";
-    }).join("");
-
-    var teslimatSel = document.getElementById("teslimatAdresSecim");
-    teslimatSel.innerHTML = "<option value=''>Seçilmedi</option>" + teslimatListe.map(function(a, i){
-      return "<option value='" + i + "'>" + htmlEsc(a.etiket) + "</option>";
-    }).join("");
-
-    // Tek adres varsa otomatik seçili gelsin (kullanıcı her seferinde seçmek zorunda kalmasın)
-    if(faturaListe.length === 1) faturaSel.value = "0";
-    if(teslimatListe.length === 1) teslimatSel.value = "0";
-  }catch(e){ hataGoster("Adres seçimleri doldurulamadı: " + e.message); }
-}
-
-function seciliAdresleriTopla(musteri){
-  var faturaIdx = document.getElementById("faturaAdresSecim").value;
-  var teslimatIdx = document.getElementById("teslimatAdresSecim").value;
-  var sonuc = {};
-  if(faturaIdx !== "" && musteri.faturaAdresleri) sonuc.faturaAdresi = musteri.faturaAdresleri[parseInt(faturaIdx,10)];
-  if(teslimatIdx !== "" && musteri.teslimatAdresleri) sonuc.teslimatAdresi = musteri.teslimatAdresleri[parseInt(teslimatIdx,10)];
-  return sonuc;
-}
-
 function ilerletKaynagiOku(){
   try{
     var v = localStorage.getItem("weiconv2_ilerlet_kaynak");
@@ -382,38 +367,55 @@ function ilerletKaynagiVarsaSekmeAyarla(){
   var kaynak = ilerletKaynagiOku();
   if(!kaynak || !kaynak.sonrakiAsama) return;
   secilenTip = kaynak.sonrakiAsama;
-  document.querySelectorAll(".tip-btn").forEach(function(b){
-    b.classList.toggle("tip-btn--secili", b.getAttribute("data-tip")===secilenTip);
-  });
   var uyari = document.createElement("div");
   uyari.className = "ilerlet-bilgi-kutu";
   uyari.textContent = "▶️ İlerletiliyor — kayıt tamamlanınca önceki aşamanın belgesi otomatik silinecek.";
-  document.getElementById("tipSecim").insertAdjacentElement("beforebegin", uyari);
+  document.getElementById("hareketTabloAlani").insertAdjacentElement("beforebegin", uyari);
 }
 
 function oncedenSecilenTipVarsaUygula(){
   try{
     var tip = localStorage.getItem("weiconv2_onceden_secilen_tip");
     if(!tip) return;
-    localStorage.removeItem("weiconv2_onceden_secilen_tip");
     secilenTip = tip;
-    document.querySelectorAll(".tip-btn").forEach(function(b){
-      b.classList.toggle("tip-btn--secili", b.getAttribute("data-tip")===secilenTip);
-    });
   }catch(e){}
 }
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  tipSecimBagla();
   oncedenSecilenTipVarsaUygula();
   ilerletKaynagiVarsaSekmeAyarla();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKaydet").onclick = kaydetTiklandi;
+  document.getElementById("btnGonder").onclick = kaydetTiklandi;
   document.getElementById("btnWhatsapp").onclick = function(){ gonderTiklandi("whatsapp"); };
   document.getElementById("btnEposta").onclick = function(){ gonderTiklandi("mail"); };
   document.getElementById("btnWhatsappSablon").onclick = function(){ sablonuUygulaTiklandi("whatsapp"); };
   document.getElementById("btnEpostaSablon").onclick = function(){ sablonuUygulaTiklandi("mail"); };
-  document.getElementById("btnGonderBitir").onclick = function(){ window.location.href = "home.html"; };
+  document.getElementById("btnFormuGoruntule").onclick = function(){
+    var alan = document.getElementById("tamOnizlemeAlani");
+    var geriBtn = document.getElementById("btnGeriDuzelt");
+    var acikMi = !alan.hidden;
+    if(acikMi){
+      alan.hidden = true;
+      geriBtn.hidden = true;
+      this.textContent = "👁 Formu Görüntüle";
+    } else {
+      var g = gonderBaglam;
+      alan.innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv);
+      alan.hidden = false;
+      geriBtn.hidden = false;
+      this.textContent = "👁 Formu Gizle";
+    }
+  };
+  document.getElementById("btnGeriDuzelt").onclick = function(){
+    window.location.href = "cart.html";
+  };
+  document.getElementById("btnGonderBitir").onclick = function(){
+    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+    try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
+    window.location.href = "home.html";
+  };
   ozetiCiz();
 });

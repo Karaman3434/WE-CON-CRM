@@ -19,11 +19,12 @@
 <link rel="stylesheet" href="customer-style.css">
 <link rel="stylesheet" href="detail-style.css">
 <link rel="stylesheet" href="cari-kart-style.css">
+<link rel="stylesheet" href="send-style.css">
 </head>
 <body>
 
 <div class="cari-baslik-serit">
-  <a class="cari-geri-ok" href="customer-detail.html">‹</a>
+  <a class="cari-geri-ok" id="cariGeriOk" href="customer-detail.html">‹</a>
   <span>CARİ KART</span>
 </div>
 
@@ -80,7 +81,23 @@
     <button class="yeni-ekle-ac-buton" id="btnYetkiliEkleAc">+ Yeni Kişi Ekle</button>
   </section>
 
-  <a class="cari-kapat-buton" href="customer-detail.html">Kapat</a>
+  <a class="cari-kapat-buton" id="cariKapatBtn" href="customer-detail.html">Kapat</a>
+
+  <!-- Sadece Müşteri Kartı'nda "İşlem Yap" ile buraya gelindiyse görünür -->
+  <button class="cari-islemedevam-buton" id="btnIslemeDevam" hidden>▶️ İşleme Devam Et</button>
+
+  <div class="tip-secim-overlay" id="tipSecimOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">Ne için ürün arıyorsun?</div>
+      <div class="tip-secim">
+        <button class="tip-btn tip-btn--numune" data-tip="numune">NUMUNE</button>
+        <button class="tip-btn tip-btn--teklif" data-tip="teklif">FİYAT<br>TEKLİFİ</button>
+        <button class="tip-btn tip-btn--proforma" data-tip="proforma">PROFORMA<br>FATURA</button>
+        <button class="tip-btn tip-btn--siparis" data-tip="siparis">SİPARİŞ</button>
+      </div>
+      <button class="tip-secim-vazgec-btn" id="btnTipSecimVazgec">Vazgeç</button>
+    </div>
+  </div>
 
   <div class="yeni-ekle-overlay" id="yeniEkleOverlay" hidden>
     <section class="yeni-ekle-form">

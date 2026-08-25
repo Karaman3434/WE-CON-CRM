@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — SEPET / HAREKET FORMU v3
+  WEICON ASİST — SEPET / HAREKET FORMU v4
   ==========================================
-  Ürün Bul'dan seçilen ürünler burada iki gruba ayrılır: HESAPLANACAK (sarı,
-  henüz hesaplanmamış) ve HESAPLANDI (yeşil, popup'tan hesaplanıp onaylanmış).
-  Ürün adına dokununca eski calc.html tasarımıyla aynı Hesapla popup'ı açılır;
-  "Listeye Ekle" ile ürün hesaplandı grubuna geçer. Tüm ürünler hesaplanmadan
-  Devam Et aktif olmaz.
+  Ürün Bul'dan seçilen ürünler burada iki gruba ayrılır: HESAPLANACAK
+  (sarı) ve HESAPLANDI (yeşil) — ikisi de belge-tablosu tasarımıyla
+  (SIRA/ÜRÜN BİLGİSİ/ADET/LİSTE/İSK/NET/TOPLAM/PRİM). Bir ürüne dokununca
+  TEK hesaplama ekranı olan calc.html'e (Hızlı Hesapla) gidilir; orada
+  hesaplanıp "Listeye Ekle" ile buraya, hesaplandı grubuna döner. Tüm
+  ürünler hesaplanmadan Kaydet/Gönder aktif olmaz.
 -->
 <html lang="tr">
 <head>
@@ -15,7 +16,7 @@
 <title>WEICON ASİST — Sepet</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
-<link rel="stylesheet" href="calc-style.css">
+<link rel="stylesheet" href="belge-style.css">
 <link rel="stylesheet" href="cart-style.css">
 </head>
 <body>
@@ -38,79 +39,16 @@
     <input type="number" id="kurInput" step="0.0001" placeholder="örn. 34.50">
   </div>
 
-  <div id="sepetListesi">
-    <div class="sepet-grup-baslik sepet-grup-baslik--sari" id="grupSariBaslik" hidden>🟡 HESAPLANACAK</div>
-    <div id="grupSariListe"></div>
-    <div class="sepet-grup-baslik sepet-grup-baslik--yesil" id="grupYesilBaslik" hidden>🟢 HESAPLANDI</div>
-    <div class="data-table-container" id="grupYesilTabloAlani" hidden>
-      <table class="data-table sepet-tablo">
-        <thead><tr>
-          <th class="col-urun">ÜRÜN</th>
-          <th class="col-dar">ADET</th>
-          <th class="col-dar">LİSTE</th>
-          <th class="col-dar">İSK%</th>
-          <th class="col-dar">NET</th>
-          <th class="col-orta">TOPLAM</th>
-          <th class="col-dar">PRİM</th>
-          <th class="col-ikon"></th>
-        </tr></thead>
-        <tbody id="grupYesilTabloGovde"></tbody>
-      </table>
-    </div>
-  </div>
+  <div id="grupSariAlani"></div>
+  <div id="grupYesilAlani"></div>
 
   <p class="bos-mesaj" id="sepetBosMesaj" hidden>Sepetiniz boş. Önce Ürün Bul'dan ürün seçin.</p>
 
-  <section class="toplam-kutu" id="toplamKutu" hidden>
-    <div class="toplam-satir">
-      <span>Toplam (EUR)</span>
-      <strong id="genelToplamEuro">0,00 EUR</strong>
-    </div>
-    <div class="toplam-satir toplam-satir--alt">
-      <span>Toplam Prim (EUR)</span>
-      <strong id="genelToplamPrim">0,00 EUR</strong>
-    </div>
-  </section>
-
-  <button class="devam-buton" id="btnDevamEt" hidden>Devam Et — Müşteri Seç</button>
-  <p class="devam-uyari" id="devamUyari" hidden>⚠️ Devam etmeden önce sarı gruptaki tüm ürünleri hesapla.</p>
-
-  <!-- HESAPLA POPUP — eski calc.html tasarımıyla birebir aynı alanlar -->
-  <div class="hesapla-overlay" id="hesaplaOverlay" hidden>
-    <div class="hesapla-kutu">
-      <div class="hesapla-baslik" id="hesaplaUrunAdi"></div>
-      <div class="hesapla-kod" id="hesaplaUrunKod"></div>
-      <div class="hc-grid-2">
-        <div class="hc-beyaz-kart">
-          <div class="hc-beyaz-etiket">Liste Fiyatı (EUR)</div>
-          <input type="number" step="0.01" id="hpListeFiyat" value="0">
-        </div>
-        <div class="hc-beyaz-kart">
-          <div class="hc-beyaz-etiket">Dip (Maliyet) (EUR)</div>
-          <input type="number" step="0.01" id="hpDipFiyat" value="0">
-        </div>
-      </div>
-      <div class="hc-grid-2">
-        <div class="hc-beyaz-kart">
-          <div class="hc-beyaz-etiket">İsk (%)</div>
-          <input type="number" step="0.1" id="hpIskonto" value="0">
-        </div>
-        <div class="hc-beyaz-kart">
-          <div class="hc-beyaz-etiket">Adet</div>
-          <input type="number" step="1" min="1" id="hpAdet" value="1">
-        </div>
-      </div>
-      <div class="hesap-sonuc">
-        <div class="hesap-sonuc-satir"><span class="lbl">NET</span><span class="val" id="hpNet">0,00</span></div>
-        <div class="hesap-sonuc-satir"><span class="lbl">TOPLAM</span><span class="val" id="hpToplam">0,00</span></div>
-        <div class="hesap-sonuc-satir"><span class="lbl">PRİM</span><span class="val" id="hpPrim">0,00</span></div>
-      </div>
-      <div class="hc-alt-buton-satir">
-        <button class="hc-kapat-buton" id="btnHesaplaVazgec">✕ Kapat</button>
-        <button class="hc-listeye-ekle-buton" id="btnHesaplaListeyeEkle">➕ LİSTEYE EKLE</button>
-      </div>
-    </div>
+  <div class="sepet-alt-buton-satir" id="sepetAltButonSatiri" hidden>
+    <button class="sepet-kaydet-btn" id="btnSepetKaydet">✓ Kaydet</button>
+    <button class="sepet-gonder-btn" id="btnSepetGonder">📤 Gönder</button>
   </div>
+  <p class="devam-uyari" id="devamUyari" hidden>⚠️ Devam etmeden önce sarı gruptaki tüm ürünleri hesapla.</p>
 
 </main>
 
@@ -119,6 +57,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="auth.js"></script>
 <script src="ayarlar-sync.js"></script>
+<script src="hareket-tablo.js"></script>
 <script src="cart-data.js"></script>
 <script src="cart-render.js"></script>
 <script src="yarim-kalan-uyari.js"></script>

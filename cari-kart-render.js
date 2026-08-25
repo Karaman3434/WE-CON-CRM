@@ -275,6 +275,26 @@ function yetkiliEkleBagla(){
   document.getElementById("btnYeniEkleKaydet").onclick = yeniEkleKaydetTiklandi;
 }
 
+function islemeDevamAkisiniKur(){
+  var akistanGeldiMi = localStorage.getItem("weiconv2_islem_yap_akisi") === "1";
+  var btn = document.getElementById("btnIslemeDevam");
+  if(!akistanGeldiMi){ btn.hidden = true; return; }
+  btn.hidden = false;
+  btn.onclick = function(){
+    document.getElementById("tipSecimOverlay").hidden = false;
+  };
+  document.getElementById("btnTipSecimVazgec").onclick = function(){
+    document.getElementById("tipSecimOverlay").hidden = true;
+  };
+  document.getElementById("tipSecimOverlay").querySelectorAll(".tip-btn").forEach(function(btn2){
+    btn2.onclick = function(){
+      localStorage.setItem("weiconv2_onceden_secilen_tip", this.getAttribute("data-tip"));
+      localStorage.removeItem("weiconv2_islem_yap_akisi");
+      window.location.href = "product.html";
+    };
+  });
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -296,6 +316,12 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnBilgiKapat").onclick = function(){
     document.getElementById("detayBilgiOverlay").hidden = true;
   };
+  islemeDevamAkisiniKur();
+
+  ["cariKapatBtn","cariGeriOk"].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener("click", function(){ localStorage.removeItem("weiconv2_islem_yap_akisi"); });
+  });
   ["ozetAlanVade","ozetAlanFatura","ozetAlanKargo"].forEach(function(id){
     document.getElementById(id).onclick = function(){
       document.getElementById("detayBilgiOverlay").hidden = false;

@@ -1,10 +1,12 @@
 /*
   cart-render.js
   ==============
-  Sepeti iki gruba ayırarak çizer: HESAPLANACAK (sarı kart listesi, ürün
-  adına dokununca Hesapla popup'ı açılır) ve HESAPLANDI (yeşil tablo,
-  Adet/Liste/İsk/Net/Toplam/Prim sütunlarıyla). Tüm ürünler hesaplanmadan
-  Devam Et butonu pasif kalır.
+  Sepeti HESAPLANACAK (sarı) / HESAPLANDI (yeşil) belge-tablosu gruplarıyla
+  çizer (bkz. hareket-tablo.js). Bekleyen bir ürün satırına dokununca TEK
+  hesaplama ekranı olan calc.html'e gidilir (düzenleme modu); hesaplanmış
+  bir ürüne dokununca da aynı ekrana, mevcut değerlerle önceden dolu
+  şekilde geri dönülüp düzeltme yapılabilir. Tüm ürünler hesaplanmadan
+  Kaydet/Gönder pasif kalır.
 */
 
 function hataGoster(mesaj){
@@ -27,142 +29,75 @@ function tarihiGuncelle(){
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
-function htmlEsc(s){
-  return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-var acikUrunIdx = null;
-
-function hesaplaPopupAc(u){
-  acikUrunIdx = u.idx;
-  document.getElementById("hesaplaUrunAdi").textContent = u.ad;
-  document.getElementById("hesaplaUrunKod").textContent = "Berta: " + (u.berta||"-") + " · Abas: " + (u.abas||"-");
-  document.getElementById("hpListeFiyat").value = u.listeFiyat || 0;
-  document.getElementById("hpDipFiyat").value = u.dipFiyat || 0;
-  document.getElementById("hpIskonto").value = u.iskonto || 0;
-  document.getElementById("hpAdet").value = u.adet || 1;
-  hesaplaPopupSonucGuncelle();
-  document.getElementById("hesaplaOverlay").hidden = false;
-}
-
-function hesaplaPopupSonucGuncelle(){
-  var gecici = {
-    listeFiyat: parseFloat(document.getElementById("hpListeFiyat").value)||0,
-    dipFiyat: parseFloat(document.getElementById("hpDipFiyat").value)||0,
-    iskonto: parseFloat(document.getElementById("hpIskonto").value)||0,
-    adet: parseFloat(document.getElementById("hpAdet").value)||1
-  };
-  var h = CartData.hesapla(gecici, CartData.kurOku(), CartData.kdvOku());
-  document.getElementById("hpNet").textContent = CartData.fmt(h.iskontoluFiyat);
-  document.getElementById("hpToplam").textContent = CartData.fmt(h.toplamEuro);
-  document.getElementById("hpPrim").textContent = CartData.fmt(h.mudurPrim);
-}
-
-function bekleyenKartHtml(u){
-  return "<div class='sepet-bekleyen-kart' data-idx='" + u.idx + "'>"
-    + "<div>"
-    + "<div class='sepet-bekleyen-ad'>" + htmlEsc(u.ad) + "</div>"
-    + "<div class='sepet-bekleyen-kod'>Berta: " + htmlEsc(u.berta||"-") + " · Abas: " + htmlEsc(u.abas||"-") + "</div>"
-    + "</div>"
-    + "<span class='sepet-bekleyen-ok'>›</span>"
-    + "</div>";
-}
-
-function hesaplananSatirHtml(u, kur, kdv){
-  var h = CartData.hesapla(u, kur, kdv);
-  return "<tr data-idx='" + u.idx + "'>"
-    + "<td class='sepet-urun-hucre'>"
-    + "<div class='sepet-urun-ad-tikla' data-idx='" + u.idx + "'>" + htmlEsc(u.ad) + "</div>"
-    + "<div class='sepet-urun-kod'>Berta: " + htmlEsc(u.berta||"-") + " · Abas: " + htmlEsc(u.abas||"-") + "</div>"
-    + "</td>"
-    + "<td>" + (u.adet||1) + "</td>"
-    + "<td>" + CartData.fmt(u.listeFiyat) + "</td>"
-    + "<td>%" + (u.iskonto||0) + "</td>"
-    + "<td>" + CartData.fmt(h.iskontoluFiyat) + "</td>"
-    + "<td class='sepet-toplam-deger'>" + CartData.fmt(h.toplamEuro) + "</td>"
-    + "<td>" + CartData.fmt(h.mudurPrim) + "</td>"
-    + "<td><button class='sepet-sil-btn' data-sil='" + u.idx + "'>🗑️</button></td>"
-    + "</tr>";
+function urunuHesaplamayaGonder(idx){
+  localStorage.setItem("weiconv2_hesapla_duzenle_idx", idx);
+  window.location.href = "calc.html";
 }
 
 function sayfayiCiz(){
   try{
     var liste = CartData.liste();
     var bosMesaj = document.getElementById("sepetBosMesaj");
-    var toplamKutu = document.getElementById("toplamKutu");
-    var devamBtn = document.getElementById("btnDevamEt");
+    var altButonSatiri = document.getElementById("sepetAltButonSatiri");
     var devamUyari = document.getElementById("devamUyari");
-
-    var grupSariBaslik = document.getElementById("grupSariBaslik");
-    var grupSariListe = document.getElementById("grupSariListe");
-    var grupYesilBaslik = document.getElementById("grupYesilBaslik");
-    var grupYesilTabloAlani = document.getElementById("grupYesilTabloAlani");
-    var grupYesilTabloGovde = document.getElementById("grupYesilTabloGovde");
+    var grupSariAlani = document.getElementById("grupSariAlani");
+    var grupYesilAlani = document.getElementById("grupYesilAlani");
 
     if(liste.length === 0){
-      grupSariBaslik.hidden = true;
-      grupSariListe.innerHTML = "";
-      grupYesilBaslik.hidden = true;
-      grupYesilTabloAlani.hidden = true;
+      grupSariAlani.innerHTML = "";
+      grupYesilAlani.innerHTML = "";
       bosMesaj.hidden = false;
-      toplamKutu.hidden = true;
-      devamBtn.hidden = true;
+      altButonSatiri.hidden = true;
       devamUyari.hidden = true;
       return;
     }
     bosMesaj.hidden = true;
-    toplamKutu.hidden = false;
-    devamBtn.hidden = false;
+    altButonSatiri.hidden = false;
 
     var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
+    var hesapla = function(u){ return CartData.hesapla(u, kur, kdv); };
+
     var bekleyenler = liste.filter(function(u){ return !u.hesaplandi; });
     var hesaplananlar = liste.filter(function(u){ return u.hesaplandi; });
 
-    grupSariBaslik.hidden = bekleyenler.length === 0;
-    grupSariListe.innerHTML = bekleyenler.map(bekleyenKartHtml).join("");
-    grupSariListe.querySelectorAll(".sepet-bekleyen-kart").forEach(function(kart){
-      kart.onclick = function(){
-        var idx = parseInt(this.getAttribute("data-idx"), 10);
-        var u = CartData.liste().find(function(x){ return x.idx===idx; });
-        if(u) hesaplaPopupAc(u);
-      };
+    grupSariAlani.innerHTML = bekleyenler.length === 0 ? "" : HareketTablo.grupHtml({
+      etiket: "🟡 HESAPLANACAK",
+      urunler: bekleyenler,
+      hesapla: function(){ return null; },
+      zeminSinifi: "hareket-satir--sari"
     });
 
-    grupYesilBaslik.hidden = hesaplananlar.length === 0;
-    grupYesilTabloAlani.hidden = hesaplananlar.length === 0;
-    grupYesilTabloGovde.innerHTML = hesaplananlar.map(function(u){ return hesaplananSatirHtml(u, kur, kdv); }).join("");
-    grupYesilTabloGovde.querySelectorAll(".sepet-urun-ad-tikla").forEach(function(el){
-      el.onclick = function(){
-        var idx = parseInt(this.getAttribute("data-idx"), 10);
-        var u = CartData.liste().find(function(x){ return x.idx===idx; });
-        if(u) hesaplaPopupAc(u);
-      };
+    var hesaplananToplam = 0;
+    hesaplananlar.forEach(function(u){ hesaplananToplam += hesapla(u).toplamEuro; });
+    grupYesilAlani.innerHTML = hesaplananlar.length === 0 ? "" : HareketTablo.grupHtml({
+      etiket: "🟢 HESAPLANDI",
+      urunler: hesaplananlar,
+      hesapla: hesapla,
+      zeminSinifi: "hareket-satir--yesil",
+      genelToplam: hesaplananToplam
     });
-    grupYesilTabloGovde.querySelectorAll("[data-sil]").forEach(function(btn){
-      btn.onclick = function(){
-        var idx = parseInt(this.getAttribute("data-sil"), 10);
-        CartData.sil(idx);
-        sayfayiCiz();
-      };
+
+    // Her iki gruptaki ürün satırlarına dokununca hesaplama ekranına git
+    // (bekleyen: ilk kez hesapla; hesaplanmış: değerleri düzeltmek için).
+    liste.forEach(function(u){
+      // ürün adı hücreleri sırayla DOM'a basıldı; idx eşleşmesi için
+      // data attribute yerine basit closure kullanıyoruz.
+    });
+    grupSariAlani.querySelectorAll("tbody tr").forEach(function(tr, i){
+      tr.style.cursor = "pointer";
+      tr.onclick = function(){ urunuHesaplamayaGonder(bekleyenler[i].idx); };
+    });
+    grupYesilAlani.querySelectorAll("tbody tr").forEach(function(tr, i){
+      tr.style.cursor = "pointer";
+      tr.onclick = function(){ urunuHesaplamayaGonder(hesaplananlar[i].idx); };
     });
 
     var tamamMi = CartData.tamamHesaplandiMi();
-    devamBtn.disabled = !tamamMi;
+    document.getElementById("btnSepetKaydet").disabled = !tamamMi;
+    document.getElementById("btnSepetGonder").disabled = !tamamMi;
     devamUyari.hidden = tamamMi;
-
-    genelToplamiGuncelle();
   }catch(e){ hataGoster("Sepet çizilemedi: " + e.message); }
-}
-
-function genelToplamiGuncelle(){
-  try{
-    var kur = CartData.kurOku();
-    var kdv = CartData.kdvOku();
-    var t = CartData.genelToplam(kur, kdv);
-    document.getElementById("genelToplamEuro").textContent = CartData.fmt(t.toplamEuro) + " EUR";
-    document.getElementById("genelToplamPrim").textContent = CartData.fmt(t.toplamPrim) + " EUR";
-  }catch(e){ hataGoster("Genel toplam güncellenemedi: " + e.message); }
 }
 
 window.addEventListener("error", function(ev){
@@ -178,31 +113,16 @@ document.addEventListener("DOMContentLoaded", function(){
     sayfayiCiz();
   });
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-  document.getElementById("btnDevamEt").onclick = function(){
-    if(document.getElementById("btnDevamEt").disabled) return;
+
+  function devamEt(intent){
+    if(!CartData.tamamHesaplandiMi()) return;
+    localStorage.setItem("weiconv2_sepet_intent", intent);
     var onceSecilmisMi = false;
     try{ onceSecilmisMi = !!JSON.parse(localStorage.getItem("weicon_secili_musteri")||"null"); }catch(e){}
     window.location.href = onceSecilmisMi ? "send.html" : "customer.html";
-  };
-
-  ["hpListeFiyat","hpDipFiyat","hpIskonto","hpAdet"].forEach(function(id){
-    document.getElementById(id).addEventListener("input", hesaplaPopupSonucGuncelle);
-  });
-  document.getElementById("btnHesaplaVazgec").onclick = function(){
-    document.getElementById("hesaplaOverlay").hidden = true;
-    acikUrunIdx = null;
-  };
-  document.getElementById("btnHesaplaListeyeEkle").onclick = function(){
-    if(acikUrunIdx === null) return;
-    var listeFiyat = parseFloat(document.getElementById("hpListeFiyat").value)||0;
-    var dipFiyat = parseFloat(document.getElementById("hpDipFiyat").value)||0;
-    var iskonto = parseFloat(document.getElementById("hpIskonto").value)||0;
-    var adet = parseFloat(document.getElementById("hpAdet").value)||1;
-    CartData.hesaplandiIsaretle(acikUrunIdx, listeFiyat, dipFiyat, iskonto, adet);
-    document.getElementById("hesaplaOverlay").hidden = true;
-    acikUrunIdx = null;
-    sayfayiCiz();
-  };
+  }
+  document.getElementById("btnSepetKaydet").onclick = function(){ devamEt("kaydet"); };
+  document.getElementById("btnSepetGonder").onclick = function(){ devamEt("gonder"); };
 
   sayfayiCiz();
 });

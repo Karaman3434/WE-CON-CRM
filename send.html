@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — KAYDET v2
+  WEICON ASİST — GÖNDER v3
   ===========================
-  Akışın son adımı: seçilen müşteri + sepet özeti gösterilir, belge türü
-  (Numune/Teklif/Proforma/Sipariş) seçilir, "Kaydet" ile Firebase arşivine
-  eski uygulamayla UYUMLU bir kayıt yazılır (Ana Sayfa'daki rakamlar bu
-  kayıttan hesaplanır).
+  Sepet'ten (tüm ürünler hesaplandıktan sonra) gelinir. Müşteri ve belge
+  türü artık BURADA seçilmiyor — İşlem Yap akışında baştan seçilmiş olarak
+  gelir. Sadece: müşteri kartı + hareket tablosu (belge-tablosu tasarımı)
+  + Kaydet/Gönder. Kaydedilince "Formu Görüntüle" ile tam önizleme
+  (vade/fatura/kargo/adres/yetkili + tablo + mesaj metni) açılabilir; bir
+  hata görülürse "Geri" ile Sepet'e dönülüp düzeltme yapılabilir — aynı
+  gün + aynı müşteri + aynı ürün seti olduğu için tekrar Kaydet'e
+  basıldığında yeni kayıt AÇILMAZ, mevcut kayıt revize edilir.
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — Kaydet</title>
+<title>WEICON ASİST — Gönder</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="cart-style.css">
@@ -26,7 +30,7 @@
 </header>
 
 <nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="customer.html">Geri</a>
+  <a class="nav-btn nav-btn--geri" href="cart.html">Geri</a>
   <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
   <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
 </nav>
@@ -36,45 +40,23 @@
   <section class="musteri-ozet-kutu">
     <div class="musteri-ozet-ad" id="ozetMusteriAd">—</div>
     <div class="musteri-ozet-sehir" id="ozetMusteriSehir"></div>
+    <div class="musteri-ozet-tip" id="ozetTipRozet"></div>
   </section>
 
-  <div class="adres-secim-grid" id="adresSecimGrid" hidden>
-    <div class="adres-secim-alan">
-      <label>📄 Fatura Adresi</label>
-      <select id="faturaAdresSecim"><option value="">Seçilmedi</option></select>
-    </div>
-    <div class="adres-secim-alan">
-      <label>🚚 Teslimat Adresi</label>
-      <select id="teslimatAdresSecim"><option value="">Seçilmedi</option></select>
-    </div>
+  <div id="hareketTabloAlani"></div>
+
+  <div class="sepet-alt-buton-satir" id="onKaydetButonSatiri">
+    <button class="sepet-kaydet-btn" id="btnKaydet">✓ Kaydet</button>
+    <button class="sepet-gonder-btn" id="btnGonder">📤 Gönder</button>
   </div>
-
-  <div class="tip-secim" id="tipSecim">
-    <button class="tip-btn tip-btn--numune" data-tip="numune">NUMUNE</button>
-    <button class="tip-btn tip-btn--teklif" data-tip="teklif">FİYAT<br>TEKLİFİ</button>
-    <button class="tip-btn tip-btn--proforma" data-tip="proforma">PROFORMA<br>FATURA</button>
-    <button class="tip-btn tip-btn--siparis tip-btn--secili" data-tip="siparis">SİPARİŞ</button>
-  </div>
-
-  <section class="toplam-kutu">
-    <div class="toplam-satir">
-      <span>Ürün Sayısı</span>
-      <strong id="ozetUrunSayisi">0</strong>
-    </div>
-    <div class="toplam-satir">
-      <span>Toplam (EUR)</span>
-      <strong id="ozetToplamEuro">0,00 EUR</strong>
-    </div>
-    <div class="toplam-satir toplam-satir--alt">
-      <span>Toplam Prim (EUR)</span>
-      <strong id="ozetToplamPrim">0,00 EUR</strong>
-    </div>
-  </section>
-
-  <button class="kaydet-buton" id="btnKaydet">✓ Kaydet</button>
 
   <section class="gonder-kutu" id="gonderKutu" hidden>
     <div class="gonder-baslik" id="gonderBaslikYazi">✓ Kaydedildi — İstersen müşteriye gönder</div>
+
+    <button class="formu-goruntule-btn" id="btnFormuGoruntule">👁 Formu Görüntüle</button>
+    <div id="tamOnizlemeAlani" hidden></div>
+    <button class="geri-duzelt-btn" id="btnGeriDuzelt" hidden>‹ Geri — Sepete Dön ve Düzelt</button>
+
     <select class="gonder-kisi-secim" id="gonderKisiSecim" hidden></select>
     <textarea id="gonderMetin" rows="6"></textarea>
     <div class="gonder-alan-grid">
@@ -110,6 +92,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="auth.js"></script>
+<script src="ayarlar-sync.js"></script>
+<script src="hareket-tablo.js"></script>
 <script src="cart-data.js"></script>
 <script src="customer-data.js"></script>
 <script src="send-data.js"></script>

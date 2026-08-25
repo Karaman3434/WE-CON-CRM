@@ -103,3 +103,15 @@
   text-decoration: none;
   margin-top: 8px;
 }
+.cari-islemedevam-buton {
+  width: 100%;
+  background: #e0730f;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: 10px;
+}

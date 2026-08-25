@@ -103,10 +103,10 @@ function tabloyuCiz(){
       return "<tr" + satirSinifi + " data-anahtar='" + k.anahtar + "'>"
         + "<td>" + etiket + "</td>"
         + "<td contenteditable='true' data-alan='saat'>" + (k.saat||"-") + "</td>"
-        + "<td contenteditable='true' data-alan='baslangic' class='km-td-baslangic" + baslangicSinifi + "'>" + (k.km!=null?k.km:"-") + "</td>"
-        + "<td contenteditable='true' data-alan='bitis'>" + (k.bitisKm!=null?k.bitisKm:"-") + "</td>"
         + "<td class='km-td-metin' contenteditable='true' data-alan='guzergah'>" + (k.guzergah||"-") + "</td>"
         + "<td class='km-td-metin' contenteditable='true' data-alan='ziyaret'>" + (k.ziyaretYerleri||"-") + "</td>"
+        + "<td contenteditable='true' data-alan='baslangic' class='km-td-baslangic" + baslangicSinifi + "'>" + (k.km!=null?k.km:"-") + "</td>"
+        + "<td contenteditable='true' data-alan='bitis'>" + (k.bitisKm!=null?k.bitisKm:"-") + "</td>"
         + "<td class='km-td-is' contenteditable='true' data-alan='isKm'>" + (k.isKm!=null?k.isKm:"-") + "</td>"
         + "<td class='km-td-ozel' contenteditable='true' data-alan='ozelKm'>" + (k.ozelKm!=null?k.ozelKm:"-") + "</td>"
         + "</tr>";
@@ -181,12 +181,12 @@ function excelAktar(){
     var now = new Date();
     var donemEtiket = AYLAR[now.getMonth()] + " " + now.getFullYear();
 
-    var basliklar = ["Tarih","Saat","Başlangıç KM","Bitiş KM","Seyir Güzergahı","Ziyaret Edilen Yerler","İş KM","Özel KM"];
+    var basliklar = ["Tarih","Saat","Seyir Güzergahı","Ziyaret Edilen Yerler","Başlangıç KM","Bitiş KM","İş KM","Özel KM"];
     var veriSatirlari = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
       var d = new Date(parseInt(parca[0]), parseInt(parca[1])-1, parseInt(parca[2]));
       var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+" "+GUNLER[d.getDay()];
-      return [tarihStr, k.saat||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", k.guzergah||"", k.ziyaretYerleri||"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
+      return [tarihStr, k.saat||"", k.guzergah||"", k.ziyaretYerleri||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
     });
 
     var aoa = [

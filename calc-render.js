@@ -54,6 +54,29 @@ function aramaSonuclariniCiz(){
 }
 
 var seciliUrunBilgi = null;
+var duzenlenenSepetIdx = null; // Sepet'ten "düzenle" ile gelindiyse dolu olur
+
+function duzenlemeModunuKontrolEt(){
+  try{
+    var idx = localStorage.getItem("weiconv2_hesapla_duzenle_idx");
+    if(!idx) return;
+    localStorage.removeItem("weiconv2_hesapla_duzenle_idx");
+    var sepet = [];
+    try{ sepet = JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]"); }catch(e){}
+    var u = sepet.find(function(x){ return String(x.idx)===String(idx); });
+    if(!u) return;
+    duzenlenenSepetIdx = u.idx;
+    seciliUrunBilgi = {ad:u.ad, berta:u.berta, abas:u.abas, fiyat:u.listeFiyat};
+    document.getElementById("seciliUrunAd").textContent = u.ad;
+    document.getElementById("seciliUrunKutu").hidden = false;
+    document.getElementById("hesListeFiyat").value = u.listeFiyat || 0;
+    document.getElementById("hesDipFiyat").value = u.dipFiyat || 0;
+    document.getElementById("hesIskonto").value = u.iskonto || 0;
+    document.getElementById("hesAdet").value = u.adet || 1;
+    document.getElementById("btnHesapSepeteEkle").textContent = "➕ LİSTEYE EKLE";
+    hesaplaVeGoster();
+  }catch(e){ hataGoster("Düzenleme modu açılamadı: " + e.message); }
+}
 
 function urunSec(bilgi){
   seciliUrunBilgi = bilgi;
@@ -92,15 +115,28 @@ function sepeteEkleTiklandi(){
   try{
     var ad = seciliUrunBilgi ? seciliUrunBilgi.ad : prompt("Ürün adı girin:", "");
     if(!ad) return;
+    var listeFiyat = parseFloat(document.getElementById("hesListeFiyat").value)||0;
+    var dipFiyat = parseFloat(document.getElementById("hesDipFiyat").value)||0;
+    var iskonto = parseFloat(document.getElementById("hesIskonto").value)||0;
+    var adet = parseFloat(document.getElementById("hesAdet").value)||1;
+
+    if(duzenlenenSepetIdx !== null){
+      // Sepet'ten bir ürünü düzenlemek için geldik — yeni satır AÇMA,
+      // mevcut satırı güncelleyip hesaplandı say ve sepete geri dön.
+      CartData.hesaplandiIsaretle(duzenlenenSepetIdx, listeFiyat, dipFiyat, iskonto, adet);
+      window.location.href = "cart.html";
+      return;
+    }
+
     var yeniUrun = {
       idx: "manuel_" + Date.now(),
       ad: ad,
       berta: seciliUrunBilgi ? seciliUrunBilgi.berta : "",
       abas: seciliUrunBilgi ? seciliUrunBilgi.abas : "",
-      listeFiyat: parseFloat(document.getElementById("hesListeFiyat").value)||0,
-      dipFiyat: parseFloat(document.getElementById("hesDipFiyat").value)||0,
-      iskonto: parseFloat(document.getElementById("hesIskonto").value)||0,
-      adet: parseFloat(document.getElementById("hesAdet").value)||1,
+      listeFiyat: listeFiyat,
+      dipFiyat: dipFiyat,
+      iskonto: iskonto,
+      adet: adet,
       hesaplandi: true
     };
     var mevcutSepet = [];
@@ -144,4 +180,5 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   ProductData.katalogDegistiginde(function(){});
   hesaplaVeGoster();
+  duzenlemeModunuKontrolEt();
 });

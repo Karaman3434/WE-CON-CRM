@@ -17,6 +17,41 @@
   color: #556170;
   margin-top: 2px;
 }
+.musteri-ozet-tip {
+  display: inline-block;
+  margin-top: 8px;
+  background: #003a70;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.formu-goruntule-btn {
+  width: 100%;
+  background: #eaf2fc;
+  color: #003a70;
+  border: 1.5px solid #3569b8;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin: 10px 0;
+}
+.geri-duzelt-btn {
+  width: 100%;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 1.5px solid #f0b8b3;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
 
 .adres-secim-grid {
   display: grid;
