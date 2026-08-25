@@ -42,8 +42,31 @@
     </div>
   </div>
 
-  <div class="istatistik-bolum-baslik">Son 6 Ay</div>
-  <div id="istAylikListe"></div>
+  <div class="istatistik-bolum-baslik">📅 Aylık Sipariş &amp; Prim Özeti (Son 12 Ay)</div>
+  <div class="data-table-container">
+    <table class="aylik-ozet-tablo">
+      <thead><tr><th>AY</th><th>SATIŞ</th><th>PRİM</th><th>TL PRİM</th></tr></thead>
+      <tbody id="istAylikListe"></tbody>
+      <tfoot><tr class="aylik-ozet-toplam-satir">
+        <td>TOPLAM (12 Ay)</td>
+        <td id="istAylikGenelToplam">-</td>
+        <td id="istAylikGenelPrim">-</td>
+        <td id="istAylikGenelPrimTl">-</td>
+      </tr></tfoot>
+    </table>
+  </div>
+  <p class="aylik-ozet-kur-notu" id="istAylikKurNotu"></p>
+
+  <!-- AY DETAYI — aylık tabloda bir satıra dokununca açılır -->
+  <section class="ay-detay-bolum" id="ayDetayBolumu" hidden>
+    <div class="ay-detay-baslik" id="ayDetayBaslik"></div>
+    <div class="ay-detay-toplam-kutu">
+      <span id="ayDetayToplamEtiket"></span>
+      <strong id="ayDetayToplamDeger"></strong>
+    </div>
+    <div id="ayDetayListesi"></div>
+    <button class="ay-detay-kapat-btn" id="btnAyDetayKapat">✕ Kapat</button>
+  </section>
 
   <div class="istatistik-bolum-baslik">En Çok Satış Yapılan Müşteriler</div>
   <div id="istMusteriListe"></div>

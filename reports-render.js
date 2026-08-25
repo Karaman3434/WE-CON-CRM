@@ -47,6 +47,55 @@ function ilerletTiklandi(k){
   }catch(e){ hataGoster("İlerletilemedi: " + e.message); }
 }
 
+function ayDetayiniAc(ayVerisi){
+  try{
+    if(!ayVerisi || ayVerisi.sayi === 0){
+      alert("Bu ayda sipariş kaydı yok.");
+      return;
+    }
+    var kayitlarBuAy = ReportsData.sonIslemler().filter(function(k){
+      if(k.tip !== "siparis" || !k.tarih) return false;
+      var parca = k.tarih.split(" ");
+      return (parca[1]||"")===ayVerisi.ayAd && (parca[2]||"")===ayVerisi.yil;
+    });
+
+    document.getElementById("ayDetayBaslik").textContent = "📅 " + ayVerisi.ayAd + " " + ayVerisi.yil + " Siparişleri";
+    document.getElementById("ayDetayToplamEtiket").textContent = "🧮 AY TOPLAMI (" + kayitlarBuAy.length + " sipariş)";
+    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayVerisi.toplam) + " €";
+
+    document.getElementById("ayDetayListesi").innerHTML = "<div class='musteri-liste-kutu'>" + kayitlarBuAy.map(function(k, i){
+      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+      var kacanMi = k.durum === "kacan";
+      var kod = TIP_KOD[k.tip] || "?";
+      var renk = kacanMi ? "#c0392b" : (KOD_RENK[kod] || "#3569b8");
+      var durumEk = "";
+      if(kacanMi) durumEk = " ❌ KAÇTI";
+      if(k.revizeZamani) durumEk += " 🔄 REVİZE";
+      return "<div class='ay-detay-satir' data-tip='" + k.tip + "' data-ts='" + k.ts + "'>"
+        + "<div class='ay-detay-satir-ust'>"
+        + "<span class='islem-kod-rozet' style='background:" + renk + ";'>" + kod + "</span>"
+        + "<span class='ay-detay-satir-tarih'>" + htmlEsc(k.tarih) + "</span>"
+        + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
+        + "</div>"
+        + "<div class='ay-detay-satir-alt'>"
+        + "<span class='ay-detay-satir-musteri'>" + htmlEsc(k.musteri) + "</span>"
+        + "<span class='ay-detay-satir-tutar'><span style='color:" + renk + ";'>" + fmt(toplam) + "€</span></span>"
+        + "</div>"
+        + "</div>";
+    }).join("") + "</div>";
+
+    document.getElementById("ayDetayListesi").querySelectorAll(".ay-detay-satir").forEach(function(el){
+      el.onclick = function(){
+        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:this.getAttribute("data-tip"), ts:parseFloat(this.getAttribute("data-ts"))}));
+        window.location.href = "belge-onizleme.html";
+      };
+    });
+
+    document.getElementById("ayDetayBolumu").hidden = false;
+    document.getElementById("ayDetayBolumu").scrollIntoView({behavior:"smooth", block:"start"});
+  }catch(e){ hataGoster("Ay detayı açılamadı: " + e.message); }
+}
+
 function fmt(n){
   return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
@@ -60,10 +109,33 @@ function istatistikleriCiz(){
     document.getElementById("istGecenAyToplam").textContent = fmt(gecenAy.toplam) + " EUR";
     document.getElementById("istGecenAySiparisSayisi").textContent = gecenAy.sayi + " sipariş";
 
-    var son6 = ReportsData.son6Ay();
-    document.getElementById("istAylikListe").innerHTML = son6.map(function(a){
-      return "<div class='istatistik-satir'><span class='istatistik-satir-ad'>" + a.ayAd + " " + a.yil + "</span><span class='istatistik-satir-deger'>" + fmt(a.toplam) + " EUR</span></div>";
+    var ozet = ReportsData.aylikPrimOzeti12();
+    var genelToplam=0, genelPrim=0, genelPrimTl=0;
+    document.getElementById("istAylikListe").innerHTML = ozet.aylar.map(function(a, i){
+      genelToplam += a.toplam; genelPrim += a.prim; genelPrimTl += a.primTl;
+      var mevcutAySinifi = i===0 ? " aylik-ozet-satir--mevcut-ay" : "";
+      return "<tr class='" + mevcutAySinifi.trim() + "'>"
+        + "<td class='aylik-ozet-ay-hucre'>" + a.ayAd + " " + a.yil + "</td>"
+        + "<td>" + fmt(a.toplam) + " €</td>"
+        + "<td class='aylik-ozet-prim-hucre'>" + fmt(a.prim) + " €</td>"
+        + "<td class='aylik-ozet-primtl-hucre'>" + fmt(a.primTl) + " ₺</td>"
+        + "</tr>";
     }).join("");
+    document.getElementById("istAylikGenelToplam").textContent = fmt(genelToplam) + " €";
+    document.getElementById("istAylikGenelPrim").textContent = fmt(genelPrim) + " €";
+    document.getElementById("istAylikGenelPrimTl").textContent = fmt(genelPrimTl) + " ₺";
+    var kurNotuEl = document.getElementById("istAylikKurNotu");
+    if(ozet.kur){
+      kurNotuEl.className = "aylik-ozet-kur-notu";
+      kurNotuEl.textContent = "Kur: 1 € = " + fmt(ozet.kur) + " ₺ üzerinden hesaplandı";
+    } else {
+      kurNotuEl.className = "aylik-ozet-kur-notu aylik-ozet-kur-notu--hata";
+      kurNotuEl.textContent = "⚠️ Güncel kur bulunamadı, TL Prim hesaplanamadı";
+    }
+
+    document.getElementById("istAylikListe").querySelectorAll("tr").forEach(function(tr, i){
+      tr.onclick = function(){ ayDetayiniAc(ozet.aylar[i]); };
+    });
 
     var musteriler = ReportsData.enCokSatisYapilanMusteriler(5);
     var musteriHtml = musteriler.length === 0
@@ -326,6 +398,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("islemAra").addEventListener("input", islemleriCiz);
   document.getElementById("islemTipFiltre").addEventListener("change", islemleriCiz);
   document.getElementById("btnIslemlerExcel").onclick = islemlerExcelAktar;
+  document.getElementById("btnAyDetayKapat").onclick = function(){ document.getElementById("ayDetayBolumu").hidden = true; };
   ReportsData.arsivDegistiginde(function(){ islemleriCiz(); istatistikleriCiz(); });
   // Firebase verisi sayfa tam yüklenmeden önce gelmiş olabilir (dinleyici
   // kaçırmış olabilir) — bu yüzden ilk anda da bir kez elle çiziyoruz.
