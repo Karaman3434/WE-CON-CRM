@@ -63,7 +63,8 @@ var CartData = (function(){
     return isNaN(v) ? 0 : v;
   }
   function kurKaydet(v){
-    localStorage.setItem(KUR_KEY, v);
+    if(typeof AyarlarSync !== "undefined") AyarlarSync.kurKaydet(v);
+    else localStorage.setItem(KUR_KEY, v);
   }
   function kdvOku(){
     var v = parseFloat(localStorage.getItem(KDV_KEY));

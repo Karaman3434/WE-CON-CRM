@@ -27,6 +27,9 @@
   <section class="ayar-kutu">
     <label>Güncel Kur (EUR → TL)</label>
     <input type="number" id="kurInput" step="0.0001">
+    <a class="tcmb-link" href="https://www.tcmb.gov.tr/kurlar/kurlar_tr.html" target="_blank" rel="noopener">
+      🏦 TCMB Günlük Döviz Kurları — güncel kuru öğrenmek için dokun
+    </a>
   </section>
 
   <section class="ayar-kutu">
@@ -38,8 +41,10 @@
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="auth.js"></script>
+<script src="ayarlar-sync.js"></script>
 <script src="ayarlar-render.js"></script>
 </body>
 </html>

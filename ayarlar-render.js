@@ -31,9 +31,14 @@ function ayarlariKaydet(){
   try{
     var kur = parseFloat(document.getElementById("kurInput").value) || 0;
     var kdv = parseFloat(document.getElementById("kdvInput").value) || 20;
-    localStorage.setItem("weicon_kur", kur);
-    localStorage.setItem("weicon_kur_zaman", Date.now());
-    localStorage.setItem("weicon_kdv_orani", kdv);
+    if(typeof AyarlarSync !== "undefined"){
+      AyarlarSync.kurKaydet(kur);
+      AyarlarSync.kdvKaydet(kdv);
+    } else {
+      localStorage.setItem("weicon_kur", kur);
+      localStorage.setItem("weicon_kur_zaman", Date.now());
+      localStorage.setItem("weicon_kdv_orani", kdv);
+    }
     alert("✓ Ayarlar kaydedildi.");
   }catch(e){ hataGoster("Ayarlar kaydedilemedi: " + e.message); }
 }
@@ -47,4 +52,5 @@ document.addEventListener("DOMContentLoaded", function(){
   ayarlariDoldur();
   document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  if(typeof AyarlarSync !== "undefined") AyarlarSync.degistiginde(ayarlariDoldur);
 });

@@ -65,38 +65,47 @@
   <div class="adres-bolum-baslik">🧾 FATURA ADRESLERİ (<span id="faturaAdresSayisi">0</span>)</div>
   <section class="adres-bolum">
     <div id="faturaAdresListesi"></div>
-    <div class="adres-ekle-satir">
-      <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
-      <input type="text" id="yeniFaturaAdres" placeholder="Adres">
-      <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
-    </div>
+    <button class="yeni-ekle-ac-buton" data-tip="fatura">+ Yeni Fatura Adresi Ekle</button>
   </section>
 
   <div class="adres-bolum-baslik">🚚 TESLİMAT ADRESLERİ (<span id="teslimatAdresSayisi">0</span>)</div>
   <section class="adres-bolum">
     <div id="teslimatAdresListesi"></div>
-    <div class="adres-ekle-satir">
-      <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
-      <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
-      <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
-    </div>
+    <button class="yeni-ekle-ac-buton" data-tip="teslimat">+ Yeni Teslimat Adresi Ekle</button>
   </section>
 
   <div class="adres-bolum-baslik">👥 YETKİLİLER (<span id="yetkiliSayisi">0</span>)</div>
   <section class="adres-bolum">
     <div id="yetkiliListesi"></div>
-    <div class="yetkili-ekle-satir">
-      <input type="text" id="yeniYetkiliIsim" placeholder="İsim *">
-      <input type="text" id="yeniYetkiliGorev" placeholder="Görev (örn. Satın Alma)">
-      <div class="form-satir-2">
-        <input type="tel" id="yeniYetkiliTelefon" placeholder="Telefon">
-        <input type="email" id="yeniYetkiliEposta" placeholder="E-posta">
-      </div>
-      <button class="adres-ekle-btn" id="btnYetkiliEkle">+ Kişi Ekle</button>
-    </div>
+    <button class="yeni-ekle-ac-buton" id="btnYetkiliEkleAc">+ Yeni Kişi Ekle</button>
   </section>
 
   <a class="cari-kapat-buton" href="customer-detail.html">Kapat</a>
+
+  <div class="yeni-ekle-overlay" id="yeniEkleOverlay" hidden>
+    <section class="yeni-ekle-form">
+      <div class="yeni-ekle-form-baslik" id="yeniEkleBaslik"></div>
+
+      <div id="yeniEkleAdresAlanlari">
+        <input type="text" id="yeniEkleEtiket" placeholder="Etiket (örn. Merkez)">
+        <input type="text" id="yeniEkleAdres" placeholder="Adres">
+      </div>
+
+      <div id="yeniEkleYetkiliAlanlari" hidden>
+        <input type="text" id="yeniEkleIsim" placeholder="İsim *">
+        <input type="text" id="yeniEkleGorev" placeholder="Görev (örn. Satın Alma)">
+        <div class="form-satir-2">
+          <input type="tel" id="yeniEkleTelefon" placeholder="Telefon">
+          <input type="email" id="yeniEkleEposta" placeholder="E-posta">
+        </div>
+      </div>
+
+      <div class="form-buton-satir">
+        <button class="birlestir-vazgec-btn" id="btnYeniEkleVazgec">Vazgeç</button>
+        <button class="yeni-urun-kaydet-btn" id="btnYeniEkleKaydet">✓ Ekle</button>
+      </div>
+    </section>
+  </div>
 
 </main>
 

@@ -19,6 +19,18 @@
   color: #003a70;
 }
 .ayar-kutu input:focus { outline: none; border-color: #003a70; }
+.tcmb-link {
+  display: block;
+  margin-top: 8px;
+  background: #eaf2fc;
+  border: 1.5px solid #3569b8;
+  color: #003a70;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
 .ayar-kutu textarea {
   width: 100%;
   border: 2px solid #cbd5e1;

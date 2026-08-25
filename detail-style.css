@@ -385,6 +385,58 @@
   cursor: pointer;
 }
 
+.yeni-ekle-ac-buton {
+  width: 100%;
+  background: #f0fdfa;
+  color: #0e6b58;
+  border: 2px dashed #16a085;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.yeni-ekle-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 9999;
+}
+.yeni-ekle-overlay[hidden] { display: none; }
+.yeni-ekle-form {
+  background: #ffffff;
+  border-radius: 14px 14px 0 0;
+  padding: 18px 16px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.yeni-ekle-form-baslik {
+  font-size: 15px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 4px;
+}
+.yeni-ekle-form input {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  box-sizing: border-box;
+  width: 100%;
+}
+#yeniEkleAdresAlanlari, #yeniEkleYetkiliAlanlari {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .yetkili-karti {
   border-bottom: 1px solid #e2e6ec;
   padding: 8px 0;
@@ -444,6 +496,14 @@
 .gecmis-td-kod .ka { color: #e0524a; font-weight: 800; }
 .gecmis-td-ad { font-weight: 900; color: #111827; margin-top: 2px; font-size: 10px; line-height: 1.2; }
 .gecmis-td-isk { color: #c0392b; font-weight: 900; }
+.gecmis-sil-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px;
+}
 .gecmis-td-toplam { color: #0e6b34; font-weight: 900; }
 .gecmis-td-prim { color: #0e7c63; font-size: 9px; font-weight: 800; }
 .gecmis-not { font-size: 13px; color: #333; margin-top: 4px; }

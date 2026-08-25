@@ -91,12 +91,13 @@ function siparisGecmisiniCiz(){
           + "<td style='color:" + TIP_RENK_GECMIS[k.tip] + ";'>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</td>"
           + "<td class='gecmis-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
           + "<td class='gecmis-td-prim'>" + fmtG(prim) + "€</td>"
+          + "<td>" + (j===0 ? "<button class='gecmis-sil-btn' data-sil-tip='" + k.tip + "' data-sil-ts='" + k.ts + "'>🗑️</button>" : "") + "</td>"
           + "</tr>";
       });
     });
 
     kapsayici.innerHTML = "<div class='data-table-container'><table class='gecmis-urun-tablo'>"
-      + "<thead><tr><th>KOD</th><th>TARİH</th><th>ÜRÜN İSMİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
+      + "<thead><tr><th>KOD</th><th>TARİH</th><th>ÜRÜN İSMİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th><th></th></tr></thead>"
       + "<tbody>" + satirlar + "</tbody></table></div>";
 
     kapsayici.querySelectorAll(".gecmis-tablo-satir").forEach(function(tr){
@@ -105,6 +106,20 @@ function siparisGecmisiniCiz(){
         var ts = this.getAttribute("data-ts");
         localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:t, ts:parseFloat(ts)}));
         window.location.href = "belge-onizleme.html";
+      };
+    });
+    kapsayici.querySelectorAll(".gecmis-sil-btn").forEach(function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        var t = this.getAttribute("data-sil-tip");
+        var ts = parseFloat(this.getAttribute("data-sil-ts"));
+        if(!confirm("Bu kayıt tamamen silinsin mi? Bu geri alınamaz.")) return;
+        this.disabled = true;
+        ReportsData.kaydiSil(t, ts, function(basarili, err){
+          if(!basarili){
+            hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+          }
+        });
       };
     });
   }catch(e){ hataGoster("Sipariş geçmişi çizilemedi: " + e.message); }

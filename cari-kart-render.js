@@ -136,25 +136,49 @@ function adresleriCiz(musteri){
   }catch(e){ hataGoster("Adresler çizilemedi: " + e.message); }
 }
 
-function adresEkleBagla(){
-  document.querySelectorAll(".adres-ekle-btn[data-tip]").forEach(function(btn){
-    btn.onclick = function(){
-      var tip = this.getAttribute("data-tip");
-      var etiketId = tip==="fatura" ? "yeniFaturaEtiket" : "yeniTeslimatEtiket";
-      var adresId = tip==="fatura" ? "yeniFaturaAdres" : "yeniTeslimatAdres";
-      var etiket = document.getElementById(etiketId).value.trim();
-      var adres = document.getElementById(adresId).value.trim();
-      if(!adres){ hataGoster("Adres girin."); return; }
-      CustomerData.musteriAdresEkle(seciliMusteriAdi, tip, etiket, adres, function(basarili, err){
-        if(basarili){
-          document.getElementById(etiketId).value = "";
-          document.getElementById(adresId).value = "";
-        } else {
-          hataGoster("Eklenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-        }
-      });
-    };
+var yeniEkleTipi = null; // "fatura" | "teslimat" | "yetkili"
+
+function yeniEkleAc(tip){
+  yeniEkleTipi = tip;
+  var baslikHarita = {fatura:"🧾 Yeni Fatura Adresi", teslimat:"🚚 Yeni Teslimat Adresi", yetkili:"👥 Yeni Kişi"};
+  document.getElementById("yeniEkleBaslik").textContent = baslikHarita[tip] || "Yeni Ekle";
+  document.getElementById("yeniEkleAdresAlanlari").hidden = tip === "yetkili";
+  document.getElementById("yeniEkleYetkiliAlanlari").hidden = tip !== "yetkili";
+  ["yeniEkleEtiket","yeniEkleAdres","yeniEkleIsim","yeniEkleGorev","yeniEkleTelefon","yeniEkleEposta"].forEach(function(id){
+    document.getElementById(id).value = "";
   });
+  document.getElementById("yeniEkleOverlay").hidden = false;
+}
+
+function yeniEkleKaydetTiklandi(){
+  if(yeniEkleTipi === "yetkili"){
+    var isim = document.getElementById("yeniEkleIsim").value.trim();
+    if(!isim){ hataGoster("İsim girin."); return; }
+    var kisi = {
+      isim: isim,
+      gorev: document.getElementById("yeniEkleGorev").value.trim(),
+      telefon: document.getElementById("yeniEkleTelefon").value.trim(),
+      eposta: document.getElementById("yeniEkleEposta").value.trim()
+    };
+    var btn = document.getElementById("btnYeniEkleKaydet");
+    btn.disabled = true;
+    CustomerData.yetkiliEkle(seciliMusteriAdi, kisi, function(basarili, err){
+      btn.disabled = false;
+      if(basarili) document.getElementById("yeniEkleOverlay").hidden = true;
+      else hataGoster("Eklenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+    });
+  } else {
+    var etiket = document.getElementById("yeniEkleEtiket").value.trim();
+    var adres = document.getElementById("yeniEkleAdres").value.trim();
+    if(!adres){ hataGoster("Adres girin."); return; }
+    var btn2 = document.getElementById("btnYeniEkleKaydet");
+    btn2.disabled = true;
+    CustomerData.musteriAdresEkle(seciliMusteriAdi, yeniEkleTipi, etiket, adres, function(basarili, err){
+      btn2.disabled = false;
+      if(basarili) document.getElementById("yeniEkleOverlay").hidden = true;
+      else hataGoster("Eklenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+    });
+  }
 }
 
 function yetkilileriCiz(musteri){
@@ -241,25 +265,14 @@ function yetkilileriCiz(musteri){
 }
 
 function yetkiliEkleBagla(){
-  document.getElementById("btnYetkiliEkle").onclick = function(){
-    var isim = document.getElementById("yeniYetkiliIsim").value.trim();
-    if(!isim){ hataGoster("İsim girin."); return; }
-    var kisi = {
-      isim: isim,
-      gorev: document.getElementById("yeniYetkiliGorev").value.trim(),
-      telefon: document.getElementById("yeniYetkiliTelefon").value.trim(),
-      eposta: document.getElementById("yeniYetkiliEposta").value.trim()
-    };
-    CustomerData.yetkiliEkle(seciliMusteriAdi, kisi, function(basarili, err){
-      if(basarili){
-        ["yeniYetkiliIsim","yeniYetkiliGorev","yeniYetkiliTelefon","yeniYetkiliEposta"].forEach(function(id){
-          document.getElementById(id).value = "";
-        });
-      } else {
-        hataGoster("Eklenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-      }
-    });
+  document.getElementById("btnYetkiliEkleAc").onclick = function(){ yeniEkleAc("yetkili"); };
+  document.querySelectorAll(".yeni-ekle-ac-buton[data-tip]").forEach(function(btn){
+    btn.onclick = function(){ yeniEkleAc(this.getAttribute("data-tip")); };
+  });
+  document.getElementById("btnYeniEkleVazgec").onclick = function(){
+    document.getElementById("yeniEkleOverlay").hidden = true;
   };
+  document.getElementById("btnYeniEkleKaydet").onclick = yeniEkleKaydetTiklandi;
 }
 
 window.addEventListener("error", function(ev){
@@ -276,7 +289,6 @@ document.addEventListener("DOMContentLoaded", function(){
   seciliMusteriAdi = secili.ad;
   ustBilgiyiCiz(secili);
   adresleriCiz(secili);
-  adresEkleBagla();
   yetkilileriCiz(secili);
   yetkiliEkleBagla();
 
