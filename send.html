@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="cart-style.css">
 <link rel="stylesheet" href="send-style.css">
+<link rel="stylesheet" href="belge-style.css">
 </head>
 <body>
 
@@ -97,8 +98,14 @@
     <button class="gonder-bitir-buton" id="btnGonderBitir">Ana Sayfa'ya Dön</button>
   </section>
 
+  <!-- Görsel oluşturma için ekran dışına gizlenmiş belge alanı — html2canvas
+       bunu PNG'ye çevirip WhatsApp/Mail ile paylaşacak. Kullanıcı bunu
+       görmez, sadece render için var. -->
+  <div id="belgeGorselAlani" style="position:fixed; left:-9999px; top:0; width:380px;"></div>
+
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>

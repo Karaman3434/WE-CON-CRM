@@ -87,6 +87,7 @@ function kaydetTiklandi(){
     var adresler = seciliAdresleriTopla(musteri);
     SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, adresler, function(basarili, sonuc, revizeMi){
       if(basarili){
+        sonKaydedilenBelge = {kayit: sonuc, musteri: musteri};
         try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
         try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
         if(revizeMi){
@@ -120,38 +121,39 @@ function sablonUygula(sablon, urunKelimesi, belgeAdi, firmaAdi){
   return sablon.split("{URUN}").join(urunKelimesi).split("{BELGE}").join(belgeAdi).split("{FIRMA}").join(firmaAdi||"");
 }
 
-function mesajMetniOlustur(musteri, sepet, tip, kur, kdv, kanal){
-  var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
-  var satirlar = [];
-
+// Eski uygulamanın buildEmailBody()/buildWhatsAppBody() ile AYNI mantık:
+// kısa bir "kapak notu" — ürün detayları artık METİNDE değil, PAYLAŞILAN
+// GÖRSELDE (PNG belge) olduğu için mesaj metni kısa tutuluyor.
+function mesajMetniOlustur(musteri, sepet, tip, kanal){
   var sablon = kanal ? sablonOku(kanal) : "";
   if(sablon){
     var urunKelimesi = sepet.length===1 ? "ürün" : "ürünler";
-    satirlar.push("Merhaba,");
-    satirlar.push(sablonUygula(sablon, urunKelimesi, TIP_ETIKET[tip], musteri.ad));
-  } else {
-    satirlar.push("WEICON " + TIP_ETIKET[tip]);
-    satirlar.push("Sayın " + musteri.ad + ",");
+    var TIP_ETIKET2 = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
+    return "Merhaba,\n" + sablonUygula(sablon, urunKelimesi, TIP_ETIKET2[tip], musteri.ad) + "\n";
   }
-  satirlar.push("");
-  sepet.forEach(function(u){
-    var h = CartData.hesapla(u, kur, kdv);
-    satirlar.push("• " + u.ad + " — " + u.adet + " adet x " + CartData.fmt(h.iskontoluFiyat) + " EUR = " + CartData.fmt(h.toplamEuro) + " EUR");
-  });
-  satirlar.push("");
-  var t = CartData.genelToplam(kur, kdv);
-  satirlar.push("Toplam: " + CartData.fmt(t.toplamEuro) + " EUR");
-  satirlar.push("");
-  satirlar.push("İyi çalışmalar dileriz.");
-  return satirlar.join("\n");
+  var tekUrunMu = sepet.length === 1;
+  var govde = "Merhaba,\n";
+  if(kanal === "whatsapp"){
+    if(tip === "numune") govde += tekUrunMu ? "Sizinle paylaştığım ürün ekte, NUMUNE olarak gönderilecektir.\n" : "Sizinle paylaştığım ürünler ekte, NUMUNE olarak gönderilecektir.\n";
+    else govde += tekUrunMu ? "İstediğiniz ürün için ürün bilgi ve fiyatını ekte paylaştım.\n" : "İstediğiniz ürünler için ürün bilgi ve fiyatını ekte paylaştım.\n";
+  } else {
+    if(tip === "siparis") govde += "Bilgilerini paylaştığım Firma için SİPARİŞİN\nişleme alınmasını rica ederim.\n";
+    else if(tip === "proforma") govde += "Bilgilerini paylaştığım Firma için PROFORMA FATURA göndermenizi rica ederim.\n";
+    else if(tip === "numune") govde += "Bilgilerini paylaştığım Firma için NUMUNE göndermenizi rica ederim.\n";
+    else govde += "Bilgilerini paylaştığım Firma için FİYAT TEKLİFİ göndermenizi rica ederim.\n";
+    var TIP_ETIKET3 = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
+    govde += TIP_ETIKET3[tip] + " bilgi formu ektedir. BİLGİNİZE.\n";
+  }
+  return govde;
 }
 
 var gonderBaglam = null;
+var sonKaydedilenBelge = null; // {kayit, musteri} — görsel oluşturmak için
 
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
     gonderBaglam = {musteri:musteri, sepet:sepet, tip:tip, kur:kur, kdv:kdv};
-    document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, kur, kdv, null);
+    document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, null);
 
     var kisiler = musteri.iletisimler || [];
     var secim = document.getElementById("gonderKisiSecim");
@@ -181,21 +183,129 @@ function kisiAlanlariniDoldur(kisi){
 function sablonuUygulaTiklandi(kanal){
   if(!gonderBaglam) return;
   var g = gonderBaglam;
-  document.getElementById("gonderMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, kanal);
+  document.getElementById("gonderMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, kanal);
 }
 
-function whatsappGonder(){
-  var metin = document.getElementById("gonderMetin").value;
-  var telefon = document.getElementById("gonderTelefon").value.replace(/[^0-9]/g,"");
-  var url = telefon ? ("https://wa.me/"+telefon+"?text="+encodeURIComponent(metin)) : ("https://api.whatsapp.com/send?text="+encodeURIComponent(metin));
-  window.open(url, "_blank");
+// ---- Belgeyi PNG görsele çevirme (eski uygulamanın siparisResmiCanvasOlustur
+// mantığıyla aynı: belge-style.css sınıflarını kullanan bir HTML üretir,
+// html2canvas ile PNG'ye çevirir). ----
+var TIP_ETIKET_BELGE_G = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
+
+function fmtG2(n){
+  return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
-function epostaGonder(){
+function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod){
+  var satirlarHtml = "";
+  var netEuro = 0;
+  sepet.forEach(function(u, i){
+    var h = CartData.hesapla(u, kur, kdv);
+    netEuro += h.toplamEuro;
+    satirlarHtml += "<tr>"
+      + "<td class='belge-td-sira'>" + (i+1) + "</td>"
+      + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kb'>Berta:</span> " + htmlEsc(u.berta||"-") + " <span class='ka'>Abas:</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>"
+      + "<td>" + (u.adet||0) + "</td>"
+      + "<td>" + fmtG2(u.listeFiyat||0) + " €</td>"
+      + "<td>%" + (u.iskonto||0) + "</td>"
+      + "<td>" + fmtG2(h.iskontoluFiyat) + " €</td>"
+      + "<td class='belge-td-toplam'>" + fmtG2(h.toplamEuro) + " €</td>"
+      + "</tr>";
+  });
+
+  var simdi = new Date();
+  var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+  var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+  var tarihStr = simdi.getDate() + " " + aylar[simdi.getMonth()] + " " + simdi.getFullYear() + " " + ("0"+simdi.getHours()).slice(-2) + ":" + ("0"+simdi.getMinutes()).slice(-2);
+
+  return "<div class='belge-kutu' style='margin:0;'>"
+    + "<div class='belge-ust-baslik'>"
+    + "<div class='belge-logo-satir'><span class='belge-logo-mini'>WEICON</span><span class='belge-tur-baslik'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " FORMU</span></div>"
+    + "<table class='belge-tarih-tablo'><tr><td class='bt-etiket'>TARİH</td><td class='bt-deger'>" + tarihStr + "</td></tr></table>"
+    + "</div>"
+    + "<div class='belge-musteri-baslik'>MÜŞTERİ BİLGİLERİ</div>"
+    + "<div class='belge-musteri-govde'><div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
+    + (musteri.sehir ? "<div style='font-size:12px;color:#556170;'>" + htmlEsc(musteri.sehir) + "</div>" : "")
+    + "</div>"
+    + "<div class='belge-belge-baslik-serit'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + (kod ? " · " + kod : "") + "</div>"
+    + "<div class='data-table-container'><table class='belge-urun-tablo'>"
+    + "<thead><tr><th style='width:6%;'>SIRA</th><th style='width:25%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th></tr></thead>"
+    + "<tbody>" + satirlarHtml + "</tbody>"
+    + "</table></div>"
+    + "<div class='belge-genel-toplam-serit'><span class='belge-gt-etiket'>GENEL TOPLAM</span><span class='belge-gt-ayrac'></span><span class='belge-gt-deger'>" + fmtG2(netEuro) + " €</span></div>"
+    + "</div>";
+}
+
+function belgeGorseliniOlustur(callback){
+  try{
+    if(typeof html2canvas === "undefined"){ callback(null); return; }
+    var g = gonderBaglam;
+    var alan = document.getElementById("belgeGorselAlani");
+    alan.innerHTML = belgeGorselHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, (sonKaydedilenBelge&&sonKaydedilenBelge.kayit)?sonKaydedilenBelge.kayit.kod:"");
+    setTimeout(function(){
+      html2canvas(alan, {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
+        callback(canvas);
+      }).catch(function(){ callback(null); });
+    }, 60);
+  }catch(e){ callback(null); }
+}
+
+function gonderTiklandi(kanal){
+  try{
+    var metin = document.getElementById("gonderMetin").value;
+    var g = gonderBaglam;
+    var toplamEuro = CartData.genelToplam(g.kur, g.kdv).toplamEuro;
+    var TIP_ETIKET4 = {numune:"NUMUNE", teklif:"TEKLİF", proforma:"PROFORMA", siparis:"SİPARİŞ"};
+    var ozetMesaj = (kanal==="whatsapp" ? "💬 WhatsApp" : "📧 Mail") + " ile gönderilecek:\n\n"
+      + "Müşteri: " + g.musteri.ad + "\n"
+      + "Tür: " + TIP_ETIKET4[g.tip] + "\n"
+      + g.sepet.length + " kalem, " + CartData.fmt(toplamEuro) + " € toplam\n\n"
+      + "Devam edilsin mi?";
+    if(!confirm(ozetMesaj)) return;
+
+    var dosyaAdi = TIP_ETIKET4[g.tip] + "_" + g.musteri.ad.replace(/[^a-zA-Z0-9]+/g,"_") + ".png";
+    var konuMetni = "*** " + TIP_ETIKET4[g.tip] + " *** " + g.musteri.ad;
+
+    belgeGorseliniOlustur(function(canvas){
+      if(!canvas){
+        // Görsel oluşturulamadıysa, en son çare: eski metin-tabanlı yöntem.
+        metinTabanliGonder(kanal);
+        return;
+      }
+      canvas.toBlob(function(blob){
+        if(!blob){ metinTabanliGonder(kanal); return; }
+        var dosya = new File([blob], dosyaAdi, {type:"image/png"});
+        var paylasimMetni = kanal==="whatsapp" ? metin : (konuMetni + "\n\n" + metin);
+
+        if(navigator.canShare && navigator.canShare({files:[dosya]})){
+          navigator.share({files:[dosya], title:konuMetni, text:paylasimMetni}).catch(function(err){
+            if(err && err.name!=="AbortError") hataGoster("Paylaşım penceresi kapatıldı.");
+          });
+        } else {
+          // Native paylaşım desteklenmiyor: PNG'yi indir + metin linkini aç.
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url; a.download = dosyaAdi;
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          alert("Bu cihazda direkt paylaşım desteklenmiyor — belge görseli indirildi. Şimdi " + (kanal==="whatsapp"?"WhatsApp":"Mail") + " açılacak, resmi elle ekleyebilirsin.");
+          metinTabanliGonder(kanal);
+        }
+      }, "image/png");
+    });
+  }catch(e){ hataGoster("Gönderim başlatılamadı: " + e.message); }
+}
+
+function metinTabanliGonder(kanal){
   var metin = document.getElementById("gonderMetin").value;
-  var eposta = document.getElementById("gonderEposta").value.trim();
-  var url = "mailto:"+encodeURIComponent(eposta)+"?subject="+encodeURIComponent("WEICON")+"&body="+encodeURIComponent(metin);
-  window.open(url, "_blank");
+  if(kanal === "whatsapp"){
+    var telefon = document.getElementById("gonderTelefon").value.replace(/[^0-9]/g,"");
+    var url = telefon ? ("https://wa.me/"+telefon+"?text="+encodeURIComponent(metin)) : ("https://api.whatsapp.com/send?text="+encodeURIComponent(metin));
+    window.open(url, "_blank");
+  } else {
+    var eposta = document.getElementById("gonderEposta").value.trim();
+    var url2 = "mailto:"+encodeURIComponent(eposta)+"?subject="+encodeURIComponent("WEICON")+"&body="+encodeURIComponent(metin);
+    window.open(url2, "_blank");
+  }
 }
 
 window.addEventListener("error", function(ev){
@@ -265,8 +375,8 @@ document.addEventListener("DOMContentLoaded", function(){
   ilerletKaynagiVarsaSekmeAyarla();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKaydet").onclick = kaydetTiklandi;
-  document.getElementById("btnWhatsapp").onclick = whatsappGonder;
-  document.getElementById("btnEposta").onclick = epostaGonder;
+  document.getElementById("btnWhatsapp").onclick = function(){ gonderTiklandi("whatsapp"); };
+  document.getElementById("btnEposta").onclick = function(){ gonderTiklandi("mail"); };
   document.getElementById("btnWhatsappSablon").onclick = function(){ sablonuUygulaTiklandi("whatsapp"); };
   document.getElementById("btnEpostaSablon").onclick = function(){ sablonuUygulaTiklandi("mail"); };
   document.getElementById("btnGonderBitir").onclick = function(){ window.location.href = "home.html"; };
