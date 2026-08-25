@@ -18,7 +18,7 @@
   padding: 14px 18px;
 }
 .islemler-musteri-ad { font-size: 20px; font-weight: 900; }
-.islemler-musteri-kod { font-size: 13px; font-weight: 700; opacity: .85; margin-top: 4px; }
+.islemler-musteri-kod { display: inline-block; font-size: 13px; font-weight: 700; opacity: .85; margin-top: 4px; color: #ffffff; text-decoration: underline; }
 
 .islemler-ozet-satir {
   font-size: 13px;

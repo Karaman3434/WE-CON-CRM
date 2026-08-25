@@ -37,10 +37,18 @@ var SendData = (function(){
       String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
   }
 
-  function kodUret(tip){
-    var onEk = {numune:"NUM", teklif:"TEK", proforma:"PRO", siparis:"SIP"}[tip] || "KYT";
+  // Belge kodu formatı: {TK|PF|SP|NU}{GGAAYY}.{sıra:2} — örn. "TK010126.01"
+  // (o müşterinin o gün ilk teklifi), "TK010126.02" (o gün, aynı müşteri,
+  // farklı ürün için ikinci teklif). Sıra numarası aynı müşteri + aynı gün +
+  // aynı belge türündeki MEVCUT kayıt sayısına göre hesaplanır — eski format
+  // kodlar (TEK-20260815-3421 gibi) da sayıma dahil edilir ki numaralar
+  // çakışmasın.
+  function kodUret(tip, musteriAd, gunIcindekiAyniTurSayisi){
+    var onEk = {numune:"NU", teklif:"TK", proforma:"PF", siparis:"SP"}[tip] || "KY";
     var d = new Date();
-    return onEk + "-" + d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0") + "-" + Math.floor(Math.random()*9000+1000);
+    var tarihKismi = String(d.getDate()).padStart(2,"0") + String(d.getMonth()+1).padStart(2,"0") + String(d.getFullYear()).slice(-2);
+    var sira = (gunIcindekiAyniTurSayisi||0) + 1;
+    return onEk + tarihKismi + "." + String(sira).padStart(2,"0");
   }
 
   function urunSetiImzaOlustur(urunler){
@@ -132,8 +140,13 @@ var SendData = (function(){
           otomatikRevizeMi = true;
           kaydedilenKayit = eskiKayit;
         } else {
+          var buGunAyniMusteriAyniTurSayisi = liste.filter(function(k){
+            if(!k || !k.ts) return false;
+            var ayniMusteriMi2 = musteri.id && k.musteriId ? (k.musteriId===musteri.id) : (k.musteri===musteri.ad);
+            return ayniMusteriMi2 && ayniGunMu(k.ts, simdi);
+          }).length;
           kaydedilenKayit = {
-            tarih: tarihStr(), ts: simdi, kod: kodUret(tip),
+            tarih: tarihStr(), ts: simdi, kod: kodUret(tip, musteri.ad, buGunAyniMusteriAyniTurSayisi),
             musteri: musteri.ad, musteriId: musteri.id || null, sehir: musteri.sehir || "",
             mod: tip, urunler: urunlerKaydi,
             faturaAdresi: (adresler && adresler.faturaAdresi) || null,

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: V2-260826.0130 — customer-cari-kart.html -->
+<!--
+  WEICON ASİST — CARİ KART v1
+  ==============================
+  Eski uygulamanın "musteriCariKartModal" ile BİREBİR aynı: navy başlık +
+  isim, VADE/FATURA/KARGO ikon kutuları, Fatura/Teslimat Adresleri,
+  Yetkili Kişiler. İŞLEMLER ekranından (customer-detail.html) "🏷 Müşteri
+  Kodu" satırına dokununca buraya gelinir — AYRI bir sayfa, İŞLEMLER'in
+  yerine geçmiyor.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Cari Kart</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="customer-style.css">
+<link rel="stylesheet" href="detail-style.css">
+<link rel="stylesheet" href="cari-kart-style.css">
+</head>
+<body>
+
+<div class="cari-baslik-serit">
+  <a class="cari-geri-ok" href="customer-detail.html">‹</a>
+  <span>CARİ KART</span>
+</div>
+
+<main class="sayfa">
+
+  <div class="cari-ad" id="cariKartAd">—</div>
+  <div class="cari-alt-baslik" id="cariKartAltBaslik"></div>
+
+  <div class="ozet-satir-3">
+    <div class="ozet-alan">
+      <div class="ozet-ikon">📅</div>
+      <div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="cariKartVade">-</div></div>
+    </div>
+    <div class="ozet-alan">
+      <div class="ozet-ikon">📄</div>
+      <div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="cariKartFatura">-</div></div>
+    </div>
+    <div class="ozet-alan">
+      <div class="ozet-ikon">🚚</div>
+      <div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="cariKartKargo">-</div></div>
+    </div>
+  </div>
+
+  <button class="duzenle-ac-buton" id="btnDuzenleAc">✏️ Vade / Fatura / Kargo Bilgilerini Düzenle</button>
+  <section class="detay-bilgi-form" id="detayBilgiForm" hidden>
+    <div class="form-satir-2">
+      <input type="text" id="detayVade" placeholder="Vade">
+      <input type="text" id="detayFatura" placeholder="Fatura Bilgisi">
+    </div>
+    <input type="text" id="detayKargo" placeholder="Kargo Firması">
+    <button class="bilgi-kaydet-buton" id="btnBilgiKaydet">Bilgileri Güncelle</button>
+  </section>
+
+  <div class="adres-bolum-baslik">🧾 FATURA ADRESLERİ (<span id="faturaAdresSayisi">0</span>)</div>
+  <section class="adres-bolum">
+    <div id="faturaAdresListesi"></div>
+    <div class="adres-ekle-satir">
+      <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
+      <input type="text" id="yeniFaturaAdres" placeholder="Adres">
+      <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
+    </div>
+  </section>
+
+  <div class="adres-bolum-baslik">🚚 TESLİMAT ADRESLERİ (<span id="teslimatAdresSayisi">0</span>)</div>
+  <section class="adres-bolum">
+    <div id="teslimatAdresListesi"></div>
+    <div class="adres-ekle-satir">
+      <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
+      <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
+      <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
+    </div>
+  </section>
+
+  <div class="adres-bolum-baslik">👥 YETKİLİLER (<span id="yetkiliSayisi">0</span>)</div>
+  <section class="adres-bolum">
+    <div id="yetkiliListesi"></div>
+    <div class="yetkili-ekle-satir">
+      <input type="text" id="yeniYetkiliIsim" placeholder="İsim *">
+      <input type="text" id="yeniYetkiliGorev" placeholder="Görev (örn. Satın Alma)">
+      <div class="form-satir-2">
+        <input type="tel" id="yeniYetkiliTelefon" placeholder="Telefon">
+        <input type="email" id="yeniYetkiliEposta" placeholder="E-posta">
+      </div>
+      <button class="adres-ekle-btn" id="btnYetkiliEkle">+ Kişi Ekle</button>
+    </div>
+  </section>
+
+  <a class="cari-kapat-buton" href="customer-detail.html">Kapat</a>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="customer-data.js"></script>
+<script src="cari-kart-render.js"></script>
+</body>
+</html>

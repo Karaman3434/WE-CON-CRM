@@ -25,7 +25,7 @@
 
 <div class="islemler-musteri-serit">
   <div class="islemler-musteri-ad" id="detayAd">—</div>
-  <div class="islemler-musteri-kod" id="detayKod"></div>
+  <a class="islemler-musteri-kod" id="detayKod" href="customer-cari-kart.html"></a>
 </div>
 
 <main class="sayfa">
@@ -99,56 +99,6 @@
     <div class="acilir-baslik">📋 Bu Müşteriyle İlgili Görevler</div>
     <div id="detayGorevListesi"></div>
     <p class="bos-mesaj" id="detayGorevBos" hidden>Görev yok.</p>
-  </section>
-
-  <!-- Ek bilgiler: adres/yetkili/vade yönetimi — eski uygulamada belge
-       hazırlarken arkaplanda kullanılan bilgiler, burada tek yerden
-       yönetilebiliyor. -->
-  <button class="duzenle-ac-buton" id="btnDuzenleAc">✏️ Vade / Fatura / Kargo / Adres / Yetkili Bilgilerini Düzenle</button>
-
-  <section class="detay-bilgi-form" id="detayBilgiForm" hidden>
-    <div class="form-satir-2">
-      <input type="text" id="detayVade" placeholder="Vade">
-      <input type="text" id="detayFatura" placeholder="Fatura Bilgisi">
-    </div>
-    <input type="text" id="detayKargo" placeholder="Kargo Firması">
-    <button class="bilgi-kaydet-buton" id="btnBilgiKaydet">Bilgileri Güncelle</button>
-  </section>
-
-  <section class="acilir-bolum" id="bolumAdresYetkili" hidden>
-    <div class="adres-bolum-baslik">🧾 FATURA ADRESLERİ (<span id="faturaAdresSayisi">0</span>)</div>
-    <section class="adres-bolum">
-      <div id="faturaAdresListesi"></div>
-      <div class="adres-ekle-satir">
-        <input type="text" id="yeniFaturaEtiket" placeholder="Etiket (örn. Merkez)">
-        <input type="text" id="yeniFaturaAdres" placeholder="Adres">
-        <button class="adres-ekle-btn" data-tip="fatura">+ Ekle</button>
-      </div>
-    </section>
-
-    <div class="adres-bolum-baslik">🚚 TESLİMAT ADRESLERİ (<span id="teslimatAdresSayisi">0</span>)</div>
-    <section class="adres-bolum">
-      <div id="teslimatAdresListesi"></div>
-      <div class="adres-ekle-satir">
-        <input type="text" id="yeniTeslimatEtiket" placeholder="Etiket (örn. Şube 2)">
-        <input type="text" id="yeniTeslimatAdres" placeholder="Adres">
-        <button class="adres-ekle-btn" data-tip="teslimat">+ Ekle</button>
-      </div>
-    </section>
-
-    <div class="adres-bolum-baslik">👥 YETKİLİLER (<span id="yetkiliSayisi">0</span>)</div>
-    <section class="adres-bolum">
-      <div id="yetkiliListesi"></div>
-      <div class="yetkili-ekle-satir">
-        <input type="text" id="yeniYetkiliIsim" placeholder="İsim *">
-        <input type="text" id="yeniYetkiliGorev" placeholder="Görev (örn. Satın Alma)">
-        <div class="form-satir-2">
-          <input type="tel" id="yeniYetkiliTelefon" placeholder="Telefon">
-          <input type="email" id="yeniYetkiliEposta" placeholder="E-posta">
-        </div>
-        <button class="adres-ekle-btn" id="btnYetkiliEkle">+ Kişi Ekle</button>
-      </div>
-    </section>
   </section>
 
 </main>

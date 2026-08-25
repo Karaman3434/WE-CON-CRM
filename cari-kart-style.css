@@ -1,0 +1,48 @@
+.cari-baslik-serit {
+  background: #003a70;
+  color: #ffffff;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: .3px;
+}
+.cari-geri-ok {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.cari-ad {
+  font-size: 20px;
+  font-weight: 900;
+  color: #1a2a3a;
+  margin-top: 12px;
+  margin-bottom: 2px;
+}
+.cari-alt-baslik {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7ea6d6;
+  margin-bottom: 12px;
+}
+
+.cari-kapat-buton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #fdeaea;
+  color: #c0392b;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  margin-top: 8px;
+}

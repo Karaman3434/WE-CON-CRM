@@ -129,15 +129,45 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function musteriIdUret(tazeListe){
+  // Türkiye il plaka kodları — şehir adından 2 haneli kodu bulmak için.
+  // Müşteri kodu formatı: M{ilKodu:2}{sıra:3} — örn. Ankara'da 1. müşteri
+  // "M06001", Samsun'da 3. müşteri "M55003". Şehir tanınmazsa "M00xxx" kullanılır.
+  var IL_KODLARI = {
+    "adana":"01","adıyaman":"02","afyonkarahisar":"03","afyon":"03","ağrı":"04","amasya":"05",
+    "ankara":"06","antalya":"07","artvin":"08","aydın":"09","balıkesir":"10","bilecik":"11",
+    "bingöl":"12","bitlis":"13","bolu":"14","burdur":"15","bursa":"16","çanakkale":"17",
+    "çankırı":"18","çorum":"19","denizli":"20","diyarbakır":"21","edirne":"22","elazığ":"23",
+    "erzincan":"24","erzurum":"25","eskişehir":"26","gaziantep":"27","giresun":"28","gümüşhane":"29",
+    "hakkari":"30","hatay":"31","ısparta":"32","isparta":"32","mersin":"33","içel":"33",
+    "istanbul":"34","i̇stanbul":"34","izmir":"35","i̇zmir":"35","kars":"36","kastamonu":"37",
+    "kayseri":"38","kırklareli":"39","kırşehir":"40","kocaeli":"41","konya":"42","kütahya":"43",
+    "malatya":"44","manisa":"45","kahramanmaraş":"46","maraş":"46","mardin":"47","muğla":"48",
+    "muş":"49","nevşehir":"50","niğde":"51","ordu":"52","rize":"53","sakarya":"54",
+    "samsun":"55","siirt":"56","sinop":"57","sivas":"58","tekirdağ":"59","tokat":"60",
+    "trabzon":"61","tunceli":"62","şanlıurfa":"63","urfa":"63","uşak":"64","van":"65",
+    "yozgat":"66","zonguldak":"67","aksaray":"68","bayburt":"69","karaman":"70","kırıkkale":"71",
+    "batman":"72","şırnak":"73","bartın":"74","ardahan":"75","ığdır":"76","yalova":"77",
+    "karabük":"78","kilis":"79","osmaniye":"80","düzce":"81"
+  };
+
+  function ilKoduBul(sehirMetni){
+    if(!sehirMetni) return "00";
+    var temiz = sehirMetni.trim().toLocaleLowerCase("tr-TR").split("-")[0].split("/")[0].trim();
+    return IL_KODLARI[temiz] || "00";
+  }
+
+  function musteriIdUret(tazeListe, sehir){
+    var ilKodu = ilKoduBul(sehir);
     var maxNo = 0;
+    var yeniDesen = new RegExp("^M" + ilKodu + "(\\d{3})$");
     tazeListe.forEach(function(m){
-      if(m.id && /^M-\d+$/.test(m.id)){
-        var no = parseInt(m.id.slice(2), 10);
+      var eslesme = m.id && m.id.match(yeniDesen);
+      if(eslesme){
+        var no = parseInt(eslesme[1], 10);
         if(no > maxNo) maxNo = no;
       }
     });
-    return "M-" + String(maxNo+1).padStart(4, "0");
+    return "M" + ilKodu + String(maxNo+1).padStart(3, "0");
   }
 
   function benzerMusterileriBul(ad){
@@ -155,7 +185,7 @@ var CustomerData = (function(){
     var yeniKayit = null;
     guvenliYaz(function(tazeListe){
       yeniKayit = {
-        id: musteriIdUret(tazeListe),
+        id: musteriIdUret(tazeListe, bilgi.sehir),
         ad: bilgi.ad.trim(),
         sehir: (bilgi.sehir||"").trim(),
         acikAdres: (bilgi.acikAdres||"").trim(),
