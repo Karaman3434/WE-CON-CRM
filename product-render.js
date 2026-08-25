@@ -221,6 +221,43 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("anaTabloAlani").hidden = false;
   };
 
+  document.getElementById("btnYeniUrunAc").onclick = function(){
+    document.getElementById("yeniUrunBerta").value = "";
+    document.getElementById("yeniUrunAbas").value = "";
+    document.getElementById("yeniUrunAdi").value = "";
+    document.getElementById("yeniUrunFiyat").value = "";
+    document.getElementById("yeniUrunHata").hidden = true;
+    document.getElementById("yeniUrunFormBolum").hidden = false;
+    document.getElementById("yeniUrunFormBolum").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  document.getElementById("btnYeniUrunVazgec").onclick = function(){
+    document.getElementById("yeniUrunFormBolum").hidden = true;
+  };
+  document.getElementById("btnYeniUrunKaydet").onclick = function(){
+    var bilgi = {
+      berta: document.getElementById("yeniUrunBerta").value,
+      abas: document.getElementById("yeniUrunAbas").value,
+      ad: document.getElementById("yeniUrunAdi").value,
+      fiyat: document.getElementById("yeniUrunFiyat").value
+    };
+    var hataEl = document.getElementById("yeniUrunHata");
+    hataEl.hidden = true;
+    var btn = document.getElementById("btnYeniUrunKaydet");
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    ProductData.yeniUrunEkle(bilgi, function(basarili, sonuc){
+      btn.disabled = false;
+      btn.textContent = "✓ Kaydet";
+      if(basarili){
+        alert("✓ \"" + bilgi.ad + "\" listeye eklendi.");
+        document.getElementById("yeniUrunFormBolum").hidden = true;
+      } else {
+        hataEl.textContent = "⚠️ " + (typeof sonuc === "string" ? sonuc : (sonuc && sonuc.message ? sonuc.message : "Eklenemedi."));
+        hataEl.hidden = false;
+      }
+    });
+  };
+
   ProductData.katalogDegistiginde(sonuclariCiz);
   sepetSatiriniGuncelle();
   sonuclariCiz();

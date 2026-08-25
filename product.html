@@ -42,6 +42,21 @@
     <button class="ozel-liste-btn ozel-liste-btn--yesil" id="btnEnCokAranan">🔍 En Çok Aranan</button>
   </div>
 
+  <button class="yeni-urun-ac-buton" id="btnYeniUrunAc">➕ Yeni Ürün Ekle</button>
+  <section class="yeni-urun-form" id="yeniUrunFormBolum" hidden>
+    <div class="form-satir-2">
+      <input type="text" id="yeniUrunBerta" placeholder="Berta Kodu">
+      <input type="text" id="yeniUrunAbas" placeholder="Abas Kodu">
+    </div>
+    <input type="text" id="yeniUrunAdi" placeholder="Ürün Adı *">
+    <input type="number" step="0.01" id="yeniUrunFiyat" placeholder="Liste Fiyatı (EUR) *">
+    <p class="yeni-urun-hata" id="yeniUrunHata" hidden></p>
+    <div class="form-buton-satir">
+      <button class="birlestir-vazgec-btn" id="btnYeniUrunVazgec">Vazgeç</button>
+      <button class="yeni-urun-kaydet-btn" id="btnYeniUrunKaydet">✓ Kaydet</button>
+    </div>
+  </section>
+
   <button class="sepet-goster-buton" id="btnSepeteDevam" hidden>🛒 Sepet (<span id="sepetSayisi">0</span>)</button>
 
   <div class="data-table-container" id="anaTabloAlani">

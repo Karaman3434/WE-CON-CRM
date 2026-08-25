@@ -116,6 +116,76 @@ body {
 .ozel-liste-btn--kirmizi { background: #fff1f0; color: #c0392b; border: 2.5px solid #c0392b; }
 .ozel-liste-btn--yesil { background: #f0fbf3; color: #0e6b34; border: 2.5px solid #1f9d55; }
 
+.yeni-urun-ac-buton {
+  width: 100%;
+  background: #f0fdfa;
+  color: #0e6b58;
+  border: 2px dashed #16a085;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.form-satir-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.form-buton-satir {
+  display: flex;
+  gap: 8px;
+}
+.birlestir-vazgec-btn {
+  flex: 1;
+  background: #eef1f5;
+  color: #556170;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.yeni-urun-form {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #fafbfc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.yeni-urun-form input {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  box-sizing: border-box;
+  width: 100%;
+}
+.yeni-urun-hata {
+  font-size: 12px;
+  color: #c0392b;
+  font-weight: 700;
+  background: #fdeceb;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.yeni-urun-kaydet-btn {
+  flex: 1;
+  background: #16a085;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .sepet-goster-buton {
   width: 100%;
   background: #fff6ec;

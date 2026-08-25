@@ -139,6 +139,45 @@ var ProductData = (function(){
 
   function sepetSayisi(){ return sepet.length; }
 
+  // Eski uygulamanın yeniUrunKaydet() ile AYNI mantık: katalog kök dizinde
+  // sayısal index'lerle duruyor (0,1,2...). Yeni ürün için MEVCUT en büyük
+  // sayısal index'i bulup +1'e yazıyoruz — başka HİÇBİR anahtara dokunmadan,
+  // tek bir yeni key set ediyoruz, bu yüzden veri kaybı riski yok.
+  function yeniUrunEkle(bilgi, geriBildir){
+    try{
+      var ad = (bilgi.ad||"").trim().slice(0,200);
+      var berta = (bilgi.berta||"").trim().slice(0,60);
+      var abas = (bilgi.abas||"").trim().slice(0,60);
+      var fiyat = parseFloat(bilgi.fiyat);
+      if(!ad){ geriBildir(false, "Ürün adı zorunlu."); return; }
+      if(isNaN(fiyat) || fiyat<=0){ geriBildir(false, "Geçerli bir fiyat girin."); return; }
+
+      if(berta && abas){
+        var mukerrer = katalog.some(function(it){
+          var b=(it.berta||it.BERTA||"").toString().trim();
+          var a=(it.abas||it.ABAS||"").toString().trim();
+          return b===berta && a===abas;
+        });
+        if(mukerrer){ geriBildir(false, "Bu Berta/Abas kodu zaten listede kayıtlı."); return; }
+      }
+
+      var db = firebase.database();
+      db.ref("/").once("value").then(function(snap){
+        var tumData = snap.val() || {};
+        var maxIndex = -1;
+        Object.keys(tumData).forEach(function(k){
+          var n = parseInt(k, 10);
+          if(!isNaN(n) && String(n)===k && n>maxIndex) maxIndex = n;
+        });
+        var yeniIndex = maxIndex + 1;
+        var yeniUrun = {urun:ad, berta:berta, abas:abas, fiyat:fiyat};
+        return db.ref(String(yeniIndex)).set(yeniUrun);
+      }).then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     katalogDegistiginde: katalogDegistiginde,
@@ -147,7 +186,8 @@ var ProductData = (function(){
     sepetteMi: sepetteMi,
     sepeteEkleCikar: sepeteEkleCikar,
     sepetSayisi: sepetSayisi,
-    katalogUzunluk: function(){ return katalog.length; }
+    katalogUzunluk: function(){ return katalog.length; },
+    yeniUrunEkle: yeniUrunEkle
   };
 
 })();
