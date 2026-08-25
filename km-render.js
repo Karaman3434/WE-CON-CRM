@@ -227,6 +227,48 @@ document.addEventListener("DOMContentLoaded", function(){
   };
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
+  document.getElementById("btnKmBaslangicKaydet").onclick = function(){
+    var deger = parseFloat(document.getElementById("kmBaslangicInput").value);
+    if(!deger || deger<=0){ hataGoster("Geçerli bir kilometre değeri girin."); return; }
+    var btn = document.getElementById("btnKmBaslangicKaydet");
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    KmData.baslangicKaydet(deger, function(basarili, err){
+      btn.disabled = false;
+      btn.textContent = "Kaydet ve Başla";
+      if(basarili){
+        document.getElementById("kmBaslangicOverlay").hidden = true;
+        dunOzetiniCiz();
+      } else {
+        hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
+    });
+  };
+  var kmBaslangicKontroluYapildi = false;
+  setTimeout(function(){
+    if(kmBaslangicKontroluYapildi) return;
+    kmBaslangicKontroluYapildi = true;
+    if(KmData.baslangicGerekliMi()){
+      var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+      var ayAdi = aylar[new Date().getMonth()];
+      document.getElementById("kmBaslangicAciklama").textContent =
+        "Sistemde henüz bir başlangıç KM kaydı yok. " + ayAdi + " ayı (veya takip başlangıcı) için aracın güncel kilometresini gir — bu değer, günlük kayıtların otomatik hesaplanabilmesi için gereklidir.";
+      document.getElementById("kmBaslangicOverlay").hidden = false;
+    }
+  }, 1200); // Firebase'in ilk veriyi getirmesi için makul bir bekleme; KmData.degistiginde()
+            // aşağıda daha erken tetiklenirse bu zaten iptal edilmiş olur.
+  KmData.degistiginde(function(){
+    if(kmBaslangicKontroluYapildi) return;
+    kmBaslangicKontroluYapildi = true;
+    if(KmData.baslangicGerekliMi()){
+      var aylar2 = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+      var ayAdi2 = aylar2[new Date().getMonth()];
+      document.getElementById("kmBaslangicAciklama").textContent =
+        "Sistemde henüz bir başlangıç KM kaydı yok. " + ayAdi2 + " ayı (veya takip başlangıcı) için aracın güncel kilometresini gir — bu değer, günlük kayıtların otomatik hesaplanabilmesi için gereklidir.";
+      document.getElementById("kmBaslangicOverlay").hidden = false;
+    }
+  });
+
   KmData.ayarlarOku(function(ayarlar){
     document.getElementById("kmAdSoyad").value = ayarlar.adSoyad || "";
     document.getElementById("kmPlaka").value = ayarlar.plaka || "";

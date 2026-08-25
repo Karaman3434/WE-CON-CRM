@@ -163,6 +163,26 @@ var KmData = (function(){
     }catch(e){ console.error("KM ayarları kaydedilemedi:", e); }
   }
 
+  // Eski uygulamanın kmAyBasiKontrolEt() ile AYNI mantık: sistemde HİÇ KM
+  // kaydı yoksa (ilk kullanım), günlük hesaplamanın çalışabilmesi için bir
+  // başlangıç değeri gerekir — sessizce atlamak yerine kullanıcıdan iste.
+  function baslangicGerekliMi(){
+    var herhangiKayitVarMi = Object.keys(kayitlar).some(function(k){
+      return kayitlar[k] && kayitlar[k].km!==undefined && kayitlar[k].km!==null && kayitlar[k].km!=="";
+    });
+    return !herhangiKayitVarMi;
+  }
+
+  function baslangicKaydet(deger, geriBildir){
+    try{
+      var dun = dunAnahtari();
+      var yeniKayit = Object.assign({}, kayitlar[dun]||{}, {km: deger, saat: (kayitlar[dun]&&kayitlar[dun].saat)||"23:59", sentetikBaslangic: true});
+      firebase.database().ref("kmTakip/" + dun).set(yeniKayit).then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   return {
     baslat: baslat,
     degistiginde: degistiginde,
@@ -176,7 +196,9 @@ var KmData = (function(){
     ziyaretYerleriniKaydet: ziyaretYerleriniKaydet,
     buAyinKayitlari: buAyinKayitlari,
     ayarlarOku: ayarlarOku,
-    ayarlarKaydet: ayarlarKaydet
+    ayarlarKaydet: ayarlarKaydet,
+    baslangicGerekliMi: baslangicGerekliMi,
+    baslangicKaydet: baslangicKaydet
   };
 
 })();

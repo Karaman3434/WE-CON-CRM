@@ -104,6 +104,16 @@
 
 </main>
 
+<!-- İLK KULLANIM: hiç KM kaydı yoksa başlangıç değeri iste -->
+<div class="km-baslangic-overlay" id="kmBaslangicOverlay" hidden>
+  <div class="km-baslangic-kutu">
+    <div class="km-baslangic-baslik">🚗 Başlangıç Kilometresi Gerekli</div>
+    <p class="km-baslangic-aciklama" id="kmBaslangicAciklama"></p>
+    <input type="number" id="kmBaslangicInput" placeholder="örn. 42150" inputmode="decimal">
+    <button class="km-baslangic-kaydet-btn" id="btnKmBaslangicKaydet">Kaydet ve Başla</button>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
