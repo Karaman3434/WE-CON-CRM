@@ -1,0 +1,100 @@
+.sayfa { padding: 8px 14px 24px; }
+
+.bildirim-bolum-baslik {
+  font-size: 16px;
+  font-weight: 900;
+  color: #003a70;
+  margin: 18px 0 10px;
+}
+.bildirim-bolum-baslik:first-child { margin-top: 0; }
+
+.acik-surec-karti {
+  background: #f7f9fc;
+  border: 1px solid #d5dce6;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.acik-surec-ust {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.acik-surec-musteri { font-size: 15px; font-weight: 900; color: #222222; }
+.acik-surec-seviye { font-size: 11px; font-weight: 900; }
+.acik-surec-detay { font-size: 12px; color: #556170; line-height: 1.35; }
+.acik-surec-buton-satir { display: flex; gap: 8px; margin-top: 10px; }
+.acik-surec-ilerlet-btn {
+  flex: 1;
+  background: #003a70;
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.acik-surec-sil-btn {
+  flex: 1;
+  background: #e0524a;
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ziyaret-hatirlat-karti {
+  background: #fdf1e8;
+  border: 1px solid #f2d9c2;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ziyaret-hatirlat-musteri { font-size: 15px; font-weight: 900; color: #222222; }
+.ziyaret-hatirlat-gun { font-size: 12px; font-weight: 800; color: #a34a1e; white-space: nowrap; }
+
+.gorev-bildirim-karti {
+  background: #fdf1e8;
+  border: 1px solid #f2d9c2;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.gorev-bildirim-musteri { font-size: 15px; font-weight: 900; color: #222222; margin-bottom: 5px; }
+.gorev-bildirim-aciklama { font-size: 13px; color: #556170; margin-bottom: 10px; line-height: 1.4; }
+.gorev-bildirim-buton-satir { display: flex; gap: 8px; }
+.gorev-tamamla-btn {
+  flex: 1;
+  background: #eafaf3;
+  color: #0e7c63;
+  border: 2px solid #7dcdb3;
+  padding: 11px;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.gorev-musteriye-git-btn {
+  flex: 1;
+  background: #eef4fb;
+  color: #003a70;
+  border: 2px solid #7ea6d6;
+  padding: 11px;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 6px;
+  cursor: pointer;
+}

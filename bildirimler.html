@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: V2-260826.0230 — bildirimler.html -->
+<!--
+  WEICON ASİST — BİLDİRİM LİSTESİ v1
+  ======================================
+  Eski uygulamanın bildirimListesiModal'ıyla BİREBİR aynı: ▶️ Açık Süreçler
+  (15+/30+/33+ gün eşiği, seviye renkli sol çizgi), 📆 Ziyaret Hatırlatmaları,
+  📌 Görevler. Ana Sayfa'daki bildirim banner'ından buraya gelinir.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Bildirimler</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="bildirimler-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+  <div id="bildirimIcerik"></div>
+  <p class="bos-mesaj" id="bildirimBosMesaj" hidden>Takip gerektiren konu yok. 🎉</p>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="customer-data.js"></script>
+<script src="reports-data.js"></script>
+<script src="bildirimler-render.js"></script>
+</body>
+</html>

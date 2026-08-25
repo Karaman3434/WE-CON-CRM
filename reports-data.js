@@ -154,20 +154,68 @@ var ReportsData = (function(){
     var aylar = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
     var ayAd = aylar[hedefAy.getMonth()];
     var yil = hedefAy.getFullYear().toString();
-    var toplam = 0, sayi = 0;
+    var toplam = 0, prim = 0, sayi = 0;
     tumSiparisler().forEach(function(k){
       if(!k.tarih) return;
       var parca = k.tarih.split(" ");
       if((parca[1]||"")!==ayAd || (parca[2]||"")!==yil) return;
       sayi++;
-      (k.urunler||[]).forEach(function(u){ toplam += u.toplamEuro||0; });
+      (k.urunler||[]).forEach(function(u){
+        toplam += u.toplamEuro||0;
+        var mk = (u.iskBirim||0)-(u.dipFiyat||0);
+        var satirPrimi = mk*(u.adet||1)*0.22;
+        if(satirPrimi>0) prim += satirPrimi; // eski uygulamayla aynı: negatif primli satırlar toplama katılmaz
+      });
     });
-    return {ayAd:ayAd, yil:yil, toplam:toplam, sayi:sayi};
+    return {ayAd:ayAd, yil:yil, toplam:toplam, prim:prim, sayi:sayi};
+  }
+
+  // Eski uygulamanın "Aylık Sipariş & Prim Özeti" tablosuyla BİREBİR aynı:
+  // son 12 ay, AY|SATIŞ|PRİM|TL PRİM sütunları, mevcut kurla TL karşılığı.
+  function aylikPrimOzeti12(){
+    var sonuc = [];
+    for(var i=0;i<12;i++){ sonuc.push(ayToplami(i)); }
+    var kur = parseFloat(localStorage.getItem("weicon_kur")) || 0;
+    sonuc.forEach(function(ay){ ay.primTl = ay.prim * kur; });
+    return {aylar: sonuc, kur: kur};
   }
 
   function son6Ay(){
     var sonuc = [];
     for(var i=0;i<6;i++){ sonuc.push(ayToplami(i)); }
+    return sonuc;
+  }
+
+  // Eski uygulamanın bildirimleriHesapla() ile AYNI mantık: her müşterinin
+  // en son teklif/proforma/numune kaydı, eğer ondan SONRA bir sipariş
+  // gelmemişse "açık süreç" sayılır. 15+ gün ⏳, 30+ gün ⚠️, 33+ gün 🔴.
+  function acikSurecleriHesapla(){
+    var tumu = sonIslemler();
+    var siparisler = tumu.filter(function(k){ return k.tip==="siparis"; });
+    var bekleyenTipler = ["teklif","proforma","numune"];
+    var musteriMap = {};
+
+    tumu.filter(function(k){ return bekleyenTipler.indexOf(k.tip)>=0; }).forEach(function(k){
+      var anahtar = (k.musteri||"").toLocaleLowerCase("tr-TR");
+      if(!musteriMap[anahtar] || (k.ts||0) > musteriMap[anahtar].ts){
+        musteriMap[anahtar] = k;
+      }
+    });
+
+    var bugun = Date.now();
+    var sonuc = [];
+    Object.keys(musteriMap).forEach(function(anahtar){
+      var k = musteriMap[anahtar];
+      var sonrasindaSiparisVar = siparisler.some(function(s){
+        return (s.musteri||"").toLocaleLowerCase("tr-TR")===anahtar && (s.ts||0) > (k.ts||0);
+      });
+      if(sonrasindaSiparisVar) return;
+      var gun = Math.floor((bugun-(k.ts||0))/86400000);
+      if(gun < 15) return;
+      var seviye = gun>=33 ? "kritik" : (gun>=30 ? "ikinci" : "ilk");
+      sonuc.push({musteri:k.musteri, sehir:k.sehir||"", tip:k.tip, ts:k.ts, tarih:k.tarih, gun:gun, seviye:seviye, urunSayisi:(k.urunler||[]).length});
+    });
+    sonuc.sort(function(a,b){ return b.gun-a.gun; });
     return sonuc;
   }
 
@@ -221,6 +269,8 @@ var ReportsData = (function(){
     gorevTamamlandiToggle: gorevTamamlandiToggle,
     ayToplami: ayToplami,
     son6Ay: son6Ay,
+    acikSurecleriHesapla: acikSurecleriHesapla,
+    aylikPrimOzeti12: aylikPrimOzeti12,
     enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler,
     kaydiKacanIsaretle: kaydiKacanIsaretle,
     kacanOzetBuAy: kacanOzetBuAy,
