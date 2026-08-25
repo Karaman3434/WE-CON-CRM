@@ -48,9 +48,12 @@ function bilgileriKaydetTiklandi(){
     btn.textContent = "Kaydediliyor...";
     CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, function(basarili, err){
       btn.disabled = false;
-      btn.textContent = "Bilgileri Güncelle";
-      if(basarili) alert("✓ Güncellendi.");
-      else hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      btn.textContent = "Kaydet";
+      if(basarili){
+        document.getElementById("detayBilgiOverlay").hidden = true;
+      } else {
+        hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
     });
   }catch(e){ hataGoster("Bilgiler kaydedilemedi: " + e.message); }
 }
@@ -278,9 +281,14 @@ document.addEventListener("DOMContentLoaded", function(){
   yetkiliEkleBagla();
 
   document.getElementById("btnBilgiKaydet").onclick = bilgileriKaydetTiklandi;
-  document.getElementById("btnDuzenleAc").onclick = function(){
-    document.getElementById("detayBilgiForm").hidden = !document.getElementById("detayBilgiForm").hidden;
+  document.getElementById("btnBilgiKapat").onclick = function(){
+    document.getElementById("detayBilgiOverlay").hidden = true;
   };
+  ["ozetAlanVade","ozetAlanFatura","ozetAlanKargo"].forEach(function(id){
+    document.getElementById(id).onclick = function(){
+      document.getElementById("detayBilgiOverlay").hidden = false;
+    };
+  });
 
   CustomerData.listeDegistiginde(function(){
     var taze = CustomerData.musteriBul(seciliMusteriAdi);

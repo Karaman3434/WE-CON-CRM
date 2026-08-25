@@ -137,6 +137,25 @@ var KmData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  // Tablodaki bir hücreye dokunup manuel düzeltme yapmak için genel alan
+  // güncelleyici (Tarih, Saat, Başl., Bitiş, Güzergah, Ziyaret, İş, Özel).
+  var ALAN_HARITA = {
+    saat: "saat", baslangic: "km", bitis: "bitisKm",
+    guzergah: "guzergah", ziyaret: "ziyaretYerleri", isKm: "isKm", ozelKm: "ozelKm"
+  };
+  function hucreGuncelle(anahtar, alanAdi, deger, geriBildir){
+    try{
+      var firebaseAlan = ALAN_HARITA[alanAdi];
+      if(!firebaseAlan){ geriBildir(false, "Bilinmeyen alan"); return; }
+      var sayisalMi = (firebaseAlan==="km" || firebaseAlan==="bitisKm" || firebaseAlan==="isKm" || firebaseAlan==="ozelKm");
+      var yaziliDeger = sayisalMi ? (parseFloat(deger)||0) : (deger||"");
+      var db = firebase.database();
+      db.ref("kmTakip/" + anahtar + "/" + firebaseAlan).set(yaziliDeger).then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   function buAyinKayitlari(){
     var now = new Date();
     var yilAy = now.getFullYear()+"-"+("0"+(now.getMonth()+1)).slice(-2);
@@ -194,6 +213,7 @@ var KmData = (function(){
     dunOzeti: dunOzeti,
     gununKmGir: gununKmGir,
     ziyaretYerleriniKaydet: ziyaretYerleriniKaydet,
+    hucreGuncelle: hucreGuncelle,
     buAyinKayitlari: buAyinKayitlari,
     ayarlarOku: ayarlarOku,
     ayarlarKaydet: ayarlarKaydet,

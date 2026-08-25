@@ -44,47 +44,6 @@ function pinDegistirTiklandi(){
   });
 }
 
-// Eski uygulamanın tumVeriyiYedekle() fonksiyonuyla AYNI yapıda JSON indirir:
-// {yedekTarihi, kdvOrani, musteriler, arsiv}. Firebase'den canlı veriyi okuyup
-// indirir.
-function yedekleTiklandi(){
-  try{
-    var db = firebase.database();
-    Promise.all([
-      db.ref("musteriler").once("value"),
-      db.ref("arsiv").once("value")
-    ]).then(function(sonuclar){
-      var musterilerSnap = sonuclar[0].val();
-      var arsivSnap = sonuclar[1].val() || {};
-      var musteriler = musterilerSnap ? (Array.isArray(musterilerSnap) ? musterilerSnap.filter(Boolean) : Object.values(musterilerSnap)) : [];
-      var kdv = parseFloat(localStorage.getItem("weicon_kdv_orani")) || 20;
-
-      var yedek = {
-        yedekTarihi: new Date().toISOString(),
-        kdvOrani: kdv,
-        musteriler: musteriler,
-        arsiv: arsivSnap
-      };
-
-      var blob = new Blob([JSON.stringify(yedek, null, 2)], {type:"application/json"});
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement("a");
-      var bugun = new Date();
-      var tarihStr = bugun.getFullYear()+"-"+String(bugun.getMonth()+1).padStart(2,"0")+"-"+String(bugun.getDate()).padStart(2,"0");
-      a.href = url;
-      a.download = "WEICON_ASIST_Yedek_"+tarihStr+".json";
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      localStorage.setItem("weicon_son_yedek_ts", Date.now());
-
-      var siparisSayisi = ((arsivSnap.siparis||[]).length||0)+((arsivSnap.teklif||[]).length||0)+((arsivSnap.proforma||[]).length||0)+((arsivSnap.numune||[]).length||0);
-      alert("✓ Yedek indirildi: " + musteriler.length + " müşteri, " + siparisSayisi + " işlem kaydı.");
-    }).catch(function(err){
-      hataGoster("Yedekleme başarısız: " + (err && err.message ? err.message : "bilinmeyen hata"));
-    });
-  }catch(e){ hataGoster("Yedekleme başlatılamadı: " + e.message); }
-}
-
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -92,7 +51,6 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnPinDegistir").onclick = pinDegistirTiklandi;
-  document.getElementById("btnYedekle").onclick = yedekleTiklandi;
   document.getElementById("btnMenuAktif").onclick = function(){};
   document.getElementById("btnCikis").onclick = function(){
     if(!confirm("Çıkış yapmak istediğinize emin misiniz?")) return;

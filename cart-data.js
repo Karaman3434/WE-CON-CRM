@@ -41,6 +41,23 @@ var CartData = (function(){
     }
   }
 
+  // Hesapla popup'ından "Listeye Ekle" ile kesin olarak hesaplandı sayılır
+  // (değerler 0 olsa bile — kullanıcı gözden geçirip onayladı demektir).
+  function hesaplandiIsaretle(idx, listeFiyat, dipFiyat, iskonto, adet){
+    var u = sepet.find(function(u){ return u.idx === idx; });
+    if(!u) return;
+    u.listeFiyat = listeFiyat;
+    u.dipFiyat = dipFiyat;
+    u.iskonto = iskonto;
+    u.adet = adet;
+    u.hesaplandi = true;
+    kaydet();
+  }
+
+  function tamamHesaplandiMi(){
+    return sepet.length>0 && sepet.every(function(u){ return u.hesaplandi; });
+  }
+
   function kurOku(){
     var v = parseFloat(localStorage.getItem(KUR_KEY));
     return isNaN(v) ? 0 : v;
@@ -99,6 +116,8 @@ var CartData = (function(){
     liste: liste,
     sil: sil,
     alaniGuncelle: alaniGuncelle,
+    hesaplandiIsaretle: hesaplandiIsaretle,
+    tamamHesaplandiMi: tamamHesaplandiMi,
     kurOku: kurOku,
     kurKaydet: kurKaydet,
     kdvOku: kdvOku,

@@ -61,9 +61,9 @@ function sonuclariCiz(){
       var bilgi = ProductData.urunBilgisi(sonuclar[i].item);
       var eklendi = ProductData.sepetteMi(idx);
       html += "<tr>"
-        + "<td class='product-cell'>"
+        + "<td class='product-cell product-cell--tikla' data-arama='" + htmlEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "'>"
         + "<div class='tablo-kod'><span class='tablo-kod-b'>Berta:</span> " + htmlEsc(bilgi.berta||"-") + " <span class='tablo-kod-a'>- Abas:</span> " + htmlEsc(bilgi.abas||"-") + "</div>"
-        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + "</div>"
+        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span></div>"
         + "</td>"
         + "<td><span class='tablo-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
         + "<td><button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"Seç") + "</button></td>"
@@ -71,10 +71,21 @@ function sonuclariCiz(){
     }
     liste.innerHTML = html;
 
+    // Ürün hücresine dokununca WEICON Türkiye sitesinde bu ürünü ara (yeni
+    // sekme). Statik siteden doğrudan resim/teknik bilgi çekmek CORS
+    // nedeniyle mümkün değil, bu yüzden gerçek WEICON sayfasını açıyoruz.
+    liste.querySelectorAll(".product-cell--tikla").forEach(function(td){
+      td.onclick = function(){
+        var kod = this.getAttribute("data-arama");
+        window.open("https://www.weicon.com.tr/search?search=" + encodeURIComponent(kod), "_blank");
+      };
+    });
+
     // Buton olayları — HTML string'e onclick gömmek yerine burada bağlanıyor
     var butonlar = liste.querySelectorAll(".btn-add");
     butonlar.forEach(function(btn){
-      btn.onclick = function(){
+      btn.onclick = function(e){
+        e.stopPropagation();
         var idx = parseInt(this.getAttribute("data-idx"), 10);
         var eklendiMi = ProductData.sepeteEkleCikar(idx);
         sepetSatiriniGuncelle();
@@ -227,11 +238,11 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("yeniUrunAdi").value = "";
     document.getElementById("yeniUrunFiyat").value = "";
     document.getElementById("yeniUrunHata").hidden = true;
-    document.getElementById("yeniUrunFormBolum").hidden = false;
-    document.getElementById("yeniUrunFormBolum").scrollIntoView({behavior:"smooth", block:"start"});
+    document.getElementById("yeniUrunOverlay").hidden = false;
+    document.getElementById("yeniUrunOverlay").scrollIntoView({behavior:"smooth", block:"start"});
   };
   document.getElementById("btnYeniUrunVazgec").onclick = function(){
-    document.getElementById("yeniUrunFormBolum").hidden = true;
+    document.getElementById("yeniUrunOverlay").hidden = true;
   };
   document.getElementById("btnYeniUrunKaydet").onclick = function(){
     var bilgi = {
@@ -250,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function(){
       btn.textContent = "✓ Kaydet";
       if(basarili){
         alert("✓ \"" + bilgi.ad + "\" listeye eklendi.");
-        document.getElementById("yeniUrunFormBolum").hidden = true;
+        document.getElementById("yeniUrunOverlay").hidden = true;
       } else {
         hataEl.textContent = "⚠️ " + (typeof sonuc === "string" ? sonuc : (sonuc && sonuc.message ? sonuc.message : "Eklenemedi."));
         hataEl.hidden = false;

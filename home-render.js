@@ -75,6 +75,21 @@ function bildirimBanneriGuncelle(){
   }catch(e){ hataGoster("Bildirim banner'ı güncellenemedi: " + e.message); }
 }
 
+function kmDurumuGuncelle(){
+  try{
+    var el = document.getElementById("kmDurumAlt");
+    if(!el || typeof KmData === "undefined") return;
+    var bugun = KmData.kaydiOku(KmData.bugunAnahtari());
+    if(bugun && bugun.km!=null && bugun.km!==""){
+      el.textContent = "✓ Bugün: " + bugun.km + " km girildi";
+      el.classList.add("menu-alt--basarili");
+    } else {
+      el.textContent = "TAKİP";
+      el.classList.remove("menu-alt--basarili");
+    }
+  }catch(e){ hataGoster("KM durumu güncellenemedi: " + e.message); }
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -88,4 +103,5 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("bildirimBanner").onclick = function(){ window.location.href = "bildirimler.html"; };
   // Firebase verisi henüz gelmemiş olabilir; ilk anda da bir kez dene.
   kartlariGuncelle();
+  if(typeof KmData !== "undefined"){ KmData.degistiginde(kmDurumuGuncelle); kmDurumuGuncelle(); }
 });

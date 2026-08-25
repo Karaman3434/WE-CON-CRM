@@ -183,6 +183,9 @@ body {
   color: #8a94a3;
   letter-spacing: .3px;
 }
+.menu-alt--basarili {
+  color: #1f9d55;
+}
 
 .menu-kart--mavi { background: #eaf2fc; border-color: #3569b8; }
 .menu-kart--mavi .menu-baslik { color: #2563eb; }

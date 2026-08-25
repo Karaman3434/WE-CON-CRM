@@ -116,17 +116,42 @@ var CustomerData = (function(){
     return sonuc;
   }
 
-  function ziyaretEkle(musteriAd, not, geriBildir){
+  function ziyaretEkle(musteriAd, not, tur, hatirlatmaTarihi, geriBildir){
+    // Geriye uyumluluk: eski çağrılar ziyaretEkle(ad, not, geriBildir) şeklindeydi.
+    if(typeof tur === "function"){ geriBildir = tur; tur = "ziyaret"; hatirlatmaTarihi = null; }
     guvenliYaz(function(tazeListe){
       var idx = musteriIndexBul(tazeListe, musteriAd);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].ziyaretGecmisi) tazeListe[idx].ziyaretGecmisi = [];
-      var kayit = {ts:Date.now(), not: not || "Ziyaret edildi, not girilmedi.", tur:"ziyaret"};
+      var kayit = {ts:Date.now(), not: not || "", tur: tur || "ziyaret"};
+      if(hatirlatmaTarihi) kayit.hatirlatmaTarihi = hatirlatmaTarihi;
       tazeListe[idx].ziyaretGecmisi.push(kayit);
       tazeListe[idx].ziyaretGecmisi.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
       tazeListe[idx].sonZiyaret = tazeListe[idx].ziyaretGecmisi[0].ts;
       tazeListe[idx].sonZiyaretNot = tazeListe[idx].ziyaretGecmisi[0].not;
     }, geriBildir);
+  }
+
+  // Takvim görünümü için: tüm müşterilerin tüm ziyaret/temas kayıtlarını,
+  // hangi müşteriye ait olduğu bilgisiyle birlikte tek listede döner.
+  function tumZiyaretTemaslar(){
+    var sonuc = [];
+    liste.forEach(function(m){
+      (m.ziyaretGecmisi||[]).forEach(function(z, i){
+        sonuc.push({
+          musteri: m.ad, sehir: m.sehir||"", ts: z.ts, not: z.not||"",
+          tur: z.tur||"ziyaret", hatirlatmaTarihi: z.hatirlatmaTarihi||null, kayitIndex: i
+        });
+      });
+    });
+    return sonuc;
+  }
+
+  // Bugün sabahı hatırlatılması gereken kayıtlar (hatirlatmaTarihi bugüne eşit).
+  function hatirlatmalarBugun(){
+    var bugun = new Date();
+    var bugunStr = bugun.getFullYear() + "-" + String(bugun.getMonth()+1).padStart(2,"0") + "-" + String(bugun.getDate()).padStart(2,"0");
+    return tumZiyaretTemaslar().filter(function(z){ return z.hatirlatmaTarihi === bugunStr; });
   }
 
   // Türkiye il plaka kodları — şehir adından 2 haneli kodu bulmak için.
@@ -342,6 +367,8 @@ var CustomerData = (function(){
     uzunluk: function(){ return liste.length; },
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,
+    tumZiyaretTemaslar: tumZiyaretTemaslar,
+    hatirlatmalarBugun: hatirlatmalarBugun,
     gunFarkiHesapla: gunFarkiHesapla,
     yeniMusteriKaydet: yeniMusteriKaydet,
     benzerMusterileriBul: benzerMusterileriBul,

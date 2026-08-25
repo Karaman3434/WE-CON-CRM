@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — SEPET / HESAPLAMA v2
-  =====================================
-  Ürün Bul sayfasında seçilen ürünler burada listelenir; her ürün için
-  liste fiyatı, dip fiyat, iskonto% ve adet girilip anlık hesaplama yapılır.
-  Aynı desen: shell / style / data / render, ağır CSS efekti yok.
+  WEICON ASİST — SEPET / HAREKET FORMU v3
+  ==========================================
+  Ürün Bul'dan seçilen ürünler burada iki gruba ayrılır: HESAPLANACAK (sarı,
+  henüz hesaplanmamış) ve HESAPLANDI (yeşil, popup'tan hesaplanıp onaylanmış).
+  Ürün adına dokununca eski calc.html tasarımıyla aynı Hesapla popup'ı açılır;
+  "Listeye Ekle" ile ürün hesaplandı grubuna geçer. Tüm ürünler hesaplanmadan
+  Devam Et aktif olmaz.
 -->
 <html lang="tr">
 <head>
@@ -13,6 +15,7 @@
 <title>WEICON ASİST — Sepet</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="calc-style.css">
 <link rel="stylesheet" href="cart-style.css">
 </head>
 <body>
@@ -36,17 +39,22 @@
   </div>
 
   <div id="sepetListesi">
-    <div class="data-table-container">
+    <div class="sepet-grup-baslik sepet-grup-baslik--sari" id="grupSariBaslik" hidden>🟡 HESAPLANACAK</div>
+    <div id="grupSariListe"></div>
+    <div class="sepet-grup-baslik sepet-grup-baslik--yesil" id="grupYesilBaslik" hidden>🟢 HESAPLANDI</div>
+    <div class="data-table-container" id="grupYesilTabloAlani" hidden>
       <table class="data-table sepet-tablo">
         <thead><tr>
-          <th class="col-urun">ÜRÜN İSMİ</th>
+          <th class="col-urun">ÜRÜN</th>
           <th class="col-dar">ADET</th>
           <th class="col-dar">LİSTE</th>
           <th class="col-dar">İSK%</th>
+          <th class="col-dar">NET</th>
           <th class="col-orta">TOPLAM</th>
+          <th class="col-dar">PRİM</th>
           <th class="col-ikon"></th>
         </tr></thead>
-        <tbody id="sepetTabloGovde"></tbody>
+        <tbody id="grupYesilTabloGovde"></tbody>
       </table>
     </div>
   </div>
@@ -65,6 +73,44 @@
   </section>
 
   <button class="devam-buton" id="btnDevamEt" hidden>Devam Et — Müşteri Seç</button>
+  <p class="devam-uyari" id="devamUyari" hidden>⚠️ Devam etmeden önce sarı gruptaki tüm ürünleri hesapla.</p>
+
+  <!-- HESAPLA POPUP — eski calc.html tasarımıyla birebir aynı alanlar -->
+  <div class="hesapla-overlay" id="hesaplaOverlay" hidden>
+    <div class="hesapla-kutu">
+      <div class="hesapla-baslik" id="hesaplaUrunAdi"></div>
+      <div class="hesapla-kod" id="hesaplaUrunKod"></div>
+      <div class="hc-grid-2">
+        <div class="hc-beyaz-kart">
+          <div class="hc-beyaz-etiket">Liste Fiyatı (EUR)</div>
+          <input type="number" step="0.01" id="hpListeFiyat" value="0">
+        </div>
+        <div class="hc-beyaz-kart">
+          <div class="hc-beyaz-etiket">Dip (Maliyet) (EUR)</div>
+          <input type="number" step="0.01" id="hpDipFiyat" value="0">
+        </div>
+      </div>
+      <div class="hc-grid-2">
+        <div class="hc-beyaz-kart">
+          <div class="hc-beyaz-etiket">İsk (%)</div>
+          <input type="number" step="0.1" id="hpIskonto" value="0">
+        </div>
+        <div class="hc-beyaz-kart">
+          <div class="hc-beyaz-etiket">Adet</div>
+          <input type="number" step="1" min="1" id="hpAdet" value="1">
+        </div>
+      </div>
+      <div class="hesap-sonuc">
+        <div class="hesap-sonuc-satir"><span class="lbl">NET</span><span class="val" id="hpNet">0,00</span></div>
+        <div class="hesap-sonuc-satir"><span class="lbl">TOPLAM</span><span class="val" id="hpToplam">0,00</span></div>
+        <div class="hesap-sonuc-satir"><span class="lbl">PRİM</span><span class="val" id="hpPrim">0,00</span></div>
+      </div>
+      <div class="hc-alt-buton-satir">
+        <button class="hc-kapat-buton" id="btnHesaplaVazgec">✕ Kapat</button>
+        <button class="hc-listeye-ekle-buton" id="btnHesaplaListeyeEkle">➕ LİSTEYE EKLE</button>
+      </div>
+    </div>
+  </div>
 
 </main>
 

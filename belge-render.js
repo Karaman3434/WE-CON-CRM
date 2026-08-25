@@ -244,6 +244,23 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnYazdir").onclick = function(){ window.print(); };
+  document.getElementById("btnBelgeSil").onclick = function(){
+    if(!ref) return;
+    if(!confirm("Bu kayıt tamamen silinsin mi? Bu geri alınamaz.")) return;
+    var btn = document.getElementById("btnBelgeSil");
+    btn.disabled = true;
+    btn.textContent = "Siliniyor...";
+    ReportsData.kaydiSil(ref.tip, ref.ts, function(basarili, err){
+      if(basarili){
+        alert("✓ Kayıt silindi.");
+        window.location.href = "reports.html";
+      } else {
+        btn.disabled = false;
+        btn.textContent = "🗑️ Kaydı Sil";
+        hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
+    });
+  };
 
   var ref = null;
   try{ ref = JSON.parse(localStorage.getItem("weiconv2_goruntulenen_belge")||"null"); }catch(e){}

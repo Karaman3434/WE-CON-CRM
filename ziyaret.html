@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!--
+  WEICON ASİST — ZİYARET / TEMAS TAKVİMİ v2
+  =============================================
+  Aylık takvim: Pazartesi başlangıç, Cmt/Paz kırmızı. Güne dokununca o günün
+  ziyaret/temas kayıtları + yeni kayıt ekleme formu (firma seç, ziyaret/temas,
+  not, opsiyonel hatırlatma tarihi) açılır. Gün üzerinde kaç kayıt varsa rozet
+  gösterir.
+-->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -6,7 +14,7 @@
 <title>WEICON ASİST — Ziyaret Takvimi</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
-<link rel="stylesheet" href="reports-style.css">
+<link rel="stylesheet" href="ziyaret-style.css">
 </head>
 <body>
 
@@ -22,9 +30,62 @@
 </nav>
 
 <main class="sayfa">
-  <p class="ziyaret-aciklama">15 gündür ziyaret edilmeyen (veya hiç ziyaret edilmemiş) müşteriler en üstte listelenir.</p>
-  <div id="ziyaretListesi"></div>
+
+  <div class="ziy-ay-gezinme">
+    <button class="ziy-ay-ok" id="btnOncekiAy">◀</button>
+    <div class="ziy-ay-baslik" id="ziyAyBaslik"></div>
+    <button class="ziy-ay-ok" id="btnSonrakiAy">▶</button>
+  </div>
+
+  <div class="ziy-takvim-kutu">
+    <div class="ziy-gun-basliklari">
+      <span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span>
+      <span class="ziy-tatil-baslik">Cmt</span><span class="ziy-tatil-baslik">Paz</span>
+    </div>
+    <div class="ziy-takvim-grid" id="ziyTakvimGrid"></div>
+  </div>
+
+  <section class="ziy-gun-panel" id="ziyGunPanel" hidden>
+    <div class="ziy-gun-panel-baslik" id="ziyGunPanelBaslik"></div>
+
+    <div id="ziyGunKayitListesi"></div>
+    <p class="bos-mesaj" id="ziyGunKayitBos" hidden>Bu günde kayıt yok.</p>
+
+    <div class="ziy-yeni-kayit-baslik">+ Yeni kayıt ekle</div>
+    <div class="arama-kutusu">
+      <input type="text" id="ziyFirmaAra" placeholder="Firma ara..." autocomplete="off">
+      <span class="arama-ikon">🔍</span>
+    </div>
+    <div id="ziyFirmaSonuclari"></div>
+    <div class="ziy-secili-firma" id="ziySeciliFirma" hidden></div>
+
+    <div class="ziy-tur-secim">
+      <button class="ziy-tur-btn ziy-tur-btn--ziyaret" id="btnTurZiyaret" data-tur="ziyaret">📍 Ziyaret</button>
+      <button class="ziy-tur-btn ziy-tur-btn--temas" id="btnTurTemas" data-tur="temas">☎ Temas</button>
+    </div>
+
+    <input type="text" id="ziyNot" placeholder="Not (opsiyonel)">
+
+    <label class="ziy-hatirlatma-satir">
+      <input type="checkbox" id="ziyHatirlatmaCheck">
+      <span>🔔 Hatırlatma ekle</span>
+    </label>
+    <input type="date" id="ziyHatirlatmaTarih" hidden>
+    <p class="ziy-hatirlatma-not">Bu tarihin sabahı, uygulamayı açtığında hatırlatma bildirimi gösterilir.</p>
+
+    <button class="ziy-kaydet-btn" id="btnZiyKaydet">✓ Kaydet</button>
+    <button class="ziy-panel-kapat-btn" id="btnZiyGunKapat">Kapat</button>
+  </section>
+
 </main>
+
+<div class="ziy-hatirlatma-overlay" id="ziyHatirlatmaOverlay" hidden>
+  <div class="ziy-hatirlatma-kutu">
+    <div class="ziy-hatirlatma-baslik">🔔 Bugünkü Hatırlatmalar</div>
+    <div id="ziyHatirlatmaListesi"></div>
+    <button class="ziy-hatirlatma-kapat-btn" id="btnZiyHatirlatmaKapat">Tamam</button>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>

@@ -291,3 +291,95 @@
   font-weight: 900;
   cursor: pointer;
 }
+.devam-buton:disabled {
+  background: #d3d1c7;
+  color: #8a8880;
+  cursor: not-allowed;
+}
+.devam-uyari {
+  text-align: center;
+  color: #b7601f;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+/* ---------- HESAPLANACAK grubu: kart listesi, sarı zemin ---------- */
+.sepet-grup-baslik--sari, .sepet-grup-baslik--yesil {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.sepet-grup-baslik--sari { background: #fff9e6; color: #8a6d1a; }
+.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; margin-top: 14px; }
+
+.sepet-bekleyen-kart {
+  background: #fffdf5;
+  border: 1.5px solid #f0d98a;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.sepet-bekleyen-ad {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0b3d67;
+  text-decoration: underline;
+}
+.sepet-bekleyen-kod {
+  font-size: 10px;
+  color: #8a6d1a;
+  margin-top: 2px;
+}
+.sepet-bekleyen-ok {
+  color: #b7601f;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* ---------- HESAPLANDI grubu: tablo, yeşil zemin ---------- */
+.sepet-tablo tbody tr { background: #f6fdf9; }
+.sepet-tablo .sepet-urun-ad-tikla {
+  font-weight: 800;
+  color: #0b3d67;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Hesapla popup ---------- */
+.hesapla-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 9999;
+}
+.hesapla-overlay[hidden] { display: none; }
+.hesapla-kutu {
+  background: #ffffff;
+  border-radius: 14px 14px 0 0;
+  padding: 18px 16px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.hesapla-baslik {
+  font-size: 15px;
+  font-weight: 900;
+  color: #003a70;
+}
+.hesapla-kod {
+  font-size: 11px;
+  color: #8a94a3;
+  margin-bottom: 12px;
+}

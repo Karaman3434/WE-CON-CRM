@@ -82,6 +82,7 @@ function tabloyuCiz(){
   try{
     var kayitlar = KmData.buAyinKayitlari();
     var govde = document.getElementById("kmTabloGovde");
+    var bugunAnahtar = KmData.bugunAnahtari();
 
     if(kayitlar.length === 0){
       govde.innerHTML = "<tr><td colspan='8' style='text-align:center;color:#8a94a3;padding:16px 0;'>Bu ay henüz kayıt yok.</td></tr>";
@@ -96,20 +97,36 @@ function tabloyuCiz(){
       var etiket = parseInt(parca[2],10) + " " + AYLAR_KISA[parseInt(parca[1],10)-1];
       if(k.isKm!=null) toplamIs += k.isKm;
       if(k.ozelKm!=null) toplamOzel += k.ozelKm;
-      return "<tr>"
+      var bugunMu = k.anahtar === bugunAnahtar;
+      var satirSinifi = bugunMu ? " class='km-satir--bugun'" : "";
+      var baslangicSinifi = bugunMu ? " km-td-baslangic-bugun" : "";
+      return "<tr" + satirSinifi + " data-anahtar='" + k.anahtar + "'>"
         + "<td>" + etiket + "</td>"
-        + "<td>" + (k.saat||"-") + "</td>"
-        + "<td>" + (k.km!=null?k.km:"-") + "</td>"
-        + "<td>" + (k.bitisKm!=null?k.bitisKm:"-") + "</td>"
-        + "<td class='km-td-metin'>" + (k.guzergah||"-") + "</td>"
-        + "<td class='km-td-metin'>" + (k.ziyaretYerleri||"-") + "</td>"
-        + "<td class='km-td-is'>" + (k.isKm!=null?k.isKm:"-") + "</td>"
-        + "<td class='km-td-ozel'>" + (k.ozelKm!=null?k.ozelKm:"-") + "</td>"
+        + "<td contenteditable='true' data-alan='saat'>" + (k.saat||"-") + "</td>"
+        + "<td contenteditable='true' data-alan='baslangic' class='km-td-baslangic" + baslangicSinifi + "'>" + (k.km!=null?k.km:"-") + "</td>"
+        + "<td contenteditable='true' data-alan='bitis'>" + (k.bitisKm!=null?k.bitisKm:"-") + "</td>"
+        + "<td class='km-td-metin' contenteditable='true' data-alan='guzergah'>" + (k.guzergah||"-") + "</td>"
+        + "<td class='km-td-metin' contenteditable='true' data-alan='ziyaret'>" + (k.ziyaretYerleri||"-") + "</td>"
+        + "<td class='km-td-is' contenteditable='true' data-alan='isKm'>" + (k.isKm!=null?k.isKm:"-") + "</td>"
+        + "<td class='km-td-ozel' contenteditable='true' data-alan='ozelKm'>" + (k.ozelKm!=null?k.ozelKm:"-") + "</td>"
         + "</tr>";
     }).join("");
 
     document.getElementById("kmAyToplamIs").textContent = toplamIs + " km";
     document.getElementById("kmAyToplamOzel").textContent = toplamOzel + " km";
+
+    govde.querySelectorAll("td[contenteditable]").forEach(function(td){
+      td.addEventListener("blur", function(){
+        var tr = this.closest("tr");
+        var anahtar = tr.getAttribute("data-anahtar");
+        var alan = this.getAttribute("data-alan");
+        var deger = this.textContent.trim();
+        if(deger === "-") deger = "";
+        KmData.hucreGuncelle(anahtar, alan, deger, function(basarili, err){
+          if(!basarili) hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        });
+      });
+    });
   }catch(e){ hataGoster("Tablo çizilemedi: " + e.message); }
 }
 
@@ -158,8 +175,9 @@ function excelAktar(){
       alert("Bu ay henüz kayıt yok, aktarılacak veri bulunamadı.");
       return;
     }
-    var adSoyad = document.getElementById("kmAdSoyad").value || "";
-    var plaka = document.getElementById("kmPlaka").value || "";
+    var kayaliAyarlar = kmAyarlarOnbellek || {};
+    var adSoyad = kayaliAyarlar.adSoyad || "";
+    var plaka = kayaliAyarlar.plaka || "";
     var now = new Date();
     var donemEtiket = AYLAR[now.getMonth()] + " " + now.getFullYear();
 
@@ -210,6 +228,8 @@ function excelAktar(){
     XLSX.writeFile(wb, dosyaAdi);
   }catch(e){ hataGoster("Excel oluşturulamadı: " + e.message); }
 }
+
+var kmAyarlarOnbellek = {};
 
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
@@ -270,13 +290,7 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
   KmData.ayarlarOku(function(ayarlar){
-    document.getElementById("kmAdSoyad").value = ayarlar.adSoyad || "";
-    document.getElementById("kmPlaka").value = ayarlar.plaka || "";
-  });
-  ["kmAdSoyad","kmPlaka"].forEach(function(id){
-    document.getElementById(id).addEventListener("change", function(){
-      KmData.ayarlarKaydet(document.getElementById("kmAdSoyad").value, document.getElementById("kmPlaka").value);
-    });
+    kmAyarlarOnbellek = ayarlar || {};
   });
 
   KmData.degistiginde(function(){

@@ -1,0 +1,240 @@
+.sayfa { padding: 8px 14px 24px; }
+
+.ziy-ay-gezinme {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.ziy-ay-ok {
+  background: #eaf2fc;
+  border: 2px solid #3569b8;
+  color: #003a70;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.ziy-ay-baslik {
+  font-size: 16px;
+  font-weight: 900;
+  color: #003a70;
+}
+
+.ziy-takvim-kutu {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 14px;
+}
+.ziy-gun-basliklari {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 900;
+  text-align: center;
+  color: #556170;
+  margin-bottom: 4px;
+}
+.ziy-tatil-baslik { color: #c0392b; }
+
+.ziy-takvim-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.ziy-gun-hucre {
+  position: relative;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #333333;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.ziy-gun-hucre--bos { cursor: default; }
+.ziy-gun-hucre--tatil { color: #c0392b; }
+.ziy-gun-hucre--bugun { background: #eaf2fc; border: 2px solid #3569b8; }
+.ziy-gun-hucre--secili { background: #fdf3e3; border: 2px solid #e0730f; }
+.ziy-gun-rozet {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  background: #e0730f;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  font-size: 9px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ziy-gun-panel {
+  background: #f9fafb;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+}
+.ziy-gun-panel-baslik {
+  font-size: 13px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 10px;
+}
+.ziy-kayit-karti {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+}
+.ziy-kayit-musteri { font-size: 12px; font-weight: 800; color: #111; }
+.ziy-kayit-tur { font-size: 10px; margin-top: 2px; font-weight: 700; }
+
+.ziy-yeni-kayit-baslik {
+  font-size: 11px;
+  font-weight: 900;
+  color: #556170;
+  margin: 12px 0 6px;
+}
+.ziy-gun-panel .arama-kutusu input,
+.ziy-gun-panel input[type=text],
+.ziy-gun-panel input[type=date] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 9px 10px;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.ziy-firma-satir {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.ziy-firma-sehir { color: #8a94a3; font-weight: 400; }
+.ziy-secili-firma {
+  background: #eafaf0;
+  color: #0e6b34;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.ziy-tur-secim {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.ziy-tur-btn {
+  border-radius: 6px;
+  padding: 9px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  opacity: .5;
+}
+.ziy-tur-btn--secili { opacity: 1; }
+.ziy-tur-btn--ziyaret { background: #f0fbf3; border: 1.5px solid #1f9d55; color: #0e6b34; }
+.ziy-tur-btn--temas { background: #f6f0fd; border: 1.5px solid #8e44ad; color: #8e44ad; }
+
+.ziy-hatirlatma-satir {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #556170;
+  margin-bottom: 6px;
+}
+.ziy-hatirlatma-not {
+  font-size: 10px;
+  color: #8a94a3;
+  margin: 0 0 10px;
+}
+
+.ziy-kaydet-btn {
+  width: 100%;
+  background: #e0730f;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.ziy-panel-kapat-btn {
+  width: 100%;
+  background: #eef1f5;
+  color: #556170;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ziy-hatirlatma-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+.ziy-hatirlatma-overlay[hidden] { display: none; }
+.ziy-hatirlatma-kutu {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  max-width: 340px;
+  width: 100%;
+}
+.ziy-hatirlatma-baslik {
+  font-size: 15px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 12px;
+}
+.ziy-hatirlatma-kapat-btn {
+  width: 100%;
+  background: #e0730f;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.bos-mesaj {
+  text-align: center;
+  color: #8a94a3;
+  font-size: 13px;
+  padding: 16px 0;
+  font-style: italic;
+}
