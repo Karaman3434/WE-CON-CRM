@@ -76,9 +76,40 @@
   </div>
 
   <div class="islemler-alt-buton-satir">
+    <button class="islemler-birlestir-btn" id="btnBirlestirAc">🔀 Birleştir</button>
     <button class="islemler-sil-btn" id="btnMusteriSil">🗑 Sil</button>
     <a class="islemler-kapat-btn" href="customer.html">Kapat</a>
   </div>
+
+  <!-- MÜŞTERİ BİRLEŞTİRME — açılır bölüm, 2 aşamalı (ara→seç, sonra onay) -->
+  <section class="birlestir-bolum" id="bolumBirlestir" hidden>
+    <div class="birlestir-arama-asama" id="birlestirAramaAsama">
+      <div class="acilir-baslik" id="birlestirAnaAdi"></div>
+      <div class="arama-kutusu">
+        <input type="text" id="birlestirAramaInput" placeholder="Birleştirilecek müşteriyi ara..." autocomplete="off">
+        <span class="arama-ikon">🔍</span>
+      </div>
+      <div id="birlestirAramaListesi"></div>
+      <button class="birlestir-vazgec-btn" id="btnBirlestirVazgec">Vazgeç</button>
+    </div>
+    <div class="birlestir-onay-asama" id="birlestirOnayAsama" hidden>
+      <div class="acilir-baslik">⚠️ Birleştirme Onayı</div>
+      <p class="birlestir-uyari-metin">Aşağıdaki müşteri SİLİNECEK, tüm geçmişi (sipariş/teklif/proforma/numune, temas, yetkili, görev) ana müşteriye taşınacak. Bu işlem geri alınamaz.</p>
+      <div class="birlestir-onay-kutu birlestir-onay-kutu--silinecek">
+        <div class="birlestir-onay-etiket">SİLİNECEK</div>
+        <div class="birlestir-onay-ad" id="birlestirDigerBilgi"></div>
+      </div>
+      <div class="birlestir-onay-ok">↓ birleşecek ↓</div>
+      <div class="birlestir-onay-kutu birlestir-onay-kutu--kalacak">
+        <div class="birlestir-onay-etiket">KALACAK (ANA)</div>
+        <div class="birlestir-onay-ad" id="birlestirAnaBilgi"></div>
+      </div>
+      <div class="form-buton-satir">
+        <button class="birlestir-vazgec-btn" id="btnBirlestirOnayVazgec">Vazgeç</button>
+        <button class="birlestir-onayla-btn" id="btnBirlestirOnayla">✓ Birleştir</button>
+      </div>
+    </div>
+  </section>
 
   <!-- TEMAS (Ziyaret Geçmişi) — açılır bölüm -->
   <section class="acilir-bolum" id="bolumTemas" hidden>

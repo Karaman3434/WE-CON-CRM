@@ -92,6 +92,75 @@
   font-weight: 800;
   cursor: pointer;
 }
+.islemler-birlestir-btn {
+  flex: 1;
+  background: #f0fdfa;
+  color: #0e6b58;
+  border: 2px solid #16a085;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.birlestir-bolum {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #fafbfc;
+}
+.birlestir-vazgec-btn {
+  width: 100%;
+  background: #eef1f5;
+  color: #556170;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.birlestir-arama-sonuc-karti {
+  cursor: pointer;
+  background: #f7f9fc;
+  border: 1px solid #d5dce6;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.birlestir-arama-sonuc-ad { font-weight: 800; font-size: 14px; color: #003a70; }
+.birlestir-arama-sonuc-sehir { font-size: 12px; color: #8a94a3; margin-top: 2px; }
+.birlestir-uyari-metin {
+  font-size: 12px;
+  color: #8a590c;
+  background: #fff6ec;
+  border: 1px solid #f2d9c2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.birlestir-onay-kutu { border-radius: 8px; padding: 12px 14px; margin-bottom: 6px; }
+.birlestir-onay-kutu--silinecek { background: #fdeceb; border: 2px solid #c0392b; }
+.birlestir-onay-kutu--kalacak { background: #f0fdfa; border: 2px solid #16a085; }
+.birlestir-onay-etiket { font-size: 10px; font-weight: 900; letter-spacing: 1px; margin-bottom: 4px; }
+.birlestir-onay-kutu--silinecek .birlestir-onay-etiket { color: #c0392b; }
+.birlestir-onay-kutu--kalacak .birlestir-onay-etiket { color: #0e6b58; }
+.birlestir-onay-ad { font-size: 16px; font-weight: 900; color: #222222; }
+.birlestir-onay-ok { text-align: center; font-size: 12px; color: #8a94a3; font-weight: 800; margin: 6px 0; }
+.birlestir-onayla-btn {
+  flex: 1;
+  background: #16a085;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
 .islemler-kapat-btn {
   flex: 1;
   display: flex;

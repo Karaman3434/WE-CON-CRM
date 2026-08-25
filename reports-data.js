@@ -1,5 +1,5 @@
 /*
-  reports-data.js
+  reports-data.js — WG250826.02
   ===============
   TEK görevi: arşiv kayıtlarını ("arsiv/numune|teklif|proforma|siparis") ve
   görevleri ("gorevler") Firebase'den okumak/yazmak. Eski uygulamayla AYNI
@@ -189,6 +189,32 @@ var ReportsData = (function(){
   // Eski uygulamanın bildirimleriHesapla() ile AYNI mantık: her müşterinin
   // en son teklif/proforma/numune kaydı, eğer ondan SONRA bir sipariş
   // gelmemişse "açık süreç" sayılır. 15+ gün ⏳, 30+ gün ⚠️, 33+ gün 🔴.
+  // YENİ ÖZELLİK (eski uygulamada yoktu, senin isteğinle eklendi): son 3
+  // yılın (bu yıl dahil) toplam satış ve prim özeti.
+  function yillikOzet(){
+    var simdi = new Date();
+    var buYil = simdi.getFullYear();
+    var sonuc = [];
+    for(var y=0; y<3; y++){
+      var hedefYil = (buYil - y).toString();
+      var toplam = 0, prim = 0, sayi = 0;
+      tumSiparisler().forEach(function(k){
+        if(!k.tarih) return;
+        var parca = k.tarih.split(" ");
+        if((parca[2]||"") !== hedefYil) return;
+        sayi++;
+        (k.urunler||[]).forEach(function(u){
+          toplam += u.toplamEuro||0;
+          var mk = (u.iskBirim||0)-(u.dipFiyat||0);
+          var sp = mk*(u.adet||1)*0.22;
+          if(sp>0) prim += sp;
+        });
+      });
+      sonuc.push({yil:hedefYil, toplam:toplam, prim:prim, sayi:sayi});
+    }
+    return sonuc;
+  }
+
   function acikSurecleriHesapla(){
     var tumu = sonIslemler();
     var siparisler = tumu.filter(function(k){ return k.tip==="siparis"; });
@@ -244,6 +270,45 @@ var ReportsData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  // Müşteri Birleştirme'nin devamı: CustomerData.musterileriBirlestir()
+  // müşteri kaydını taşıdıktan sonra çağrılır — arşivdeki (sipariş/teklif/
+  // proforma/numune) kayıtları ve görevleri "diger"den "ana"ya taşır.
+  // Her koleksiyon kendi taze-oku-sonra-yaz adımıyla, sırayla işlenir.
+  function kayitlariBirlestir(digerAd, digerId, anaAd, anaId, geriBildir){
+    var db = firebase.database();
+    var tipler = ["siparis","teklif","proforma","numune"];
+    var i = 0;
+
+    function sonrakiTipeGec(){
+      if(i >= tipler.length){ gorevleriTasi(); return; }
+      var tip = tipler[i]; i++;
+      db.ref("arsiv/" + tip).once("value").then(function(snap){
+        var mevcut = snap.val();
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+        var degistiMi = false;
+        liste.forEach(function(k){
+          var buNaAitMi = (digerId && k.musteriId) ? (k.musteriId===digerId) : (k.musteri===digerAd);
+          if(buNaAitMi){ k.musteri = anaAd; k.musteriId = anaId; degistiMi = true; }
+        });
+        if(!degistiMi) return sonrakiTipeGec();
+        return db.ref("arsiv/" + tip).set(liste).then(sonrakiTipeGec);
+      }).catch(function(err){ geriBildir(false, err); });
+    }
+
+    function gorevleriTasi(){
+      db.ref("gorevler").once("value").then(function(snap){
+        var mevcut = snap.val();
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+        var degistiMi = false;
+        liste.forEach(function(g){ if(g.musteriAd===digerAd){ g.musteriAd=anaAd; degistiMi=true; } });
+        if(!degistiMi) return geriBildir(true);
+        return db.ref("gorevler").set(liste).then(function(){ geriBildir(true); });
+      }).catch(function(err){ geriBildir(false, err); });
+    }
+
+    sonrakiTipeGec();
+  }
+
   function kaydiGuncelle(tip, ts, yeniUrunler, geriBildir){
     try{
       var db = firebase.database();
@@ -270,11 +335,13 @@ var ReportsData = (function(){
     ayToplami: ayToplami,
     son6Ay: son6Ay,
     acikSurecleriHesapla: acikSurecleriHesapla,
+    yillikOzet: yillikOzet,
     aylikPrimOzeti12: aylikPrimOzeti12,
     enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler,
     kaydiKacanIsaretle: kaydiKacanIsaretle,
     kacanOzetBuAy: kacanOzetBuAy,
     kaydiSil: kaydiSil,
+    kayitlariBirlestir: kayitlariBirlestir,
     kaydiGuncelle: kaydiGuncelle
   };
 

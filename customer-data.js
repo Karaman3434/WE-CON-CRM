@@ -282,6 +282,47 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
+  // Eski uygulamanın musteriBirlestirOnayla() ile AYNI mantık: "diger"
+  // müşterinin iletişim/ziyaret bilgileri "ana"ya taşınır, "diger" silinir.
+  // Arşiv (sipariş/teklif/proforma/numune) ve görev taşıma AYRICA
+  // ReportsData.kayitlariBirlestir() ile yapılır (bkz. reports-data.js) —
+  // her koleksiyon kendi güvenli-yaz mekanizmasıyla, taze veri üzerinden.
+  function musterileriBirlestir(anaAd, digerAd, geriBildir){
+    var sonucBilgi = null;
+    guvenliYaz(function(tazeListe){
+      var anaIdx = musteriIndexBul(tazeListe, anaAd);
+      var digerIdx = musteriIndexBul(tazeListe, digerAd);
+      if(anaIdx===-1 || digerIdx===-1) throw new Error("Müşterilerden biri bulunamadı");
+      var ana = tazeListe[anaIdx];
+      var diger = tazeListe[digerIdx];
+      if(!ana.id) ana.id = musteriIdUret(tazeListe, ana.sehir);
+
+      var mevcutIsimler = (ana.iletisimler||[]).map(function(k){ return (k.isim||"").toLocaleLowerCase("tr-TR"); });
+      (diger.iletisimler||[]).forEach(function(k){
+        if(mevcutIsimler.indexOf((k.isim||"").toLocaleLowerCase("tr-TR"))===-1){
+          if(!ana.iletisimler) ana.iletisimler = [];
+          ana.iletisimler.push(k);
+        }
+      });
+
+      if(diger.ziyaretGecmisi && diger.ziyaretGecmisi.length){
+        if(!ana.ziyaretGecmisi) ana.ziyaretGecmisi = [];
+        ana.ziyaretGecmisi = ana.ziyaretGecmisi.concat(diger.ziyaretGecmisi);
+        ana.ziyaretGecmisi.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+        ana.sonZiyaret = ana.ziyaretGecmisi[0].ts;
+        ana.sonZiyaretNot = ana.ziyaretGecmisi[0].not;
+      }
+
+      sonucBilgi = {anaAd: ana.ad, anaId: ana.id, digerAd: diger.ad, digerId: diger.id||null};
+      // digerIdx, anaIdx'ten büyükse önce onu silmek indexleri bozmaz;
+      // güvenli olmak için isimle tekrar bulup öyle çıkarıyoruz.
+      var silinecekIdx = musteriIndexBul(tazeListe, digerAd);
+      tazeListe.splice(silinecekIdx, 1);
+    }, function(basarili, err){
+      geriBildir(basarili, basarili ? sonucBilgi : err);
+    });
+  }
+
   // Bir müşteri kartı açıldığında çağrılır — eski uygulamayla aynı: arama
   // sonuçlarını "en son görüntülenen üstte" sıralayabilmek için.
   function sonGoruntulendi(musteriAd){
@@ -313,6 +354,7 @@ var CustomerData = (function(){
     yetkiliSil: yetkiliSil,
     yetkiliGuncelle: yetkiliGuncelle,
     musteriSil: musteriSil,
+    musterileriBirlestir: musterileriBirlestir,
     sonGoruntulendi: sonGoruntulendi
   };
 

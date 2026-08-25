@@ -184,6 +184,62 @@ function musteriGorevleriniCiz(){
   }catch(e){ hataGoster("Görevler çizilemedi: " + e.message); }
 }
 
+// ---- MÜŞTERİ BİRLEŞTİRME ----
+var birlestirHedefAd = null;
+
+function birlestirAramaCiz(){
+  var q = (document.getElementById("birlestirAramaInput").value||"").trim().toLocaleLowerCase("tr-TR");
+  var sonuclar = CustomerData.ara(q).filter(function(m){ return m.ad !== seciliMusteriAdi; }).slice(0, 30);
+  var el = document.getElementById("birlestirAramaListesi");
+  if(sonuclar.length === 0){
+    el.innerHTML = "<p class='bos-mesaj'>Sonuç yok.</p>";
+    return;
+  }
+  el.innerHTML = sonuclar.map(function(m){
+    return "<div class='birlestir-arama-sonuc-karti' data-ad='" + htmlEsc(m.ad) + "'>"
+      + "<div class='birlestir-arama-sonuc-ad'>" + htmlEsc(m.ad) + "</div>"
+      + (m.sehir ? "<div class='birlestir-arama-sonuc-sehir'>" + htmlEsc(m.sehir) + "</div>" : "")
+      + "</div>";
+  }).join("");
+  el.querySelectorAll(".birlestir-arama-sonuc-karti").forEach(function(kart){
+    kart.onclick = function(){ birlestirHedefSec(this.getAttribute("data-ad")); };
+  });
+}
+
+function birlestirHedefSec(digerAd){
+  birlestirHedefAd = digerAd;
+  var ana = CustomerData.musteriBul(seciliMusteriAdi);
+  var diger = CustomerData.musteriBul(digerAd);
+  if(!ana || !diger) return;
+  document.getElementById("birlestirDigerBilgi").textContent = diger.ad + (diger.sehir?" — "+diger.sehir:"");
+  document.getElementById("birlestirAnaBilgi").textContent = ana.ad + (ana.sehir?" — "+ana.sehir:"");
+  document.getElementById("birlestirAramaAsama").hidden = true;
+  document.getElementById("birlestirOnayAsama").hidden = false;
+}
+
+function birlestirmeyiOnayla(){
+  var btn = document.getElementById("btnBirlestirOnayla");
+  btn.disabled = true;
+  btn.textContent = "Birleştiriliyor...";
+  CustomerData.musterileriBirlestir(seciliMusteriAdi, birlestirHedefAd, function(basarili, sonuc){
+    if(!basarili){
+      btn.disabled = false;
+      btn.textContent = "✓ Birleştir";
+      hataGoster("Birleştirilemedi: " + (sonuc && sonuc.message ? sonuc.message : "bilinmeyen hata"));
+      return;
+    }
+    ReportsData.kayitlariBirlestir(sonuc.digerAd, sonuc.digerId, sonuc.anaAd, sonuc.anaId, function(basarili2, err2){
+      btn.disabled = false;
+      btn.textContent = "✓ Birleştir";
+      if(basarili2){
+        alert("✅ \"" + sonuc.digerAd + "\" → \"" + sonuc.anaAd + "\" ile birleştirildi.");
+        document.getElementById("bolumBirlestir").hidden = true;
+      } else {
+        hataGoster("Müşteri birleştirildi ama arşiv/görev taşımada sorun oldu: " + (err2 && err2.message ? err2.message : "bilinmeyen hata") + " — lütfen tekrar dene veya elle kontrol et.");
+      }
+    });
+  });
+}
 
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
@@ -214,6 +270,24 @@ document.addEventListener("DOMContentLoaded", function(){
       }
     });
   };
+
+  document.getElementById("btnBirlestirAc").onclick = function(){
+    birlestirHedefAd = null;
+    document.getElementById("birlestirAnaAdi").textContent = "\"" + seciliMusteriAdi + "\" için bir birleştirme hedefi seçin";
+    document.getElementById("birlestirAramaInput").value = "";
+    document.getElementById("birlestirOnayAsama").hidden = true;
+    document.getElementById("birlestirAramaAsama").hidden = false;
+    birlestirAramaCiz();
+    document.getElementById("bolumBirlestir").hidden = false;
+    document.getElementById("bolumBirlestir").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+  document.getElementById("birlestirAramaInput").addEventListener("input", birlestirAramaCiz);
+  document.getElementById("btnBirlestirVazgec").onclick = function(){ document.getElementById("bolumBirlestir").hidden = true; };
+  document.getElementById("btnBirlestirOnayVazgec").onclick = function(){
+    document.getElementById("birlestirOnayAsama").hidden = true;
+    document.getElementById("birlestirAramaAsama").hidden = false;
+  };
+  document.getElementById("btnBirlestirOnayla").onclick = birlestirmeyiOnayla;
 
   CustomerData.listeDegistiginde(function(){
     var tazeMusteri = CustomerData.musteriBul(seciliMusteriAdi);
