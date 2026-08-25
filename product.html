@@ -37,12 +37,14 @@
     <span class="arama-ikon">🔍</span>
   </div>
 
-  <div class="sepet-satiri">
-    <span id="sepetSayisi">0 ürün seçili</span>
-    <button class="sepet-buton" id="btnSepeteDevam" hidden>Sepete Git →</button>
+  <div class="ozel-liste-satiri">
+    <button class="ozel-liste-btn ozel-liste-btn--kirmizi" id="btnHitUrunler">🔥 Hit Ürünler</button>
+    <button class="ozel-liste-btn ozel-liste-btn--yesil" id="btnEnCokAranan">🔍 En Çok Aranan</button>
   </div>
 
-  <div class="data-table-container">
+  <button class="sepet-goster-buton" id="btnSepeteDevam" hidden>🛒 Sepet (<span id="sepetSayisi">0</span>)</button>
+
+  <div class="data-table-container" id="anaTabloAlani">
     <table class="data-table">
       <thead><tr>
         <th class="col-urun">ÜRÜN</th>
@@ -56,12 +58,49 @@
   <p class="bos-mesaj" id="bosMesaj" hidden>Sonuç bulunamadı.</p>
   <p class="yukleniyor-mesaj" id="yukleniyorMesaj">Katalog yükleniyor...</p>
 
+  <!-- HİT ÜRÜNLER / EN ÇOK ARANAN — açılır bölüm -->
+  <section class="acilir-liste-bolum" id="ozelListeBolumu" hidden>
+    <div class="acilir-liste-baslik-satir">
+      <span id="ozelListeBaslik"></span>
+      <button class="acilir-liste-kapat" id="btnOzelListeKapat">✕</button>
+    </div>
+    <p class="acilir-liste-ipucu">💡 Bir ürüne dokunarak doğrudan sepete ekleyebilirsiniz.</p>
+    <div class="data-table-container">
+      <table class="data-table hit-urun-tablo">
+        <thead><tr><th>Ürün</th><th>Toplam Adet</th><th>Geçmiş</th></tr></thead>
+        <tbody id="ozelListeGovde"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ÜRÜN SATIŞ GEÇMİŞİ — açılır bölüm -->
+  <section class="urun-gecmis-bolum" id="urunGecmisBolumu" hidden>
+    <div class="urun-gecmis-ust-serit">
+      <div class="urun-gecmis-kod" id="urunGecmisKod"></div>
+      <div class="urun-gecmis-ad" id="urunGecmisAd"></div>
+    </div>
+    <div class="urun-gecmis-ozet-grid">
+      <div class="urun-gecmis-ozet-kutu">
+        <div class="urun-gecmis-ozet-sayi" id="urunGecmisMusteriSayisi">0</div>
+        <div class="urun-gecmis-ozet-etiket">FARKLI MÜŞTERİ</div>
+      </div>
+      <div class="urun-gecmis-ozet-kutu">
+        <div class="urun-gecmis-ozet-sayi urun-gecmis-ozet-sayi--yesil" id="urunGecmisToplamAdet">0 adet</div>
+        <div class="urun-gecmis-ozet-etiket">TOPLAM SATILAN</div>
+      </div>
+    </div>
+    <button class="urun-gecmis-kapat-btn" id="btnUrunGecmisKapat">✕ Kapat</button>
+    <div id="urunGecmisListesi"></div>
+  </section>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="auth.js"></script>
+<script src="customer-data.js"></script>
+<script src="reports-data.js"></script>
 <script src="product-data.js"></script>
 <script src="product-render.js"></script>
 </body>
