@@ -391,9 +391,22 @@ function ilerletKaynagiVarsaSekmeAyarla(){
   document.getElementById("tipSecim").insertAdjacentElement("beforebegin", uyari);
 }
 
+function oncedenSecilenTipVarsaUygula(){
+  try{
+    var tip = localStorage.getItem("weiconv2_onceden_secilen_tip");
+    if(!tip) return;
+    localStorage.removeItem("weiconv2_onceden_secilen_tip");
+    secilenTip = tip;
+    document.querySelectorAll(".tip-btn").forEach(function(b){
+      b.classList.toggle("tip-btn--secili", b.getAttribute("data-tip")===secilenTip);
+    });
+  }catch(e){}
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   tipSecimBagla();
+  oncedenSecilenTipVarsaUygula();
   ilerletKaynagiVarsaSekmeAyarla();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKaydet").onclick = kaydetTiklandi;

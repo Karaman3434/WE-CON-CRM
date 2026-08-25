@@ -230,6 +230,9 @@
   z-index: 9999;
   padding: 20px;
 }
+.km-baslangic-overlay[hidden] {
+  display: none;
+}
 .km-baslangic-kutu {
   background: #ffffff;
   border-radius: 12px;

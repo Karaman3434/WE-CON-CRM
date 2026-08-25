@@ -56,6 +56,45 @@
 #tileGecmis, #tileGorevler { background: #f4f5f6; border: 2.5px solid #556170; }
 #tileGecmis .islemler-tile-alt, #tileGorevler .islemler-tile-alt { color: #8a94a3; }
 
+.tip-secim-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+.tip-secim-overlay[hidden] {
+  display: none;
+}
+.tip-secim-kutu {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  max-width: 360px;
+  width: 100%;
+}
+.tip-secim-baslik {
+  font-size: 15px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.tip-secim-vazgec-btn {
+  width: 100%;
+  background: #fff;
+  color: #556170;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .islemler-tile-sag { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .islemler-rozet {
   color: #ffffff;

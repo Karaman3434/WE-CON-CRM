@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="customer-style.css">
 <link rel="stylesheet" href="detail-style.css">
+<link rel="stylesheet" href="send-style.css">
 </head>
 <body>
 
@@ -43,7 +44,7 @@
     </div>
   </div>
 
-  <a class="islemler-tile" id="tileUrunBul" href="product.html">
+  <div class="islemler-tile" id="tileUrunBul">
     <div class="islemler-tile-icerik">
       <div class="islemler-tile-baslik islemler-tile-baslik--mavi">🔍 Ürün Bul</div>
       <div class="islemler-tile-alt">Katalogda ara, teklif hazırla</div>
@@ -51,7 +52,7 @@
     <div class="islemler-tile-sag">
       <span class="islemler-ok islemler-ok--mavi">›</span>
     </div>
-  </a>
+  </div>
 
   <div class="islemler-tile" id="tileGecmis">
     <div class="islemler-tile-icerik">
@@ -131,6 +132,22 @@
     <div id="detayGorevListesi"></div>
     <p class="bos-mesaj" id="detayGorevBos" hidden>Görev yok.</p>
   </section>
+
+  <!-- ÜRÜN BUL — belge türü seçim popup'ı: Ürün Bul'a dokununca önce
+       Numune/Fiyat Teklifi/Proforma/Sipariş seçilir, sonra product.html'e
+       gidilir; seçilen tür send.html'de otomatik işaretli gelir. -->
+  <div class="tip-secim-overlay" id="tipSecimOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">Ne için ürün arıyorsun?</div>
+      <div class="tip-secim">
+        <button class="tip-btn tip-btn--numune" data-tip="numune">NUMUNE</button>
+        <button class="tip-btn tip-btn--teklif" data-tip="teklif">FİYAT<br>TEKLİFİ</button>
+        <button class="tip-btn tip-btn--proforma" data-tip="proforma">PROFORMA<br>FATURA</button>
+        <button class="tip-btn tip-btn--siparis" data-tip="siparis">SİPARİŞ</button>
+      </div>
+      <button class="tip-secim-vazgec-btn" id="btnTipSecimVazgec">Vazgeç</button>
+    </div>
+  </div>
 
 </main>
 

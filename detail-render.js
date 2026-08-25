@@ -149,11 +149,22 @@ function tilelariBagla(){
     bolum.hidden = !bolum.hidden;
     if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
   };
-  // "Ürün Bul" kutucuğu — TEK ROTA: hiç soru sormadan direkt gider, müşteri
-  // zaten CustomerData.sec() ile arka planda seçili tutuluyor.
+  // "Ürün Bul" kutucuğu — önce belge türü (Numune/Teklif/Proforma/Sipariş)
+  // seçilir, sonra Ürün Bul'a gidilir. Müşteri CustomerData.sec() ile arka
+  // planda seçili tutuluyor.
   document.getElementById("tileUrunBul").onclick = function(){
     CustomerData.sec(CustomerData.musteriBul(seciliMusteriAdi) || {ad:seciliMusteriAdi});
+    document.getElementById("tipSecimOverlay").hidden = false;
   };
+  document.getElementById("btnTipSecimVazgec").onclick = function(){
+    document.getElementById("tipSecimOverlay").hidden = true;
+  };
+  document.getElementById("tipSecimOverlay").querySelectorAll(".tip-btn").forEach(function(btn){
+    btn.onclick = function(){
+      localStorage.setItem("weiconv2_onceden_secilen_tip", this.getAttribute("data-tip"));
+      window.location.href = "product.html";
+    };
+  });
 }
 
 function musteriGorevleriniCiz(){

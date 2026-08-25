@@ -49,19 +49,24 @@ function ilerletTiklandi(k){
 
 function ayDetayiniAc(ayVerisi){
   try{
-    if(!ayVerisi || ayVerisi.sayi === 0){
-      alert("Bu ayda sipariş kaydı yok.");
-      return;
-    }
+    if(!ayVerisi) return;
     var kayitlarBuAy = ReportsData.sonIslemler().filter(function(k){
-      if(k.tip !== "siparis" || !k.tarih) return false;
+      if(!k.tarih) return false;
       var parca = k.tarih.split(" ");
       return (parca[1]||"")===ayVerisi.ayAd && (parca[2]||"")===ayVerisi.yil;
     });
+    if(kayitlarBuAy.length === 0){
+      alert("Bu ayda kayıt yok.");
+      return;
+    }
 
-    document.getElementById("ayDetayBaslik").textContent = "📅 " + ayVerisi.ayAd + " " + ayVerisi.yil + " Siparişleri";
-    document.getElementById("ayDetayToplamEtiket").textContent = "🧮 AY TOPLAMI (" + kayitlarBuAy.length + " sipariş)";
-    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayVerisi.toplam) + " €";
+    var ayToplamEuro = kayitlarBuAy.reduce(function(s,k){
+      return s + (k.urunler||[]).reduce(function(ss,u){ return ss+(u.toplamEuro||0); }, 0);
+    }, 0);
+
+    document.getElementById("ayDetayBaslik").textContent = "📅 " + ayVerisi.ayAd + " " + ayVerisi.yil + " Kayıtları";
+    document.getElementById("ayDetayToplamEtiket").textContent = "🧮 AY TOPLAMI (" + kayitlarBuAy.length + " kayıt)";
+    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayToplamEuro) + " €";
 
     document.getElementById("ayDetayListesi").innerHTML = "<div class='musteri-liste-kutu'>" + kayitlarBuAy.map(function(k, i){
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
@@ -136,14 +141,6 @@ function istatistikleriCiz(){
     document.getElementById("istAylikListe").querySelectorAll("tr").forEach(function(tr, i){
       tr.onclick = function(){ ayDetayiniAc(ozet.aylar[i]); };
     });
-
-    var musteriler = ReportsData.enCokSatisYapilanMusteriler(5);
-    var musteriHtml = musteriler.length === 0
-      ? "<p class='bos-mesaj'>Henüz veri yok.</p>"
-      : musteriler.map(function(m){
-          return "<div class='istatistik-satir'><span class='istatistik-satir-ad'>" + htmlEsc(m.ad) + "</span><span class='istatistik-satir-deger'>" + fmt(m.toplam) + " EUR</span></div>";
-        }).join("");
-    document.getElementById("istMusteriListe").innerHTML = musteriHtml;
 
     var kacanOzet = ReportsData.kacanOzetBuAy();
     document.getElementById("istKacanSayi").textContent = kacanOzet.kacanlar.length;

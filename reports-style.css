@@ -212,6 +212,9 @@
   align-items: flex-end;
   z-index: 9999;
 }
+.duzenle-overlay[hidden] {
+  display: none;
+}
 .duzenle-kutu {
   background: #ffffff;
   border-radius: 14px 14px 0 0;
