@@ -71,18 +71,40 @@ function tipSecimBagla(){
   });
 }
 
+function anomaliUyarilariniTopla(sepet, kur, kdv){
+  var uyarilar = [];
+  sepet.forEach(function(u){
+    if(u.iskonto && u.iskonto > 50){
+      uyarilar.push("⚠️ " + u.ad + " için iskonto %" + u.iskonto + " — çok yüksek görünüyor.");
+    }
+    var h = CartData.hesapla(u, kur, kdv);
+    if(u.dipFiyat && h.iskontoluFiyat < u.dipFiyat){
+      uyarilar.push("🔴 " + u.ad + " dip maliyetin (" + CartData.fmt(u.dipFiyat) + " €) altında satılıyor (net: " + CartData.fmt(h.iskontoluFiyat) + " €) — zararına satış olabilir.");
+    }
+  });
+  return uyarilar;
+}
+
 function kaydetTiklandi(){
   try{
     var musteri = CustomerData.seciliyiOku();
     var sepet = CartData.liste();
     if(!musteri || sepet.length === 0) return;
 
+    var kur = CartData.kurOku();
+    var kdv = CartData.kdvOku();
+
+    // Eski uygulamanın anomali kontrolüyle AYNI mantık: aşırı iskonto veya
+    // zararına satış varsa, kaydetmeden önce uyar (durdurmaz, sadece onay ister).
+    var uyarilar = anomaliUyarilariniTopla(sepet, kur, kdv);
+    if(uyarilar.length > 0){
+      var devamMi = confirm("⚠️ Anomali Uyarısı\n\n" + uyarilar.join("\n\n") + "\n\nYine de kaydetmek istiyor musunuz?");
+      if(!devamMi) return;
+    }
+
     var btn = document.getElementById("btnKaydet");
     btn.disabled = true;
     btn.textContent = "Kaydediliyor...";
-
-    var kur = CartData.kurOku();
-    var kdv = CartData.kdvOku();
 
     var adresler = seciliAdresleriTopla(musteri);
     SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, adresler, function(basarili, sonuc, revizeMi){
