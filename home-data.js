@@ -79,7 +79,7 @@ var WeiconData = (function(){
         var u = k.urunler[j];
         toplamEuro += u.toplamEuro||0;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
-        var satirPrimi = mk*(u.adet||1)*0.22;
+        var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
         if(satirPrimi>0) toplamPrim += satirPrimi;
       }
     }
@@ -103,7 +103,7 @@ var WeiconData = (function(){
         var u = k.urunler[j];
         toplamEuro += u.toplamEuro||0;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
-        var satirPrimi = mk*(u.adet||1)*0.22;
+        var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
         if(satirPrimi>0) toplamPrim += satirPrimi;
       }
     }

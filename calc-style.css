@@ -85,6 +85,14 @@
 .hc-beyaz-kart input {
   width: 100%; border: none; background: transparent;
   font-size: 22px; font-weight: 900; color: #0f4fc0; padding: 0;
+  outline: none;
+}
+.hc-beyaz-kart input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.hc-beyaz-kart:focus-within {
+  border-color: #3569b8;
 }
 
 .hc-turuncu-kart {

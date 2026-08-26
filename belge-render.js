@@ -66,7 +66,8 @@ function belgeyiCiz(kayit, musteri){
       var toplamEuro = item.toplamEuro!==undefined ? item.toplamEuro : ((item.iskBirim||0)*(item.adet||0));
       netEuro += toplamEuro;
       var mk = (item.iskBirim||0)-(item.dipFiyat||0);
-      var satirPrim = mk*(item.adet||0)*0.22;
+      var ozelFiyatMi = (item.iskonto||0) > 60;
+      var satirPrim = ozelFiyatMi ? 0 : mk*(item.adet||0)*0.22;
       if(satirPrim > 0) toplamPrim += satirPrim;
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
@@ -76,7 +77,7 @@ function belgeyiCiz(kayit, musteri){
         + "<td class='belge-td-isk'>%" + (item.iskonto||0) + "</td>"
         + "<td>" + fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)) + " €</td>"
         + "<td class='belge-td-toplam'>" + fmt(toplamEuro) + " €</td>"
-        + "<td class='belge-td-prim'>" + (satirPrim<0 ? "Yok" : fmt(satirPrim)+" €") + "</td>"
+        + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "ÖZEL FİYAT" : (satirPrim<0 ? "Yok" : fmt(satirPrim)+" €")) + "</td>"
         + "</tr>";
     }).join("");
 

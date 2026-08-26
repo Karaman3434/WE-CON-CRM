@@ -111,9 +111,9 @@ function hesaplaVeGoster(){
     document.getElementById("rTlBirimFiyat").textContent = CartData.fmt(h.tlBirimFiyat) + " TL";
     document.getElementById("rToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " €";
     document.getElementById("rFaturaToplam").textContent = CartData.fmt(h.faturaToplam) + " TL";
-    document.getElementById("rPrimEuro").textContent = (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim)+" €");
+    document.getElementById("rPrimEuro").textContent = (h.mudurPrim===0 && urun.iskonto>60) ? "ÖZEL FİYAT" : (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim)+" €");
     var kur2 = kur||0;
-    document.getElementById("rPrimTL").textContent = (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim*kur2)+" TL");
+    document.getElementById("rPrimTL").textContent = (h.mudurPrim===0 && urun.iskonto>60) ? "ÖZEL FİYAT" : (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim*kur2)+" TL");
   }catch(e){ hataGoster("Hesaplama yapılamadı: " + e.message); }
 }
 

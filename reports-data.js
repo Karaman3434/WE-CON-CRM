@@ -163,7 +163,7 @@ var ReportsData = (function(){
       (k.urunler||[]).forEach(function(u){
         toplam += u.toplamEuro||0;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
-        var satirPrimi = mk*(u.adet||1)*0.22;
+        var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
         if(satirPrimi>0) prim += satirPrimi; // eski uygulamayla aynı: negatif primli satırlar toplama katılmaz
       });
     });
@@ -206,7 +206,7 @@ var ReportsData = (function(){
         (k.urunler||[]).forEach(function(u){
           toplam += u.toplamEuro||0;
           var mk = (u.iskBirim||0)-(u.dipFiyat||0);
-          var sp = mk*(u.adet||1)*0.22;
+          var sp = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
           if(sp>0) prim += sp;
         });
       });
