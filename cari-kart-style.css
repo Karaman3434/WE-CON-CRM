@@ -125,6 +125,25 @@
   margin: 8px 0 0;
 }
 
+.ck-yetkili-etiket {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #44494f;
+  letter-spacing: .3px;
+  margin-bottom: 4px;
+}
+.ck-yetkili-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  margin-bottom: 12px;
+  font-family: inherit;
+}
+
 .ck-buton-satir {
   display: flex;
   gap: 8px;

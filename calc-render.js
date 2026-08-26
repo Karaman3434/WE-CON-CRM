@@ -78,11 +78,17 @@ function duzenlemeModunuKontrolEt(){
   }catch(e){ hataGoster("Düzenleme modu açılamadı: " + e.message); }
 }
 
+function dipFiyatiOner(){
+  var liste = parseFloat(document.getElementById("hesListeFiyat").value)||0;
+  document.getElementById("hesDipFiyat").value = CartData.dipFiyatOner(liste);
+}
+
 function urunSec(bilgi){
   seciliUrunBilgi = bilgi;
   document.getElementById("seciliUrunAd").textContent = bilgi.ad;
   document.getElementById("seciliUrunKutu").hidden = false;
   document.getElementById("hesListeFiyat").value = bilgi.fiyat;
+  dipFiyatiOner();
   document.getElementById("searchInput").value = "";
   document.getElementById("sonucListesi").innerHTML = "";
   hesaplaVeGoster();
@@ -174,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function(){
   ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet","kurInput"].forEach(function(id){
     document.getElementById(id).addEventListener("input", function(){
       if(id==="kurInput") CartData.kurKaydet(parseFloat(this.value)||0);
+      if(id==="hesListeFiyat") dipFiyatiOner();
       hesaplaVeGoster();
     });
   });

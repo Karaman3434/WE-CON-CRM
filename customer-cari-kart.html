@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.260826.1549.29 — customer-cari-kart.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.260826.1606.30 — customer-cari-kart.html -->
 <!--
   WEICON ASİST — CARİ KART v3
   ==============================
@@ -55,14 +55,14 @@
   <!-- YETKİLİ KİŞİ -->
   <div class="ck-blok-etiket ck-blok-etiket--yetkili">👤 YETKİLİ KİŞİ</div>
   <section class="ck-blok">
-    <div class="form-satir-2">
-      <input type="text" id="ckYetkiliIsimInput" placeholder="İsim Soyisim">
-      <input type="text" id="ckYetkiliGorevInput" placeholder="Görev (örn. Satın Alma)">
-    </div>
-    <div class="form-satir-2">
-      <input type="tel" id="ckYetkiliTelInput" placeholder="Telefon">
-      <input type="email" id="ckYetkiliEpostaInput" placeholder="E-posta">
-    </div>
+    <label class="ck-yetkili-etiket" for="ckYetkiliIsimInput">İSİM SOYİSİM</label>
+    <input type="text" id="ckYetkiliIsimInput" class="ck-yetkili-input" placeholder="İsim Soyisim">
+    <label class="ck-yetkili-etiket" for="ckYetkiliGorevInput">GÖREV</label>
+    <input type="text" id="ckYetkiliGorevInput" class="ck-yetkili-input" placeholder="örn. Satın Alma Sorumlusu">
+    <label class="ck-yetkili-etiket" for="ckYetkiliTelInput">TELEFON</label>
+    <input type="tel" id="ckYetkiliTelInput" class="ck-yetkili-input" placeholder="Telefon">
+    <label class="ck-yetkili-etiket" for="ckYetkiliEpostaInput">E-POSTA</label>
+    <input type="email" id="ckYetkiliEpostaInput" class="ck-yetkili-input" placeholder="E-posta">
     <div class="ck-buton-satir">
       <button class="ck-duzenle-btn" data-odak="ckYetkiliIsimInput">✏️ Düzenle</button>
       <button class="ck-kaydet-btn" id="btnYetkiliKaydet">✓ Kaydet</button>

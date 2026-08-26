@@ -72,6 +72,15 @@ var CartData = (function(){
   }
 
   // ---- Formüller: eski hesapla() ile birebir aynı ----
+  // Eski uygulamadan taşınan iş kuralı: DİP (Maliyet), Liste Fiyatının
+  // %36,35'i olarak otomatik hesaplanır — kullanıcı elle değiştirmediği
+  // sürece bu değer kullanılır (bkz. calc-render.js dipFiyatOnerisiUygula).
+  var DIP_FIYAT_ORANI = 0.3635;
+
+  function dipFiyatOner(listeFiyat){
+    return Math.round((parseFloat(listeFiyat)||0) * DIP_FIYAT_ORANI * 100) / 100;
+  }
+
   function hesapla(urun, kur, kdv){
     var listeFiyat = parseFloat(urun.listeFiyat)||0;
     var dipFiyat = parseFloat(urun.dipFiyat)||0;
@@ -82,7 +91,10 @@ var CartData = (function(){
     var tlBirimFiyat = iskontoluFiyat * kur;
     var maliyetKar = iskontoluFiyat - dipFiyat;
     var toplamMaliyetKar = maliyetKar * adet;
-    var mudurPrim = toplamMaliyetKar * 0.22;
+    // İş kuralı: %60'ın üzerinde (yani %60,01 ve üstü) iskontoda prim
+    // KESİNLİKLE ödenmez — bu iskonto seviyesinde özel/istisnai fiyata
+    // girildiği için müdür primi otomatik sıfırlanır.
+    var mudurPrim = iskonto > 60 ? 0 : toplamMaliyetKar * 0.22;
     var mudurPrimTL = mudurPrim * kur;
     var toplamEuro = adet * iskontoluFiyat;
     var faturaToplam = adet * tlBirimFiyat * (1 + kdv/100);
@@ -123,6 +135,7 @@ var CartData = (function(){
     kurKaydet: kurKaydet,
     kdvOku: kdvOku,
     hesapla: hesapla,
+    dipFiyatOner: dipFiyatOner,
     genelToplam: genelToplam,
     fmt: fmt
   };
