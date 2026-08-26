@@ -288,30 +288,10 @@ document.addEventListener("DOMContentLoaded", function(){
       }
     });
   };
-  var kmBaslangicKontroluYapildi = false;
-  setTimeout(function(){
-    if(kmBaslangicKontroluYapildi) return;
-    kmBaslangicKontroluYapildi = true;
-    if(KmData.baslangicGerekliMi()){
-      var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-      var ayAdi = aylar[new Date().getMonth()];
-      document.getElementById("kmBaslangicAciklama").textContent =
-        "Sistemde henüz bir başlangıç KM kaydı yok. " + ayAdi + " ayı (veya takip başlangıcı) için aracın güncel kilometresini gir — bu değer, günlük kayıtların otomatik hesaplanabilmesi için gereklidir.";
-      document.getElementById("kmBaslangicOverlay").hidden = false;
-    }
-  }, 1200); // Firebase'in ilk veriyi getirmesi için makul bir bekleme; KmData.degistiginde()
-            // aşağıda daha erken tetiklenirse bu zaten iptal edilmiş olur.
-  KmData.degistiginde(function(){
-    if(kmBaslangicKontroluYapildi) return;
-    kmBaslangicKontroluYapildi = true;
-    if(KmData.baslangicGerekliMi()){
-      var aylar2 = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-      var ayAdi2 = aylar2[new Date().getMonth()];
-      document.getElementById("kmBaslangicAciklama").textContent =
-        "Sistemde henüz bir başlangıç KM kaydı yok. " + ayAdi2 + " ayı (veya takip başlangıcı) için aracın güncel kilometresini gir — bu değer, günlük kayıtların otomatik hesaplanabilmesi için gereklidir.";
-      document.getElementById("kmBaslangicOverlay").hidden = false;
-    }
-  });
+  // NOT: "Başlangıç Kilometresi Gerekli" hatırlatma popup'ı kaldırıldı —
+  // Firebase verisi yavaş bağlantıda geç gelince yanlışlıkla tetiklenip
+  // hiç kapanmıyordu (zaten dolu olan güne rağmen). Artık hiçbir koşulda
+  // gösterilmiyor; kmBaslangicOverlay HTML'de duruyor ama hiç açılmıyor.
 
   KmData.ayarlarOku(function(ayarlar){
     kmAyarlarOnbellek = ayarlar || {};
