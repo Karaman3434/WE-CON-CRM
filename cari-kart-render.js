@@ -1,8 +1,10 @@
 /*
   cari-kart-render.js
   ====================
-  Cari Kart sayfasının mantığı — detail-render.js'teki adres/yetkili
-  yönetim kodunun aynısı, sadece bu sayfaya taşındı.
+  Cari Kart sayfasının mantığı — yeni sadeleştirilmiş tasarım: TEK
+  FATURA ADRESİ bloğu (müşteri adı+şehir+vade/fatura/kargo+yetkili+açık
+  adres), TEK TESLİMAT ADRESİ bloğu (açık adres), TEK opsiyonel NOT
+  bloğu — hepsi satır içi (popup değil) Düzenle/Kaydet/Sil ile yönetilir.
 */
 
 function hataGoster(mesaj){
@@ -20,259 +22,114 @@ function htmlEsc(s){
 
 var seciliMusteriAdi = null;
 
-function ustBilgiyiCiz(musteri){
-  document.getElementById("cariKartAd").textContent = musteri.ad;
-  var altBaslikParcalar = [];
-  if(musteri.id) altBaslikParcalar.push("🏷 " + musteri.id);
-  if(musteri.sehir) altBaslikParcalar.push(musteri.sehir);
-  document.getElementById("cariKartAltBaslik").textContent = altBaslikParcalar.join(" · ");
+function faturaBlokCiz(musteri){
+  document.getElementById("ckMusteriAd").textContent = musteri.ad;
+  document.getElementById("ckMusteriSehir").textContent = musteri.sehir || "";
+  document.getElementById("ckVadeGoster").textContent = musteri.vade || "-";
+  document.getElementById("ckFaturaTuruGoster").textContent = musteri.fatura || "-";
+  document.getElementById("ckKargoGoster").textContent = musteri.kargo || "-";
 
-  document.getElementById("cariKartVade").textContent = musteri.vade || "-";
-  document.getElementById("cariKartFatura").textContent = musteri.fatura || "-";
-  document.getElementById("cariKartKargo").textContent = musteri.kargo || "-";
-
-  document.getElementById("detayVade").value = musteri.vade || "";
-  document.getElementById("detayFatura").value = musteri.fatura || "";
-  document.getElementById("detayKargo").value = musteri.kargo || "";
-}
-
-function bilgileriKaydetTiklandi(){
-  try{
-    var guncelBilgi = {
-      vade: document.getElementById("detayVade").value,
-      fatura: document.getElementById("detayFatura").value,
-      kargo: document.getElementById("detayKargo").value
-    };
-    var btn = document.getElementById("btnBilgiKaydet");
-    btn.disabled = true;
-    btn.textContent = "Kaydediliyor...";
-    CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, function(basarili, err){
-      btn.disabled = false;
-      btn.textContent = "Kaydet";
-      if(basarili){
-        document.getElementById("detayBilgiOverlay").hidden = true;
-      } else {
-        hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-      }
-    });
-  }catch(e){ hataGoster("Bilgiler kaydedilemedi: " + e.message); }
-}
-
-function adresleriCiz(musteri){
-  try{
-    ["fatura","teslimat"].forEach(function(tip){
-      var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
-      var liste = musteri[alan] || [];
-      var kapsayiciId = tip==="fatura" ? "faturaAdresListesi" : "teslimatAdresListesi";
-      var sayacId = tip==="fatura" ? "faturaAdresSayisi" : "teslimatAdresSayisi";
-      var kapsayici = document.getElementById(kapsayiciId);
-      var sayacEl = document.getElementById(sayacId);
-      if(sayacEl) sayacEl.textContent = liste.length;
-
-      if(liste.length === 0){
-        kapsayici.innerHTML = "<p class='bos-mesaj' style='padding:8px 0;'>Kayıtlı adres yok.</p>";
-        return;
-      }
-      kapsayici.innerHTML = liste.map(function(a, i){
-        return "<div class='adres-satir' id='adresSatir-" + tip + "-" + i + "'>"
-          + "<div class='adres-goruntu'>"
-          + "<div><div class='adres-etiket'>" + htmlEsc(a.etiket) + "</div><div class='adres-metin'>" + htmlEsc(a.adres) + "</div></div>"
-          + "<div class='satir-buton-grubu'>"
-          + "<button class='satir-duzenle-btn' data-tip='" + tip + "' data-i='" + i + "'>Düzenle</button>"
-          + "<button class='satir-sil-btn' data-tip='" + tip + "' data-i='" + i + "'>Sil</button>"
-          + "</div>"
-          + "</div>"
-          + "<div class='adres-duzenle-form' hidden>"
-          + "<input type='text' class='adres-duzenle-etiket' value=\"" + htmlEsc(a.etiket) + "\" placeholder='Etiket'>"
-          + "<input type='text' class='adres-duzenle-adres' value=\"" + htmlEsc(a.adres) + "\" placeholder='Adres'>"
-          + "<div class='form-buton-satir'>"
-          + "<button class='duzenle-kapat-btn-kucuk' data-tip='" + tip + "' data-i='" + i + "'>Kapat</button>"
-          + "<button class='duzenle-kaydet-btn-kucuk' data-tip='" + tip + "' data-i='" + i + "'>Kaydet</button>"
-          + "</div>"
-          + "</div>"
-          + "</div>";
-      }).join("");
-
-      kapsayici.querySelectorAll(".satir-sil-btn").forEach(function(btn){
-        btn.onclick = function(){
-          if(!confirm("Bu adres silinsin mi?")) return;
-          var t = this.getAttribute("data-tip");
-          var i = parseInt(this.getAttribute("data-i"), 10);
-          CustomerData.musteriAdresSil(seciliMusteriAdi, t, i, function(basarili, err){
-            if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-          });
-        };
-      });
-      kapsayici.querySelectorAll(".satir-duzenle-btn").forEach(function(btn){
-        btn.onclick = function(){
-          var t = this.getAttribute("data-tip"); var i = this.getAttribute("data-i");
-          var satir = document.getElementById("adresSatir-" + t + "-" + i);
-          satir.querySelector(".adres-goruntu").hidden = true;
-          satir.querySelector(".adres-duzenle-form").hidden = false;
-        };
-      });
-      kapsayici.querySelectorAll(".duzenle-kapat-btn-kucuk").forEach(function(btn){
-        btn.onclick = function(){
-          var t = this.getAttribute("data-tip"); var i = this.getAttribute("data-i");
-          var satir = document.getElementById("adresSatir-" + t + "-" + i);
-          satir.querySelector(".adres-goruntu").hidden = false;
-          satir.querySelector(".adres-duzenle-form").hidden = true;
-        };
-      });
-      kapsayici.querySelectorAll(".duzenle-kaydet-btn-kucuk").forEach(function(btn){
-        btn.onclick = function(){
-          var t = this.getAttribute("data-tip");
-          var i = parseInt(this.getAttribute("data-i"), 10);
-          var satir = document.getElementById("adresSatir-" + t + "-" + i);
-          var yeniEtiket = satir.querySelector(".adres-duzenle-etiket").value.trim();
-          var yeniAdres = satir.querySelector(".adres-duzenle-adres").value.trim();
-          if(!yeniAdres){ hataGoster("Adres boş olamaz."); return; }
-          CustomerData.musteriAdresGuncelle(seciliMusteriAdi, t, i, yeniEtiket, yeniAdres, function(basarili, err){
-            if(!basarili) hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-          });
-        };
-      });
-    });
-  }catch(e){ hataGoster("Adresler çizilemedi: " + e.message); }
-}
-
-var yeniEkleTipi = null; // "fatura" | "teslimat" | "yetkili"
-
-function yeniEkleAc(tip){
-  yeniEkleTipi = tip;
-  var baslikHarita = {fatura:"🧾 Yeni Fatura Adresi", teslimat:"🚚 Yeni Teslimat Adresi", yetkili:"👥 Yeni Kişi"};
-  document.getElementById("yeniEkleBaslik").textContent = baslikHarita[tip] || "Yeni Ekle";
-  document.getElementById("yeniEkleAdresAlanlari").hidden = tip === "yetkili";
-  document.getElementById("yeniEkleYetkiliAlanlari").hidden = tip !== "yetkili";
-  ["yeniEkleEtiket","yeniEkleAdres","yeniEkleIsim","yeniEkleGorev","yeniEkleTelefon","yeniEkleEposta"].forEach(function(id){
-    document.getElementById(id).value = "";
-  });
-  document.getElementById("yeniEkleOverlay").hidden = false;
-}
-
-function yeniEkleKaydetTiklandi(){
-  if(yeniEkleTipi === "yetkili"){
-    var isim = document.getElementById("yeniEkleIsim").value.trim();
-    if(!isim){ hataGoster("İsim girin."); return; }
-    var kisi = {
-      isim: isim,
-      gorev: document.getElementById("yeniEkleGorev").value.trim(),
-      telefon: document.getElementById("yeniEkleTelefon").value.trim(),
-      eposta: document.getElementById("yeniEkleEposta").value.trim()
-    };
-    var btn = document.getElementById("btnYeniEkleKaydet");
-    btn.disabled = true;
-    CustomerData.yetkiliEkle(seciliMusteriAdi, kisi, function(basarili, err){
-      btn.disabled = false;
-      if(basarili) document.getElementById("yeniEkleOverlay").hidden = true;
-      else hataGoster("Eklenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-    });
+  var yetkili = (musteri.iletisimler && musteri.iletisimler[0]) || null;
+  if(yetkili && yetkili.isim){
+    document.getElementById("ckYetkiliIsimGoster").textContent = "👤 " + yetkili.isim + (yetkili.gorev ? " (" + yetkili.gorev + ")" : "");
+    var detaylar = [yetkili.telefon, yetkili.eposta].filter(Boolean).join(" · ");
+    document.getElementById("ckYetkiliDetayGoster").textContent = detaylar;
   } else {
-    var etiket = document.getElementById("yeniEkleEtiket").value.trim();
-    var adres = document.getElementById("yeniEkleAdres").value.trim();
-    if(!adres){ hataGoster("Adres girin."); return; }
-    var btn2 = document.getElementById("btnYeniEkleKaydet");
-    btn2.disabled = true;
-    CustomerData.musteriAdresEkle(seciliMusteriAdi, yeniEkleTipi, etiket, adres, function(basarili, err){
-      btn2.disabled = false;
-      if(basarili) document.getElementById("yeniEkleOverlay").hidden = true;
-      else hataGoster("Eklenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-    });
+    document.getElementById("ckYetkiliIsimGoster").textContent = "👤 Yetkili eklenmedi";
+    document.getElementById("ckYetkiliDetayGoster").textContent = "";
   }
+
+  var faturaAdr = (musteri.faturaAdresleri && musteri.faturaAdresleri[0]) ? musteri.faturaAdresleri[0].adres : "";
+  document.getElementById("ckFaturaAdresGoster").textContent = faturaAdr || "Adres eklenmedi.";
+
+  // Düzenle formunun alanlarını da güncel tut (Düzenle'ye her basıldığında taze değer görünsün)
+  document.getElementById("ckVadeInput").value = musteri.vade || "";
+  document.getElementById("ckFaturaTuruInput").value = musteri.fatura || "";
+  document.getElementById("ckKargoInput").value = musteri.kargo || "";
+  document.getElementById("ckYetkiliIsimInput").value = yetkili ? (yetkili.isim||"") : "";
+  document.getElementById("ckYetkiliGorevInput").value = yetkili ? (yetkili.gorev||"") : "";
+  document.getElementById("ckYetkiliTelInput").value = yetkili ? (yetkili.telefon||"") : "";
+  document.getElementById("ckYetkiliEpostaInput").value = yetkili ? (yetkili.eposta||"") : "";
+  document.getElementById("ckFaturaAdresInput").value = faturaAdr;
 }
 
-function yetkilileriCiz(musteri){
-  try{
-    var liste = musteri.iletisimler || [];
-    var kapsayici = document.getElementById("yetkiliListesi");
-    var sayacEl = document.getElementById("yetkiliSayisi");
-    if(sayacEl) sayacEl.textContent = liste.length;
-    if(liste.length === 0){
-      kapsayici.innerHTML = "<p class='bos-mesaj' style='padding:8px 0;'>Kayıtlı kişi yok.</p>";
+function faturaDuzenleModunaGec(acikMi){
+  document.getElementById("ckFaturaGoruntule").hidden = acikMi;
+  document.getElementById("ckFaturaDuzenle").hidden = !acikMi;
+  document.getElementById("btnFaturaDuzenle").hidden = acikMi;
+  document.getElementById("btnFaturaKaydet").hidden = !acikMi;
+}
+
+function faturaKaydetTiklandi(){
+  var guncelBilgi = {
+    vade: document.getElementById("ckVadeInput").value.trim(),
+    fatura: document.getElementById("ckFaturaTuruInput").value.trim(),
+    kargo: document.getElementById("ckKargoInput").value.trim()
+  };
+  var yetkiliIsim = document.getElementById("ckYetkiliIsimInput").value.trim();
+  var adres = document.getElementById("ckFaturaAdresInput").value.trim();
+  var btn = document.getElementById("btnFaturaKaydet");
+  btn.disabled = true;
+  btn.textContent = "Kaydediliyor...";
+
+  CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, function(basarili1, err1){
+    if(!basarili1){
+      btn.disabled = false; btn.textContent = "✓ Kaydet";
+      hataGoster("Kaydedilemedi: " + (err1 && err1.message ? err1.message : "bilinmeyen hata"));
       return;
     }
-    kapsayici.innerHTML = liste.map(function(k, i){
-      var detaylar = [k.telefon, k.eposta].filter(Boolean).join(" · ");
-      return "<div class='yetkili-karti' id='yetkiliSatir-" + i + "'>"
-        + "<div class='yetkili-goruntu'>"
-        + "<div class='yetkili-ust-satir'>"
-        + "<div><span class='yetkili-isim'>" + htmlEsc(k.isim) + "</span>" + (k.gorev?" <span class='yetkili-gorev'>("+htmlEsc(k.gorev)+")</span>":"") + "</div>"
-        + "<div class='satir-buton-grubu'>"
-        + "<button class='satir-duzenle-btn' data-i='" + i + "'>Düzenle</button>"
-        + "<button class='satir-sil-btn' data-i='" + i + "'>Sil</button>"
-        + "</div>"
-        + "</div>"
-        + (detaylar ? "<div class='yetkili-detay'>" + htmlEsc(detaylar) + "</div>" : "")
-        + "</div>"
-        + "<div class='yetkili-duzenle-form' hidden>"
-        + "<input type='text' class='yd-isim' value=\"" + htmlEsc(k.isim) + "\" placeholder='İsim'>"
-        + "<input type='text' class='yd-gorev' value=\"" + htmlEsc(k.gorev||"") + "\" placeholder='Görev'>"
-        + "<div class='form-satir-2'>"
-        + "<input type='tel' class='yd-telefon' value=\"" + htmlEsc(k.telefon||"") + "\" placeholder='Telefon'>"
-        + "<input type='email' class='yd-eposta' value=\"" + htmlEsc(k.eposta||"") + "\" placeholder='E-posta'>"
-        + "</div>"
-        + "<div class='form-buton-satir'>"
-        + "<button class='duzenle-kapat-btn-kucuk' data-i='" + i + "'>Kapat</button>"
-        + "<button class='duzenle-kaydet-btn-kucuk' data-i='" + i + "'>Kaydet</button>"
-        + "</div>"
-        + "</div>"
-        + "</div>";
-    }).join("");
-
-    kapsayici.querySelectorAll(".satir-sil-btn").forEach(function(btn){
-      btn.onclick = function(){
-        if(!confirm("Bu kişi silinsin mi?")) return;
-        var i = parseInt(this.getAttribute("data-i"), 10);
-        CustomerData.yetkiliSil(seciliMusteriAdi, i, function(basarili, err){
-          if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-        });
+    var sonrakiAdim = function(){
+      CustomerData.musteriTekAdresKaydet(seciliMusteriAdi, "fatura", adres, function(basarili3, err3){
+        btn.disabled = false; btn.textContent = "✓ Kaydet";
+        if(basarili3) faturaDuzenleModunaGec(false);
+        else hataGoster("Adres kaydedilemedi: " + (err3 && err3.message ? err3.message : "bilinmeyen hata"));
+      });
+    };
+    if(yetkiliIsim){
+      var kisi = {
+        isim: yetkiliIsim,
+        gorev: document.getElementById("ckYetkiliGorevInput").value.trim(),
+        telefon: document.getElementById("ckYetkiliTelInput").value.trim(),
+        eposta: document.getElementById("ckYetkiliEpostaInput").value.trim()
       };
-    });
-    kapsayici.querySelectorAll(".satir-duzenle-btn").forEach(function(btn){
-      btn.onclick = function(){
-        var i = this.getAttribute("data-i");
-        var satir = document.getElementById("yetkiliSatir-" + i);
-        satir.querySelector(".yetkili-goruntu").hidden = true;
-        satir.querySelector(".yetkili-duzenle-form").hidden = false;
-      };
-    });
-    kapsayici.querySelectorAll(".duzenle-kapat-btn-kucuk").forEach(function(btn){
-      btn.onclick = function(){
-        var i = this.getAttribute("data-i");
-        var satir = document.getElementById("yetkiliSatir-" + i);
-        satir.querySelector(".yetkili-goruntu").hidden = false;
-        satir.querySelector(".yetkili-duzenle-form").hidden = true;
-      };
-    });
-    kapsayici.querySelectorAll(".duzenle-kaydet-btn-kucuk").forEach(function(btn){
-      btn.onclick = function(){
-        var i = parseInt(this.getAttribute("data-i"), 10);
-        var satir = document.getElementById("yetkiliSatir-" + i);
-        var isim = satir.querySelector(".yd-isim").value.trim();
-        if(!isim){ hataGoster("İsim boş olamaz."); return; }
-        var yeniKisi = {
-          isim: isim,
-          gorev: satir.querySelector(".yd-gorev").value.trim(),
-          telefon: satir.querySelector(".yd-telefon").value.trim(),
-          eposta: satir.querySelector(".yd-eposta").value.trim()
-        };
-        CustomerData.yetkiliGuncelle(seciliMusteriAdi, i, yeniKisi, function(basarili, err){
-          if(!basarili) hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-        });
-      };
-    });
-  }catch(e){ hataGoster("Yetkili kişiler çizilemedi: " + e.message); }
+      CustomerData.musteriTekYetkiliKaydet(seciliMusteriAdi, kisi, function(basarili2, err2){
+        if(!basarili2){
+          btn.disabled = false; btn.textContent = "✓ Kaydet";
+          hataGoster("Yetkili kaydedilemedi: " + (err2 && err2.message ? err2.message : "bilinmeyen hata"));
+          return;
+        }
+        sonrakiAdim();
+      });
+    } else {
+      sonrakiAdim();
+    }
+  });
 }
 
-function yetkiliEkleBagla(){
-  document.getElementById("btnYetkiliEkleAc").onclick = function(){ yeniEkleAc("yetkili"); };
-  document.querySelectorAll(".yeni-ekle-ac-buton[data-tip]").forEach(function(btn){
-    btn.onclick = function(){ yeniEkleAc(this.getAttribute("data-tip")); };
-  });
-  document.getElementById("btnYeniEkleVazgec").onclick = function(){
-    document.getElementById("yeniEkleOverlay").hidden = true;
-  };
-  document.getElementById("btnYeniEkleKaydet").onclick = yeniEkleKaydetTiklandi;
+function teslimatBlokCiz(musteri){
+  var adr = (musteri.teslimatAdresleri && musteri.teslimatAdresleri[0]) ? musteri.teslimatAdresleri[0].adres : "";
+  document.getElementById("ckTeslimatGoster").textContent = adr || "Adres eklenmedi.";
+  document.getElementById("ckTeslimatInput").value = adr;
+}
+
+function teslimatDuzenleModunaGec(acikMi){
+  document.getElementById("ckTeslimatGoster").hidden = acikMi;
+  document.getElementById("ckTeslimatInput").hidden = !acikMi;
+  document.getElementById("btnTeslimatDuzenle").hidden = acikMi;
+  document.getElementById("btnTeslimatKaydet").hidden = !acikMi;
+}
+
+function notBlokCiz(musteri){
+  var not = musteri.not || "";
+  document.getElementById("ckNotGoster").textContent = not || "Not eklenmedi.";
+  document.getElementById("ckNotInput").value = not;
+}
+
+function notDuzenleModunaGec(acikMi){
+  document.getElementById("ckNotGoster").hidden = acikMi;
+  document.getElementById("ckNotInput").hidden = !acikMi;
+  document.getElementById("btnNotDuzenle").hidden = acikMi;
+  document.getElementById("btnNotKaydet").hidden = !acikMi;
 }
 
 function islemeDevamAkisiniKur(){
@@ -307,40 +164,74 @@ document.addEventListener("DOMContentLoaded", function(){
     return;
   }
   seciliMusteriAdi = secili.ad;
-  ustBilgiyiCiz(secili);
-  adresleriCiz(secili);
-  yetkilileriCiz(secili);
-  yetkiliEkleBagla();
 
-  document.getElementById("btnBilgiKaydet").onclick = bilgileriKaydetTiklandi;
-  document.getElementById("btnBilgiKapat").onclick = function(){
-    document.getElementById("detayBilgiOverlay").hidden = true;
+  function tazeVeriyiCiz(musteri){
+    faturaBlokCiz(musteri);
+    teslimatBlokCiz(musteri);
+    notBlokCiz(musteri);
+  }
+  tazeVeriyiCiz(secili);
+
+  // --- FATURA bloğu ---
+  document.getElementById("btnFaturaDuzenle").onclick = function(){ faturaDuzenleModunaGec(true); };
+  document.getElementById("btnFaturaKaydet").onclick = faturaKaydetTiklandi;
+  document.getElementById("btnFaturaSil").onclick = function(){
+    if(!confirm("Fatura adresi ve yetkili bilgisi silinsin mi? (Vade/Fatura/Kargo ayarları kalır.)")) return;
+    CustomerData.musteriTekAdresSil(seciliMusteriAdi, "fatura", function(b1, e1){
+      if(!b1){ hataGoster("Silinemedi: " + (e1&&e1.message?e1.message:"bilinmeyen hata")); return; }
+      CustomerData.musteriTekYetkiliSil(seciliMusteriAdi, function(b2, e2){
+        if(!b2) hataGoster("Yetkili silinemedi: " + (e2&&e2.message?e2.message:"bilinmeyen hata"));
+      });
+    });
   };
+
+  // --- TESLİMAT bloğu ---
+  document.getElementById("btnTeslimatDuzenle").onclick = function(){ teslimatDuzenleModunaGec(true); };
+  document.getElementById("btnTeslimatKaydet").onclick = function(){
+    var adres = document.getElementById("ckTeslimatInput").value.trim();
+    var btn = document.getElementById("btnTeslimatKaydet");
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    CustomerData.musteriTekAdresKaydet(seciliMusteriAdi, "teslimat", adres, function(basarili, err){
+      btn.disabled = false; btn.textContent = "✓ Kaydet";
+      if(basarili) teslimatDuzenleModunaGec(false);
+      else hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+    });
+  };
+  document.getElementById("btnTeslimatSil").onclick = function(){
+    if(!confirm("Teslimat adresi silinsin mi?")) return;
+    CustomerData.musteriTekAdresSil(seciliMusteriAdi, "teslimat", function(basarili, err){
+      if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+    });
+  };
+
+  // --- NOT bloğu ---
+  document.getElementById("btnNotDuzenle").onclick = function(){ notDuzenleModunaGec(true); };
+  document.getElementById("btnNotKaydet").onclick = function(){
+    var not = document.getElementById("ckNotInput").value.trim();
+    var btn = document.getElementById("btnNotKaydet");
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    CustomerData.musteriNotKaydet(seciliMusteriAdi, not, function(basarili, err){
+      btn.disabled = false; btn.textContent = "✓ Kaydet";
+      if(basarili) notDuzenleModunaGec(false);
+      else hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+    });
+  };
+  document.getElementById("btnNotSil").onclick = function(){
+    if(!confirm("Not silinsin mi?")) return;
+    CustomerData.musteriNotSil(seciliMusteriAdi, function(basarili, err){
+      if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+    });
+  };
+
   islemeDevamAkisiniKur();
 
   ["cariKapatBtn","cariGeriOk"].forEach(function(id){
     var el = document.getElementById(id);
     if(el) el.addEventListener("click", function(){ localStorage.removeItem("weiconv2_islem_yap_akisi"); });
   });
-  ["ozetAlanVade","ozetAlanFatura","ozetAlanKargo"].forEach(function(id){
-    document.getElementById(id).onclick = function(){
-      document.getElementById("detayBilgiOverlay").hidden = false;
-    };
-  });
 
   CustomerData.listeDegistiginde(function(){
     var taze = CustomerData.musteriBul(seciliMusteriAdi);
-    if(taze){
-      ustBilgiyiCiz(taze);
-      adresleriCiz(taze);
-      yetkilileriCiz(taze);
-    }
+    if(taze) tazeVeriyiCiz(taze);
   });
-
-  var tazeIlk = CustomerData.musteriBul(seciliMusteriAdi);
-  if(tazeIlk){
-    ustBilgiyiCiz(tazeIlk);
-    adresleriCiz(tazeIlk);
-    yetkilileriCiz(tazeIlk);
-  }
 });

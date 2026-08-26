@@ -47,9 +47,7 @@
   align-items: center;
   text-align: center;
   gap: 4px;
-  cursor: pointer;
 }
-.ozet-alan:active { background: #e9eef5; }
 .ozet-ikon { font-size: 18px; }
 .ozet-metin { min-width: 0; width: 100%; }
 .ozet-baslik {
@@ -66,18 +64,105 @@
   overflow-wrap: break-word;
 }
 
+/* ---------- Yeni Cari Kart blok tasarımı (v2) ---------- */
+.ck-blok-etiket {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .3px;
+  padding: 8px 10px;
+  border-radius: 8px 8px 0 0;
+  margin-top: 16px;
+}
+.ck-blok-etiket--fatura { background: #fff9e6; color: #8a6d1a; }
+.ck-blok-etiket--teslimat { background: #eafaf0; color: #0e6b34; }
+.ck-blok-etiket--not { background: #f6f0fd; color: #6a1b9a; }
+
+.ck-blok {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  padding: 14px;
+}
+
+.ck-musteri-ad { font-size: 16px; font-weight: 900; color: #003a70; }
+.ck-musteri-sehir { font-size: 12px; color: #2d3540; margin-bottom: 10px; }
+
+.ck-yetkili-goster {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  margin-bottom: 10px;
+}
+.ck-yetkili-isim { font-size: 13px; font-weight: 800; color: #111; }
+.ck-yetkili-detay { font-size: 11px; color: #2d3540; margin-top: 2px; }
+
+.ck-adres-etiket {
+  font-size: 9px;
+  font-weight: 900;
+  color: #8a6d1a;
+  letter-spacing: .3px;
+  margin-bottom: 4px;
+}
+.ck-adres-goster {
+  font-size: 12px;
+  color: #111;
+  background: #f9fafb;
+  border: 1px solid #e2e6ec;
+  border-radius: 8px;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.ck-not-aciklama {
+  font-size: 10px;
+  color: #44494f;
+  margin: 8px 0 0;
+}
+
+#ckFaturaDuzenle, #ckTeslimatInput, #ckNotInput {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#ckFaturaDuzenle input, #ckTeslimatInput, #ckNotInput {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 9px 10px;
+  font-size: 13px;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: inherit;
+}
+
+.ck-buton-satir {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ck-duzenle-btn, .ck-kaydet-btn, .ck-sil-btn {
+  flex: 1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ck-duzenle-btn { background: #eaf2fc; color: #003a70; border: 1px solid #3569b8; }
+.ck-kaydet-btn { background: #f0fdfa; color: #0e6b58; border: 1px solid #16a085; }
+.ck-sil-btn { background: #fdeaea; color: #c0392b; border: 1px solid #f0b8b3; }
+
 .detay-bilgi-overlay {
   position: fixed;
-  inset: 0;
+  top: 92px; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.5);
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   z-index: 9999;
 }
 .detay-bilgi-overlay[hidden] { display: none; }
 .detay-bilgi-form {
   background: #ffffff;
-  border-radius: 14px 14px 0 0;
+  border-radius: 0 0 14px 14px;
   padding: 18px 16px;
   width: 100%;
 }

@@ -149,25 +149,33 @@ function sablonUygula(sablon, urunKelimesi, belgeAdi, firmaAdi){
 
 function mesajMetniOlustur(musteri, sepet, tip, kanal){
   var sablon = kanal ? sablonOku(kanal) : "";
+  var metin;
   if(sablon){
     var urunKelimesi = sepet.length===1 ? "ürün" : "ürünler";
     var TIP_ETIKET2 = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
-    return "Merhaba,\n" + sablonUygula(sablon, urunKelimesi, TIP_ETIKET2[tip], musteri.ad) + "\n";
-  }
-  var tekUrunMu = sepet.length === 1;
-  var govde = "Merhaba,\n";
-  if(kanal === "whatsapp"){
-    if(tip === "numune") govde += tekUrunMu ? "Sizinle paylaştığım ürün ekte, NUMUNE olarak gönderilecektir.\n" : "Sizinle paylaştığım ürünler ekte, NUMUNE olarak gönderilecektir.\n";
-    else govde += tekUrunMu ? "İstediğiniz ürün için ürün bilgi ve fiyatını ekte paylaştım.\n" : "İstediğiniz ürünler için ürün bilgi ve fiyatını ekte paylaştım.\n";
+    metin = "Merhaba,\n" + sablonUygula(sablon, urunKelimesi, TIP_ETIKET2[tip], musteri.ad) + "\n";
   } else {
-    if(tip === "siparis") govde += "Bilgilerini paylaştığım Firma için SİPARİŞİN\nişleme alınmasını rica ederim.\n";
-    else if(tip === "proforma") govde += "Bilgilerini paylaştığım Firma için PROFORMA FATURA göndermenizi rica ederim.\n";
-    else if(tip === "numune") govde += "Bilgilerini paylaştığım Firma için NUMUNE göndermenizi rica ederim.\n";
-    else govde += "Bilgilerini paylaştığım Firma için FİYAT TEKLİFİ göndermenizi rica ederim.\n";
-    var TIP_ETIKET3 = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
-    govde += TIP_ETIKET3[tip] + " bilgi formu ektedir. BİLGİNİZE.\n";
+    var tekUrunMu = sepet.length === 1;
+    var govde = "Merhaba,\n";
+    if(kanal === "whatsapp"){
+      if(tip === "numune") govde += tekUrunMu ? "Sizinle paylaştığım ürün ekte, NUMUNE olarak gönderilecektir.\n" : "Sizinle paylaştığım ürünler ekte, NUMUNE olarak gönderilecektir.\n";
+      else govde += tekUrunMu ? "İstediğiniz ürün için ürün bilgi ve fiyatını ekte paylaştım.\n" : "İstediğiniz ürünler için ürün bilgi ve fiyatını ekte paylaştım.\n";
+    } else {
+      if(tip === "siparis") govde += "Bilgilerini paylaştığım Firma için SİPARİŞİN\nişleme alınmasını rica ederim.\n";
+      else if(tip === "proforma") govde += "Bilgilerini paylaştığım Firma için PROFORMA FATURA göndermenizi rica ederim.\n";
+      else if(tip === "numune") govde += "Bilgilerini paylaştığım Firma için NUMUNE göndermenizi rica ederim.\n";
+      else govde += "Bilgilerini paylaştığım Firma için FİYAT TEKLİFİ göndermenizi rica ederim.\n";
+      var TIP_ETIKET3 = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
+      govde += TIP_ETIKET3[tip] + " bilgi formu ektedir. BİLGİNİZE.\n";
+    }
+    metin = govde;
   }
-  return govde;
+  // Müşteri kartında bir NOT girilmişse, mesaj metninin en altına eklenir;
+  // not yoksa hiçbir şey eklenmez (etiket dahi görünmez).
+  if(musteri.not && musteri.not.trim()){
+    metin += "\nNOT: " + musteri.not.trim() + "\n";
+  }
+  return metin;
 }
 
 var gonderBaglam = null;

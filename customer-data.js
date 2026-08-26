@@ -299,6 +299,61 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
+  // --- Sadeleştirilmiş "tek kayıt" modeli (yeni Cari Kart tasarımı) ---
+  // Her müşterinin TEK fatura adresi, TEK teslimat adresi, TEK yetkilisi
+  // ve opsiyonel TEK notu olur (liste değil). Var olan diziyi her zaman
+  // tek elemanlı [obje] ile değiştirir; böylece eski çoklu-kayıt verisi
+  // varsa bile ilk kayıt korunur, üzerine yazınca dizi sadeleşir.
+  function musteriTekAdresKaydet(musteriAd, tip, adres, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
+      tazeListe[idx][alan] = [{etiket: tip==="fatura"?"Fatura Adresi":"Teslimat Adresi", adres: adres||""}];
+    }, geriBildir);
+  }
+
+  function musteriTekAdresSil(musteriAd, tip, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
+      tazeListe[idx][alan] = [];
+    }, geriBildir);
+  }
+
+  function musteriTekYetkiliKaydet(musteriAd, kisi, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      tazeListe[idx].iletisimler = [kisi];
+    }, geriBildir);
+  }
+
+  function musteriTekYetkiliSil(musteriAd, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      tazeListe[idx].iletisimler = [];
+    }, geriBildir);
+  }
+
+  function musteriNotKaydet(musteriAd, not, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      tazeListe[idx].not = not||"";
+    }, geriBildir);
+  }
+
+  function musteriNotSil(musteriAd, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      tazeListe[idx].not = "";
+    }, geriBildir);
+  }
+
   function musteriSil(musteriAd, geriBildir){
     guvenliYaz(function(tazeListe){
       var idx = musteriIndexBul(tazeListe, musteriAd);
@@ -380,6 +435,12 @@ var CustomerData = (function(){
     yetkiliEkle: yetkiliEkle,
     yetkiliSil: yetkiliSil,
     yetkiliGuncelle: yetkiliGuncelle,
+    musteriTekAdresKaydet: musteriTekAdresKaydet,
+    musteriTekAdresSil: musteriTekAdresSil,
+    musteriTekYetkiliKaydet: musteriTekYetkiliKaydet,
+    musteriTekYetkiliSil: musteriTekYetkiliSil,
+    musteriNotKaydet: musteriNotKaydet,
+    musteriNotSil: musteriNotSil,
     musteriSil: musteriSil,
     musterileriBirlestir: musterileriBirlestir,
     sonGoruntulendi: sonGoruntulendi
