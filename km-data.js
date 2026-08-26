@@ -36,12 +36,42 @@ var KmData = (function(){
       db.ref("kmTakip").on("value", function(snap){
         kayitlar = snap.val() || {};
         dinleyiciler.forEach(function(fn){ fn(); });
+        bozukIsOzelDegerleriniOnar();
       }, function(err){
         console.error("KM okuma hatası:", err);
       });
     }catch(e){
       console.error("Firebase başlatma hatası:", e);
     }
+  }
+
+  // Kendi kendini onarma: Başlangıç/Bitiş KM'si dolu olduğu halde İş/Özel
+  // KM'si (kategoriye göre) yanlış/eksik kalmış kayıtları (ör. hücreler
+  // eski bir sürümde doğrudan düzenlenmiş de yeniden hesaplanmamışsa)
+  // sessizce düzeltir. Sayfa her açıldığında ve veri her değiştiğinde
+  // çalışır, sadece gerçekten YANLIŞ olan kayıtları yazar (gereksiz
+  // Firebase trafiği olmasın diye).
+  var onarimCalisiyorMu = false;
+  function bozukIsOzelDegerleriniOnar(){
+    if(onarimCalisiyorMu) return;
+    var guncellemeler = {};
+    Object.keys(kayitlar).forEach(function(anahtar){
+      var k = kayitlar[anahtar];
+      if(!k || k.km==null || k.km==="" || k.bitisKm==null || k.bitisKm==="") return;
+      var fark = farkHesapla(k.bitisKm, k.km);
+      var kategori = k.kmKategori || "is";
+      var beklenenIs = kategori==="is" ? fark : null;
+      var beklenenOzel = kategori==="ozel" ? fark : null;
+      var mevcutIs = (k.isKm===undefined) ? null : k.isKm;
+      var mevcutOzel = (k.ozelKm===undefined) ? null : k.ozelKm;
+      if(mevcutIs !== beklenenIs) guncellemeler["kmTakip/"+anahtar+"/isKm"] = beklenenIs;
+      if(mevcutOzel !== beklenenOzel) guncellemeler["kmTakip/"+anahtar+"/ozelKm"] = beklenenOzel;
+    });
+    if(Object.keys(guncellemeler).length === 0) return;
+    onarimCalisiyorMu = true;
+    firebase.database().ref().update(guncellemeler).catch(function(err){
+      console.error("KM onarım hatası:", err);
+    }).then(function(){ onarimCalisiyorMu = false; });
   }
 
   function degistiginde(fn){ dinleyiciler.push(fn); }
@@ -139,10 +169,34 @@ var KmData = (function(){
 
   // Tablodaki bir hücreye dokunup manuel düzeltme yapmak için genel alan
   // güncelleyici (Tarih, Saat, Başl., Bitiş, Güzergah, Ziyaret, İş, Özel).
+  // Başlangıç veya Bitiş KM elle değiştirilince İş/Özel KM o günün kendi
+  // kategorisine göre YENİDEN hesaplanır — aksi halde tabloda eski/yanlış
+  // İş-Özel değeri kalır. Başlangıç KM değişikliği ayrıca BİR ÖNCEKİ günün
+  // Bitiş KM'sine otomatik yansır (iş kuralı: bugünün başlangıcı = dünün
+  // bitişi) ve dünün İş/Özel'i de buna göre yeniden hesaplanır.
   var ALAN_HARITA = {
     saat: "saat", baslangic: "km", bitis: "bitisKm",
     guzergah: "guzergah", ziyaret: "ziyaretYerleri", isKm: "isKm", ozelKm: "ozelKm"
   };
+
+  function oncekiGunAnahtari(anahtar){
+    var parca = anahtar.split("-").map(Number);
+    var d = new Date(parca[0], parca[1]-1, parca[2]);
+    d.setDate(d.getDate()-1);
+    return tarihAnahtari(d);
+  }
+
+  function gununIsOzelYenidenHesapla(anahtar, guncelleyecekObje){
+    var kayit = Object.assign({}, kayitlar[anahtar]||{}, guncelleyecekObje);
+    if(kayit.km!=null && kayit.km!=="" && kayit.bitisKm!=null && kayit.bitisKm!==""){
+      var fark = farkHesapla(kayit.bitisKm, kayit.km);
+      var kategori = kayit.kmKategori || "is";
+      guncelleyecekObje.isKm = kategori==="is" ? fark : null;
+      guncelleyecekObje.ozelKm = kategori==="ozel" ? fark : null;
+    }
+    return guncelleyecekObje;
+  }
+
   function hucreGuncelle(anahtar, alanAdi, deger, geriBildir){
     try{
       var firebaseAlan = ALAN_HARITA[alanAdi];
@@ -150,7 +204,31 @@ var KmData = (function(){
       var sayisalMi = (firebaseAlan==="km" || firebaseAlan==="bitisKm" || firebaseAlan==="isKm" || firebaseAlan==="ozelKm");
       var yaziliDeger = sayisalMi ? (parseFloat(deger)||0) : (deger||"");
       var db = firebase.database();
-      db.ref("kmTakip/" + anahtar + "/" + firebaseAlan).set(yaziliDeger).then(function(){
+      var guncellemeler = {};
+
+      if(alanAdi === "baslangic" || alanAdi === "bitis"){
+        var buGuncelleme = {};
+        buGuncelleme[firebaseAlan] = yaziliDeger;
+        buGuncelleme = gununIsOzelYenidenHesapla(anahtar, buGuncelleme);
+        Object.keys(buGuncelleme).forEach(function(k){
+          guncellemeler["kmTakip/" + anahtar + "/" + k] = buGuncelleme[k];
+        });
+
+        if(alanAdi === "baslangic"){
+          var oncekiAnahtar = oncekiGunAnahtari(anahtar);
+          if(kayitlar[oncekiAnahtar]){
+            var oncekiGuncelleme = {bitisKm: yaziliDeger};
+            oncekiGuncelleme = gununIsOzelYenidenHesapla(oncekiAnahtar, oncekiGuncelleme);
+            Object.keys(oncekiGuncelleme).forEach(function(k){
+              guncellemeler["kmTakip/" + oncekiAnahtar + "/" + k] = oncekiGuncelleme[k];
+            });
+          }
+        }
+      } else {
+        guncellemeler["kmTakip/" + anahtar + "/" + firebaseAlan] = yaziliDeger;
+      }
+
+      db.ref().update(guncellemeler).then(function(){
         geriBildir(true);
       }).catch(function(err){ geriBildir(false, err); });
     }catch(e){ geriBildir(false, e); }
