@@ -185,8 +185,17 @@ function excelAktar(){
     var veriSatirlari = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
       var d = new Date(parseInt(parca[0]), parseInt(parca[1])-1, parseInt(parca[2]));
-      var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+" "+GUNLER[d.getDay()].toLocaleUpperCase("tr-TR");
-      return [tarihStr, k.saat||"", k.guzergah||"", k.ziyaretYerleri||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
+      // İstenen format: "26.08.2026" (rakam) alt satırda "ÇARŞAMBA" (harf) —
+      // hücre içinde iki satır (wrapText ile aşağıda etkinleştiriliyor).
+      var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+"\n"+GUNLER[d.getDay()].toLocaleUpperCase("tr-TR");
+      // Saat: "09:00-18:00" gibi eski/aralıklı girişlerde başlangıç üstte,
+      // bitiş altta iki satır olsun. Tek saat girilmişse tek satır kalır.
+      var saatStr = k.saat || "";
+      if(saatStr.indexOf("-") >= 0){
+        var saatParca = saatStr.split("-");
+        saatStr = saatParca[0].trim() + "\n" + saatParca[1].trim();
+      }
+      return [tarihStr, saatStr, k.guzergah||"", k.ziyaretYerleri||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
     });
 
     var aoa = [
@@ -197,6 +206,11 @@ function excelAktar(){
 
     var ws = XLSX.utils.aoa_to_sheet(aoa);
     ws["!cols"] = [{wch:20},{wch:10},{wch:12},{wch:12},{wch:22},{wch:26},{wch:9},{wch:9}];
+    // Tarih/Saat hücreleri iki satırlı olduğu için veri satırlarını daha
+    // yüksek yapıyoruz (başlık ve boş satırlar normal kalsın).
+    var satirYukseklikleri = [{},{},{}];
+    for(var ry=0; ry<veriSatirlari.length; ry++){ satirYukseklikleri.push({hpt:32}); }
+    ws["!rows"] = satirYukseklikleri;
 
     var INCE_KENAR = { style:"thin", color:{rgb:"3569B8"} };
     var TUM_KENAR = { top:INCE_KENAR, bottom:INCE_KENAR, left:INCE_KENAR, right:INCE_KENAR };
@@ -216,7 +230,7 @@ function excelAktar(){
         var vAdr = XLSX.utils.encode_cell({r:BAS_SATIR+vr, c:vc});
         if(!ws[vAdr]) ws[vAdr] = {t:"s", v:""};
         ws[vAdr].s = {
-          alignment: {horizontal: (vc===0||vc===4||vc===5?"left":"center"), vertical:"center"},
+          alignment: {horizontal: (vc===0||vc===1?"center":(vc===4||vc===5?"left":"center")), vertical:"center", wrapText: (vc===0||vc===1)},
           border: TUM_KENAR
         };
       }
