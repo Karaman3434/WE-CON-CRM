@@ -336,6 +336,33 @@
   margin-top: 8px;
 }
 
+.sepet-iptal-btn {
+  width: 100%;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 1.5px solid #f0b8b3;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.sepet-urun-sil-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+}
+.sepet-prim-ve-sil {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
 /* ---------- HESAPLANACAK grubu: kart listesi, sarı zemin ---------- */
 .sepet-grup-baslik--sari, .sepet-grup-baslik--yesil {
   font-size: 11px;

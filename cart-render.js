@@ -48,11 +48,13 @@ function sayfayiCiz(){
       grupYesilAlani.innerHTML = "";
       bosMesaj.hidden = false;
       altButonSatiri.hidden = true;
+      document.getElementById("btnSepetIptal").hidden = true;
       devamUyari.hidden = true;
       return;
     }
     bosMesaj.hidden = true;
     altButonSatiri.hidden = false;
+    document.getElementById("btnSepetIptal").hidden = false;
 
     var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
@@ -86,11 +88,36 @@ function sayfayiCiz(){
     });
     grupSariAlani.querySelectorAll("tbody tr").forEach(function(tr, i){
       tr.style.cursor = "pointer";
-      tr.onclick = function(){ urunuHesaplamayaGonder(bekleyenler[i].idx); };
+      var urun = bekleyenler[i];
+      tr.onclick = function(){ urunuHesaplamayaGonder(urun.idx); };
+      // PRİM sütunu bekleyen ürünlerde zaten "-" gösteriyor; buraya bu
+      // ürünü sepetten kaldırma (vazgeçme) tuşu ekliyoruz.
+      var sonHucre = tr.querySelector("td:last-child");
+      if(sonHucre){
+        sonHucre.innerHTML = "<button class='sepet-urun-sil-btn' title='Bu üründen vazgeç'>🗑️</button>";
+        sonHucre.querySelector("button").onclick = function(e){
+          e.stopPropagation();
+          if(!confirm(urun.ad + " sepetten kaldırılsın mı?")) return;
+          CartData.sil(urun.idx);
+          sayfayiCiz();
+        };
+      }
     });
     grupYesilAlani.querySelectorAll("tbody tr").forEach(function(tr, i){
       tr.style.cursor = "pointer";
-      tr.onclick = function(){ urunuHesaplamayaGonder(hesaplananlar[i].idx); };
+      var urun = hesaplananlar[i];
+      tr.onclick = function(){ urunuHesaplamayaGonder(urun.idx); };
+      var sonHucre = tr.querySelector("td:last-child");
+      if(sonHucre){
+        var mevcutIcerik = sonHucre.innerHTML;
+        sonHucre.innerHTML = "<div class='sepet-prim-ve-sil'><span>" + mevcutIcerik + "</span><button class='sepet-urun-sil-btn' title='Bu üründen vazgeç'>🗑️</button></div>";
+        sonHucre.querySelector("button").onclick = function(e){
+          e.stopPropagation();
+          if(!confirm(urun.ad + " sepetten kaldırılsın mı?")) return;
+          CartData.sil(urun.idx);
+          sayfayiCiz();
+        };
+      }
     });
 
     var tamamMi = CartData.tamamHesaplandiMi();
@@ -123,6 +150,11 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   document.getElementById("btnSepetKaydet").onclick = function(){ devamEt("kaydet"); };
   document.getElementById("btnSepetGonder").onclick = function(){ devamEt("gonder"); };
+  document.getElementById("btnSepetIptal").onclick = function(){
+    if(!confirm("Bu işlemi iptal edip sepetteki TÜM ürünleri kaldırmak istediğinden emin misin? Bu geri alınamaz.")) return;
+    localStorage.setItem("weiconv2_sepet", "[]");
+    window.location.href = "home.html";
+  };
 
   sayfayiCiz();
 });
