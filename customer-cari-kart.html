@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.260826.1524.28 — customer-cari-kart.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.260826.1549.29 — customer-cari-kart.html -->
 <!--
-  WEICON ASİST — CARİ KART v2
+  WEICON ASİST — CARİ KART v3
   ==============================
-  Yeniden tasarlandı: tek FATURA ADRESİ bloğu (müşteri adı, şehir,
-  vade/fatura/kargo, yetkili, açık adres), tek TESLİMAT ADRESİ bloğu
-  (açık adres), tek opsiyonel NOT bloğu — her biri kendi Düzenle/Kaydet/
-  Sil tuşlarıyla, satır içi (popup değil) düzenlenir. Çoklu adres/yetkili
-  listesi kaldırıldı — sadeleştirme kasıtlı (eski programın çökme
-  riskini azaltmak için).
+  Dört blok: FATURA ADRESİ (ad+şehir+vade/fatura/kargo+açık adres),
+  YETKİLİ KİŞİ (isim/görev/tel/eposta), TESLİMAT ADRESİ (açık adres),
+  NOT (opsiyonel). Her blokta alanlar HER ZAMAN doğrudan düzenlenebilir
+  (gizle/göster geçişi YOK — önceki sürümdeki "hidden CSS çakışması"
+  hata sınıfını kökten ortadan kaldırır). Her blokta aynı satırda eşit
+  boyutta Düzenle/Kaydet/Sil tuşları — Kaydet basılmadan hiçbir değişiklik
+  kalıcı olmaz.
 -->
 <html lang="tr">
 <head>
@@ -31,73 +32,64 @@
 
 <main class="sayfa">
 
-  <!-- FATURA ADRESİ bloğu -->
+  <div class="cari-ad" id="cariKartAd">—</div>
+  <div class="cari-alt-baslik" id="cariKartAltBaslik"></div>
+
+  <!-- FATURA ADRESİ -->
   <div class="ck-blok-etiket ck-blok-etiket--fatura">🧾 FATURA ADRESİ</div>
-  <section class="ck-blok" id="ckFaturaBlok">
-    <div id="ckFaturaGoruntule">
-      <div class="ck-musteri-ad" id="ckMusteriAd">—</div>
-      <div class="ck-musteri-sehir" id="ckMusteriSehir"></div>
-
-      <div class="ozet-satir-3">
-        <div class="ozet-alan"><div class="ozet-ikon">📅</div><div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="ckVadeGoster">-</div></div></div>
-        <div class="ozet-alan"><div class="ozet-ikon">📄</div><div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="ckFaturaTuruGoster">-</div></div></div>
-        <div class="ozet-alan"><div class="ozet-ikon">🚚</div><div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="ckKargoGoster">-</div></div></div>
-      </div>
-
-      <div class="ck-yetkili-goster" id="ckYetkiliGoster">
-        <div class="ck-yetkili-isim" id="ckYetkiliIsimGoster">👤 Yetkili eklenmedi</div>
-        <div class="ck-yetkili-detay" id="ckYetkiliDetayGoster"></div>
-      </div>
-
-      <div class="ck-adres-etiket">AÇIK ADRES</div>
-      <div class="ck-adres-goster" id="ckFaturaAdresGoster">Adres eklenmedi.</div>
+  <section class="ck-blok">
+    <div class="ozet-satir-3">
+      <div class="ozet-alan"><div class="ozet-ikon">📅</div><div class="ozet-metin"><div class="ozet-baslik">VADE</div><input type="text" id="ckVadeInput" class="ck-mini-input" placeholder="30 gün"></div></div>
+      <div class="ozet-alan"><div class="ozet-ikon">📄</div><div class="ozet-metin"><div class="ozet-baslik">FATURA</div><input type="text" id="ckFaturaTuruInput" class="ck-mini-input" placeholder="TL fatura"></div></div>
+      <div class="ozet-alan"><div class="ozet-ikon">🚚</div><div class="ozet-metin"><div class="ozet-baslik">KARGO</div><input type="text" id="ckKargoInput" class="ck-mini-input" placeholder="Alıcı öder"></div></div>
     </div>
-
-    <div id="ckFaturaDuzenle" hidden>
-      <div class="form-satir-2">
-        <input type="text" id="ckVadeInput" placeholder="Vade (örn. 30 gün)">
-        <input type="text" id="ckFaturaTuruInput" placeholder="Fatura Türü (örn. TL fatura)">
-      </div>
-      <input type="text" id="ckKargoInput" placeholder="Kargo (örn. Alıcı ödemeli)">
-      <div class="form-satir-2">
-        <input type="text" id="ckYetkiliIsimInput" placeholder="Yetkili İsim Soyisim">
-        <input type="text" id="ckYetkiliGorevInput" placeholder="Görev (örn. Satın Alma)">
-      </div>
-      <div class="form-satir-2">
-        <input type="tel" id="ckYetkiliTelInput" placeholder="Telefon">
-        <input type="email" id="ckYetkiliEpostaInput" placeholder="E-posta">
-      </div>
-      <textarea id="ckFaturaAdresInput" rows="3" placeholder="Açık adres"></textarea>
-    </div>
-
+    <div class="ck-adres-etiket">FATURA ADRESİ</div>
+    <textarea id="ckFaturaAdresInput" class="ck-adres-textarea" rows="3" placeholder="Açık adres"></textarea>
     <div class="ck-buton-satir">
-      <button class="ck-duzenle-btn" id="btnFaturaDuzenle">✏️ Düzenle</button>
-      <button class="ck-kaydet-btn" id="btnFaturaKaydet" hidden>✓ Kaydet</button>
+      <button class="ck-duzenle-btn" data-odak="ckVadeInput">✏️ Düzenle</button>
+      <button class="ck-kaydet-btn" id="btnFaturaKaydet">✓ Kaydet</button>
       <button class="ck-sil-btn" id="btnFaturaSil">🗑 Sil</button>
     </div>
   </section>
 
-  <!-- TESLİMAT ADRESİ bloğu -->
-  <div class="ck-blok-etiket ck-blok-etiket--teslimat">🚚 TESLİMAT ADRESİ</div>
-  <section class="ck-blok" id="ckTeslimatBlok">
-    <div id="ckTeslimatGoster" class="ck-adres-goster">Adres eklenmedi.</div>
-    <textarea id="ckTeslimatInput" rows="3" placeholder="Açık adres" hidden></textarea>
+  <!-- YETKİLİ KİŞİ -->
+  <div class="ck-blok-etiket ck-blok-etiket--yetkili">👤 YETKİLİ KİŞİ</div>
+  <section class="ck-blok">
+    <div class="form-satir-2">
+      <input type="text" id="ckYetkiliIsimInput" placeholder="İsim Soyisim">
+      <input type="text" id="ckYetkiliGorevInput" placeholder="Görev (örn. Satın Alma)">
+    </div>
+    <div class="form-satir-2">
+      <input type="tel" id="ckYetkiliTelInput" placeholder="Telefon">
+      <input type="email" id="ckYetkiliEpostaInput" placeholder="E-posta">
+    </div>
     <div class="ck-buton-satir">
-      <button class="ck-duzenle-btn" id="btnTeslimatDuzenle">✏️ Düzenle</button>
-      <button class="ck-kaydet-btn" id="btnTeslimatKaydet" hidden>✓ Kaydet</button>
+      <button class="ck-duzenle-btn" data-odak="ckYetkiliIsimInput">✏️ Düzenle</button>
+      <button class="ck-kaydet-btn" id="btnYetkiliKaydet">✓ Kaydet</button>
+      <button class="ck-sil-btn" id="btnYetkiliSil">🗑 Sil</button>
+    </div>
+  </section>
+
+  <!-- TESLİMAT ADRESİ -->
+  <div class="ck-blok-etiket ck-blok-etiket--teslimat">🚚 TESLİMAT ADRESİ</div>
+  <section class="ck-blok">
+    <div class="ck-adres-etiket ck-adres-etiket--yesil">TESLİMAT ADRESİ</div>
+    <textarea id="ckTeslimatInput" class="ck-adres-textarea" rows="3" placeholder="Açık adres"></textarea>
+    <div class="ck-buton-satir">
+      <button class="ck-duzenle-btn" data-odak="ckTeslimatInput">✏️ Düzenle</button>
+      <button class="ck-kaydet-btn" id="btnTeslimatKaydet">✓ Kaydet</button>
       <button class="ck-sil-btn" id="btnTeslimatSil">🗑 Sil</button>
     </div>
   </section>
 
-  <!-- NOT bloğu (opsiyonel) -->
+  <!-- NOT -->
   <div class="ck-blok-etiket ck-blok-etiket--not">📝 NOT</div>
-  <section class="ck-blok" id="ckNotBlok">
-    <div id="ckNotGoster" class="ck-adres-goster">Not eklenmedi.</div>
-    <textarea id="ckNotInput" rows="3" placeholder="Ör: Sadece perşembe günleri teslimat kabul ediyor." hidden></textarea>
+  <section class="ck-blok">
+    <textarea id="ckNotInput" class="ck-adres-textarea" rows="3" placeholder="Ör: Sadece perşembe günleri teslimat kabul ediyor."></textarea>
     <p class="ck-not-aciklama">Not varsa, mail/WhatsApp mesaj metninin altına otomatik eklenir; boşsa hiç görünmez.</p>
     <div class="ck-buton-satir">
-      <button class="ck-duzenle-btn" id="btnNotDuzenle">✏️ Düzenle</button>
-      <button class="ck-kaydet-btn" id="btnNotKaydet" hidden>✓ Kaydet</button>
+      <button class="ck-duzenle-btn" data-odak="ckNotInput">✏️ Düzenle</button>
+      <button class="ck-kaydet-btn" id="btnNotKaydet">✓ Kaydet</button>
       <button class="ck-sil-btn" id="btnNotSil">🗑 Sil</button>
     </div>
   </section>

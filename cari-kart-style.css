@@ -64,7 +64,7 @@
   overflow-wrap: break-word;
 }
 
-/* ---------- Yeni Cari Kart blok tasarımı (v2) ---------- */
+/* ---------- Yeni Cari Kart blok tasarımı (v3 — her zaman düzenlenebilir) ---------- */
 .ck-blok-etiket {
   font-size: 11px;
   font-weight: 900;
@@ -74,6 +74,7 @@
   margin-top: 16px;
 }
 .ck-blok-etiket--fatura { background: #fff9e6; color: #8a6d1a; }
+.ck-blok-etiket--yetkili { background: #eaf2fc; color: #1a5276; }
 .ck-blok-etiket--teslimat { background: #eafaf0; color: #0e6b34; }
 .ck-blok-etiket--not { background: #f6f0fd; color: #6a1b9a; }
 
@@ -85,53 +86,43 @@
   padding: 14px;
 }
 
-.ck-musteri-ad { font-size: 16px; font-weight: 900; color: #003a70; }
-.ck-musteri-sehir { font-size: 12px; color: #2d3540; margin-bottom: 10px; }
-
-.ck-yetkili-goster {
-  border-top: 1px solid #eee;
-  padding-top: 10px;
-  margin-bottom: 10px;
+.ck-mini-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 3px 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 2px;
+  box-sizing: border-box;
+  background: #ffffff;
 }
-.ck-yetkili-isim { font-size: 13px; font-weight: 800; color: #111; }
-.ck-yetkili-detay { font-size: 11px; color: #2d3540; margin-top: 2px; }
 
 .ck-adres-etiket {
   font-size: 9px;
   font-weight: 900;
   color: #8a6d1a;
   letter-spacing: .3px;
-  margin-bottom: 4px;
+  margin: 10px 0 4px;
 }
-.ck-adres-goster {
-  font-size: 12px;
-  color: #111;
-  background: #f9fafb;
-  border: 1px solid #e2e6ec;
+.ck-adres-etiket--yesil { color: #0e6b34; }
+
+.ck-adres-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 10px;
-  white-space: pre-wrap;
+  font-size: 12px;
+  font-family: inherit;
+  resize: vertical;
 }
 
 .ck-not-aciklama {
   font-size: 10px;
   color: #44494f;
   margin: 8px 0 0;
-}
-
-#ckFaturaDuzenle, #ckTeslimatInput, #ckNotInput {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-#ckFaturaDuzenle input, #ckTeslimatInput, #ckNotInput {
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 9px 10px;
-  font-size: 13px;
-  box-sizing: border-box;
-  width: 100%;
-  font-family: inherit;
 }
 
 .ck-buton-satir {
