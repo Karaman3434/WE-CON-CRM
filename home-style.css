@@ -81,7 +81,7 @@ body {
 .karsilama {
   font-size: 15px;
   font-weight: 700;
-  color: #556170;
+  color: #2d3540;
   margin-bottom: 12px;
 }
 
@@ -139,12 +139,12 @@ body {
 .kart--koyu-yesil .kart-etiket { color: #a8ffb0; }
 
 .kart--acik-mavi { background: #eaf2fc; border-color: #3569b8; }
-.kart--acik-mavi .kart-baslik { color: #556170; }
+.kart--acik-mavi .kart-baslik { color: #2d3540; }
 .kart--acik-mavi .kart-deger { color: #003a70; }
 .kart--acik-mavi .kart-etiket { color: #3569b8; }
 
 .kart--acik-yesil { background: #e9f7ee; border-color: #1f9d55; }
-.kart--acik-yesil .kart-baslik { color: #556170; }
+.kart--acik-yesil .kart-baslik { color: #2d3540; }
 .kart--acik-yesil .kart-deger { color: #0e6b34; }
 .kart--acik-yesil .kart-etiket { color: #1f9d55; }
 
@@ -180,7 +180,7 @@ body {
 .menu-alt {
   font-size: 11px;
   font-weight: 800;
-  color: #8a94a3;
+  color: #44494f;
   letter-spacing: .3px;
 }
 .menu-alt--basarili {

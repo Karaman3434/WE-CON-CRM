@@ -252,7 +252,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod){
       + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kb'>Berta:</span> " + htmlEsc(u.berta||"-") + " <span class='ka'>Abas:</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>"
       + "<td>" + (u.adet||0) + "</td>"
       + "<td>" + fmtG2(u.listeFiyat||0) + " €</td>"
-      + "<td>%" + (u.iskonto||0) + "</td>"
+      + "<td class='belge-td-isk'>%" + (u.iskonto||0) + "</td>"
       + "<td>" + fmtG2(h.iskontoluFiyat) + " €</td>"
       + "<td class='belge-td-toplam'>" + fmtG2(h.toplamEuro) + " €</td>"
       + "</tr>";
@@ -263,14 +263,26 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod){
   var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
   var tarihStr = simdi.getDate() + " " + aylar[simdi.getMonth()] + " " + simdi.getFullYear() + " " + ("0"+simdi.getHours()).slice(-2) + ":" + ("0"+simdi.getMinutes()).slice(-2);
 
+  var vade = musteri.vade || "";
+  var faturaTuru = musteri.fatura || "";
+  var kargo = musteri.kargo || "";
+  var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";
+  var teslimatAdr = seciliAdresler.teslimatAdresi ? (seciliAdresler.teslimatAdresi.adres||"") : "";
+  var yetkililer = musteri.iletisimler || [];
+
   return "<div class='belge-kutu' style='margin:0;'>"
     + "<div class='belge-ust-baslik'>"
     + "<div class='belge-logo-satir'><span class='belge-logo-mini'>WEICON</span><span class='belge-tur-baslik'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " FORMU</span></div>"
     + "<table class='belge-tarih-tablo'><tr><td class='bt-etiket'>TARİH</td><td class='bt-deger'>" + tarihStr + "</td></tr></table>"
     + "</div>"
     + "<div class='belge-musteri-baslik'>MÜŞTERİ BİLGİLERİ</div>"
-    + "<div class='belge-musteri-govde'><div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-    + (musteri.sehir ? "<div style='font-size:12px;color:#556170;'>" + htmlEsc(musteri.sehir) + "</div>" : "")
+    + "<div class='belge-musteri-govde'>"
+    + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
+    + (musteri.sehir ? "<div style='font-size:12px;color:#2d3540;'>" + htmlEsc(musteri.sehir) + "</div>" : "")
+    + (faturaAdr ? "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + htmlEsc(faturaAdr) + "</div>" : "")
+    + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
+    + yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("")
+    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
     + "</div>"
     + "<div class='belge-belge-baslik-serit'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + (kod ? " · " + kod : "") + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo'>"
@@ -288,7 +300,7 @@ function belgeGorseliniOlustur(callback){
     var alan = document.getElementById("belgeGorselAlani");
     alan.innerHTML = belgeGorselHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, (sonKaydedilenBelge&&sonKaydedilenBelge.kayit)?sonKaydedilenBelge.kayit.kod:"");
     setTimeout(function(){
-      html2canvas(alan, {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
+      html2canvas(alan, {backgroundColor:"#ffffff", scale:1.4}).then(function(canvas){
         callback(canvas);
       }).catch(function(){ callback(null); });
     }, 60);
@@ -300,7 +312,7 @@ function gonderTiklandi(kanal){
     var metin = document.getElementById("gonderMetin").value;
     var g = gonderBaglam;
     var toplamEuro = CartData.genelToplam(g.kur, g.kdv).toplamEuro;
-    var TIP_ETIKET4 = {numune:"NUMUNE", teklif:"TEKLİF", proforma:"PROFORMA", siparis:"SİPARİŞ"};
+    var TIP_ETIKET4 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
     var ozetMesaj = (kanal==="whatsapp" ? "💬 WhatsApp" : "📧 Mail") + " ile gönderilecek:\n\n"
       + "Müşteri: " + g.musteri.ad + "\n"
       + "Tür: " + TIP_ETIKET4[g.tip] + "\n"
@@ -308,7 +320,7 @@ function gonderTiklandi(kanal){
       + "Devam edilsin mi?";
     if(!confirm(ozetMesaj)) return;
 
-    var dosyaAdi = TIP_ETIKET4[g.tip] + "_" + g.musteri.ad.replace(/[^a-zA-Z0-9]+/g,"_") + ".png";
+    var dosyaAdi = TIP_ETIKET4[g.tip].replace(/\s/g,"_") + "_" + g.musteri.ad.replace(/[^a-zA-Z0-9]+/g,"_") + ".png";
     var konuMetni = "*** " + TIP_ETIKET4[g.tip] + " *** " + g.musteri.ad;
 
     belgeGorseliniOlustur(function(canvas){

@@ -29,12 +29,12 @@
 .menu-satir--pin { color: #003a70; }
 .menu-satir--yedek { color: #0e6b58; }
 .menu-satir--sablon { color: #0e6b58; }
-.menu-satir--ayarlar { color: #556170; }
+.menu-satir--ayarlar { color: #2d3540; }
 .menu-satir--cikis { color: #c0392b; }
 
 .kullanici-bilgi {
   text-align: center;
   font-size: 13px;
-  color: #8a94a3;
+  color: #44494f;
   margin-top: 16px;
 }

@@ -53,8 +53,8 @@
 #tileTemas .islemler-tile-alt { color: #8a6bb0; }
 #tileUrunBul { background: #f0f7ff; border: 2.5px solid #3569b8; }
 #tileUrunBul .islemler-tile-alt { color: #6a8fc9; }
-#tileGecmis, #tileGorevler { background: #f4f5f6; border: 2.5px solid #556170; }
-#tileGecmis .islemler-tile-alt, #tileGorevler .islemler-tile-alt { color: #8a94a3; }
+#tileGecmis, #tileGorevler { background: #f4f5f6; border: 2.5px solid #2d3540; }
+#tileGecmis .islemler-tile-alt, #tileGorevler .islemler-tile-alt { color: #44494f; }
 
 .tip-secim-overlay {
   position: fixed;
@@ -86,7 +86,7 @@
 .tip-secim-vazgec-btn {
   width: 100%;
   background: #fff;
-  color: #556170;
+  color: #2d3540;
   border: 2px solid #cbd5e1;
   border-radius: 8px;
   padding: 12px;
@@ -113,7 +113,7 @@
 .islemler-ok { font-size: 18px; }
 .islemler-ok--mor { color: #8e44ad; }
 .islemler-ok--mavi { color: #2563eb; }
-.islemler-ok--gri { color: #556170; }
+.islemler-ok--gri { color: #2d3540; }
 
 .islemler-alt-buton-satir {
   display: flex;
@@ -152,7 +152,7 @@
 .birlestir-vazgec-btn {
   width: 100%;
   background: #eef1f5;
-  color: #556170;
+  color: #2d3540;
   border: none;
   border-radius: 8px;
   padding: 12px;
@@ -170,7 +170,7 @@
   margin-bottom: 8px;
 }
 .birlestir-arama-sonuc-ad { font-weight: 800; font-size: 14px; color: #003a70; }
-.birlestir-arama-sonuc-sehir { font-size: 12px; color: #8a94a3; margin-top: 2px; }
+.birlestir-arama-sonuc-sehir { font-size: 12px; color: #44494f; margin-top: 2px; }
 .birlestir-uyari-metin {
   font-size: 12px;
   color: #8a590c;
@@ -188,7 +188,7 @@
 .birlestir-onay-kutu--silinecek .birlestir-onay-etiket { color: #c0392b; }
 .birlestir-onay-kutu--kalacak .birlestir-onay-etiket { color: #0e6b58; }
 .birlestir-onay-ad { font-size: 16px; font-weight: 900; color: #222222; }
-.birlestir-onay-ok { text-align: center; font-size: 12px; color: #8a94a3; font-weight: 800; margin: 6px 0; }
+.birlestir-onay-ok { text-align: center; font-size: 12px; color: #44494f; font-weight: 800; margin: 6px 0; }
 .birlestir-onayla-btn {
   flex: 1;
   background: #16a085;
@@ -233,7 +233,7 @@
 .duzenle-ac-buton {
   width: 100%;
   background: #f5f7fa;
-  color: #556170;
+  color: #2d3540;
   border: 2px solid #cbd5e1;
   border-radius: 8px;
   padding: 10px;
@@ -280,7 +280,7 @@
 .adres-bolum-baslik {
   font-size: 13px;
   font-weight: 900;
-  color: #8a94a3;
+  color: #44494f;
   letter-spacing: .3px;
   margin-bottom: 8px;
 }
@@ -296,7 +296,7 @@
   gap: 8px;
 }
 .adres-etiket { font-size: 13px; font-weight: 800; color: #003a70; }
-.adres-metin { font-size: 12px; color: #556170; margin-top: 2px; }
+.adres-metin { font-size: 12px; color: #2d3540; margin-top: 2px; }
 
 .satir-buton-grubu {
   display: flex;
@@ -305,7 +305,7 @@
 }
 .satir-duzenle-btn {
   background: #f5f7fa;
-  color: #556170;
+  color: #2d3540;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   padding: 4px 8px;
@@ -447,8 +447,8 @@
   align-items: flex-start;
 }
 .yetkili-isim { font-size: 14px; font-weight: 800; color: #003a70; }
-.yetkili-gorev { font-size: 11px; color: #8a94a3; }
-.yetkili-detay { font-size: 12px; color: #556170; margin-top: 3px; }
+.yetkili-gorev { font-size: 11px; color: #44494f; }
+.yetkili-detay { font-size: 12px; color: #2d3540; margin-top: 3px; }
 
 .yetkili-ekle-satir {
   display: flex;
@@ -491,7 +491,7 @@
 .gecmis-kod-mini { font-size: 10px; font-weight: 900; color: #111827; }
 .gecmis-durum-mini { font-size: 8px; font-weight: 900; color: #c0392b; margin-top: 2px; }
 .gecmis-td-urun { text-align: left; }
-.gecmis-td-kod { font-size: 9px; color: #556170; line-height: 1.3; }
+.gecmis-td-kod { font-size: 9px; color: #2d3540; line-height: 1.3; }
 .gecmis-td-kod .kb { color: #003a70; font-weight: 800; }
 .gecmis-td-kod .ka { color: #e0524a; font-weight: 800; }
 .gecmis-td-ad { font-weight: 900; color: #111827; margin-top: 2px; font-size: 10px; line-height: 1.2; }
@@ -525,7 +525,7 @@
 .gorev-karti.tamamlandi { opacity: .55; }
 .gorev-aciklama { font-size: 13px; font-weight: 700; color: #111827; }
 .gorev-karti.tamamlandi .gorev-aciklama { text-decoration: line-through; }
-.gorev-zaman { font-size: 11px; color: #8a94a3; margin-top: 2px; }
+.gorev-zaman { font-size: 11px; color: #44494f; margin-top: 2px; }
 
 .sekme-secim {
   display: grid;
@@ -536,7 +536,7 @@
 .sekme-btn {
   border: 2px solid #cbd5e1;
   background: #ffffff;
-  color: #556170;
+  color: #2d3540;
   border-radius: 8px;
   padding: 12px;
   font-size: 14px;
@@ -550,7 +550,7 @@
 }
 .bos-mesaj {
   text-align: center;
-  color: #8a94a3;
+  color: #44494f;
   font-size: 14px;
   padding: 30px 0;
   font-style: italic;

@@ -31,7 +31,7 @@
   border-radius: 8px;
   padding: 10px 8px;
   font-size: 12px;
-  color: #556170;
+  color: #2d3540;
 }
 
 .excel-buton {
@@ -103,13 +103,13 @@
 .islem-sehir-buyuk {
   font-size: 13px;
   font-weight: 800;
-  color: #556170;
+  color: #2d3540;
   flex-shrink: 0;
   white-space: nowrap;
 }
 .islem-detay {
   font-size: 12px;
-  color: #8a94a3;
+  color: #44494f;
 }
 .islem-toplam {
   font-size: 14px;
@@ -118,7 +118,7 @@
   margin-top: 4px;
 }
 .islem-tiklanabilir { cursor: pointer; }
-.islem-ac-ikon { font-size: 10px; color: #8a94a3; }
+.islem-ac-ikon { font-size: 10px; color: #44494f; }
 .urun-detay-kutu {
   background: #f5f7fa;
   border-radius: 8px;
@@ -185,7 +185,7 @@
 }
 .islem-duzenle-btn {
   background: #f5f7fa;
-  color: #556170;
+  color: #2d3540;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   padding: 8px;
@@ -357,7 +357,7 @@
 .gorev-bilgi { flex: 1; min-width: 0; }
 .gorev-musteri { font-size: 14px; font-weight: 800; color: #003a70; }
 .gorev-aciklama { font-size: 13px; color: #333; margin-top: 2px; }
-.gorev-zaman { font-size: 11px; color: #8a94a3; margin-top: 2px; }
+.gorev-zaman { font-size: 11px; color: #44494f; margin-top: 2px; }
 .gorev-karti.tamamlandi .gorev-aciklama,
 .gorev-karti.tamamlandi .gorev-musteri {
   text-decoration: line-through;
@@ -367,7 +367,7 @@
 
 .bos-mesaj {
   text-align: center;
-  color: #8a94a3;
+  color: #44494f;
   font-size: 14px;
   padding: 30px 0;
   font-style: italic;
@@ -391,16 +391,16 @@
   border-color: #0a1628;
 }
 .istatistik-kart--koyu .istatistik-baslik { color: #7fd6ff; }
-.istatistik-baslik { font-size: 11px; font-weight: 800; color: #556170; text-transform: uppercase; margin-bottom: 6px; }
+.istatistik-baslik { font-size: 11px; font-weight: 800; color: #2d3540; text-transform: uppercase; margin-bottom: 6px; }
 .istatistik-deger { font-size: 20px; font-weight: 900; color: #00d9ff; }
 .istatistik-deger--koyu { color: #003a70; }
-.istatistik-alt { font-size: 11px; color: #8a94a3; margin-top: 4px; }
+.istatistik-alt { font-size: 11px; color: #44494f; margin-top: 4px; }
 .istatistik-kart--koyu .istatistik-alt { color: #a8c0e8; }
 
 .istatistik-bolum-baslik {
   font-size: 13px;
   font-weight: 800;
-  color: #556170;
+  color: #2d3540;
   margin: 16px 0 8px;
 }
 .istatistik-satir {
@@ -521,12 +521,12 @@
   font-size: 12px;
 }
 .kacan-satir-ust { display: flex; justify-content: space-between; font-weight: 800; color: #c0392b; }
-.kacan-satir-alt { color: #8a94a3; margin-top: 2px; }
+.kacan-satir-alt { color: #44494f; margin-top: 2px; }
 
 /* Ziyaret Takvimi */
 .ziyaret-aciklama {
   font-size: 12px;
-  color: #8a94a3;
+  color: #44494f;
   margin-bottom: 12px;
   font-style: italic;
 }
@@ -559,7 +559,7 @@
   border-radius: 6px;
   background: #ffffff;
 }
-.ziyaret-sehir { font-size: 12px; color: #8a94a3; margin-bottom: 8px; }
+.ziyaret-sehir { font-size: 12px; color: #44494f; margin-bottom: 8px; }
 .ziyaret-not-input {
   display: flex;
   gap: 6px;

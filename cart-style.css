@@ -19,7 +19,7 @@
 .kur-satiri label {
   font-size: 13px;
   font-weight: 700;
-  color: #556170;
+  color: #2d3540;
 }
 .kur-satiri input {
   width: 110px;
@@ -53,7 +53,7 @@
 }
 .sepet-urun-kod {
   font-size: 11px;
-  color: #8a94a3;
+  color: #44494f;
   margin-top: 2px;
 }
 .sepet-sil-btn {
@@ -82,7 +82,7 @@
 .hesap-alan label {
   font-size: 11px;
   font-weight: 800;
-  color: #556170;
+  color: #2d3540;
   text-transform: uppercase;
 }
 .hesap-alan input {
@@ -146,7 +146,7 @@
 
 .bos-mesaj {
   text-align: center;
-  color: #8a94a3;
+  color: #44494f;
   font-size: 14px;
   padding: 40px 0;
   font-style: italic;
@@ -204,7 +204,7 @@
 }
 .sepet-urun-kod {
   font-size: 9px;
-  color: #8a94a3;
+  color: #44494f;
   margin-top: 1px;
 }
 .sepet-dip-satiri {
@@ -219,7 +219,7 @@
 }
 .sepet-dip-satiri label {
   font-size: 9px;
-  color: #8a94a3;
+  color: #44494f;
 }
 
 .sepet-tablo input[type=number] {
@@ -239,7 +239,7 @@
 .sepet-net-deger {
   font-size: 11px;
   font-weight: 800;
-  color: #556170;
+  color: #2d3540;
 }
 .sepet-toplam-deger {
   background: #fdeaea;
@@ -304,7 +304,7 @@
 .sepet-kaydet-btn {
   flex: 1;
   background: #eef1f5;
-  color: #556170;
+  color: #2d3540;
   border: none;
   border-radius: 10px;
   padding: 15px;
@@ -412,6 +412,6 @@
 }
 .hesapla-kod {
   font-size: 11px;
-  color: #8a94a3;
+  color: #44494f;
   margin-bottom: 12px;
 }

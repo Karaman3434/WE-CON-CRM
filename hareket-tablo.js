@@ -29,7 +29,7 @@ var HareketTablo = (function(){
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kb'>Berta:</span> " + htmlEsc(u.berta||"-") + " <span class='ka'>Abas:</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>"
         + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
         + "<td>" + (u.listeFiyat!=null ? fmt(u.listeFiyat)+" €" : "-") + "</td>"
-        + "<td>" + (u.iskonto!=null ? "%"+u.iskonto : "-") + "</td>"
+        + "<td class='belge-td-isk'>" + (u.iskonto!=null ? "%"+u.iskonto : "-") + "</td>"
         + "<td>" + (toplamVarMi ? fmt(h.iskontoluFiyat)+" €" : "-") + "</td>"
         + "<td class='belge-td-toplam'>" + (toplamVarMi ? fmt(h.toplamEuro)+" €" : "-") + "</td>"
         + "<td class='belge-td-prim'>" + (toplamVarMi ? (h.mudurPrim<0?"Yok":fmt(h.mudurPrim)+" €") : "-") + "</td>"

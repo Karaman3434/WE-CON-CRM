@@ -153,7 +153,7 @@ function urunSatisGecmisiniAc(berta, abas, ad){
       kapsayici.innerHTML = gecmis.map(function(g){
         return "<div class='urun-gecmis-satir'>"
           + "<div class='urun-gecmis-satir-ust'>"
-          + "<span class='urun-gecmis-tip-rozet' style='background:" + (TIP_RENK_URUN[g.tip]||"#556170") + ";'>" + (TIP_ETIKET_URUN[g.tip]||"") + "</span>"
+          + "<span class='urun-gecmis-tip-rozet' style='background:" + (TIP_RENK_URUN[g.tip]||"#2d3540") + ";'>" + (TIP_ETIKET_URUN[g.tip]||"") + "</span>"
           + "<span class='urun-gecmis-musteri'>" + htmlEsc(g.musteri) + "</span>"
           + "<span class='urun-gecmis-tarih'>" + htmlEsc(g.tarih) + "</span>"
           + "</div>"

@@ -85,7 +85,7 @@ function tabloyuCiz(){
     var bugunAnahtar = KmData.bugunAnahtari();
 
     if(kayitlar.length === 0){
-      govde.innerHTML = "<tr><td colspan='8' style='text-align:center;color:#8a94a3;padding:16px 0;'>Bu ay henüz kayıt yok.</td></tr>";
+      govde.innerHTML = "<tr><td colspan='8' style='text-align:center;color:#44494f;padding:16px 0;'>Bu ay henüz kayıt yok.</td></tr>";
       document.getElementById("kmAyToplamIs").textContent = "0 km";
       document.getElementById("kmAyToplamOzel").textContent = "0 km";
       return;

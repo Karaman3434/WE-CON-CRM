@@ -73,7 +73,7 @@ function belgeyiCiz(kayit, musteri){
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kb'>Berta:</span> " + htmlEsc(item.berta||"-") + " <span class='ka'>Abas:</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
         + "<td>" + fmt(item.listeFiyat||0) + " €</td>"
-        + "<td>%" + (item.iskonto||0) + "</td>"
+        + "<td class='belge-td-isk'>%" + (item.iskonto||0) + "</td>"
         + "<td>" + fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)) + " €</td>"
         + "<td class='belge-td-toplam'>" + fmt(toplamEuro) + " €</td>"
         + "<td class='belge-td-prim'>" + (satirPrim<0 ? "Yok" : fmt(satirPrim)+" €") + "</td>"

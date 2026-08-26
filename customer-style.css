@@ -68,7 +68,7 @@
 
 .bos-mesaj, .yukleniyor-mesaj {
   text-align: center;
-  color: #8a94a3;
+  color: #44494f;
   font-size: 14px;
   padding: 30px 0;
   font-style: italic;
@@ -200,12 +200,12 @@
 .ic-kutu-baslik {
   font-size: 12px;
   font-weight: 800;
-  color: #556170;
+  color: #2d3540;
   margin-bottom: 8px;
 }
 .yardim-notu {
   font-size: 11px;
-  color: #8a94a3;
+  color: #44494f;
   line-height: 1.4;
 }
 .form-kaydet-btn--buyuk {

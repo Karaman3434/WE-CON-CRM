@@ -118,7 +118,7 @@
   margin-bottom: 5px;
   border-bottom: 1px solid #eef1f4;
 }
-.belge-yetkili-detay { color: #556170; font-size: 11px; }
+.belge-yetkili-detay { color: #2d3540; font-size: 11px; }
 
 .belge-belge-baslik-serit {
   background: #3569b8;
@@ -147,12 +147,13 @@
 }
 .belge-td-sira { color: #3569b8; font-weight: 800; }
 .belge-td-urun { text-align: left; }
-.belge-td-urun-kod { font-size: 9px; color: #556170; line-height: 1.3; }
+.belge-td-urun-kod { font-size: 9px; color: #2d3540; line-height: 1.3; }
 .belge-td-urun-kod .kb { color: #3569b8; }
 .belge-td-urun-kod .ka { color: #e0524a; }
 .belge-td-urun-ad { font-weight: 800; color: #222; margin-top: 2px; font-size: 11px; line-height: 1.25; }
 .belge-td-toplam { color: #16a085; font-weight: 900; }
 .belge-td-prim { font-size: 9px; }
+.belge-td-isk { color: #c0392b; font-weight: 900; }
 
 .hareket-grup-etiket {
   font-size: 11px;
