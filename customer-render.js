@@ -108,9 +108,11 @@ function listeyiCiz(){
       kart.onclick = function(){
         CustomerData.sec(sonuclar[i]);
         CustomerData.sonGoruntulendi(sonuclar[i].ad);
-        var sepetDoluMu = false;
-        try{ sepetDoluMu = JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0; }catch(e){}
-        window.location.href = sepetDoluMu ? "send.html" : "customer-detail.html";
+        // Müşteri arama sonuçlarından seçim her zaman Müşteri Kartı'na
+        // gider — sepette eskiden kalmış bir ürün olması bu rotayı
+        // etkilemez (eskiden "yarım kalan işlemi tamamla" mantığıyla
+        // send.html'e atlıyordu, bu yanlış rotaydı).
+        window.location.href = "customer-detail.html";
       };
     });
   }catch(e){ hataGoster("Liste çizilemedi: " + e.message); }
