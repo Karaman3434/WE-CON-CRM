@@ -185,7 +185,7 @@ function excelAktar(){
     var veriSatirlari = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
       var d = new Date(parseInt(parca[0]), parseInt(parca[1])-1, parseInt(parca[2]));
-      var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+" "+GUNLER[d.getDay()];
+      var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear()+" "+GUNLER[d.getDay()].toLocaleUpperCase("tr-TR");
       return [tarihStr, k.saat||"", k.guzergah||"", k.ziyaretYerleri||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
     });
 
