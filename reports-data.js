@@ -341,7 +341,11 @@ var ReportsData = (function(){
     var secenekler = SONRAKI_ASAMALAR[kayit.tip];
     if(!secenekler){ return false; }
     var sepet = (kayit.urunler||[]).map(function(u, i){
-      return {idx:i, ad:u.ad, berta:u.berta, abas:u.abas, listeFiyat:u.listeFiyat, dipFiyat:u.dipFiyat, iskonto:u.iskonto, adet:u.adet, hesaplandi:true};
+      return {
+        idx:i, ad: u.ad || "İsimsiz Ürün", berta: u.berta||"", abas: u.abas||"",
+        listeFiyat: u.listeFiyat||0, dipFiyat: u.dipFiyat||0, iskonto: u.iskonto||0, adet: u.adet||0,
+        hesaplandi:true
+      };
     });
     localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));
     localStorage.setItem("weicon_secili_musteri", JSON.stringify({ad:kayit.musteri, sehir:kayit.sehir||"", id:kayit.musteriId||null}));

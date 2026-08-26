@@ -93,13 +93,22 @@ var SendData = (function(){
 
   function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, geriBildir){
     try{
+      // Firebase, obje içinde HERHANGİ bir "undefined" değer varsa TÜM
+      // yazmayı reddeder (ör. eski/zincirlenmiş revize kayıtlarında ürün
+      // adı bir şekilde boş kalmışsa). Bu yüzden her alanı güvenli bir
+      // varsayılana düşürüyoruz — asla undefined Firebase'e gitmesin.
       var urunlerKaydi = sepetUrunleri.map(function(u){
         var h = CartData.hesapla(u, kur, kdv);
         return {
-          ad: u.ad, berta: u.berta, abas: u.abas,
-          listeFiyat: u.listeFiyat, dipFiyat: u.dipFiyat, iskonto: u.iskonto, adet: u.adet,
-          iskBirim: h.iskontoluFiyat,
-          toplamEuro: h.toplamEuro
+          ad: u.ad || "İsimsiz Ürün",
+          berta: u.berta || "",
+          abas: u.abas || "",
+          listeFiyat: u.listeFiyat || 0,
+          dipFiyat: u.dipFiyat || 0,
+          iskonto: u.iskonto || 0,
+          adet: u.adet || 0,
+          iskBirim: h.iskontoluFiyat || 0,
+          toplamEuro: h.toplamEuro || 0
         };
       });
       var yeniImza = urunSetiImzaOlustur(urunlerKaydi);
