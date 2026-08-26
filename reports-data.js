@@ -324,6 +324,37 @@ var ReportsData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  // Revize/İlerletme mekanizması: Numune → Proforma veya Teklif;
+  // Teklif → Proforma veya Sipariş; Proforma → sadece Sipariş (tek seçenek,
+  // soru sorulmadan otomatik ilerler). Sipariş'ten sonrası yok (nihai aşama).
+  var SONRAKI_ASAMALAR = {
+    numune: ["proforma","teklif"],
+    teklif: ["proforma","siparis"],
+    proforma: ["siparis"]
+  };
+
+  // Bir kaydı (numune/teklif/proforma) düzenlenebilir Sepet'e yükler.
+  // secenekler.length===1 ise otomatik o aşamaya, >1 ise send.html'de
+  // Gönder anında Proforma/Sipariş (veya Proforma/Teklif) seçim popup'ı
+  // çıkar. Kayıt başarıyla kaydedilince eski kayıt otomatik silinir.
+  function revizeBaslat(kayit){
+    var secenekler = SONRAKI_ASAMALAR[kayit.tip];
+    if(!secenekler){ return false; }
+    var sepet = (kayit.urunler||[]).map(function(u, i){
+      return {idx:i, ad:u.ad, berta:u.berta, abas:u.abas, listeFiyat:u.listeFiyat, dipFiyat:u.dipFiyat, iskonto:u.iskonto, adet:u.adet, hesaplandi:true};
+    });
+    localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));
+    localStorage.setItem("weicon_secili_musteri", JSON.stringify({ad:kayit.musteri, sehir:kayit.sehir||"", id:kayit.musteriId||null}));
+    localStorage.setItem("weiconv2_ilerlet_kaynak", JSON.stringify({tip:kayit.tip, ts:kayit.ts, sonrakiAsamaSecenekleri:secenekler}));
+    if(secenekler.length === 1){
+      localStorage.setItem("weiconv2_onceden_secilen_tip", secenekler[0]);
+    } else {
+      localStorage.removeItem("weiconv2_onceden_secilen_tip");
+    }
+    window.location.href = "cart.html";
+    return true;
+  }
+
   return {
     baslat: baslat,
     arsivDegistiginde: arsivDegistiginde,
@@ -342,7 +373,9 @@ var ReportsData = (function(){
     kacanOzetBuAy: kacanOzetBuAy,
     kaydiSil: kaydiSil,
     kayitlariBirlestir: kayitlariBirlestir,
-    kaydiGuncelle: kaydiGuncelle
+    kaydiGuncelle: kaydiGuncelle,
+    SONRAKI_ASAMALAR: SONRAKI_ASAMALAR,
+    revizeBaslat: revizeBaslat
   };
 
 })();

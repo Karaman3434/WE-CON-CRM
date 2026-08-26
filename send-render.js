@@ -375,14 +375,41 @@ function ilerletKaynagiOku(){
   }catch(e){ return null; }
 }
 
+var revizeSecimBekleniyor = null; // sonrakiAsamaSecenekleri.length>1 ise seçenek dizisi
+
 function ilerletKaynagiVarsaSekmeAyarla(){
   var kaynak = ilerletKaynagiOku();
-  if(!kaynak || !kaynak.sonrakiAsama) return;
-  secilenTip = kaynak.sonrakiAsama;
+  if(!kaynak || !kaynak.sonrakiAsamaSecenekleri || kaynak.sonrakiAsamaSecenekleri.length===0) return;
+  var secenekler = kaynak.sonrakiAsamaSecenekleri;
   var uyari = document.createElement("div");
   uyari.className = "ilerlet-bilgi-kutu";
-  uyari.textContent = "▶️ İlerletiliyor — kayıt tamamlanınca önceki aşamanın belgesi otomatik silinecek.";
+  if(secenekler.length === 1){
+    secilenTip = secenekler[0];
+    uyari.textContent = "▶️ İlerletiliyor — kayıt tamamlanınca önceki aşamanın belgesi otomatik silinecek.";
+  } else {
+    revizeSecimBekleniyor = secenekler;
+    uyari.textContent = "🔄 Revize ediliyor — Gönder/Kaydet'e basınca hangi aşamaya (" + secenekler.map(function(s){return TIP_ETIKET_ROZET[s];}).join(" / ") + ") dönüşeceğini seçeceksin.";
+  }
   document.getElementById("hareketTabloAlani").insertAdjacentElement("beforebegin", uyari);
+}
+
+function asamaSecimPopupunuAc(devamFn){
+  var overlay = document.getElementById("asamaSecimOverlay");
+  var kapsayici = document.getElementById("asamaSecimButonlari");
+  kapsayici.innerHTML = revizeSecimBekleniyor.map(function(s){
+    return "<button class='tip-btn tip-btn--" + s + "' data-secim='" + s + "'>" + TIP_ETIKET_ROZET[s] + "</button>";
+  }).join("");
+  kapsayici.querySelectorAll("[data-secim]").forEach(function(btn){
+    btn.onclick = function(){
+      secilenTip = this.getAttribute("data-secim");
+      revizeSecimBekleniyor = null;
+      overlay.hidden = true;
+      document.getElementById("ozetTipRozet").textContent = TIP_ETIKET_ROZET[secilenTip] || "";
+      devamFn();
+    };
+  });
+  document.getElementById("btnAsamaSecimVazgec").onclick = function(){ overlay.hidden = true; };
+  overlay.hidden = false;
 }
 
 function oncedenSecilenTipVarsaUygula(){
@@ -398,8 +425,14 @@ document.addEventListener("DOMContentLoaded", function(){
   oncedenSecilenTipVarsaUygula();
   ilerletKaynagiVarsaSekmeAyarla();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-  document.getElementById("btnKaydet").onclick = kaydetTiklandi;
-  document.getElementById("btnGonder").onclick = kaydetTiklandi;
+  document.getElementById("btnKaydet").onclick = function(){
+    if(revizeSecimBekleniyor){ asamaSecimPopupunuAc(kaydetTiklandi); return; }
+    kaydetTiklandi();
+  };
+  document.getElementById("btnGonder").onclick = function(){
+    if(revizeSecimBekleniyor){ asamaSecimPopupunuAc(kaydetTiklandi); return; }
+    kaydetTiklandi();
+  };
   document.getElementById("btnWhatsapp").onclick = function(){ gonderTiklandi("whatsapp"); };
   document.getElementById("btnEposta").onclick = function(){ gonderTiklandi("mail"); };
   document.getElementById("btnWhatsappSablon").onclick = function(){ sablonuUygulaTiklandi("whatsapp"); };

@@ -269,15 +269,34 @@ document.addEventListener("DOMContentLoaded", function(){
     return;
   }
 
+  var sonCizilenKayit = null;
+
   function denemeCiz(){
     var liste = ReportsData.sonIslemler();
     var kayit = liste.find(function(k){ return k.tip===ref.tip && k.ts===ref.ts; });
     if(!kayit) return false;
+    sonCizilenKayit = kayit;
     var musteri = CustomerData.musteriBul(kayit.musteri);
     belgeyiCiz(kayit, musteri);
     belgeGecmisiniCiz(kayit);
+
+    var revizeBtn = document.getElementById("btnRevizeEt");
+    revizeBtn.hidden = !ReportsData.SONRAKI_ASAMALAR[kayit.tip];
     return true;
   }
+
+  document.getElementById("btnRevizeEt").onclick = function(){
+    if(!sonCizilenKayit) return;
+    var secenekler = ReportsData.SONRAKI_ASAMALAR[sonCizilenKayit.tip] || [];
+    var TIP_ETIKET_KISA = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
+    var mesaj = sonCizilenKayit.musteri + " için " + (sonCizilenKayit.urunler||[]).length + " ürün düzenlenmek üzere Sepet'e yüklenecek";
+    mesaj += secenekler.length>1
+      ? " (Gönder aşamasında " + secenekler.map(function(s){return TIP_ETIKET_KISA[s];}).join(" veya ") + " seçebileceksin)."
+      : (" ve " + TIP_ETIKET_KISA[secenekler[0]] + " olarak ilerletilecek.");
+    mesaj += " Devam edilsin mi?";
+    if(!confirm(mesaj)) return;
+    ReportsData.revizeBaslat(sonCizilenKayit);
+  };
 
   ReportsData.arsivDegistiginde(denemeCiz);
   CustomerData.listeDegistiginde(denemeCiz);

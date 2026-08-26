@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="cart-style.css">
 <link rel="stylesheet" href="send-style.css">
 <link rel="stylesheet" href="belge-style.css">
+<link rel="stylesheet" href="detail-style.css">
 </head>
 <body>
 
@@ -84,6 +85,17 @@
        bunu PNG'ye çevirip WhatsApp/Mail ile paylaşacak. Kullanıcı bunu
        görmez, sadece render için var. -->
   <div id="belgeGorselAlani" style="position:fixed; left:-9999px; top:0; width:380px;"></div>
+
+  <!-- Revize/İlerletme aşama seçimi: Numune→Proforma/Teklif veya
+       Teklif→Proforma/Sipariş gibi birden çok seçenek varken Gönder/Kaydet
+       anında açılır. -->
+  <div class="tip-secim-overlay" id="asamaSecimOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">Bu kayıt hangi aşamaya dönüşsün?</div>
+      <div class="tip-secim" id="asamaSecimButonlari"></div>
+      <button class="tip-secim-vazgec-btn" id="btnAsamaSecimVazgec">Vazgeç</button>
+    </div>
+  </div>
 
 </main>
 

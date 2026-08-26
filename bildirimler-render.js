@@ -32,22 +32,18 @@ function htmlEsc(s){
 var TIP_ETIKET_B = {teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA", numune:"NUMUNE"};
 var SEVIYE_ETIKET = {ilk:"⏳ 15+ gün", ikinci:"⚠️ 30+ gün", kritik:"🔴 33+ gün — İNCELE"};
 var SEVIYE_RENK = {ilk:"#f2994a", ikinci:"#e0524a", kritik:"#c0392b"};
-var SONRAKI_ASAMA_B = {numune:"teklif", teklif:"proforma", proforma:"siparis"};
+var TIP_ETIKET_B = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
 
 function ilerletTiklandi(b){
   try{
     var tumu = ReportsData.sonIslemler();
     var k = tumu.find(function(x){ return x.tip===b.tip && x.ts===b.ts; });
     if(!k){ hataGoster("Kayıt bulunamadı."); return; }
-    if(!confirm(k.musteri + " için " + (k.urunler||[]).length + " ürün, bir sonraki aşamaya taşınacak. Devam edilsin mi?")) return;
-
-    var sepet = (k.urunler||[]).map(function(u, i){
-      return {idx:i, ad:u.ad, berta:u.berta, abas:u.abas, listeFiyat:u.listeFiyat, dipFiyat:u.dipFiyat, iskonto:u.iskonto, adet:u.adet};
-    });
-    localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));
-    localStorage.setItem("weicon_secili_musteri", JSON.stringify({ad:k.musteri, sehir:k.sehir||"", id:k.musteriId||null}));
-    localStorage.setItem("weiconv2_ilerlet_kaynak", JSON.stringify({tip:k.tip, ts:k.ts, sonrakiAsama:SONRAKI_ASAMA_B[k.tip]}));
-    window.location.href = "cart.html";
+    var secenekler = ReportsData.SONRAKI_ASAMALAR[k.tip];
+    if(!secenekler) return;
+    var etiketler = secenekler.map(function(s){ return TIP_ETIKET_B[s]; }).join(" veya ");
+    if(!confirm(k.musteri + " için " + (k.urunler||[]).length + " ürün düzenlenmek üzere Sepet'e yüklenecek" + (secenekler.length>1 ? " (Gönder'de " + etiketler + " seçebileceksin)." : (" ve " + etiketler + " olarak ilerletilecek.")) + " Devam edilsin mi?")) return;
+    ReportsData.revizeBaslat(k);
   }catch(e){ hataGoster("İlerletilemedi: " + e.message); }
 }
 
