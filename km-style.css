@@ -202,6 +202,18 @@
 .km-veri-tablo .km-td-ozel { color: #b7601f; font-weight: 800; }
 .km-veri-tablo .km-td-is { color: #003a70; font-weight: 800; }
 
+.km-td-tarih {
+  white-space: normal !important;
+  line-height: 1.3;
+}
+.km-tarih-gun { font-weight: 800; color: #111; font-size: 11px; }
+.km-tarih-adi { font-size: 9px; color: #556170; letter-spacing: .2px; }
+
+.km-td-saat {
+  white-space: pre-line !important;
+  line-height: 1.35;
+}
+
 .km-ay-toplam {
   display: flex;
   justify-content: space-between;

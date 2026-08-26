@@ -94,15 +94,20 @@ function tabloyuCiz(){
     var toplamIs = 0, toplamOzel = 0;
     govde.innerHTML = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
-      var etiket = parseInt(parca[2],10) + " " + AYLAR_KISA[parseInt(parca[1],10)-1];
+      var d = new Date(parseInt(parca[0],10), parseInt(parca[1],10)-1, parseInt(parca[2],10));
+      var tarihGosterim = ("0"+d.getDate()).slice(-2) + "." + ("0"+(d.getMonth()+1)).slice(-2) + "." + d.getFullYear();
+      var gunAdiGosterim = GUNLER[d.getDay()].toLocaleUpperCase("tr-TR");
       if(k.isKm!=null) toplamIs += k.isKm;
       if(k.ozelKm!=null) toplamOzel += k.ozelKm;
       var bugunMu = k.anahtar === bugunAnahtar;
       var satirSinifi = bugunMu ? " class='km-satir--bugun'" : "";
       var baslangicSinifi = bugunMu ? " km-td-baslangic-bugun" : "";
+      // Saat: "09:00-18:00" gibi aralık girilmişse iki satır (üstte
+      // başlangıç, altta bitiş); tek saat varsa tek satır.
+      var saatGosterim = (k.saat||"-").split("-").map(function(s){ return s.trim(); }).join("\n");
       return "<tr" + satirSinifi + " data-anahtar='" + k.anahtar + "'>"
-        + "<td>" + etiket + "</td>"
-        + "<td contenteditable='true' data-alan='saat'>" + (k.saat||"-") + "</td>"
+        + "<td class='km-td-tarih'><div class='km-tarih-gun'>" + tarihGosterim + "</div><div class='km-tarih-adi'>" + gunAdiGosterim + "</div></td>"
+        + "<td class='km-td-saat' contenteditable='true' data-alan='saat'>" + saatGosterim + "</td>"
         + "<td class='km-td-metin' contenteditable='true' data-alan='guzergah'>" + (k.guzergah||"-") + "</td>"
         + "<td class='km-td-metin' contenteditable='true' data-alan='ziyaret'>" + (k.ziyaretYerleri||"-") + "</td>"
         + "<td contenteditable='true' data-alan='baslangic' class='km-td-baslangic" + baslangicSinifi + "'>" + (k.km!=null?k.km:"-") + "</td>"
@@ -121,6 +126,11 @@ function tabloyuCiz(){
         var anahtar = tr.getAttribute("data-anahtar");
         var alan = this.getAttribute("data-alan");
         var deger = this.textContent.trim();
+        // Saat hücresi iki satır (başlangıç/bitiş) olarak gösteriliyor —
+        // kaydederken tekrar tek satır "09:00-18:00" formatına çeviriyoruz.
+        if(alan === "saat"){
+          deger = deger.split("\n").map(function(s){ return s.trim(); }).filter(Boolean).join("-");
+        }
         if(deger === "-") deger = "";
         KmData.hucreGuncelle(anahtar, alan, deger, function(basarili, err){
           if(!basarili) hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
