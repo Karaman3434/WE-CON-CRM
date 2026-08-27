@@ -9,7 +9,7 @@
 var ProductData = (function(){
 
   var firebaseConfig = {
-    apiKey: "AIzaSyC08Oe1LE7TdQl8gG2H9raZQek211Dxd60",
+    apiKey: "AIzaSyC08oE1LE7TdQl8gG2H9raZQek211Dxd60",
     authDomain: "weicon-asist.firebaseapp.com",
     databaseURL: "https://weicon-asist-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "weicon-asist",
@@ -24,8 +24,8 @@ var ProductData = (function(){
   var katalog = [];
   var sepet = [];
   var katalogDinleyicileri = [];
+  var katalogDinleyiciBagli = false;
 
-  // --- Sepet: localStorage'dan yükle (eski aramadan kalan seçim varsa korunsun) ---
   try{
     var kayitliSepet = localStorage.getItem(SEPET_KEY);
     if(kayitliSepet) sepet = JSON.parse(kayitliSepet);
@@ -40,7 +40,6 @@ var ProductData = (function(){
       if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
       var db = firebase.database();
 
-      // Önce localStorage önbelleğini göster (hız için)
       try{
         var local = localStorage.getItem(STORAGE_KEY);
         if(local){
@@ -51,22 +50,19 @@ var ProductData = (function(){
 
       db.ref("/").on("value", function(snap){
         var tumData = snap.val();
-        if(!tumData) return;
         var urunler = [];
         if(Array.isArray(tumData)){
           urunler = tumData.filter(function(x){ return x && x.urun; });
-        } else if(typeof tumData === "object"){
+        } else if(tumData && typeof tumData === "object"){
           Object.keys(tumData).forEach(function(k){
             if(!isNaN(parseInt(k)) && tumData[k] && tumData[k].urun){
               urunler.push(tumData[k]);
             }
           });
         }
-        if(urunler.length > 0){
-          katalog = urunler;
-          try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(urunler)); }catch(e){}
-          katalogDinleyicileri.forEach(function(fn){ fn(); });
-        }
+        katalog = urunler;
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(urunler)); }catch(e){}
+        katalogDinleyicileri.forEach(function(fn){ fn(); });
       }, function(err){
         console.error("Katalog okuma hatası:", err);
       });
@@ -129,20 +125,16 @@ var ProductData = (function(){
     if(mevcutIdx !== -1){
       sepet.splice(mevcutIdx, 1);
       sepetiKaydet();
-      return false; // çıkarıldı
+      return false;
     }
     var bilgi = urunBilgisi(katalog[idx]);
     sepet.push({idx:idx, ad:bilgi.ad, berta:bilgi.berta, abas:bilgi.abas, listeFiyat:bilgi.fiyat, dipFiyat:0, iskonto:0, adet:1, hesaplandi:false});
     sepetiKaydet();
-    return true; // eklendi
+    return true;
   }
 
   function sepetSayisi(){ return sepet.length; }
 
-  // Eski uygulamanın yeniUrunKaydet() ile AYNI mantık: katalog kök dizinde
-  // sayısal index'lerle duruyor (0,1,2...). Yeni ürün için MEVCUT en büyük
-  // sayısal index'i bulup +1'e yazıyoruz — başka HİÇBİR anahtara dokunmadan,
-  // tek bir yeni key set ediyoruz, bu yüzden veri kaybı riski yok.
   function yeniUrunEkle(bilgi, geriBildir){
     try{
       var ad = (bilgi.ad||"").trim().slice(0,200);
@@ -152,27 +144,35 @@ var ProductData = (function(){
       if(!ad){ geriBildir(false, "Ürün adı zorunlu."); return; }
       if(isNaN(fiyat) || fiyat<=0){ geriBildir(false, "Geçerli bir fiyat girin."); return; }
 
-      if(berta && abas){
-        var mukerrer = katalog.some(function(it){
-          var b=(it.berta||it.BERTA||"").toString().trim();
-          var a=(it.abas||it.ABAS||"").toString().trim();
-          return b===berta && a===abas;
-        });
-        if(mukerrer){ geriBildir(false, "Bu Berta/Abas kodu zaten listede kayıtlı."); return; }
-      }
-
       var db = firebase.database();
-      db.ref("/").once("value").then(function(snap){
-        var tumData = snap.val() || {};
+      db.ref("/").transaction(function(tumData){
+        tumData = tumData || {};
+        var veri = (typeof tumData === "object" && !Array.isArray(tumData)) ? tumData : {};
+        var mukerrer = false;
         var maxIndex = -1;
-        Object.keys(tumData).forEach(function(k){
+        Object.keys(veri).forEach(function(k){
           var n = parseInt(k, 10);
           if(!isNaN(n) && String(n)===k && n>maxIndex) maxIndex = n;
+          var it = veri[k];
+          if(it && typeof it === "object"){
+            var b=(it.berta||it.BERTA||"").toString().trim();
+            var a=(it.abas||it.ABAS||"").toString().trim();
+            if(berta && abas && b===berta && a===abas) mukerrer = true;
+          }
         });
-        var yeniIndex = maxIndex + 1;
-        var yeniUrun = {urun:ad, berta:berta, abas:abas, fiyat:fiyat};
-        return db.ref(String(yeniIndex)).set(yeniUrun);
-      }).then(function(){
+        if(mukerrer) return;
+        veri[String(maxIndex + 1)] = {urun:ad, berta:berta, abas:abas, fiyat:fiyat};
+        return veri;
+      }).then(function(result){
+        if(!result.committed){ geriBildir(false, "Ürün ekleme işlemi iptal edildi."); return; }
+        if(berta && abas){
+          var yeni = result.snapshot.val() || {};
+          var bulundu = Object.keys(yeni).some(function(k){
+            var it=yeni[k];
+            return it && (it.berta||it.BERTA||"").toString().trim()===berta && (it.abas||it.ABAS||"").toString().trim()===abas;
+          });
+          if(!bulundu){ geriBildir(false, "Ürün kaydı doğrulanamadı."); return; }
+        }
         geriBildir(true);
       }).catch(function(err){ geriBildir(false, err); });
     }catch(e){ geriBildir(false, e); }
