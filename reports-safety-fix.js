@@ -19,7 +19,7 @@
         return list;
       }).then(function(result){
         if(!result.committed){
-          if(done) done(false, 'İşlem commit edilmedi.');
+          if(done) done(false, 'İşlem uygulanamadı veya kayıt bulunamadı.');
           return false;
         }
         if(done) done(true);
@@ -63,7 +63,7 @@
   ReportsData.kaydiKacanIsaretle = function(tip, ts, sebep, rakip, geriBildir){
     return transactionList('arsiv/' + tip, function(list){
       var idx = list.findIndex(function(k){ return k.ts === ts; });
-      if(idx === -1){ if(geriBildir) geriBildir(false, 'Kayıt bulunamadı'); return false; }
+      if(idx === -1) return false;
       list[idx].durum = 'kacan';
       list[idx].kacanSebep = sebep || '';
       list[idx].kacanRakip = rakip || '';
@@ -74,7 +74,7 @@
   ReportsData.kaydiSil = function(tip, ts, geriBildir){
     return transactionList('arsiv/' + tip, function(list){
       var yeni = list.filter(function(k){ return k.ts !== ts; });
-      if(yeni.length === list.length){ if(geriBildir) geriBildir(false, 'Kayıt bulunamadı'); return false; }
+      if(yeni.length === list.length) return false;
       list.splice(0, list.length);
       Array.prototype.push.apply(list, yeni);
       return true;
@@ -84,7 +84,7 @@
   ReportsData.kaydiGuncelle = function(tip, ts, yeniUrunler, geriBildir){
     return transactionList('arsiv/' + tip, function(list){
       var idx = list.findIndex(function(k){ return k.ts === ts; });
-      if(idx === -1){ if(geriBildir) geriBildir(false, 'Kayıt bulunamadı'); return false; }
+      if(idx === -1) return false;
       list[idx].urunler = yeniUrunler;
       list[idx].revizeZamani = Date.now();
       return true;
@@ -98,15 +98,13 @@
     function sonraki(){
       if(i >= tipler.length){
         return transactionList('gorevler', function(list){
-          var degisti = false;
           list.forEach(function(g){
             if(g.musteriAd === digerAd || (digerId && g.musteriId === digerId)){
               g.musteriAd = anaAd;
               if(digerId || g.musteriId) g.musteriId = anaId;
-              degisti = true;
             }
           });
-          return degisti ? true : false;
+          return true;
         }, geriBildir);
       }
       var tip = tipler[i++];
