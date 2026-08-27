@@ -15,7 +15,7 @@
 var SendData = (function(){
 
   var firebaseConfig = {
-    apiKey: "AIzaSyC08Oe1LE7TdQl8gG2H9raZQek211Dxd60",
+    apiKey: "AIzaSyC08eO1LE7TdQl8gG2H9raZQek211Dxd60",
     authDomain: "weicon-asist.firebaseapp.com",
     databaseURL: "https://weicon-asist-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "weicon-asist",
@@ -37,12 +37,6 @@ var SendData = (function(){
       String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
   }
 
-  // Belge kodu formatı: {TK|PF|SP|NU}{GGAAYY}.{sıra:2} — örn. "TK010126.01"
-  // (o müşterinin o gün ilk teklifi), "TK010126.02" (o gün, aynı müşteri,
-  // farklı ürün için ikinci teklif). Sıra numarası aynı müşteri + aynı gün +
-  // aynı belge türündeki MEVCUT kayıt sayısına göre hesaplanır — eski format
-  // kodlar (TEK-20260815-3421 gibi) da sayıma dahil edilir ki numaralar
-  // çakışmasın.
   function kodUret(tip, musteriAd, gunIcindekiAyniTurSayisi){
     var onEk = {numune:"NU", teklif:"TK", proforma:"PF", siparis:"SP"}[tip] || "KY";
     var d = new Date();
@@ -93,10 +87,6 @@ var SendData = (function(){
 
   function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, geriBildir){
     try{
-      // Firebase, obje içinde HERHANGİ bir "undefined" değer varsa TÜM
-      // yazmayı reddeder (ör. eski/zincirlenmiş revize kayıtlarında ürün
-      // adı bir şekilde boş kalmışsa). Bu yüzden her alanı güvenli bir
-      // varsayılana düşürüyoruz — asla undefined Firebase'e gitmesin.
       var urunlerKaydi = sepetUrunleri.map(function(u){
         var h = CartData.hesapla(u, kur, kdv);
         return {
@@ -113,14 +103,14 @@ var SendData = (function(){
       });
       var yeniImza = urunSetiImzaOlustur(urunlerKaydi);
       var simdi = Date.now();
-
       var db = firebase.database();
-      db.ref("arsiv/" + tip).once("value").then(function(snap){
-        var mevcut = snap.val();
-        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+      var ref = db.ref("arsiv/" + tip);
 
-        // AYNI GÜN + AYNI MÜŞTERİ + BİREBİR AYNI ÜRÜN SETİ (Berta/Abas) varsa,
-        // yeni kayıt açmak yerine mevcut kaydı REVİZE olarak güncelle.
+      // Transaction kullanılır: iki cihaz aynı anda kayıt yazarsa Firebase
+      // güncel değeri alıp callback'i yeniden çalıştırır. Böylece bir cihazın
+      // yazdığı kayıt diğer cihazın eski snapshot'ı tarafından ezilmez.
+      ref.transaction(function(mevcut){
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
         var eslesenIdx = -1;
         for(var i=0;i<liste.length;i++){
           var aday = liste[i];
@@ -133,11 +123,10 @@ var SendData = (function(){
           break;
         }
 
+        var eskiKayit = null;
         var otomatikRevizeMi = false;
-        var kaydedilenKayit;
-
         if(eslesenIdx >= 0){
-          var eskiKayit = liste[eslesenIdx];
+          eskiKayit = liste[eslesenIdx];
           var eskiToplam = (eskiKayit.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
           if(!eskiKayit.revizeGecmisi) eskiKayit.revizeGecmisi = [];
           eskiKayit.revizeGecmisi.push({ts: eskiKayit.revizeZamani||eskiKayit.ts, toplamEuro:eskiToplam, urunSayisi:(eskiKayit.urunler||[]).length});
@@ -147,29 +136,43 @@ var SendData = (function(){
           if(adresler && adresler.teslimatAdresi) eskiKayit.teslimatAdresi = adresler.teslimatAdresi;
           if(!eskiKayit.musteriId && musteri.id) eskiKayit.musteriId = musteri.id;
           otomatikRevizeMi = true;
-          kaydedilenKayit = eskiKayit;
         } else {
           var buGunAyniMusteriAyniTurSayisi = liste.filter(function(k){
             if(!k || !k.ts) return false;
             var ayniMusteriMi2 = musteri.id && k.musteriId ? (k.musteriId===musteri.id) : (k.musteri===musteri.ad);
             return ayniMusteriMi2 && ayniGunMu(k.ts, simdi);
           }).length;
-          kaydedilenKayit = {
+          liste.unshift({
             tarih: tarihStr(), ts: simdi, kod: kodUret(tip, musteri.ad, buGunAyniMusteriAyniTurSayisi),
             musteri: musteri.ad, musteriId: musteri.id || null, sehir: musteri.sehir || "",
             mod: tip, urunler: urunlerKaydi,
             faturaAdresi: (adresler && adresler.faturaAdresi) || null,
             teslimatAdresi: (adresler && adresler.teslimatAdresi) || null
-          };
-          liste.unshift(kaydedilenKayit);
+          });
         }
-
         liste.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
-        return db.ref("arsiv/" + tip).set(liste).then(function(){
-          return {kayit: kaydedilenKayit, revizeMi: otomatikRevizeMi};
-        });
-      }).then(function(sonuc){
-        geriBildir(true, sonuc.kayit, sonuc.revizeMi);
+        return liste;
+      }).then(function(result){
+        if(!result.committed){
+          geriBildir(false, new Error("Firebase kaydı commit edilmedi."));
+          return;
+        }
+        var liste = result.snapshot.val();
+        liste = liste ? (Array.isArray(liste) ? liste.filter(Boolean) : Object.values(liste)) : [];
+        var kaydedilenKayit = null;
+        for(var i=0;i<liste.length;i++){
+          var k = liste[i];
+          if(k && ((k.ts === simdi) || (k.revizeZamani === simdi)) && k.musteriId === (musteri.id || null) && k.mod === tip){
+            kaydedilenKayit = k;
+            break;
+          }
+        }
+        if(!kaydedilenKayit){
+          geriBildir(false, new Error("Firebase kaydı yazıldı ancak kaydedilen kayıt doğrulanamadı."));
+          return;
+        }
+        var revizeMi = !!(kaydedilenKayit.revizeZamani === simdi);
+        geriBildir(true, kaydedilenKayit, revizeMi);
       }).catch(function(err){
         console.error("Arşive kaydetme hatası:", err);
         geriBildir(false, err);
@@ -183,12 +186,14 @@ var SendData = (function(){
   function kaynakSil(tip, ts, geriBildir){
     try{
       var db = firebase.database();
-      db.ref("arsiv/" + tip).once("value").then(function(snap){
-        var mevcut = snap.val();
+      var ref = db.ref("arsiv/" + tip);
+      // Silme de transaction ile yapılır; böylece başka cihazın aynı anda
+      // eklediği/güncellediği kayıt eski snapshot tarafından ezilmez.
+      ref.transaction(function(mevcut){
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
-        var yeniListe = liste.filter(function(k){ return k.ts !== ts; });
-        return db.ref("arsiv/" + tip).set(yeniListe);
-      }).then(function(){
+        return liste.filter(function(k){ return k.ts !== ts; });
+      }).then(function(result){
+        if(!result.committed){ geriBildir(false, new Error("Firebase silme işlemi commit edilmedi.")); return; }
         geriBildir(true);
       }).catch(function(err){
         geriBildir(false, err);
