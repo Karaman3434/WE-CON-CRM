@@ -78,19 +78,29 @@ var CustomerData = (function(){
   function guvenliYaz(mutateFn, geriBildir){
     try{
       var db = firebase.database();
-      db.ref("musteriler").once("value").then(function(snap){
-        var data = snap.val();
-        var tazeListe = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+      var ref = db.ref("musteriler");
+      var callbackCalled = false;
+      ref.transaction(function(currentData){
+        var tazeListe = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
         var sonuc = mutateFn(tazeListe);
-        var yazilacak = (sonuc !== undefined) ? sonuc : tazeListe;
-        return db.ref("musteriler").set(yazilacak).then(function(){ return sonuc; });
-      }).then(function(sonuc){
-        geriBildir(true, sonuc);
-      }).catch(function(err){
-        console.error("Müşteri yazma hatası:", err);
-        geriBildir(false, err);
+        return (sonuc !== undefined) ? sonuc : tazeListe;
+      }, function(error, committed, snapshot){
+        if(callbackCalled) return;
+        callbackCalled = true;
+        if(error){
+          console.error("Müşteri transaction hatası:", error);
+          geriBildir(false, error);
+          return;
+        }
+        if(!committed){
+          geriBildir(false, new Error("Müşteri değişikliği Firebase tarafından uygulanmadı."));
+          return;
+        }
+        geriBildir(true, snapshot ? snapshot.val() : null);
       });
-    }catch(e){ geriBildir(false, e); }
+    }catch(e){
+      geriBildir(false, e);
+    }
   }
 
   function musteriIndexBul(tazeListe, musteriAd){
