@@ -354,6 +354,46 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
+  // --- Çoklu NOT desteği (Cari Kart v4) ---
+  // Her müşterinin birden fazla notu olabilir: notlar: [{baslik, metin}].
+  // Geriye dönük uyumluluk için tazeListe[idx].not alanı HER ZAMAN
+  // notlar dizisindeki tüm metinlerin birleşimiyle senkron tutulur —
+  // send-render.js gibi eski tüketiciler hâlâ musteri.not okuyabilir.
+  function notlarSenkronizeEt(kayit){
+    var notlar = kayit.notlar || [];
+    kayit.not = notlar.map(function(n){ return n.metin; }).filter(Boolean).join("\n");
+  }
+
+  function notEkle(musteriAd, not, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      if(!tazeListe[idx].notlar) tazeListe[idx].notlar = [];
+      tazeListe[idx].notlar.push(not);
+      notlarSenkronizeEt(tazeListe[idx]);
+    }, geriBildir);
+  }
+
+  function notSil(musteriAd, notIdx, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      if(!tazeListe[idx].notlar) tazeListe[idx].notlar = [];
+      tazeListe[idx].notlar.splice(notIdx, 1);
+      notlarSenkronizeEt(tazeListe[idx]);
+    }, geriBildir);
+  }
+
+  function notGuncelle(musteriAd, notIdx, not, geriBildir){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      if(!tazeListe[idx].notlar || !tazeListe[idx].notlar[notIdx]) throw new Error("Not bulunamadı");
+      tazeListe[idx].notlar[notIdx] = not;
+      notlarSenkronizeEt(tazeListe[idx]);
+    }, geriBildir);
+  }
+
   function musteriSil(musteriAd, geriBildir){
     guvenliYaz(function(tazeListe){
       var idx = musteriIndexBul(tazeListe, musteriAd);
@@ -441,6 +481,9 @@ var CustomerData = (function(){
     musteriTekYetkiliSil: musteriTekYetkiliSil,
     musteriNotKaydet: musteriNotKaydet,
     musteriNotSil: musteriNotSil,
+    notEkle: notEkle,
+    notSil: notSil,
+    notGuncelle: notGuncelle,
     musteriSil: musteriSil,
     musterileriBirlestir: musterileriBirlestir,
     sonGoruntulendi: sonGoruntulendi

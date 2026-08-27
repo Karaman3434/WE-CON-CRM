@@ -1,10 +1,12 @@
 /*
   cari-kart-render.js
   ====================
-  Cari Kart — dört blok (Fatura Adresi, Yetkili Kişi, Teslimat Adresi,
-  Not). Alanlar HER ZAMAN doğrudan düzenlenebilir; gizle/göster geçişi
-  yok, bu yüzden "hidden CSS çakışması" hata sınıfı burada oluşamaz.
-  Kaydet basılmadan hiçbir değişiklik kalıcı olmaz.
+  Cari Kart v4 — dört blok (Fatura Adresi, Yetkili Kişi, Teslimat Adresi,
+  Not), her biri ÇOKLU KAYIT destekler. Her blok bir kart listesi + tek
+  bir "Yönet" butonu gösterir. Yönet → Düzenle/Sil seçimi → (birden
+  fazla kayıt varsa) "hangisi?" seçici → form / silme onayı.
+  Sayfa altındaki "Yeni Bilgi Ekle" butonu 4 kategoriden birini
+  seçtirip aynı formu "ekle" modunda açar.
 */
 
 function hataGoster(mesaj){
@@ -17,8 +19,60 @@ function hataGoster(mesaj){
 }
 
 var seciliMusteriAdi = null;
+var musteriVerisi = null;
+
+var TIP_META = {
+  fatura:   {baslik:"Fatura Adresi",   tekil:"fatura adresi",   ikon:"🧾"},
+  teslimat: {baslik:"Teslimat Adresi", tekil:"teslimat adresi", ikon:"🚚"},
+  yetkili:  {baslik:"Yetkili Kişi",    tekil:"yetkili kişi",    ikon:"👤"},
+  not:      {baslik:"Not",             tekil:"not",             ikon:"📝"}
+};
+
+var aktifTip = null, aktifEylem = null, aktifIndex = null;
+var silTip = null, silIndex = null;
+
+function escapeText(s){ var d = document.createElement("div"); d.textContent = s||""; return d.innerHTML; }
+
+function kayitlariGetir(musteri, tip){
+  if(tip === "fatura") return musteri.faturaAdresleri || [];
+  if(tip === "teslimat") return musteri.teslimatAdresleri || [];
+  if(tip === "yetkili") return musteri.iletisimler || [];
+  // not: yeni "notlar" dizisi varsa onu kullan; yoksa eski tekil "not"
+  // alanını tek elemanlı liste gibi göster (veri kaybı olmasın diye).
+  if(musteri.notlar && musteri.notlar.length) return musteri.notlar;
+  if(musteri.not && musteri.not.trim()) return [{baslik:"Not", metin: musteri.not.trim()}];
+  return [];
+}
+
+function kayitBaslik(tip, kayit){
+  if(tip === "yetkili") return kayit.isim || "(isimsiz)";
+  if(tip === "not") return kayit.baslik || "Not";
+  return kayit.etiket || TIP_META[tip].baslik;
+}
+function kayitAltMetin(tip, kayit){
+  if(tip === "yetkili") return [kayit.gorev, kayit.telefon, kayit.eposta].filter(Boolean).join(" · ");
+  if(tip === "not") return kayit.metin || "";
+  return kayit.adres || "";
+}
+
+function listeleriRenderEt(){
+  var m = musteriVerisi;
+  ["fatura","teslimat","yetkili","not"].forEach(function(tip){
+    var liste = kayitlariGetir(m, tip);
+    var kapsayici = document.getElementById(tip + "Listesi");
+    document.getElementById(tip + "Sayac").textContent = liste.length;
+    if(liste.length === 0){
+      kapsayici.innerHTML = "<div class='ck-kart-bos'>Henüz " + TIP_META[tip].tekil + " eklenmemiş.</div>";
+      return;
+    }
+    kapsayici.innerHTML = liste.map(function(k){
+      return "<div class='ck-kart'><div class='ck-kart-ust'>" + escapeText(kayitBaslik(tip,k)) + "</div><div class='ck-kart-alt'>" + escapeText(kayitAltMetin(tip,k)) + "</div></div>";
+    }).join("");
+  });
+}
 
 function alanlariDoldur(musteri){
+  musteriVerisi = musteri;
   document.getElementById("cariKartAd").textContent = musteri.ad;
   var altBaslikParcalar = [];
   if(musteri.id) altBaslikParcalar.push("🏷 " + musteri.id);
@@ -28,33 +82,170 @@ function alanlariDoldur(musteri){
   document.getElementById("ckVadeInput").value = musteri.vade || "";
   document.getElementById("ckFaturaTuruInput").value = musteri.fatura || "";
   document.getElementById("ckKargoInput").value = musteri.kargo || "";
-  var faturaAdr = (musteri.faturaAdresleri && musteri.faturaAdresleri[0]) ? musteri.faturaAdresleri[0].adres : "";
-  document.getElementById("ckFaturaAdresInput").value = faturaAdr;
 
-  var yetkili = (musteri.iletisimler && musteri.iletisimler[0]) || {};
-  document.getElementById("ckYetkiliIsimInput").value = yetkili.isim || "";
-  document.getElementById("ckYetkiliGorevInput").value = yetkili.gorev || "";
-  document.getElementById("ckYetkiliTelInput").value = yetkili.telefon || "";
-  document.getElementById("ckYetkiliEpostaInput").value = yetkili.eposta || "";
-
-  var teslimatAdr = (musteri.teslimatAdresleri && musteri.teslimatAdresleri[0]) ? musteri.teslimatAdresleri[0].adres : "";
-  document.getElementById("ckTeslimatInput").value = teslimatAdr;
-
-  document.getElementById("ckNotInput").value = musteri.not || "";
+  listeleriRenderEt();
 }
 
-function kaydetButonuBagla(btnId, isFn){
-  var btn = document.getElementById(btnId);
-  btn.onclick = function(){
-    var eskiMetin = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = "Kaydediliyor...";
-    isFn(function(basarili, err){
-      btn.disabled = false;
-      btn.textContent = eskiMetin;
-      if(!basarili) hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-    });
-  };
+var toastZamanlayici;
+function toastGoster(msg){
+  var t = document.getElementById("ckToast");
+  t.textContent = msg;
+  t.classList.add("gorunur");
+  clearTimeout(toastZamanlayici);
+  toastZamanlayici = setTimeout(function(){ t.classList.remove("gorunur"); }, 1800);
+}
+
+function ac(id){ document.getElementById(id).hidden = false; }
+function kapat(id){ document.getElementById(id).hidden = true; }
+
+// ---- "Yönet" (bölüm bazlı) ----
+function yonetAc(tip){
+  aktifTip = tip;
+  document.getElementById("yonetBaslik").textContent = TIP_META[tip].ikon + " " + TIP_META[tip].baslik + " — Yönet";
+  ac("yonetOverlay");
+}
+
+function pickerAc(eylem){
+  kapat("yonetOverlay");
+  aktifEylem = eylem;
+  var liste = kayitlariGetir(musteriVerisi, aktifTip);
+  if(liste.length === 0){ toastGoster("Henüz kayıtlı " + TIP_META[aktifTip].tekil + " yok."); return; }
+  if(liste.length === 1){
+    if(eylem === "duzenle") formAc(aktifTip, "duzenle", 0);
+    else silSor(aktifTip, 0);
+    return;
+  }
+  document.getElementById("pickerBaslik").textContent = (eylem==="duzenle" ? "✏️ Hangisini düzenlemek istiyorsun?" : "🗑️ Hangisini silmek istiyorsun?");
+  document.getElementById("pickerAlt").textContent = TIP_META[aktifTip].baslik + " — bir kayıt seç";
+  document.getElementById("pickerListesi").innerHTML = liste.map(function(k,i){
+    return "<button class='picker-item' data-idx='" + i + "'><div class='ust'>" + escapeText(kayitBaslik(aktifTip,k)) + "</div><div class='alt'>" + escapeText(kayitAltMetin(aktifTip,k)) + "</div></button>";
+  }).join("");
+  document.getElementById("pickerListesi").querySelectorAll(".picker-item").forEach(function(btn){
+    btn.onclick = function(){
+      var i = parseInt(this.getAttribute("data-idx"), 10);
+      kapat("pickerOverlay");
+      if(aktifEylem === "duzenle") formAc(aktifTip, "duzenle", i);
+      else silSor(aktifTip, i);
+    };
+  });
+  ac("pickerOverlay");
+}
+
+function silSor(tip, i){
+  silTip = tip; silIndex = i;
+  var kayit = kayitlariGetir(musteriVerisi, tip)[i];
+  document.getElementById("silOnayMetin").textContent = "\"" + kayitBaslik(tip, kayit) + "\" kalıcı olarak silinecek.";
+  ac("silOnayOverlay");
+}
+
+function silOnayla(){
+  var btn = document.getElementById("silOnaylaBtn");
+  btn.disabled = true;
+  function tamamla(basarili, err){
+    btn.disabled = false;
+    if(!basarili){ hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata")); return; }
+    kapat("silOnayOverlay");
+    toastGoster("Silindi.");
+  }
+  if(silTip === "fatura" || silTip === "teslimat"){
+    CustomerData.musteriAdresSil(seciliMusteriAdi, silTip, silIndex, tamamla);
+  } else if(silTip === "yetkili"){
+    CustomerData.yetkiliSil(seciliMusteriAdi, silIndex, tamamla);
+  } else if(silTip === "not"){
+    if(musteriVerisi.notlar && musteriVerisi.notlar.length){
+      CustomerData.notSil(seciliMusteriAdi, silIndex, tamamla);
+    } else {
+      // eski tekil "not" alanından geliyor — legacy silme fonksiyonuyla temizle
+      CustomerData.musteriNotSil(seciliMusteriAdi, tamamla);
+    }
+  }
+}
+
+// ---- Ekle / Düzenle formu ----
+function formAlanlariHtml(tip){
+  if(tip === "fatura" || tip === "teslimat"){
+    return "<div class='form-etiket'>ETİKET (ör. Merkez Ofis, Depo)</div><input class='form-input' id='fBaslik' placeholder='Etiket'>"
+      + "<div class='form-etiket'>AÇIK ADRES</div><textarea class='form-textarea' id='fDetay' rows='3' placeholder='Açık adres'></textarea>";
+  }
+  if(tip === "yetkili"){
+    return "<div class='form-satir-2'>"
+      + "<div><div class='form-etiket'>İSİM SOYİSİM</div><input class='form-input' id='fIsim' placeholder='İsim Soyisim'></div>"
+      + "<div><div class='form-etiket'>GÖREV</div><input class='form-input' id='fGorev' placeholder='Görev'></div>"
+      + "</div><div class='form-satir-2' style='margin-top:10px'>"
+      + "<div><div class='form-etiket'>TELEFON</div><input class='form-input' id='fTel' placeholder='Telefon' type='tel'></div>"
+      + "<div><div class='form-etiket'>E-POSTA</div><input class='form-input' id='fEposta' placeholder='E-posta' type='email'></div>"
+      + "</div>";
+  }
+  return "<div class='form-etiket'>BAŞLIK</div><input class='form-input' id='fBaslik' placeholder='ör. Teslimat Kısıtı'>"
+    + "<div class='form-etiket'>NOT METNİ</div><textarea class='form-textarea' id='fDetay' rows='3' placeholder='Not metni'></textarea>";
+}
+
+function formAc(tip, eylem, index){
+  aktifTip = tip; aktifEylem = eylem; aktifIndex = (index===undefined?null:index);
+  kapat("yeniBilgiOverlay");
+  var meta = TIP_META[tip];
+  document.getElementById("formBaslik").textContent = (eylem==="ekle" ? "➕ Yeni " + meta.baslik + " Ekle" : "✏️ " + meta.baslik + " Düzenle");
+  document.getElementById("formIcerik").innerHTML = formAlanlariHtml(tip);
+
+  if(eylem === "duzenle"){
+    var kayit = kayitlariGetir(musteriVerisi, tip)[index];
+    if(tip === "yetkili"){
+      document.getElementById("fIsim").value = kayit.isim || "";
+      document.getElementById("fGorev").value = kayit.gorev || "";
+      document.getElementById("fTel").value = kayit.telefon || "";
+      document.getElementById("fEposta").value = kayit.eposta || "";
+    } else if(tip === "not"){
+      document.getElementById("fBaslik").value = kayit.baslik || "";
+      document.getElementById("fDetay").value = kayit.metin || "";
+    } else {
+      document.getElementById("fBaslik").value = kayit.etiket || "";
+      document.getElementById("fDetay").value = kayit.adres || "";
+    }
+  }
+  ac("formOverlay");
+}
+
+function formKaydet(){
+  var tip = aktifTip;
+  var btn = document.getElementById("formKaydetBtn");
+
+  function tamamla(basarili, err){
+    btn.disabled = false;
+    btn.textContent = "✓ Kaydet";
+    if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata")); return; }
+    kapat("formOverlay");
+    toastGoster(aktifEylem==="ekle" ? "Eklendi." : "Güncellendi.");
+  }
+
+  if(tip === "yetkili"){
+    var isim = document.getElementById("fIsim").value.trim();
+    if(!isim){ toastGoster("İsim boş olamaz."); return; }
+    var kisi = {
+      isim: isim,
+      gorev: document.getElementById("fGorev").value.trim(),
+      telefon: document.getElementById("fTel").value.trim(),
+      eposta: document.getElementById("fEposta").value.trim()
+    };
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    if(aktifEylem === "ekle") CustomerData.yetkiliEkle(seciliMusteriAdi, kisi, tamamla);
+    else CustomerData.yetkiliGuncelle(seciliMusteriAdi, aktifIndex, kisi, tamamla);
+    return;
+  }
+
+  var baslik = document.getElementById("fBaslik").value.trim();
+  var detay = document.getElementById("fDetay").value.trim();
+  if(!baslik){ toastGoster("Etiket/başlık boş olamaz."); return; }
+
+  btn.disabled = true; btn.textContent = "Kaydediliyor...";
+
+  if(tip === "fatura" || tip === "teslimat"){
+    if(aktifEylem === "ekle") CustomerData.musteriAdresEkle(seciliMusteriAdi, tip, baslik, detay, tamamla);
+    else CustomerData.musteriAdresGuncelle(seciliMusteriAdi, tip, aktifIndex, baslik, detay, tamamla);
+  } else if(tip === "not"){
+    var notObj = {baslik: baslik, metin: detay};
+    if(aktifEylem === "ekle") CustomerData.notEkle(seciliMusteriAdi, notObj, tamamla);
+    else CustomerData.notGuncelle(seciliMusteriAdi, aktifIndex, notObj, tamamla);
+  }
 }
 
 window.addEventListener("error", function(ev){
@@ -71,83 +262,51 @@ document.addEventListener("DOMContentLoaded", function(){
   seciliMusteriAdi = secili.ad;
   alanlariDoldur(secili);
 
-  // "Düzenle" tuşları — hiçbir şeyi göstermez/gizlemez, sadece o bloğun
-  // ilk alanına odaklanıp klavyeyi açar (alanlar zaten her zaman yazılabilir).
-  document.querySelectorAll(".ck-duzenle-btn[data-odak]").forEach(function(btn){
-    btn.onclick = function(){
-      var el = document.getElementById(this.getAttribute("data-odak"));
-      if(el){ el.focus(); if(el.select) el.select(); }
-    };
-  });
-
-  // --- FATURA ADRESİ Kaydet ---
-  kaydetButonuBagla("btnFaturaKaydet", function(geriBildir){
+  // Vade / Fatura / Kargo — tek değerli özet alanları, ayrı kaydet butonu
+  document.getElementById("btnOzetKaydet").onclick = function(){
+    var btn = this;
+    var eskiMetin = btn.textContent;
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
     var guncelBilgi = {
       vade: document.getElementById("ckVadeInput").value.trim(),
       fatura: document.getElementById("ckFaturaTuruInput").value.trim(),
       kargo: document.getElementById("ckKargoInput").value.trim()
     };
-    var adres = document.getElementById("ckFaturaAdresInput").value.trim();
-    CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, function(b1, e1){
-      if(!b1){ geriBildir(false, e1); return; }
-      CustomerData.musteriTekAdresKaydet(seciliMusteriAdi, "fatura", adres, geriBildir);
-    });
-  });
-  document.getElementById("btnFaturaSil").onclick = function(){
-    if(!confirm("Fatura adresi silinsin mi? (Vade/Fatura/Kargo ayarları kalır.)")) return;
-    document.getElementById("ckFaturaAdresInput").value = "";
-    CustomerData.musteriTekAdresSil(seciliMusteriAdi, "fatura", function(basarili, err){
-      if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+    CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, function(basarili, err){
+      btn.disabled = false; btn.textContent = eskiMetin;
+      if(!basarili) hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      else toastGoster("Kaydedildi.");
     });
   };
 
-  // --- YETKİLİ KİŞİ Kaydet ---
-  kaydetButonuBagla("btnYetkiliKaydet", function(geriBildir){
-    var isim = document.getElementById("ckYetkiliIsimInput").value.trim();
-    if(!isim){ geriBildir(false, {message:"Yetkili ismi boş olamaz."}); return; }
-    var kisi = {
-      isim: isim,
-      gorev: document.getElementById("ckYetkiliGorevInput").value.trim(),
-      telefon: document.getElementById("ckYetkiliTelInput").value.trim(),
-      eposta: document.getElementById("ckYetkiliEpostaInput").value.trim()
-    };
-    CustomerData.musteriTekYetkiliKaydet(seciliMusteriAdi, kisi, geriBildir);
+  // "Yeni Bilgi Ekle" ana buton + kategori seçim sheet'i
+  document.getElementById("btnYeniBilgiAc").onclick = function(){ ac("yeniBilgiOverlay"); };
+  document.getElementById("yeniBilgiOverlay").querySelectorAll(".sheet-secenek[data-tip]").forEach(function(btn){
+    btn.onclick = function(){ formAc(this.getAttribute("data-tip"), "ekle"); };
   });
-  document.getElementById("btnYetkiliSil").onclick = function(){
-    if(!confirm("Yetkili kişi silinsin mi?")) return;
-    ["ckYetkiliIsimInput","ckYetkiliGorevInput","ckYetkiliTelInput","ckYetkiliEpostaInput"].forEach(function(id){
-      document.getElementById(id).value = "";
-    });
-    CustomerData.musteriTekYetkiliSil(seciliMusteriAdi, function(basarili, err){
-      if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-    });
-  };
 
-  // --- TESLİMAT ADRESİ Kaydet ---
-  kaydetButonuBagla("btnTeslimatKaydet", function(geriBildir){
-    var adres = document.getElementById("ckTeslimatInput").value.trim();
-    CustomerData.musteriTekAdresKaydet(seciliMusteriAdi, "teslimat", adres, geriBildir);
+  // Her bloğun "Yönet" butonu
+  document.querySelectorAll(".ck-yonet-btn[data-tip]").forEach(function(btn){
+    btn.onclick = function(){ yonetAc(this.getAttribute("data-tip")); };
   });
-  document.getElementById("btnTeslimatSil").onclick = function(){
-    if(!confirm("Teslimat adresi silinsin mi?")) return;
-    document.getElementById("ckTeslimatInput").value = "";
-    CustomerData.musteriTekAdresSil(seciliMusteriAdi, "teslimat", function(basarili, err){
-      if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-    });
-  };
 
-  // --- NOT Kaydet ---
-  kaydetButonuBagla("btnNotKaydet", function(geriBildir){
-    var not = document.getElementById("ckNotInput").value.trim();
-    CustomerData.musteriNotKaydet(seciliMusteriAdi, not, geriBildir);
+  // Yönet sheet'i içindeki Düzenle/Sil
+  document.getElementById("yonetDuzenleBtn").onclick = function(){ pickerAc("duzenle"); };
+  document.getElementById("yonetSilBtn").onclick = function(){ pickerAc("sil"); };
+
+  // Form Kaydet + Sil Onayla
+  document.getElementById("formKaydetBtn").onclick = formKaydet;
+  document.getElementById("silOnaylaBtn").onclick = silOnayla;
+
+  // Tüm overlay'lerin kapatma tuşları (dışarı tıklama + "Vazgeç" tuşları)
+  document.querySelectorAll("[data-kapat]").forEach(function(el){
+    el.onclick = function(){ kapat(this.getAttribute("data-kapat")); };
   });
-  document.getElementById("btnNotSil").onclick = function(){
-    if(!confirm("Not silinsin mi?")) return;
-    document.getElementById("ckNotInput").value = "";
-    CustomerData.musteriNotSil(seciliMusteriAdi, function(basarili, err){
-      if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+  document.querySelectorAll(".overlay").forEach(function(ov){
+    ov.addEventListener("click", function(ev){
+      if(ev.target === ov) kapat(ov.id);
     });
-  };
+  });
 
   // --- İşlem Yap akışı (değişmedi) ---
   var akistanGeldiMi = localStorage.getItem("weiconv2_islem_yap_akisi") === "1";
@@ -170,15 +329,21 @@ document.addEventListener("DOMContentLoaded", function(){
     if(el) el.addEventListener("click", function(){ localStorage.removeItem("weiconv2_islem_yap_akisi"); });
   });
 
-  // Firebase'den taze veri gelince alanları güncelle — kullanıcı o an bir
-  // alanı yazıyorsa (odaktaysa) o ALANA dokunmadan diğerlerini tazeler,
-  // yazdığı yarım veri üzerine yazılıp kaybolmasın diye.
+  // Firebase'den taze veri gelince listeleri güncelle — Vade/Fatura/Kargo
+  // alanlarından biri o an odaktaysa (kullanıcı yazıyorsa) o üçüne
+  // dokunmadan sadece kart listelerini tazeler.
   CustomerData.listeDegistiginde(function(){
     var taze = CustomerData.musteriBul(seciliMusteriAdi);
     if(!taze) return;
+    musteriVerisi = taze;
     var aktifId = document.activeElement ? document.activeElement.id : null;
-    var tumInputlar = ["ckVadeInput","ckFaturaTuruInput","ckKargoInput","ckFaturaAdresInput","ckYetkiliIsimInput","ckYetkiliGorevInput","ckYetkiliTelInput","ckYetkiliEpostaInput","ckTeslimatInput","ckNotInput"];
-    if(tumInputlar.indexOf(aktifId) !== -1) return; // yazarken üzerine yazma
-    alanlariDoldur(taze);
+    var ozetInputlar = ["ckVadeInput","ckFaturaTuruInput","ckKargoInput"];
+    document.getElementById("cariKartAd").textContent = taze.ad;
+    if(ozetInputlar.indexOf(aktifId) === -1){
+      document.getElementById("ckVadeInput").value = taze.vade || "";
+      document.getElementById("ckFaturaTuruInput").value = taze.fatura || "";
+      document.getElementById("ckKargoInput").value = taze.kargo || "";
+    }
+    listeleriRenderEt();
   });
 });
