@@ -24,7 +24,6 @@ var ProductData = (function(){
   var katalog = [];
   var sepet = [];
   var katalogDinleyicileri = [];
-  var katalogDinleyiciBagli = false;
 
   try{
     var kayitliSepet = localStorage.getItem(SEPET_KEY);
@@ -50,19 +49,22 @@ var ProductData = (function(){
 
       db.ref("/").on("value", function(snap){
         var tumData = snap.val();
+        if(!tumData) return;
         var urunler = [];
         if(Array.isArray(tumData)){
           urunler = tumData.filter(function(x){ return x && x.urun; });
-        } else if(tumData && typeof tumData === "object"){
+        } else if(typeof tumData === "object"){
           Object.keys(tumData).forEach(function(k){
             if(!isNaN(parseInt(k)) && tumData[k] && tumData[k].urun){
               urunler.push(tumData[k]);
             }
           });
         }
-        katalog = urunler;
-        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(urunler)); }catch(e){}
-        katalogDinleyicileri.forEach(function(fn){ fn(); });
+        if(urunler.length > 0){
+          katalog = urunler;
+          try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(urunler)); }catch(e){}
+          katalogDinleyicileri.forEach(function(fn){ fn(); });
+        }
       }, function(err){
         console.error("Katalog okuma hatası:", err);
       });
@@ -144,35 +146,27 @@ var ProductData = (function(){
       if(!ad){ geriBildir(false, "Ürün adı zorunlu."); return; }
       if(isNaN(fiyat) || fiyat<=0){ geriBildir(false, "Geçerli bir fiyat girin."); return; }
 
+      if(berta && abas){
+        var mukerrer = katalog.some(function(it){
+          var b=(it.berta||it.BERTA||"").toString().trim();
+          var a=(it.abas||it.ABAS||"").toString().trim();
+          return b===berta && a===abas;
+        });
+        if(mukerrer){ geriBildir(false, "Bu Berta/Abas kodu zaten listede kayıtlı."); return; }
+      }
+
       var db = firebase.database();
-      db.ref("/").transaction(function(tumData){
-        tumData = tumData || {};
-        var veri = (typeof tumData === "object" && !Array.isArray(tumData)) ? tumData : {};
-        var mukerrer = false;
+      db.ref("/").once("value").then(function(snap){
+        var tumData = snap.val() || {};
         var maxIndex = -1;
-        Object.keys(veri).forEach(function(k){
+        Object.keys(tumData).forEach(function(k){
           var n = parseInt(k, 10);
           if(!isNaN(n) && String(n)===k && n>maxIndex) maxIndex = n;
-          var it = veri[k];
-          if(it && typeof it === "object"){
-            var b=(it.berta||it.BERTA||"").toString().trim();
-            var a=(it.abas||it.ABAS||"").toString().trim();
-            if(berta && abas && b===berta && a===abas) mukerrer = true;
-          }
         });
-        if(mukerrer) return;
-        veri[String(maxIndex + 1)] = {urun:ad, berta:berta, abas:abas, fiyat:fiyat};
-        return veri;
-      }).then(function(result){
-        if(!result.committed){ geriBildir(false, "Ürün ekleme işlemi iptal edildi."); return; }
-        if(berta && abas){
-          var yeni = result.snapshot.val() || {};
-          var bulundu = Object.keys(yeni).some(function(k){
-            var it=yeni[k];
-            return it && (it.berta||it.BERTA||"").toString().trim()===berta && (it.abas||it.ABAS||"").toString().trim()===abas;
-          });
-          if(!bulundu){ geriBildir(false, "Ürün kaydı doğrulanamadı."); return; }
-        }
+        var yeniIndex = maxIndex + 1;
+        var yeniUrun = {urun:ad, berta:berta, abas:abas, fiyat:fiyat};
+        return db.ref(String(yeniIndex)).set(yeniUrun);
+      }).then(function(){
         geriBildir(true);
       }).catch(function(err){ geriBildir(false, err); });
     }catch(e){ geriBildir(false, e); }
