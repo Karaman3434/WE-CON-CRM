@@ -1,1 +1,0 @@
-trigger HATA-004 transactional reports-data.js fixer
