@@ -1,3 +1,7 @@
+// Tek merkezi sürüm bilgisi — ui-render-fix.js içindeki yorum satırıyla
+// senkron tutulmalıdır. Format: W(YYMMDD).(HHMM).(sıra no)
+var APP_VERSION = "W230826.0824.02";
+
 function hataGoster(mesaj){
   console.error(mesaj);
   var kutu = document.createElement("div");
@@ -53,4 +57,6 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   if(typeof AyarlarSync !== "undefined") AyarlarSync.degistiginde(ayarlariDoldur);
+  var surumEl = document.getElementById("surumBilgisi");
+  if(surumEl) surumEl.textContent = "Sürüm " + APP_VERSION;
 });

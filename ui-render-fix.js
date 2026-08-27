@@ -1,5 +1,5 @@
 // WEICON ASİST — UI RENDER / NAVIGATION SAFETY LAYER
-// W230826.0824.01
+// W230826.0824.02 — varsayılan PIN'in zorunlu değiştirilmesi düzeltmesiyle güncellendi
 // Bu katman veri kaydetmez; yalnızca navigasyonun DOM tarafındaki güvenliğini sağlar.
 // Amaç: geçersiz sayfa çağrıları, eksik DOM elemanları ve aynı anda gelen geçişlerin
 // uygulamanın UI katmanını yarım durumda bırakmasını önlemek.

@@ -3,9 +3,20 @@
   =============
   4 haneli tuş takımı + gizli input ile PIN toplar, pinDogrula() ile
   kontrol eder, doğruysa aktivite zamanını güncelleyip home.html'e döner.
+
+  GÜVENLİK DÜZELTMESİ (v2 üstü): Kullanıcı hâlâ değiştirilmemiş varsayılan
+  "1234" PIN'i ile giriş yaptıysa, uygulamaya geçmeden ÖNCE kendi 4 haneli
+  PIN'ini belirlemesi zorunlu tutulur. Böylece varsayılan PIN sonsuza kadar
+  geçerli kalmaz. Akış dört aşamalıdır:
+    "giris"    -> mevcut PIN doğrulanır
+    "yeniPin1" -> (sadece varsayılan PIN kullanılıyorsa) yeni PIN girilir
+    "yeniPin2" -> yeni PIN tekrar girilir (doğrulama)
+    tamam       -> hash kaydedilir, home.html'e geçilir
 */
 
 var girilenPin = "";
+var pinAsama = "giris";
+var yeniPinIlkGiris = "";
 
 function noktalariGuncelle(){
   var noktalar = document.querySelectorAll(".pin-nokta");
@@ -18,7 +29,11 @@ function rakamEkle(r){
   if(girilenPin.length >= 4) return;
   girilenPin += r;
   noktalariGuncelle();
-  if(girilenPin.length === 4) pinKontrolEt();
+  if(girilenPin.length === 4){
+    if(pinAsama === "giris") pinKontrolEt();
+    else if(pinAsama === "yeniPin1") yeniPinIlkAdimiIsle();
+    else if(pinAsama === "yeniPin2") yeniPinTekrarIsle();
+  }
 }
 
 function rakamSil(){
@@ -27,16 +42,55 @@ function rakamSil(){
   document.getElementById("pinHata").hidden = true;
 }
 
+function pinEkraniniSifirla(){
+  girilenPin = "";
+  noktalariGuncelle();
+}
+
 function pinKontrolEt(){
   pinDogrula(girilenPin).then(function(dogruMu){
     if(dogruMu){
-      try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
-      window.location.href = "home.html";
+      if(pinVarsayilanKullaniliyorMu()){
+        // Varsayılan "1234" ile girildi -> zorunlu yeni PIN belirleme adımına geç.
+        pinAsama = "yeniPin1";
+        pinEkraniniSifirla();
+        document.getElementById("pinBaslik").textContent = "🆕 Yeni PIN Belirle";
+        var bilgi = document.getElementById("pinBilgi");
+        bilgi.textContent = "Güvenliğiniz için varsayılan PIN yerine kendi 4 haneli PIN'inizi belirleyin.";
+        bilgi.hidden = false;
+      } else {
+        try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
+        window.location.href = "home.html";
+      }
     } else {
       document.getElementById("pinHata").hidden = false;
-      girilenPin = "";
-      noktalariGuncelle();
+      pinEkraniniSifirla();
     }
+  });
+}
+
+function yeniPinIlkAdimiIsle(){
+  yeniPinIlkGiris = girilenPin;
+  pinAsama = "yeniPin2";
+  pinEkraniniSifirla();
+  document.getElementById("pinBaslik").textContent = "🆕 Yeni PIN'i Onayla";
+  document.getElementById("pinBilgi").textContent = "Az önce girdiğiniz PIN'i onaylamak için tekrar girin.";
+}
+
+function yeniPinTekrarIsle(){
+  if(girilenPin !== yeniPinIlkGiris){
+    document.getElementById("pinHata").textContent = "PIN'ler eşleşmiyor, baştan deneyin.";
+    document.getElementById("pinHata").hidden = false;
+    pinAsama = "yeniPin1";
+    yeniPinIlkGiris = "";
+    pinEkraniniSifirla();
+    document.getElementById("pinBaslik").textContent = "🆕 Yeni PIN Belirle";
+    return;
+  }
+  pinHashHesapla(girilenPin).then(function(yeniHash){
+    pinYeniHashKaydet(yeniHash);
+    try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
+    window.location.href = "home.html";
   });
 }
 

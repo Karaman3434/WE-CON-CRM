@@ -54,3 +54,11 @@
   cursor: pointer;
   margin-top: 4px;
 }
+
+.surum-bilgisi {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9aa5b1;
+  margin-top: 18px;
+}

@@ -2,6 +2,14 @@
 
 .giris-kutu { text-align: center; }
 
+.pin-bilgi {
+  font-size: 13px;
+  font-weight: 600;
+  color: #556170;
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
+
 .pin-noktalar {
   display: flex;
   justify-content: center;

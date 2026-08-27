@@ -21,6 +21,15 @@ function pinKayitliHashGetir(){
   return localStorage.getItem("weicon_pin_hash") || VARSAYILAN_PIN_HASH;
 }
 
+// GÜVENLİK DÜZELTMESİ (v2 üstü): Kullanıcı henüz kendi PIN'ini belirlememişse
+// (localStorage'da özel bir hash yoksa) sistem hâlâ herkesçe bilinen
+// varsayılan "1234" PIN'iyle korunuyor demektir. pin-render.js bu durumu
+// tespit edip kullanıcıyı zorunlu PIN belirleme adımına yönlendirir.
+function pinVarsayilanKullaniliyorMu(){
+  try{ return !localStorage.getItem("weicon_pin_hash"); }
+  catch(e){ return false; }
+}
+
 function pinDogrula(girilenPin){
   return pinHashHesapla(girilenPin).then(function(girilenHash){
     return girilenHash === pinKayitliHashGetir();
