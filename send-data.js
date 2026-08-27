@@ -15,7 +15,7 @@
 var SendData = (function(){
 
   var firebaseConfig = {
-    apiKey: "AIzaSyC08Oe1LE7TdQl8gG2H9raZQek211Dxd60",
+    apiKey: "AIzaSyC08eO1LE7TdQl8gG2H9raZQek211Dxd60",
     authDomain: "weicon-asist.firebaseapp.com",
     databaseURL: "https://weicon-asist-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "weicon-asist",
@@ -162,10 +162,16 @@ var SendData = (function(){
         var kaydedilenKayit = null;
         for(var i=0;i<liste.length;i++){
           var k = liste[i];
-          if(k && k.ts === simdi && k.musteriId === (musteri.id || null) && k.mod === tip){ kaydedilenKayit = k; break; }
+          if(k && ((k.ts === simdi) || (k.revizeZamani === simdi)) && k.musteriId === (musteri.id || null) && k.mod === tip){
+            kaydedilenKayit = k;
+            break;
+          }
         }
-        if(!kaydedilenKayit && liste.length) kaydedilenKayit = liste[0];
-        var revizeMi = !!(kaydedilenKayit && kaydedilenKayit.revizeZamani === simdi);
+        if(!kaydedilenKayit){
+          geriBildir(false, new Error("Firebase kaydı yazıldı ancak kaydedilen kayıt doğrulanamadı."));
+          return;
+        }
+        var revizeMi = !!(kaydedilenKayit.revizeZamani === simdi);
         geriBildir(true, kaydedilenKayit, revizeMi);
       }).catch(function(err){
         console.error("Arşive kaydetme hatası:", err);
