@@ -8,8 +8,14 @@
   hâlâ aynı localStorage anahtarlarını ("weicon_kur", "weicon_kdv_orani")
   okuyor — bu dosya sadece o anahtarları Firebase ile canlı senkron tutar.
   Firebase'e önce yazan cihaz kazanır kuralı yok; en son yazan değer geçerli
-  olur (basit "son yazan kazanır" senkronizasyonu, kur/kdv gibi tek kişinin
-  girdiği ayarlar için yeterli).
+  olur (kur/kdv gibi tek kişinin girdiği ayarlar için yeterli).
+
+  GÜVENLİK/İSTİKRAR NOTU:
+  Kur alanı gibi "input" event'i ile sık güncellenen değerlerde Firebase'e
+  her tuş vuruşunda yazmak gereksiz trafik ve ardışık render/senkron olayları
+  oluşturabilir. Bu nedenle yazmalar kısa bir debounce ile gruplanır. Yerel
+  değer her zaman anında kaydedilir; Firebase'e yalnızca kullanıcı kısa süre
+  değişiklik yapmadığında yazılır.
 */
 
 var AyarlarSync = (function(){
@@ -25,6 +31,9 @@ var AyarlarSync = (function(){
   };
 
   var dinleyiciler = [];
+  var kurTimer = null;
+  var kdvTimer = null;
+  var YAZMA_DEBOUNCE_MS = 400;
 
   function baslat(){
     try{
@@ -43,12 +52,30 @@ var AyarlarSync = (function(){
   function kurKaydet(v){
     localStorage.setItem("weicon_kur", v);
     localStorage.setItem("weicon_kur_zaman", Date.now());
-    try{ firebase.database().ref("ayarlar/kur").set(v); }catch(e){}
+    clearTimeout(kurTimer);
+    kurTimer = setTimeout(function(){
+      try{
+        firebase.database().ref("ayarlar/kur").set(v).catch(function(e){
+          console.error("Kur Firebase'e kaydedilemedi:", e);
+        });
+      }catch(e){
+        console.error("Kur Firebase yazma hatası:", e);
+      }
+    }, YAZMA_DEBOUNCE_MS);
   }
 
   function kdvKaydet(v){
     localStorage.setItem("weicon_kdv_orani", v);
-    try{ firebase.database().ref("ayarlar/kdv").set(v); }catch(e){}
+    clearTimeout(kdvTimer);
+    kdvTimer = setTimeout(function(){
+      try{
+        firebase.database().ref("ayarlar/kdv").set(v).catch(function(e){
+          console.error("KDV Firebase'e kaydedilemedi:", e);
+        });
+      }catch(e){
+        console.error("KDV Firebase yazma hatası:", e);
+      }
+    }, YAZMA_DEBOUNCE_MS);
   }
 
   return {
