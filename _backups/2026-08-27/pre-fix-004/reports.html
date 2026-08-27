@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — İSTATİSTİKLER v3
+  ===================================
+  Eski uygulamayla AYNI sıra: istatistik kartları → kaçan özet → 
+  "🕘 Son İşlemler" (AYRI bir sayfa DEĞİL, bu sayfanın alt bölümü).
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — İstatistikler</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="reports-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="raporlar.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="istatistik-kart-grid">
+    <div class="istatistik-kart istatistik-kart--koyu">
+      <div class="istatistik-baslik">Bu Ay Toplam</div>
+      <div class="istatistik-deger" id="istBuAyToplam">0,00 EUR</div>
+      <div class="istatistik-alt" id="istBuAySiparisSayisi">0 sipariş</div>
+    </div>
+    <div class="istatistik-kart">
+      <div class="istatistik-baslik">Geçen Ay Toplam</div>
+      <div class="istatistik-deger istatistik-deger--koyu" id="istGecenAyToplam">0,00 EUR</div>
+      <div class="istatistik-alt" id="istGecenAySiparisSayisi">0 sipariş</div>
+    </div>
+  </div>
+
+  <div class="istatistik-bolum-baslik">📅 Aylık Sipariş &amp; Prim Özeti (Son 12 Ay)</div>
+  <div class="data-table-container">
+    <table class="aylik-ozet-tablo">
+      <thead><tr><th>AY</th><th>SATIŞ</th><th>PRİM</th><th>TL PRİM</th></tr></thead>
+      <tbody id="istAylikListe"></tbody>
+      <tfoot><tr class="aylik-ozet-toplam-satir">
+        <td>TOPLAM (12 Ay)</td>
+        <td id="istAylikGenelToplam">-</td>
+        <td id="istAylikGenelPrim">-</td>
+        <td id="istAylikGenelPrimTl">-</td>
+      </tr></tfoot>
+    </table>
+  </div>
+  <p class="aylik-ozet-kur-notu" id="istAylikKurNotu"></p>
+
+  <section class="ay-detay-bolum" id="ayDetayBolumu" hidden>
+    <div class="ay-detay-baslik" id="ayDetayBaslik"></div>
+    <div class="ay-detay-toplam-kutu">
+      <span id="ayDetayToplamEtiket"></span>
+      <strong id="ayDetayToplamDeger"></strong>
+    </div>
+    <div id="ayDetayListesi"></div>
+    <button class="ay-detay-kapat-btn" id="btnAyDetayKapat">✕ Kapat</button>
+  </section>
+
+  <div class="istatistik-bolum-baslik">❌ Kaçan Siparişler (Bu Ay)</div>
+  <div class="kacan-ozet-grid">
+    <div class="kacan-ozet-kart">
+      <div class="kacan-ozet-baslik">Kaçan İşlem</div>
+      <div class="kacan-ozet-deger" id="istKacanSayi">0</div>
+    </div>
+    <div class="kacan-ozet-kart">
+      <div class="kacan-ozet-baslik">Kaybedilen Tutar</div>
+      <div class="kacan-ozet-deger" id="istKacanTutar">0,00 EUR</div>
+    </div>
+  </div>
+  <div id="istKacanListe"></div>
+
+  <div class="son-islemler-baslik">🕘 Son İşlemler</div>
+
+  <div class="islem-filtre-satiri">
+    <input type="text" id="islemAra" placeholder="Müşteri adıyla ara..." autocomplete="off">
+    <select id="islemTipFiltre">
+      <option value="">Tüm Türler</option>
+      <option value="numune">Numune</option>
+      <option value="teklif">Teklif</option>
+      <option value="proforma">Proforma</option>
+      <option value="siparis">Sipariş</option>
+    </select>
+  </div>
+  <button class="excel-buton islem-excel-buton" id="btnIslemlerExcel">📊 Listeyi Excel'e Aktar</button>
+  <div id="islemlerListesi"></div>
+  <p class="bos-mesaj" id="islemlerBosMesaj" hidden>Henüz kayıt yok.</p>
+
+  <div class="duzenle-overlay" id="duzenleOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">Kaydı Düzenle</div>
+      <div id="duzenleUrunListesi"></div>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnDuzenleVazgec">Kapat</button>
+        <button class="duzenle-kaydet-btn" id="btnDuzenleKaydet">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="ayarlar-sync.js"></script>
+<script src="customer-data.js"></script>
+<script src="reports-data.js"></script>
+<script src="reports-render.js"></script>
+</body>
+</html>
