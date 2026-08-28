@@ -98,27 +98,24 @@ function toastGoster(msg){
 function ac(id){ document.getElementById(id).hidden = false; }
 function kapat(id){ document.getElementById(id).hidden = true; }
 
-// ---- "Yönet" (bölüm bazlı) ----
-function yonetAc(tip){
+// ---- "Yeni Bilgi Ekle" popup'ındaki Ekle/Sil/Düzenle butonları ----
+function eylemBaslat(tip, eylem){
+  kapat("yeniBilgiOverlay");
   aktifTip = tip;
-  document.getElementById("yonetBaslik").textContent = TIP_META[tip].ikon + " " + TIP_META[tip].baslik + " — Yönet";
-  ac("yonetOverlay");
-}
-
-function pickerAc(eylem){
-  kapat("yonetOverlay");
   aktifEylem = eylem;
-  var liste = kayitlariGetir(musteriVerisi, aktifTip);
-  if(liste.length === 0){ toastGoster("Henüz kayıtlı " + TIP_META[aktifTip].tekil + " yok."); return; }
+  if(eylem === "ekle"){ formAc(tip, "ekle"); return; }
+
+  var liste = kayitlariGetir(musteriVerisi, tip);
+  if(liste.length === 0){ toastGoster("Henüz kayıtlı " + TIP_META[tip].tekil + " yok."); return; }
   if(liste.length === 1){
-    if(eylem === "duzenle") formAc(aktifTip, "duzenle", 0);
-    else silSor(aktifTip, 0);
+    if(eylem === "duzenle") formAc(tip, "duzenle", 0);
+    else silSor(tip, 0);
     return;
   }
   document.getElementById("pickerBaslik").textContent = (eylem==="duzenle" ? "✏️ Hangisini düzenlemek istiyorsun?" : "🗑️ Hangisini silmek istiyorsun?");
-  document.getElementById("pickerAlt").textContent = TIP_META[aktifTip].baslik + " — bir kayıt seç";
+  document.getElementById("pickerAlt").textContent = TIP_META[tip].baslik + " — bir kayıt seç";
   document.getElementById("pickerListesi").innerHTML = liste.map(function(k,i){
-    return "<button class='picker-item' data-idx='" + i + "'><div class='ust'>" + escapeText(kayitBaslik(aktifTip,k)) + "</div><div class='alt'>" + escapeText(kayitAltMetin(aktifTip,k)) + "</div></button>";
+    return "<button class='picker-item' data-idx='" + i + "'><div class='ust'>" + escapeText(kayitBaslik(tip,k)) + "</div><div class='alt'>" + escapeText(kayitAltMetin(tip,k)) + "</div></button>";
   }).join("");
   document.getElementById("pickerListesi").querySelectorAll(".picker-item").forEach(function(btn){
     btn.onclick = function(){
@@ -281,18 +278,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // "Yeni Bilgi Ekle" ana buton + kategori seçim sheet'i
   document.getElementById("btnYeniBilgiAc").onclick = function(){ ac("yeniBilgiOverlay"); };
-  document.getElementById("yeniBilgiOverlay").querySelectorAll(".sheet-secenek[data-tip]").forEach(function(btn){
-    btn.onclick = function(){ formAc(this.getAttribute("data-tip"), "ekle"); };
+  document.getElementById("yeniBilgiOverlay").querySelectorAll(".yb-buton[data-tip][data-eylem]").forEach(function(btn){
+    btn.onclick = function(){ eylemBaslat(this.getAttribute("data-tip"), this.getAttribute("data-eylem")); };
   });
-
-  // Her bloğun "Yönet" butonu
-  document.querySelectorAll(".ck-yonet-btn[data-tip]").forEach(function(btn){
-    btn.onclick = function(){ yonetAc(this.getAttribute("data-tip")); };
-  });
-
-  // Yönet sheet'i içindeki Düzenle/Sil
-  document.getElementById("yonetDuzenleBtn").onclick = function(){ pickerAc("duzenle"); };
-  document.getElementById("yonetSilBtn").onclick = function(){ pickerAc("sil"); };
 
   // Form Kaydet + Sil Onayla
   document.getElementById("formKaydetBtn").onclick = formKaydet;

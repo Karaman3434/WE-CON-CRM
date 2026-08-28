@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: W230826.0824.03 — customer-cari-kart.html -->
+<!-- WEICON ASİST V2 — VERSİYON: W230826.0824.05 — customer-cari-kart.html -->
 <!--
-  WEICON ASİST — CARİ KART v4
+  WEICON ASİST — CARİ KART v5
   ==============================
   Dört blok: FATURA ADRESİ, YETKİLİ KİŞİ, TESLİMAT ADRESİ, NOT — her biri
-  ÇOKLU KAYIT destekler (liste + kart görünümü). Her blokta tek bir
-  "⚙️ Yönet" butonu var; tıklanınca Düzenle/Sil seçimi çıkar, birden
-  fazla kayıt varsa "hangisi?" seçici gösterilir. Yeni kayıt eklemek için
-  sayfa altındaki tek "➕ Yeni Bilgi Ekle" butonu kategori seçtirir.
-  Önceki sürümdeki (v3) her blokta 3 ayrı buton + her zaman açık tekil
-  alan tasarımı, çoklu kayıt ihtiyacı üzerine bu şekilde değiştirildi.
+  ÇOKLU KAYIT destekler (liste + kart görünümü), SADECE görüntüleme amaçlı —
+  bloklarda artık ayrı "Yönet" butonu YOK. Tüm Ekle/Sil/Düzenle işlemleri
+  sayfa sonundaki tek "➕ Yeni Bilgi Ekle" popup'ında toplandı: her kategori
+  satırında (Fatura Adresi / Yetkili Kişi / Teslimat Adresi / Not) yan yana
+  Ekle, Sil, Düzenle butonları var.
+  Kapat / Yeni Bilgi Ekle / İşleme Devam Et butonları artık page İÇİ akışta
+  (position:fixed DEĞİL) — önceki sürümde sabit-konumlu "Yeni Bilgi Ekle"
+  butonu bu üç butonun üzerine binip onları görsel olarak gizliyordu.
 -->
 <html lang="tr">
 <head>
@@ -49,7 +51,6 @@
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="faturaListesi"></div>
-    <button class="ck-yonet-btn" data-tip="fatura">⚙️ Yönet (Düzenle / Sil)</button>
   </section>
 
   <!-- YETKİLİ KİŞİLER -->
@@ -59,7 +60,6 @@
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="yetkiliListesi"></div>
-    <button class="ck-yonet-btn" data-tip="yetkili">⚙️ Yönet (Düzenle / Sil)</button>
   </section>
 
   <!-- TESLİMAT ADRESLERİ -->
@@ -69,7 +69,6 @@
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="teslimatListesi"></div>
-    <button class="ck-yonet-btn" data-tip="teslimat">⚙️ Yönet (Düzenle / Sil)</button>
   </section>
 
   <!-- NOTLAR -->
@@ -79,10 +78,11 @@
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="notListesi"></div>
-    <button class="ck-yonet-btn" data-tip="not">⚙️ Yönet (Düzenle / Sil)</button>
   </section>
 
   <a class="cari-kapat-buton" id="cariKapatBtn" href="customer-detail.html">Kapat</a>
+
+  <button class="cari-yenibilgi-buton-icerde" id="btnYeniBilgiAc">➕ Yeni Bilgi Ekle</button>
 
   <!-- Sadece Müşteri Kartı'nda "İşlem Yap" ile buraya gelindiyse görünür -->
   <button class="cari-islemedevam-buton" id="btnIslemeDevam" hidden>▶️ İşleme Devam Et</button>
@@ -102,29 +102,51 @@
 
 </main>
 
-<button class="yeni-bilgi-buton" id="btnYeniBilgiAc">➕ Yeni Bilgi Ekle</button>
-
-<!-- "+ Yeni Bilgi Ekle" seçim sheet'i -->
+<!-- "Yeni Bilgi Ekle" — her kategori satırında Ekle / Sil / Düzenle bir arada.
+     Önceki sürümdeki her blok altındaki ayrı "⚙️ Yönet" butonları kaldırıldı,
+     tüm Ekle/Sil/Düzenle işlemleri bu tek popup'a toplandı. -->
 <div class="overlay" id="yeniBilgiOverlay" hidden>
   <div class="sheet">
-    <div class="sheet-baslik">Ne eklemek istiyorsun?</div>
-    <div class="sheet-alt">Bir kategori seç, bilgileri gir, kaydet.</div>
-    <button class="sheet-secenek" data-tip="fatura"><span class="ikon">🧾</span> Yeni Fatura Adresi Ekle</button>
-    <button class="sheet-secenek" data-tip="yetkili"><span class="ikon">👤</span> Yeni Yetkili Ekle</button>
-    <button class="sheet-secenek" data-tip="teslimat"><span class="ikon">🚚</span> Yeni Teslimat Adresi Ekle</button>
-    <button class="sheet-secenek" data-tip="not"><span class="ikon">📝</span> Yeni Not Ekle</button>
-    <button class="sheet-secenek sheet-secenek--vazgec" data-kapat="yeniBilgiOverlay">Vazgeç</button>
-  </div>
-</div>
+    <div class="sheet-baslik">Bilgi Yönet</div>
+    <div class="sheet-alt">Bir kategori ve işlem seç.</div>
 
-<!-- Düzenle/Sil seçim sheet'i (bölüm bazlı "Yönet" tuşu) -->
-<div class="overlay" id="yonetOverlay" hidden>
-  <div class="sheet">
-    <div class="sheet-baslik" id="yonetBaslik">Yönet</div>
-    <div class="sheet-alt">Ne yapmak istiyorsun?</div>
-    <button class="sheet-secenek" id="yonetDuzenleBtn"><span class="ikon">✏️</span> Düzenle</button>
-    <button class="sheet-secenek sheet-secenek--sil" id="yonetSilBtn"><span class="ikon">🗑️</span> Sil</button>
-    <button class="sheet-secenek sheet-secenek--vazgec" data-kapat="yonetOverlay">Vazgeç</button>
+    <div class="yb-kategori-satir">
+      <div class="yb-kategori-baslik">🧾 Fatura Adresi</div>
+      <div class="yb-buton-grubu">
+        <button class="yb-buton yb-buton--ekle" data-tip="fatura" data-eylem="ekle">➕ Ekle</button>
+        <button class="yb-buton yb-buton--sil" data-tip="fatura" data-eylem="sil">🗑️ Sil</button>
+        <button class="yb-buton yb-buton--duzenle" data-tip="fatura" data-eylem="duzenle">✏️ Düzenle</button>
+      </div>
+    </div>
+
+    <div class="yb-kategori-satir">
+      <div class="yb-kategori-baslik">👤 Yetkili Kişi</div>
+      <div class="yb-buton-grubu">
+        <button class="yb-buton yb-buton--ekle" data-tip="yetkili" data-eylem="ekle">➕ Ekle</button>
+        <button class="yb-buton yb-buton--sil" data-tip="yetkili" data-eylem="sil">🗑️ Sil</button>
+        <button class="yb-buton yb-buton--duzenle" data-tip="yetkili" data-eylem="duzenle">✏️ Düzenle</button>
+      </div>
+    </div>
+
+    <div class="yb-kategori-satir">
+      <div class="yb-kategori-baslik">🚚 Teslimat Adresi</div>
+      <div class="yb-buton-grubu">
+        <button class="yb-buton yb-buton--ekle" data-tip="teslimat" data-eylem="ekle">➕ Ekle</button>
+        <button class="yb-buton yb-buton--sil" data-tip="teslimat" data-eylem="sil">🗑️ Sil</button>
+        <button class="yb-buton yb-buton--duzenle" data-tip="teslimat" data-eylem="duzenle">✏️ Düzenle</button>
+      </div>
+    </div>
+
+    <div class="yb-kategori-satir">
+      <div class="yb-kategori-baslik">📝 Not</div>
+      <div class="yb-buton-grubu">
+        <button class="yb-buton yb-buton--ekle" data-tip="not" data-eylem="ekle">➕ Ekle</button>
+        <button class="yb-buton yb-buton--sil" data-tip="not" data-eylem="sil">🗑️ Sil</button>
+        <button class="yb-buton yb-buton--duzenle" data-tip="not" data-eylem="duzenle">✏️ Düzenle</button>
+      </div>
+    </div>
+
+    <button class="sheet-secenek sheet-secenek--vazgec" data-kapat="yeniBilgiOverlay">Vazgeç</button>
   </div>
 </div>
 

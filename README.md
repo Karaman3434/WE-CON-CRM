@@ -35,6 +35,20 @@ bir cihazda hızlı erişimi engeller.
 
 ## Değişiklik Geçmişi
 
+### W230826.0824.05
+- **Kritik hata düzeltildi:** Cari Kart'ta sabit (fixed) konumlu "Yeni
+  Bilgi Ekle" butonu, sayfanın alt kısmındaki "Kapat" ve "İşleme Devam
+  Et" butonlarının ÜZERİNE biniyor, onları görsel olarak gizliyordu — bu
+  yüzden "İşlem Yap" akışından gelindiğinde ilerlemek mümkün olmuyordu.
+  Üç buton da artık normal sayfa akışında (fixed değil), bu sırayla:
+  Kapat → Yeni Bilgi Ekle → İşleme Devam Et.
+- **Cari Kart yeniden düzenlendi:** Fatura Adresi / Yetkili Kişi /
+  Teslimat Adresi / Not bloklarının altındaki ayrı "⚙️ Yönet" butonları
+  kaldırıldı — bloklar artık sadece görüntüleme amaçlı. Tüm Ekle/Sil/
+  Düzenle işlemleri tek "➕ Yeni Bilgi Ekle" popup'ında toplandı: her
+  kategori satırında (örn. "🧾 Fatura Adresi") yan yana Ekle/Sil/Düzenle
+  butonları var.
+
 ### W230826.0824.04
 - **KM Excel'e Aktar:** İş KM / Özel KM sütunları artık her export'ta
   (Bitiş KM − Başlangıç KM) taze hesaplanıp doğru sütuna yazılıyor,
