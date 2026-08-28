@@ -193,6 +193,8 @@
   border-bottom: 1px solid #e2e6ec;
   text-align: center;
   white-space: nowrap;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 .km-veri-tablo td.km-td-metin {
   text-align: left;

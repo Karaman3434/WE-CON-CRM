@@ -69,6 +69,7 @@
   border-bottom: 1px solid #d5dce6;
 }
 .belge-adres-etiket-fatura { color: #3569b8; font-size: 11px; display: block; margin-bottom: 2px; font-weight: 900; }
+.belge-adres-bos { color: #9aa5b1; font-style: italic; font-weight: 600; }
 .belge-adres-etiket-teslimat { color: #c0392b; font-size: 12px; display: block; margin-bottom: 2px; font-weight: 900; }
 .belge-adres-blok-teslimat {
   font-size: 11px;
@@ -144,6 +145,8 @@
   padding: 5px 2px;
   text-align: center;
   vertical-align: middle;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 .belge-td-sira { color: #3569b8; font-weight: 800; }
 .belge-td-urun { text-align: left; }

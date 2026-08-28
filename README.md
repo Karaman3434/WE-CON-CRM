@@ -35,6 +35,27 @@ bir cihazda hızlı erişimi engeller.
 
 ## Değişiklik Geçmişi
 
+### W230826.0824.04
+- **KM Excel'e Aktar:** İş KM / Özel KM sütunları artık her export'ta
+  (Bitiş KM − Başlangıç KM) taze hesaplanıp doğru sütuna yazılıyor,
+  saklanan eski değerlere güvenilmiyor.
+- **Son İşlemler:** Belgeyi Görüntüle / Düzenle / Sil tek satırda 3 buton;
+  toplam tutar tarih-saat satırının sonuna taşındı.
+- **Ürün listesi:** İşlevsiz "En Çok Aranan" butonu kaldırıldı (zaten Hit
+  Ürünler ile aynı listeyi gösteriyordu); "Yeni Ürün Ekle" onun yerine
+  Hit Ürünler'in yanına taşındı.
+- **Sepet tablosu:** Sil butonu PRİM sütunundan SIRA sütununa taşındı
+  (sıra numarasına dokununca 🗑️ çıkıyor); ÜRÜN BİLGİSİ sütunu genişletildi.
+- **Okunabilirlik:** Programdaki tüm tablolarda (Sepet, KM, Raporlar,
+  Ürün Listesi, Belge/Gönder, Müşteri Geçmişi) yazı fontu kalınlaştırıldı.
+- **Sipariş formu:** Fatura adresi artık her zaman gösteriliyor (boşsa
+  "Girilmemiş" yazıyor); mail konu başlığındaki sabit "WEICON" hatası
+  düzeltildi; **Mail Önizleme ekranı** eklendi — Mail Gönder'e basınca
+  konu/alıcı/mesaj/sipariş tablosu tek ekranda gösterilip son kontrol
+  yapılabiliyor, gönder onaylanınca gerçek mail açılıyor.
+- **KM sayfası:** "Bugünün Kilometresi — [tarih]" başlığı ilgili alanla
+  birleştirildi; Seyir Güzergahı / Ziyaret Edilen Yerler yan yana alındı.
+
 ### W230826.0824.03
 - **Cari Kart yeniden tasarlandı:** Fatura Adresi, Yetkili Kişi, Teslimat
   Adresi ve Not blokları artık **çoklu kayıt** destekliyor (liste + kart

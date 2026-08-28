@@ -219,10 +219,6 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnHitUrunler").onclick = function(){
     ozelListeyiAc("🔥 Hit Ürünler (en çok satılan)", hitUrunleriHesapla());
   };
-  document.getElementById("btnEnCokAranan").onclick = function(){
-    // Arama geçmişi izlemesi henüz yok — şimdilik en çok satılanları gösteriyor.
-    ozelListeyiAc("🔍 En Çok Aranan", hitUrunleriHesapla());
-  };
   document.getElementById("btnOzelListeKapat").onclick = function(){
     document.getElementById("ozelListeBolumu").hidden = true;
     document.getElementById("anaTabloAlani").hidden = false;

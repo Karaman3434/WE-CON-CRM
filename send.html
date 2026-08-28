@@ -81,6 +81,33 @@
     <button class="gonder-bitir-buton" id="btnGonderBitir">Ana Sayfa'ya Dön</button>
   </section>
 
+  <!-- Mail Önizleme — MAIL GÖNDER'e basınca, gerçek mail açılmadan önce
+       konu başlığı + mesaj + sipariş tablosu birlikte gösterilir. -->
+  <div class="overlay" id="mailOnizlemeOverlay" hidden>
+    <div class="sheet mail-onizleme-sheet">
+      <div class="sheet-baslik">📧 Mail Önizleme</div>
+      <div class="sheet-alt">Göndermeden önce son kontrol — konuyu değiştirebilirsin.</div>
+
+      <div class="form-etiket">KONU</div>
+      <input type="text" class="form-input" id="mailOnizlemeKonu">
+
+      <div class="form-etiket">ALICI</div>
+      <input type="email" class="form-input" id="mailOnizlemeAlici" readonly>
+
+      <div class="form-etiket">MESAJ</div>
+      <div class="mail-onizleme-metin" id="mailOnizlemeMetin"></div>
+
+      <div class="form-etiket">SİPARİŞ TABLOSU (ekte / görsel olarak gidecek)</div>
+      <div id="mailOnizlemeTablo"></div>
+
+      <div class="sheet-buton-satir">
+        <button class="btn-vazgec" id="mailOnizlemeVazgecBtn">Vazgeç</button>
+        <button class="btn-kaydet" id="mailOnizlemeGonderBtn">📧 Şimdi Gönder</button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Görsel oluşturma için ekran dışına gizlenmiş belge alanı — html2canvas
        bunu PNG'ye çevirip WhatsApp/Mail ile paylaşacak. Kullanıcı bunu
        görmez, sadece render için var. -->

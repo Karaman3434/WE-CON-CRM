@@ -128,6 +128,12 @@ body {
   cursor: pointer;
   margin-bottom: 10px;
 }
+.yeni-urun-ac-buton--yanyana {
+  /* "Hit Ürünler" ile aynı satırda, .ozel-liste-satiri grid'i içinde */
+  margin-bottom: 0;
+  padding: 14px 6px;
+  border-radius: 10px;
+}
 .form-satir-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -332,6 +338,8 @@ body {
   padding: 10px 6px;
   border-bottom: 1px solid #e2e6ec;
   vertical-align: middle;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 .col-urun { width: auto; }
 .col-euro { width: 90px; }

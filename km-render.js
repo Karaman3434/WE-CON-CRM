@@ -205,7 +205,18 @@ function excelAktar(){
         var saatParca = saatStr.split("-");
         saatStr = saatParca[0].trim() + "\n" + saatParca[1].trim();
       }
-      return [tarihStr, saatStr, k.guzergah||"", k.ziyaretYerleri||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", k.isKm!=null?k.isKm:"", k.ozelKm!=null?k.ozelKm:""];
+      // İş KM / Özel KM — depolanmış değere güvenmek yerine HER ZAMAN
+      // Excel'e aktarırken (Bitiş KM - Başlangıç KM) taze hesaplanır ve
+      // günün kategorisine (İş/Özel) göre ilgili sütuna yazılır. Böylece
+      // tablo satırı sonradan elle düzenlenmiş olsa bile Excel çıktısı
+      // her zaman tutarlı kalır.
+      var isKmDeger = "", ozelKmDeger = "";
+      if(k.km!=null && k.bitisKm!=null){
+        var fark = k.bitisKm - k.km;
+        if(k.kmKategori === "ozel") ozelKmDeger = fark;
+        else isKmDeger = fark; // varsayılan/"is" kategorisi
+      }
+      return [tarihStr, saatStr, k.guzergah||"", k.ziyaretYerleri||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", isKmDeger, ozelKmDeger];
     });
 
     var aoa = [

@@ -82,42 +82,43 @@ function sayfayiCiz(){
 
     // Her iki gruptaki ürün satırlarına dokununca hesaplama ekranına git
     // (bekleyen: ilk kez hesapla; hesaplanmış: değerleri düzeltmek için).
-    liste.forEach(function(u){
-      // ürün adı hücreleri sırayla DOM'a basıldı; idx eşleşmesi için
-      // data attribute yerine basit closure kullanıyoruz.
-    });
-    grupSariAlani.querySelectorAll("tbody tr").forEach(function(tr, i){
-      tr.style.cursor = "pointer";
-      var urun = bekleyenler[i];
-      tr.onclick = function(){ urunuHesaplamayaGonder(urun.idx); };
-      // PRİM sütunu bekleyen ürünlerde zaten "-" gösteriyor; buraya bu
-      // ürünü sepetten kaldırma (vazgeçme) tuşu ekliyoruz.
-      var sonHucre = tr.querySelector("td:last-child");
-      if(sonHucre){
-        sonHucre.innerHTML = "<button class='sepet-urun-sil-btn' title='Bu üründen vazgeç'>🗑️</button>";
-        sonHucre.querySelector("button").onclick = function(e){
+    // Silme işlevi artık PRİM sütununda değil, SIRA sütununda: numaraya
+    // dokununca aynı hücrede küçük bir 🗑️ butonu belirir, ona basınca
+    // (onay sonrası) ürün sepetten kaldırılır. Böylece ÜRÜN BİLGİSİ
+    // sütununa (Berta/Abas + ad) daha fazla yer kalıyor.
+    function siraHucresineSilTiklamasiEkle(tr, urun){
+      var siraHucre = tr.querySelector("td.belge-td-sira");
+      if(!siraHucre) return;
+      var orijinalSira = siraHucre.textContent;
+      function numaraHalineGetir(){
+        siraHucre.innerHTML = "<span class='sepet-sira-numara'>" + orijinalSira + "</span>";
+        siraHucre.querySelector(".sepet-sira-numara").onclick = function(e){
           e.stopPropagation();
-          if(!confirm(urun.ad + " sepetten kaldırılsın mı?")) return;
+          silButonuHalineGetir();
+        };
+      }
+      function silButonuHalineGetir(){
+        siraHucre.innerHTML = "<button class='sepet-sira-sil-btn' title='Sil'>🗑️</button>";
+        siraHucre.querySelector("button").onclick = function(e){
+          e.stopPropagation();
+          if(!confirm(urun.ad + " sepetten kaldırılsın mı?")){ numaraHalineGetir(); return; }
           CartData.sil(urun.idx);
           sayfayiCiz();
         };
       }
+      numaraHalineGetir();
+    }
+    grupSariAlani.querySelectorAll("tbody tr").forEach(function(tr, i){
+      tr.style.cursor = "pointer";
+      var urun = bekleyenler[i];
+      tr.onclick = function(){ urunuHesaplamayaGonder(urun.idx); };
+      siraHucresineSilTiklamasiEkle(tr, urun);
     });
     grupYesilAlani.querySelectorAll("tbody tr").forEach(function(tr, i){
       tr.style.cursor = "pointer";
       var urun = hesaplananlar[i];
       tr.onclick = function(){ urunuHesaplamayaGonder(urun.idx); };
-      var sonHucre = tr.querySelector("td:last-child");
-      if(sonHucre){
-        var mevcutIcerik = sonHucre.innerHTML;
-        sonHucre.innerHTML = "<div class='sepet-prim-ve-sil'><span>" + mevcutIcerik + "</span><button class='sepet-urun-sil-btn' title='Bu üründen vazgeç'>🗑️</button></div>";
-        sonHucre.querySelector("button").onclick = function(e){
-          e.stopPropagation();
-          if(!confirm(urun.ad + " sepetten kaldırılsın mı?")) return;
-          CartData.sil(urun.idx);
-          sayfayiCiz();
-        };
-      }
+      siraHucresineSilTiklamasiEkle(tr, urun);
     });
 
     var tamamMi = CartData.tamamHesaplandiMi();

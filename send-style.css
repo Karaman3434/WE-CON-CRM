@@ -255,3 +255,50 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+/* ---------- Mail Önizleme overlay ---------- */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(10,20,35,0.5);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 999;
+}
+.overlay[hidden] { display: none; }
+.sheet {
+  background: #fff;
+  width: 100%; max-width: 480px;
+  border-radius: 16px 16px 0 0;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 4px; }
+.sheet-alt { font-size: 12px; color: #6b7684; margin-bottom: 12px; }
+.form-etiket { font-size: 10.5px; font-weight: 900; color: #6b7684; letter-spacing: .3px; margin: 10px 0 4px; }
+.form-input {
+  width: 100%; box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 700;
+}
+.mail-onizleme-metin {
+  background: #f8fafc;
+  border: 1px solid #e8ecf1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a2a3a;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+.sheet-buton-satir { display: flex; gap: 8px; margin-top: 16px; }
+.btn-kaydet, .btn-vazgec {
+  flex: 1; border-radius: 8px; padding: 12px;
+  font-size: 13px; font-weight: 900; cursor: pointer; border: none;
+}
+.btn-kaydet { background: #16a085; color: #fff; }
+.btn-vazgec { background: #f1f3f5; color: #44494f; }

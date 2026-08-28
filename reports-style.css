@@ -84,6 +84,13 @@
   font-weight: 900;
   color: #c0392b;
 }
+.islem-toplam-satirici {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 900;
+  color: #003a70;
+  white-space: nowrap;
+}
 
 .islem-musteri-satir {
   display: flex;
@@ -111,12 +118,7 @@
   font-size: 12px;
   color: #44494f;
 }
-.islem-toplam {
-  font-size: 14px;
-  font-weight: 900;
-  color: #003a70;
-  margin-top: 4px;
-}
+.islem-toplam { display: none; } /* v4: toplam artık tarih satırında (islem-toplam-satirici) */
 .islem-tiklanabilir { cursor: pointer; }
 .islem-ac-ikon { font-size: 10px; color: #44494f; }
 .urun-detay-kutu {
@@ -142,14 +144,12 @@
   margin-top: 6px;
 }
 .islem-belge-btn {
-  margin-top: 8px;
-  width: 100%;
   background: #eaf2fc;
   color: #003a70;
   border: 1px solid #3569b8;
   border-radius: 6px;
-  padding: 8px;
-  font-size: 12px;
+  padding: 8px 4px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -177,9 +177,9 @@
   font-weight: 800;
   cursor: pointer;
 }
-.islem-duzenle-sil-satir {
+.islem-3buton-satir {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 6px;
   margin-top: 8px;
 }
@@ -188,8 +188,8 @@
   color: #2d3540;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  padding: 8px;
-  font-size: 12px;
+  padding: 8px 4px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -198,8 +198,8 @@
   color: #c0392b;
   border: 1px solid #f0b8b3;
   border-radius: 6px;
-  padding: 8px;
-  font-size: 12px;
+  padding: 8px 4px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -429,6 +429,8 @@
   border: 1px solid #3569b8;
   padding: 6px 4px;
   text-align: center;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 .aylik-ozet-ay-hucre { font-weight: bold; color: #003a70; }
 .aylik-ozet-prim-hucre { font-weight: bold; color: #16a085; }

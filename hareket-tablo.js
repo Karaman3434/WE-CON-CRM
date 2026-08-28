@@ -43,7 +43,7 @@ var HareketTablo = (function(){
     var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#fff9e6" : "#eafaf0";
     var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'>" + opts.etiket + "</div>";
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:6%;'>SIRA</th><th style='width:25%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:9%;'>SIRA</th><th style='width:28%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi) + "</tbody></table></div>";
     if(opts.genelToplam != null){
       html += "<div class='belge-genel-toplam-serit'>"

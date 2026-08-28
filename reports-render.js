@@ -188,21 +188,21 @@ function islemleriCiz(){
         + "<span class='islem-kod-rozet' style='background:" + renk + ";'>" + kod + "</span>"
         + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
         + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
+        + "<span class='islem-toplam-satirici'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</span>"
         + "</div>"
         + "<div class='islem-musteri-satir islem-tiklanabilir' data-ac-i='" + i + "'>"
         + "<span class='islem-musteri-buyuk'>" + htmlEsc(k.musteri) + "</span>"
         + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
         + "</div>"
         + "<div class='islem-detay islem-tiklanabilir' data-ac-i='" + i + "'>" + (k.urunler||[]).length + " ürün <span class='islem-ac-ikon'>▾</span></div>"
-        + "<div class='islem-toplam'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</div>"
         + "<div class='urun-detay-kutu' id='urunDetay-" + i + "' hidden>" + urunDetayHtml + "</div>"
-        + "<button class='islem-belge-btn' data-belge-i='" + i + "'>📄 Belgeyi Görüntüle</button>"
         + (!kacanMi
               ? ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
               + (ReportsData.SONRAKI_ASAMALAR[k.tip] ? "<button class='islem-ilerlet-btn' data-ilerlet-i='"+i+"'>▶️ " + (ReportsData.SONRAKI_ASAMALAR[k.tip].length>1 ? "İlerlet" : "İlerlet — " + TIP_ETIKET[ReportsData.SONRAKI_ASAMALAR[k.tip][0]]) + "</button>" : "")
               : ""
            )
-        + "<div class='islem-duzenle-sil-satir'>"
+        + "<div class='islem-3buton-satir'>"
+        + "<button class='islem-belge-btn' data-belge-i='" + i + "'>📄 Belge</button>"
         + "<button class='islem-duzenle-btn' data-duzenle-i='" + i + "'>✏️ Düzenle</button>"
         + "<button class='islem-sil-btn' data-sil-i='" + i + "'>🗑️ Sil</button>"
         + "</div>"
