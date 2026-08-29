@@ -71,7 +71,7 @@ function belgeyiCiz(kayit, musteri){
       if(satirPrim > 0) toplamPrim += satirPrim;
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
-        + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kb'>Berta:</span> " + htmlEsc(item.berta||"-") + " <span class='ka'>Abas:</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
+        + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
         + "<td>" + fmt(item.listeFiyat||0) + " €</td>"
         + "<td class='belge-td-isk'>%" + (item.iskonto||0) + "</td>"
@@ -96,10 +96,7 @@ function belgeyiCiz(kayit, musteri){
 
     var ustBaslikHtml = "<div class='belge-ust-baslik'>"
       + "<div class='belge-logo-satir'><span class='belge-logo-mini'>WEICON</span><span class='belge-tur-baslik'>" + (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + " FORMU</span></div>"
-      + "<table class='belge-tarih-tablo'>"
-      + "<tr><td class='bt-etiket'>TARİH</td><td class='bt-deger'>" + htmlEsc(kayit.tarih) + "</td></tr>"
-      + (kayit.revizeZamani ? "<tr class='belge-revize-satir'><td class='bt-etiket'>🔄 REVİZE</td><td class='bt-deger'>Fiyat güncellendi</td></tr>" : "")
-      + "</table>"
+      + "<span class='belge-tarih-kompakt'>" + htmlEsc(kayit.tarih) + (kayit.revizeZamani ? "<span class='revize-rozet'>🔄 REVİZE</span>" : "") + "</span>"
       + "</div>";
 
     var musteriBlokHtml = "<div class='belge-musteri-baslik'>MÜŞTERİ BİLGİLERİ</div>"
@@ -119,7 +116,7 @@ function belgeyiCiz(kayit, musteri){
       + musteriBlokHtml
       + "<div class='belge-belge-baslik-serit'>" + htmlEsc(belgeBaslikMetni) + "</div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:6%;'>SIRA</th><th style='width:25%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:6%;'>SIRA</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"

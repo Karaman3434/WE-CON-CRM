@@ -62,7 +62,7 @@ function sonuclariCiz(){
       var eklendi = ProductData.sepetteMi(idx);
       html += "<tr>"
         + "<td class='product-cell product-cell--tikla' data-arama='" + htmlEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "'>"
-        + "<div class='tablo-kod'><span class='tablo-kod-b'>Berta:</span> " + htmlEsc(bilgi.berta||"-") + " <span class='tablo-kod-a'>- Abas:</span> " + htmlEsc(bilgi.abas||"-") + "</div>"
+        + "<div class='tablo-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(bilgi.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(bilgi.abas||"-") + "</div>"
         + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span></div>"
         + "</td>"
         + "<td><span class='tablo-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
@@ -191,7 +191,7 @@ function ozelListeyiAc(baslik, liste){
   } else {
     govde.innerHTML = liste.slice(0,30).map(function(u,i){
       return "<tr data-i='" + i + "'>"
-        + "<td class='hit-urun-sira-ad'>" + (i+1) + ". " + htmlEsc(u.ad) + "<div class='hit-urun-kod'>Berta: " + htmlEsc(u.berta||"-") + " · Abas: " + htmlEsc(u.abas||"-") + "</div></td>"
+        + "<td class='hit-urun-sira-ad'>" + (i+1) + ". " + htmlEsc(u.ad) + "<div class='hit-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div></td>"
         + "<td class='hit-urun-adet'>" + u.adet + "</td>"
         + "<td>📊</td>"
         + "</tr>";

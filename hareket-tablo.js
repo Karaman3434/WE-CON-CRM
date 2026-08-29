@@ -20,13 +20,25 @@ var HareketTablo = (function(){
   // urunler: [{ad, berta, abas, listeFiyat, dipFiyat, iskonto, adet}]
   // hesapla(u): CartData.hesapla ile aynı imzada fonksiyon — {iskontoluFiyat, toplamEuro, mudurPrim}
   // zeminSinifi: "hareket-satir--sari" | "hareket-satir--yesil" | ""
-  function satirlarHtml(urunler, hesapla, zeminSinifi){
+  // basit: true ise WhatsApp'a özel sade satır (SIRA/ÜRÜN/ADET/NET/TOPLAM) üretir —
+  // müşteriye internal bilgi olan LİSTE/İSK/PRİM sütunları hiç gönderilmez.
+  function satirlarHtml(urunler, hesapla, zeminSinifi, basit){
     return (urunler||[]).map(function(u, i){
       var h = hesapla(u);
       var toplamVarMi = h && h.toplamEuro != null;
+      var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
+      if(basit){
+        return "<tr class='" + (zeminSinifi||"") + "'>"
+          + "<td class='belge-td-sira'>" + (i+1) + "</td>"
+          + urunHucre
+          + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
+          + "<td>" + (toplamVarMi ? fmt(h.iskontoluFiyat)+" €" : "-") + "</td>"
+          + "<td class='belge-td-toplam'>" + (toplamVarMi ? fmt(h.toplamEuro)+" €" : "-") + "</td>"
+          + "</tr>";
+      }
       return "<tr class='" + (zeminSinifi||"") + "'>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
-        + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kb'>Berta:</span> " + htmlEsc(u.berta||"-") + " <span class='ka'>Abas:</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>"
+        + urunHucre
         + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
         + "<td>" + (u.listeFiyat!=null ? fmt(u.listeFiyat)+" €" : "-") + "</td>"
         + "<td class='belge-td-isk'>" + (u.iskonto!=null ? "%"+u.iskonto : "-") + "</td>"
@@ -38,13 +50,18 @@ var HareketTablo = (function(){
   }
 
   // Tek bir grup (örn. sadece HESAPLANDI) için etiket + tablo + (istenirse) genel toplam.
+  // opts.kanal === "whatsapp" ise sade tablo (SIRA/ÜRÜN BİLGİSİ/ADET/NET/TOPLAM) üretir.
   function grupHtml(opts){
+    var basit = opts.kanal === "whatsapp";
     var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#8a6d1a" : "#0e6b34";
     var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#fff9e6" : "#eafaf0";
     var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'>" + opts.etiket + "</div>";
+    var basHucreler = basit
+      ? "<th style='width:8%;'>SIRA</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
+      : "<th style='width:6%;'>SIRA</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th>";
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:9%;'>SIRA</th><th style='width:28%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
-      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi) + "</tbody></table></div>";
+      + "<thead><tr>" + basHucreler + "</tr></thead>"
+      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit) + "</tbody></table></div>";
     if(opts.genelToplam != null){
       html += "<div class='belge-genel-toplam-serit'>"
         + "<span class='belge-gt-etiket'>GENEL TOPLAM</span><span class='belge-gt-ayrac'></span><span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " €</span>"

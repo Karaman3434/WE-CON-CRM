@@ -107,6 +107,31 @@
     </div>
   </div>
 
+  <!-- WhatsApp Önizleme — WHATSAPP GÖNDER'e basınca, gerçek WhatsApp
+       açılmadan önce mesaj metni + sade sipariş tablosu (İskonto/Liste/
+       Prim OLMADAN) birlikte gösterilir. Mesaj metni mail metninden
+       farklı, tekil/çoğul ürün durumuna göre otomatik değişir. -->
+  <div class="overlay" id="whatsappOnizlemeOverlay" hidden>
+    <div class="sheet mail-onizleme-sheet">
+      <div class="sheet-baslik">💬 WhatsApp Önizleme</div>
+      <div class="sheet-alt">Göndermeden önce son kontrol — mesajı değiştirebilirsin.</div>
+
+      <div class="form-etiket">ALICI</div>
+      <input type="text" class="form-input" id="whatsappOnizlemeAlici" readonly>
+
+      <div class="form-etiket">MESAJ</div>
+      <textarea class="form-input" id="whatsappOnizlemeMetin" rows="6" style="resize:vertical;"></textarea>
+
+      <div class="form-etiket">SİPARİŞ TABLOSU (ekte / görsel olarak gidecek — fiyat detayı içermez)</div>
+      <div id="whatsappOnizlemeTablo"></div>
+
+      <div class="sheet-buton-satir">
+        <button class="btn-vazgec" id="whatsappOnizlemeVazgecBtn">Vazgeç</button>
+        <button class="btn-kaydet" id="whatsappOnizlemeGonderBtn" style="background:#25d366;">💬 Şimdi Gönder</button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Görsel oluşturma için ekran dışına gizlenmiş belge alanı — html2canvas
        bunu PNG'ye çevirip WhatsApp/Mail ile paylaşacak. Kullanıcı bunu

@@ -85,7 +85,7 @@ function siparisGecmisiniCiz(){
         satirlar += "<tr class='gecmis-tablo-satir' data-tip='" + k.tip + "' data-ts='" + k.ts + "' style='background:" + satirBg + ";'>"
           + "<td>" + (j===0 ? "<span class='gecmis-kod-mini'>" + TIP_KOD_GECMIS[k.tip] + "</span>" + (kacanMi?"<div class='gecmis-durum-mini'>❌ KAÇTI</div>":"") : "") + "</td>"
           + "<td>" + (j===0 ? htmlEsc(k.tarih.split(" ").slice(0,2).join(" ")) : "") + "</td>"
-          + "<td class='gecmis-td-urun'><div class='gecmis-td-kod'><span class='kb'>B:</span>" + htmlEsc(u.berta||"-") + " <span class='ka'>A:</span>" + htmlEsc(u.abas||"-") + "</div><div class='gecmis-td-ad'>" + htmlEsc(u.ad) + "</div></td>"
+          + "<td class='gecmis-td-urun'><div class='gecmis-td-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='gecmis-td-ad'>" + htmlEsc(u.ad) + "</div></td>"
           + "<td>" + (u.adet||0) + "</td>"
           + "<td>" + fmtG(u.listeFiyat||0) + "€</td>"
           + "<td class='gecmis-td-isk'>%" + (u.iskonto||0) + "</td>"

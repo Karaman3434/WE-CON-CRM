@@ -351,8 +351,15 @@ body {
   margin-bottom: 2px;
   color: #2d3540;
 }
-.tablo-kod-b { color: #003a70; font-weight: 900; }
-.tablo-kod-a { color: #e0524a; font-weight: 900; }
+/* B (Berta) / A (Abas) kod harfleri — programdaki tüm tablolarda ortak dil:
+   tam kelime yerine tek harf rozeti (B kırmızı, A mavi), kalın ve büyük. */
+.kod-harf {
+  font-weight: 900;
+  font-size: 1.25em;
+  padding: 0 1px;
+}
+.kod-harf--b { color: #c0392b; }
+.kod-harf--a { color: #003a70; }
 .urun-adi {
   font-size: 14px;
   font-weight: 700;

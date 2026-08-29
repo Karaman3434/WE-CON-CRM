@@ -35,6 +35,34 @@ bir cihazda hızlı erişimi engeller.
 
 ## Değişiklik Geçmişi
 
+### W230826.0824.07
+- **Ürün kodu tek satırda:** Ürün Bilgisi sütunu genişletildi (SIRA %9→%6,
+  ÜRÜN BİLGİSİ %28→%34), kod fontu 9px→8px ve `nowrap` yapıldı — "B
+  12345678 A 87654321" artık hiçbir tabloda alt satıra kaymıyor.
+- **WhatsApp'a giden tablo sadeleşti:** WhatsApp'a gönderilen sipariş
+  tablosunda artık sadece SIRA / ÜRÜN BİLGİSİ / ADET / NET / TOPLAM var —
+  LİSTE, İSKONTO ve PRİM (iç bilgi) müşteriye gönderilmiyor. Mail
+  değişmedi, tam tablo gitmeye devam ediyor.
+- **WhatsApp Önizleme ekranı eklendi:** Mail Önizleme'nin eşleniği —
+  WhatsApp Gönder'e basınca, mesaj + sade tablo bir arada gösterilip son
+  kontrol yapılabiliyor.
+- **WhatsApp mesaj metni artık mail'den bağımsız:** Tek ürün / birden
+  fazla ürün durumuna göre otomatik "ürünümüzün" / "ürünlerimizin" gibi
+  değişen, WhatsApp'a özel bir şablon kullanılıyor (bu fonksiyon zaten
+  vardı, sadece devreye alınmamıştı — artık gerçekten kullanılıyor).
+- **Tarih göstergesi küçültüldü:** Belge/form başlığındaki büyük ayrı
+  "TARİH" kutulu tablo kaldırıldı; tarih artık WEICON + form adıyla aynı
+  satırda, sağda, sade küçük bir metin olarak duruyor (Belgeyi Görüntüle,
+  Mail/WhatsApp'a giden görsel — hepsinde).
+
+### W230826.0824.06
+- **Ürün kodu gösterimi sadeleştirildi:** Programdaki tüm tablolarda
+  (Sepet, Belge/Gönder önizlemesi, Ürün Listesi, Hit Ürünler, Müşteri
+  Geçmişi) "Berta:" / "Abas:" kelimeleri kaldırıldı. Yerine tek harf
+  rozeti kullanılıyor: **B** (kalın, kırmızı) Berta kodunun önünde,
+  **A** (kalın, mavi) Abas kodunun önünde — böylece dar mobil sütunlarda
+  daha az yer kaplıyor ve kodlar daha hızlı ayırt ediliyor.
+
 ### W230826.0824.05
 - **Kritik hata düzeltildi:** Cari Kart'ta sabit (fixed) konumlu "Yeni
   Bilgi Ekle" butonu, sayfanın alt kısmındaki "Kapat" ve "İşleme Devam

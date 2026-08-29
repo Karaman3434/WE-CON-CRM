@@ -24,13 +24,13 @@
 .belge-ust-baslik {
   padding: 12px 14px;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
   border-bottom: 2px solid #3569b8;
 }
-.belge-logo-satir { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.belge-logo-satir { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
 .belge-logo-mini {
   background: #3569b8;
   color: #ffffff;
@@ -41,13 +41,11 @@
   border-radius: 4px;
   flex-shrink: 0;
 }
-.belge-tur-baslik { font-size: 15px; font-weight: 900; color: #3569b8; white-space: nowrap; }
-.belge-tarih-tablo { border-collapse: collapse; font-size: 11px; flex-shrink: 0; }
-.belge-tarih-tablo td { border: 1px solid #3569b8; padding: 3px 7px; white-space: nowrap; }
-.belge-tarih-tablo .bt-etiket { background: #3569b8; color: #ffffff; font-weight: 900; }
-.belge-tarih-tablo .bt-deger { font-weight: 800; color: #222222; }
-.belge-revize-satir .bt-etiket { background: #c0392b !important; }
-.belge-revize-satir .bt-deger { color: #c0392b !important; font-size: 10px; }
+.belge-tur-baslik { font-size: 13px; font-weight: 900; color: #3569b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Tarih artık ayrı büyük kutulu bir tablo değil — WEICON/form adıyla aynı
+   satırda, sağda, sade ve küçük bir metin (v7). */
+.belge-tarih-kompakt { font-size: 11px; font-weight: 800; color: #556170; white-space: nowrap; flex-shrink: 0; }
+.belge-tarih-kompakt .revize-rozet { color: #c0392b; font-weight: 900; margin-left: 4px; }
 
 .belge-musteri-baslik {
   background: #3569b8;
@@ -150,9 +148,12 @@
 }
 .belge-td-sira { color: #3569b8; font-weight: 800; }
 .belge-td-urun { text-align: left; }
-.belge-td-urun-kod { font-size: 9px; color: #2d3540; line-height: 1.3; }
-.belge-td-urun-kod .kb { color: #3569b8; }
-.belge-td-urun-kod .ka { color: #e0524a; }
+.belge-td-urun-kod { font-size: 8px; color: #2d3540; line-height: 1.3; white-space: nowrap; overflow: hidden; }
+/* B (Berta) / A (Abas) kod harfleri — bkz product-style.css .kod-harf için
+   aynı tasarım dili: tam kelime yerine tek harf rozeti, kalın ve büyük. */
+.kod-harf { font-weight: 900; font-size: 1.3em; padding: 0 1px; }
+.kod-harf--b { color: #c0392b; }
+.kod-harf--a { color: #003a70; }
 .belge-td-urun-ad { font-weight: 800; color: #222; margin-top: 2px; font-size: 11px; line-height: 1.25; }
 .belge-td-toplam { color: #16a085; font-weight: 900; }
 .belge-td-prim { font-size: 9px; }
