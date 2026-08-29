@@ -373,3 +373,26 @@
   pointer-events: none;
 }
 .toast.gorunur { opacity: 1; transform: translateY(0); }
+
+/* ---------- Cari Kart v6 — akordiyon "Bilgiyi Düzenle" ekranı ---------- */
+.akordiyon-baslik {
+  display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid #e2e6ec; border-radius: 10px; padding: 12px 14px;
+  margin-bottom: 8px; cursor: pointer; background: #fff;
+}
+.akordiyon-baslik--acik { border-radius: 10px 10px 0 0; margin-bottom: 0; }
+.akordiyon-baslik-metin { font-size: 13px; font-weight: 900; color: #1a2a3a; }
+.akordiyon-ok { font-size: 14px; color: #9aa5b1; }
+.akordiyon-govde {
+  border: 1px solid #e2e6ec; border-top: none; border-radius: 0 0 10px 10px;
+  margin-bottom: 8px; padding: 12px 14px; background: #f8fafc;
+}
+.akordiyon-govde-icerik { margin-bottom: 12px; }
+.akordiyon-govde-icerik .satir { font-size: 11.5px; color: #556170; margin-bottom: 4px; line-height: 1.4; }
+.akordiyon-govde-icerik .satir b { color: #1a2a3a; }
+.akordiyon-govde-icerik .satir-bos { font-size: 11.5px; color: #9aa5b1; font-style: italic; }
+.akordiyon-buton-satir { display: flex; gap: 6px; }
+.akordiyon-buton { flex: 1; border-radius: 7px; padding: 9px 4px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+.akordiyon-buton--ekle { background: #f0fdfa; color: #0e6b58; border: 1px solid #16a085; }
+.akordiyon-buton--duzenle { background: #eaf2fc; color: #003a70; border: 1px solid #3569b8; }
+.akordiyon-buton--sil { background: #fdeaea; color: #c0392b; border: 1px solid #f0b8b3; }

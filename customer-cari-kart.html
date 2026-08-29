@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: W230826.0824.05 — customer-cari-kart.html -->
+<!-- WEICON ASİST V2 — VERSİYON: W230826.0824.08 — customer-cari-kart.html -->
 <!--
-  WEICON ASİST — CARİ KART v5
+  WEICON ASİST — CARİ KART v6
   ==============================
-  Dört blok: FATURA ADRESİ, YETKİLİ KİŞİ, TESLİMAT ADRESİ, NOT — her biri
-  ÇOKLU KAYIT destekler (liste + kart görünümü), SADECE görüntüleme amaçlı —
-  bloklarda artık ayrı "Yönet" butonu YOK. Tüm Ekle/Sil/Düzenle işlemleri
-  sayfa sonundaki tek "➕ Yeni Bilgi Ekle" popup'ında toplandı: her kategori
-  satırında (Fatura Adresi / Yetkili Kişi / Teslimat Adresi / Not) yan yana
-  Ekle, Sil, Düzenle butonları var.
-  Kapat / Yeni Bilgi Ekle / İşleme Devam Et butonları artık page İÇİ akışta
-  (position:fixed DEĞİL) — önceki sürümde sabit-konumlu "Yeni Bilgi Ekle"
-  butonu bu üç butonun üzerine binip onları görsel olarak gizliyordu.
+  Ana sayfa (main) TAMAMEN salt-görüntüleme: isim/şehir, Vade/Fatura/Kargo
+  (yan yana, grid), sonra Fatura Adresi / Yetkili Kişi / Teslimat Adresi /
+  Not blokları (sadece kart listesi, hiçbir buton yok). Tek eylem butonu:
+  "✏️ Bilgiyi Düzenle" — açtığı "bilgiYonetOverlay" ekranı AKORDİYON
+  şeklinde 4 bölüm sunar (CARİ BİLGİLERİ / YETKİLİ KİŞİ / TESLİMAT ADRESİ /
+  NOT): başlığa dokunca açılır/kapanır, açılınca içerik + Ekle/Düzenle/Sil
+  butonları görünür. CARİ BİLGİLERİ; isim/şehir/vade/fatura/kargo ve fatura
+  adresi listesini bir arada tutar (Ekle = yeni fatura adresi; Düzenle =
+  temel bilgiler veya bir fatura adresi seçimi; Sil = bir fatura adresi).
+  Müşteri ADI şu an bilerek düzenlenebilir değil — uygulamada sipariş/
+  rapor/görev/km kayıtları müşteri adını anahtar olarak kullanıyor, isim
+  değişikliği bu bağlantıları koparabilir (ayrı, güvenli bir "yeniden
+  adlandırma" özelliği gerekir).
 -->
 <html lang="tr">
 <head>
@@ -38,11 +42,10 @@
   <div class="cari-alt-baslik" id="cariKartAltBaslik"></div>
 
   <div class="ozet-satir-3">
-    <div class="ozet-alan"><div class="ozet-ikon">📅</div><div class="ozet-metin"><div class="ozet-baslik">VADE</div><input type="text" id="ckVadeInput" class="ck-mini-input" placeholder="30 gün"></div></div>
-    <div class="ozet-alan"><div class="ozet-ikon">📄</div><div class="ozet-metin"><div class="ozet-baslik">FATURA</div><input type="text" id="ckFaturaTuruInput" class="ck-mini-input" placeholder="TL fatura"></div></div>
-    <div class="ozet-alan"><div class="ozet-ikon">🚚</div><div class="ozet-metin"><div class="ozet-baslik">KARGO</div><input type="text" id="ckKargoInput" class="ck-mini-input" placeholder="Alıcı öder"></div></div>
+    <div class="ozet-alan"><div class="ozet-ikon">📅</div><div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="ozetVadeDeger">—</div></div></div>
+    <div class="ozet-alan"><div class="ozet-ikon">📄</div><div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="ozetFaturaDeger">—</div></div></div>
+    <div class="ozet-alan"><div class="ozet-ikon">🚚</div><div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="ozetKargoDeger">—</div></div></div>
   </div>
-  <button class="ck-ozet-kaydet-btn" id="btnOzetKaydet">✓ Vade / Fatura / Kargo Kaydet</button>
 
   <!-- FATURA ADRESLERİ -->
   <div class="ck-blok-etiket ck-blok-etiket--fatura">
@@ -82,7 +85,7 @@
 
   <a class="cari-kapat-buton" id="cariKapatBtn" href="customer-detail.html">Kapat</a>
 
-  <button class="cari-yenibilgi-buton-icerde" id="btnYeniBilgiAc">➕ Yeni Bilgi Ekle</button>
+  <button class="cari-yenibilgi-buton-icerde" id="btnBilgiYonetAc">✏️ Bilgiyi Düzenle</button>
 
   <!-- Sadece Müşteri Kartı'nda "İşlem Yap" ile buraya gelindiyse görünür -->
   <button class="cari-islemedevam-buton" id="btnIslemeDevam" hidden>▶️ İşleme Devam Et</button>
@@ -102,51 +105,17 @@
 
 </main>
 
-<!-- "Yeni Bilgi Ekle" — her kategori satırında Ekle / Sil / Düzenle bir arada.
-     Önceki sürümdeki her blok altındaki ayrı "⚙️ Yönet" butonları kaldırıldı,
-     tüm Ekle/Sil/Düzenle işlemleri bu tek popup'a toplandı. -->
-<div class="overlay" id="yeniBilgiOverlay" hidden>
+<!-- "Bilgiyi Düzenle" — akordiyon: 4 başlık (CARİ BİLGİLERİ / YETKİLİ KİŞİ /
+     TESLİMAT ADRESİ / NOT), her birine dokununca açılıp içerik + Ekle/
+     Düzenle/Sil butonlarını gösterir. -->
+<div class="overlay" id="bilgiYonetOverlay" hidden>
   <div class="sheet">
-    <div class="sheet-baslik">Bilgi Yönet</div>
-    <div class="sheet-alt">Bir kategori ve işlem seç.</div>
+    <div class="sheet-baslik">Bilgiyi Düzenle</div>
+    <div class="sheet-alt">Bir başlığa dokun, ne yapmak istediğini seç.</div>
 
-    <div class="yb-kategori-satir">
-      <div class="yb-kategori-baslik">🧾 Fatura Adresi</div>
-      <div class="yb-buton-grubu">
-        <button class="yb-buton yb-buton--ekle" data-tip="fatura" data-eylem="ekle">➕ Ekle</button>
-        <button class="yb-buton yb-buton--sil" data-tip="fatura" data-eylem="sil">🗑️ Sil</button>
-        <button class="yb-buton yb-buton--duzenle" data-tip="fatura" data-eylem="duzenle">✏️ Düzenle</button>
-      </div>
-    </div>
+    <div id="akordiyonKapsayici"></div>
 
-    <div class="yb-kategori-satir">
-      <div class="yb-kategori-baslik">👤 Yetkili Kişi</div>
-      <div class="yb-buton-grubu">
-        <button class="yb-buton yb-buton--ekle" data-tip="yetkili" data-eylem="ekle">➕ Ekle</button>
-        <button class="yb-buton yb-buton--sil" data-tip="yetkili" data-eylem="sil">🗑️ Sil</button>
-        <button class="yb-buton yb-buton--duzenle" data-tip="yetkili" data-eylem="duzenle">✏️ Düzenle</button>
-      </div>
-    </div>
-
-    <div class="yb-kategori-satir">
-      <div class="yb-kategori-baslik">🚚 Teslimat Adresi</div>
-      <div class="yb-buton-grubu">
-        <button class="yb-buton yb-buton--ekle" data-tip="teslimat" data-eylem="ekle">➕ Ekle</button>
-        <button class="yb-buton yb-buton--sil" data-tip="teslimat" data-eylem="sil">🗑️ Sil</button>
-        <button class="yb-buton yb-buton--duzenle" data-tip="teslimat" data-eylem="duzenle">✏️ Düzenle</button>
-      </div>
-    </div>
-
-    <div class="yb-kategori-satir">
-      <div class="yb-kategori-baslik">📝 Not</div>
-      <div class="yb-buton-grubu">
-        <button class="yb-buton yb-buton--ekle" data-tip="not" data-eylem="ekle">➕ Ekle</button>
-        <button class="yb-buton yb-buton--sil" data-tip="not" data-eylem="sil">🗑️ Sil</button>
-        <button class="yb-buton yb-buton--duzenle" data-tip="not" data-eylem="duzenle">✏️ Düzenle</button>
-      </div>
-    </div>
-
-    <button class="sheet-secenek sheet-secenek--vazgec" data-kapat="yeniBilgiOverlay">Vazgeç</button>
+    <button class="sheet-secenek sheet-secenek--vazgec" data-kapat="bilgiYonetOverlay">Vazgeç</button>
   </div>
 </div>
 

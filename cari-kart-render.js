@@ -1,12 +1,23 @@
 /*
   cari-kart-render.js
   ====================
-  Cari Kart v4 — dört blok (Fatura Adresi, Yetkili Kişi, Teslimat Adresi,
-  Not), her biri ÇOKLU KAYIT destekler. Her blok bir kart listesi + tek
-  bir "Yönet" butonu gösterir. Yönet → Düzenle/Sil seçimi → (birden
-  fazla kayıt varsa) "hangisi?" seçici → form / silme onayı.
-  Sayfa altındaki "Yeni Bilgi Ekle" butonu 4 kategoriden birini
-  seçtirip aynı formu "ekle" modunda açar.
+  Cari Kart v6 — ana sayfa TAMAMEN salt-görüntüleme (isim/şehir,
+  Vade/Fatura/Kargo, Fatura Adresi/Yetkili Kişi/Teslimat Adresi/Not
+  blokları — hiçbirinde buton yok). Tek eylem: "✏️ Bilgiyi Düzenle" →
+  4 bölümlü AKORDİYON ekranı (CARİ BİLGİLERİ / YETKİLİ KİŞİ / TESLİMAT
+  ADRESİ / NOT). Bir başlığa dokununca açılır/kapanır; açıkken içerik +
+  Ekle/Düzenle/Sil butonları görünür.
+
+  CARİ BİLGİLERİ özel bir bölüm: şehir/vade/fatura/kargo (tekil alanlar)
+  + fatura adresi listesini bir arada gösterir.
+    Ekle    → yeni fatura adresi ekleme formu
+    Düzenle → "Temel Bilgileri Düzenle" mi yoksa hangi fatura adresi mi
+              seçimi (birden fazla seçenek varsa picker açılır)
+    Sil     → hangi fatura adresinin silineceğini sorar
+
+  Müşteri ADI burada düzenlenemez (bkz. customer-cari-kart.html başındaki
+  not — sipariş/rapor/görev/km kayıtları müşteri adını anahtar olarak
+  kullanıyor).
 */
 
 function hataGoster(mesaj){
@@ -28,6 +39,16 @@ var TIP_META = {
   not:      {baslik:"Not",             tekil:"not",             ikon:"📝"}
 };
 
+// Akordiyonda gösterilecek 4 bölüm — "cari" özel bir sanal bölüm (fatura
+// adresi listesini + tekil temel bilgileri bir arada tutar).
+var AKORDIYON_TANIM = [
+  {id:"cari",     ikon:"🏢", baslik:"CARİ BİLGİLERİ"},
+  {id:"yetkili",  ikon:"👤", baslik:"YETKİLİ KİŞİ"},
+  {id:"teslimat", ikon:"🚚", baslik:"TESLİMAT ADRESİ"},
+  {id:"not",      ikon:"📝", baslik:"NOT"}
+];
+var acikBolum = null; // aynı anda tek bölüm açık kalır
+
 var aktifTip = null, aktifEylem = null, aktifIndex = null;
 var silTip = null, silIndex = null;
 
@@ -40,7 +61,7 @@ function kayitlariGetir(musteri, tip){
   // not: yeni "notlar" dizisi varsa onu kullan; yoksa eski tekil "not"
   // alanını tek elemanlı liste gibi göster (veri kaybı olmasın diye).
   if(musteri.notlar && musteri.notlar.length) return musteri.notlar;
-  if(musteri.not && musteri.not.trim()) return [{baslik:"Not", metin: musteri.not.trim()}];
+  if(musteri.not && musteri.not.trim()) return [{baslik:"", metin: musteri.not.trim()}];
   return [];
 }
 
@@ -55,7 +76,7 @@ function kayitAltMetin(tip, kayit){
   return kayit.adres || "";
 }
 
-function listeleriRenderEt(){
+function anaSayfayiRenderEt(){
   var m = musteriVerisi;
   ["fatura","teslimat","yetkili","not"].forEach(function(tip){
     var liste = kayitlariGetir(m, tip);
@@ -79,11 +100,11 @@ function alanlariDoldur(musteri){
   if(musteri.sehir) altBaslikParcalar.push(musteri.sehir);
   document.getElementById("cariKartAltBaslik").textContent = altBaslikParcalar.join(" · ");
 
-  document.getElementById("ckVadeInput").value = musteri.vade || "";
-  document.getElementById("ckFaturaTuruInput").value = musteri.fatura || "";
-  document.getElementById("ckKargoInput").value = musteri.kargo || "";
+  document.getElementById("ozetVadeDeger").textContent = musteri.vade || "—";
+  document.getElementById("ozetFaturaDeger").textContent = musteri.fatura || "—";
+  document.getElementById("ozetKargoDeger").textContent = musteri.kargo || "—";
 
-  listeleriRenderEt();
+  anaSayfayiRenderEt();
 }
 
 var toastZamanlayici;
@@ -98,34 +119,134 @@ function toastGoster(msg){
 function ac(id){ document.getElementById(id).hidden = false; }
 function kapat(id){ document.getElementById(id).hidden = true; }
 
-// ---- "Yeni Bilgi Ekle" popup'ındaki Ekle/Sil/Düzenle butonları ----
-function eylemBaslat(tip, eylem){
-  kapat("yeniBilgiOverlay");
-  aktifTip = tip;
-  aktifEylem = eylem;
-  if(eylem === "ekle"){ formAc(tip, "ekle"); return; }
-
-  var liste = kayitlariGetir(musteriVerisi, tip);
-  if(liste.length === 0){ toastGoster("Henüz kayıtlı " + TIP_META[tip].tekil + " yok."); return; }
-  if(liste.length === 1){
-    if(eylem === "duzenle") formAc(tip, "duzenle", 0);
-    else silSor(tip, 0);
-    return;
-  }
-  document.getElementById("pickerBaslik").textContent = (eylem==="duzenle" ? "✏️ Hangisini düzenlemek istiyorsun?" : "🗑️ Hangisini silmek istiyorsun?");
-  document.getElementById("pickerAlt").textContent = TIP_META[tip].baslik + " — bir kayıt seç";
-  document.getElementById("pickerListesi").innerHTML = liste.map(function(k,i){
-    return "<button class='picker-item' data-idx='" + i + "'><div class='ust'>" + escapeText(kayitBaslik(tip,k)) + "</div><div class='alt'>" + escapeText(kayitAltMetin(tip,k)) + "</div></button>";
+// ---- Akordiyon ("Bilgiyi Düzenle" ekranı) ----
+function akordiyonuRenderEt(){
+  var kapsayici = document.getElementById("akordiyonKapsayici");
+  kapsayici.innerHTML = AKORDIYON_TANIM.map(function(bolum){
+    var acikMi = acikBolum === bolum.id;
+    var html = "<div class='akordiyon-baslik" + (acikMi ? " akordiyon-baslik--acik" : "") + "' data-bolum='" + bolum.id + "'>"
+      + "<div class='akordiyon-baslik-metin'>" + bolum.ikon + " " + bolum.baslik + "</div>"
+      + "<div class='akordiyon-ok'>" + (acikMi ? "▴" : "▾") + "</div>"
+      + "</div>";
+    if(acikMi) html += akordiyonGovdeHtml(bolum.id);
+    return html;
   }).join("");
-  document.getElementById("pickerListesi").querySelectorAll(".picker-item").forEach(function(btn){
-    btn.onclick = function(){
-      var i = parseInt(this.getAttribute("data-idx"), 10);
-      kapat("pickerOverlay");
-      if(aktifEylem === "duzenle") formAc(aktifTip, "duzenle", i);
-      else silSor(aktifTip, i);
+
+  kapsayici.querySelectorAll(".akordiyon-baslik").forEach(function(el){
+    el.onclick = function(){
+      var id = this.getAttribute("data-bolum");
+      acikBolum = (acikBolum === id) ? null : id;
+      akordiyonuRenderEt();
     };
   });
+  kapsayici.querySelectorAll(".akordiyon-buton[data-tip][data-eylem]").forEach(function(btn){
+    btn.onclick = function(ev){
+      ev.stopPropagation();
+      eylemBaslat(this.getAttribute("data-tip"), this.getAttribute("data-eylem"));
+    };
+  });
+}
+
+function akordiyonGovdeHtml(bolumId){
+  if(bolumId === "cari"){
+    var m = musteriVerisi;
+    var faturaListesi = kayitlariGetir(m, "fatura");
+    var satirlar = "<div class='satir'><b>Şehir:</b> " + escapeText(m.sehir||"—") + "</div>"
+      + "<div class='satir'><b>Vade:</b> " + escapeText(m.vade||"—") + " · <b>Fatura:</b> " + escapeText(m.fatura||"—") + " · <b>Kargo:</b> " + escapeText(m.kargo||"—") + "</div>";
+    if(faturaListesi.length === 0){
+      satirlar += "<div class='satir-bos'>Henüz fatura adresi eklenmemiş.</div>";
+    } else {
+      satirlar += faturaListesi.map(function(k){
+        return "<div class='satir'><b>Fatura Adresi" + (k.etiket ? " — "+escapeText(k.etiket) : "") + ":</b> " + escapeText(k.adres||"") + "</div>";
+      }).join("");
+    }
+    return "<div class='akordiyon-govde'>"
+      + "<div class='akordiyon-govde-icerik'>" + satirlar + "</div>"
+      + "<div class='akordiyon-buton-satir'>"
+      + "<button class='akordiyon-buton akordiyon-buton--ekle' data-tip='cari' data-eylem='ekle'>➕ Yeni Fatura Adresi</button>"
+      + "<button class='akordiyon-buton akordiyon-buton--duzenle' data-tip='cari' data-eylem='duzenle'>✏️ Düzenle</button>"
+      + "<button class='akordiyon-buton akordiyon-buton--sil' data-tip='cari' data-eylem='sil'>🗑️ Sil</button>"
+      + "</div></div>";
+  }
+
+  // yetkili / teslimat / not — ortak liste düzeni
+  var liste = kayitlariGetir(musteriVerisi, bolumId);
+  var icerik = liste.length === 0
+    ? "<div class='satir-bos'>Henüz " + TIP_META[bolumId].tekil + " eklenmemiş.</div>"
+    : liste.map(function(k){
+        var baslikMetni = kayitBaslik(bolumId, k);
+        var altMetni = kayitAltMetin(bolumId, k);
+        return "<div class='satir'>" + (baslikMetni && bolumId!=="not" ? "<b>"+escapeText(baslikMetni)+":</b> " : "") + escapeText(altMetni || baslikMetni) + "</div>";
+      }).join("");
+  return "<div class='akordiyon-govde'>"
+    + "<div class='akordiyon-govde-icerik'>" + icerik + "</div>"
+    + "<div class='akordiyon-buton-satir'>"
+    + "<button class='akordiyon-buton akordiyon-buton--ekle' data-tip='" + bolumId + "' data-eylem='ekle'>➕ Ekle</button>"
+    + "<button class='akordiyon-buton akordiyon-buton--duzenle' data-tip='" + bolumId + "' data-eylem='duzenle'>✏️ Düzenle</button>"
+    + "<button class='akordiyon-buton akordiyon-buton--sil' data-tip='" + bolumId + "' data-eylem='sil'>🗑️ Sil</button>"
+    + "</div></div>";
+}
+
+// ---- Genel amaçlı picker (birden fazla kayıt arasından seçim) ----
+function pickerGoster(baslikMetni, altMetni, ogeler){
+  document.getElementById("pickerBaslik").textContent = baslikMetni;
+  document.getElementById("pickerAlt").textContent = altMetni;
+  document.getElementById("pickerListesi").innerHTML = ogeler.map(function(o, i){
+    return "<button class='picker-item' data-idx='" + i + "'><div class='ust'>" + escapeText(o.baslik) + "</div>" + (o.alt ? "<div class='alt'>" + escapeText(o.alt) + "</div>" : "") + "</button>";
+  }).join("");
+  document.getElementById("pickerListesi").querySelectorAll(".picker-item").forEach(function(btn, i){
+    btn.onclick = function(){ kapat("pickerOverlay"); ogeler[i].onSecim(); };
+  });
   ac("pickerOverlay");
+}
+
+// ---- "Ekle/Düzenle/Sil" butonlarının eylem başlatıcısı ----
+function eylemBaslat(bolumId, eylem){
+  if(bolumId === "cari"){
+    if(eylem === "ekle"){ formAc("fatura", "ekle"); return; }
+
+    var faturaListesi = kayitlariGetir(musteriVerisi, "fatura");
+
+    if(eylem === "duzenle"){
+      var ogeler = [{baslik:"⚙️ Temel Bilgileri Düzenle", alt:"Şehir / Vade / Fatura / Kargo", onSecim:function(){ formAc("temel","duzenle"); }}];
+      faturaListesi.forEach(function(k, i){
+        ogeler.push({baslik: kayitBaslik("fatura",k), alt: kayitAltMetin("fatura",k), onSecim:function(){ formAc("fatura","duzenle", i); }});
+      });
+      pickerGoster("✏️ Ne düzenlemek istiyorsun?", "Temel bilgiler veya bir fatura adresi seç", ogeler);
+      return;
+    }
+
+    if(eylem === "sil"){
+      if(faturaListesi.length === 0){ toastGoster("Henüz kayıtlı fatura adresi yok."); return; }
+      if(faturaListesi.length === 1){ silSor("fatura", 0); return; }
+      var silOgeler = faturaListesi.map(function(k, i){
+        return {baslik: kayitBaslik("fatura",k), alt: kayitAltMetin("fatura",k), onSecim:function(){ silSor("fatura", i); }};
+      });
+      pickerGoster("🗑️ Hangi fatura adresini silmek istiyorsun?", "Fatura Adresi — bir kayıt seç", silOgeler);
+      return;
+    }
+    return;
+  }
+
+  // yetkili / teslimat / not — ortak akış
+  aktifTip = bolumId;
+  aktifEylem = eylem;
+  if(eylem === "ekle"){ formAc(bolumId, "ekle"); return; }
+
+  var liste = kayitlariGetir(musteriVerisi, bolumId);
+  if(liste.length === 0){ toastGoster("Henüz kayıtlı " + TIP_META[bolumId].tekil + " yok."); return; }
+  if(liste.length === 1){
+    if(eylem === "duzenle") formAc(bolumId, "duzenle", 0);
+    else silSor(bolumId, 0);
+    return;
+  }
+  var ogeler2 = liste.map(function(k, i){
+    return {baslik: kayitBaslik(bolumId,k), alt: kayitAltMetin(bolumId,k), onSecim:function(){
+      if(eylem === "duzenle") formAc(bolumId, "duzenle", i);
+      else silSor(bolumId, i);
+    }};
+  });
+  pickerGoster((eylem==="duzenle" ? "✏️ Hangisini düzenlemek istiyorsun?" : "🗑️ Hangisini silmek istiyorsun?"), TIP_META[bolumId].baslik + " — bir kayıt seç", ogeler2);
 }
 
 function silSor(tip, i){
@@ -152,7 +273,6 @@ function silOnayla(){
     if(musteriVerisi.notlar && musteriVerisi.notlar.length){
       CustomerData.notSil(seciliMusteriAdi, silIndex, tamamla);
     } else {
-      // eski tekil "not" alanından geliyor — legacy silme fonksiyonuyla temizle
       CustomerData.musteriNotSil(seciliMusteriAdi, tamamla);
     }
   }
@@ -160,8 +280,15 @@ function silOnayla(){
 
 // ---- Ekle / Düzenle formu ----
 function formAlanlariHtml(tip){
+  if(tip === "temel"){
+    var m = musteriVerisi;
+    return "<div class='form-etiket'>ŞEHİR</div><input class='form-input' id='fSehir' placeholder='Şehir' value=\"" + escapeText(m.sehir||"") + "\">"
+      + "<div class='form-etiket'>VADE</div><input class='form-input' id='fVade' placeholder='örn. 60 gün' value=\"" + escapeText(m.vade||"") + "\">"
+      + "<div class='form-etiket'>FATURA</div><input class='form-input' id='fFatura' placeholder='örn. EURO fatura' value=\"" + escapeText(m.fatura||"") + "\">"
+      + "<div class='form-etiket'>KARGO</div><input class='form-input' id='fKargo' placeholder='örn. Ücretsiz' value=\"" + escapeText(m.kargo||"") + "\">";
+  }
   if(tip === "fatura" || tip === "teslimat"){
-    return "<div class='form-etiket'>ETİKET (ör. Merkez Ofis, Depo)</div><input class='form-input' id='fBaslik' placeholder='Etiket'>"
+    return "<div class='form-etiket'>ETİKET (ör. Fabrika 2 Fatura Adresi)</div><input class='form-input' id='fBaslik' placeholder='Etiket'>"
       + "<div class='form-etiket'>AÇIK ADRES</div><textarea class='form-textarea' id='fDetay' rows='3' placeholder='Açık adres'></textarea>";
   }
   if(tip === "yetkili"){
@@ -173,18 +300,18 @@ function formAlanlariHtml(tip){
       + "<div><div class='form-etiket'>E-POSTA</div><input class='form-input' id='fEposta' placeholder='E-posta' type='email'></div>"
       + "</div>";
   }
-  return "<div class='form-etiket'>BAŞLIK</div><input class='form-input' id='fBaslik' placeholder='ör. Teslimat Kısıtı'>"
-    + "<div class='form-etiket'>NOT METNİ</div><textarea class='form-textarea' id='fDetay' rows='3' placeholder='Not metni'></textarea>";
+  // not — sadece metin, ayrı başlık alanı yok
+  return "<div class='form-etiket'>NOT METNİ</div><textarea class='form-textarea' id='fDetay' rows='3' placeholder='Not metni'></textarea>";
 }
 
 function formAc(tip, eylem, index){
   aktifTip = tip; aktifEylem = eylem; aktifIndex = (index===undefined?null:index);
-  kapat("yeniBilgiOverlay");
-  var meta = TIP_META[tip];
-  document.getElementById("formBaslik").textContent = (eylem==="ekle" ? "➕ Yeni " + meta.baslik + " Ekle" : "✏️ " + meta.baslik + " Düzenle");
+  kapat("pickerOverlay");
+  var baslikMetni = tip === "temel" ? "Temel Bilgiler" : TIP_META[tip].baslik;
+  document.getElementById("formBaslik").textContent = (tip === "temel" ? "⚙️ Temel Bilgileri Düzenle" : (eylem==="ekle" ? "➕ Yeni " + baslikMetni + " Ekle" : "✏️ " + baslikMetni + " Düzenle"));
   document.getElementById("formIcerik").innerHTML = formAlanlariHtml(tip);
 
-  if(eylem === "duzenle"){
+  if(eylem === "duzenle" && tip !== "temel"){
     var kayit = kayitlariGetir(musteriVerisi, tip)[index];
     if(tip === "yetkili"){
       document.getElementById("fIsim").value = kayit.isim || "";
@@ -192,7 +319,6 @@ function formAc(tip, eylem, index){
       document.getElementById("fTel").value = kayit.telefon || "";
       document.getElementById("fEposta").value = kayit.eposta || "";
     } else if(tip === "not"){
-      document.getElementById("fBaslik").value = kayit.baslik || "";
       document.getElementById("fDetay").value = kayit.metin || "";
     } else {
       document.getElementById("fBaslik").value = kayit.etiket || "";
@@ -211,7 +337,19 @@ function formKaydet(){
     btn.textContent = "✓ Kaydet";
     if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata")); return; }
     kapat("formOverlay");
-    toastGoster(aktifEylem==="ekle" ? "Eklendi." : "Güncellendi.");
+    toastGoster(tip === "temel" ? "Güncellendi." : (aktifEylem==="ekle" ? "Eklendi." : "Güncellendi."));
+  }
+
+  if(tip === "temel"){
+    var guncelBilgi = {
+      sehir: document.getElementById("fSehir").value.trim(),
+      vade: document.getElementById("fVade").value.trim(),
+      fatura: document.getElementById("fFatura").value.trim(),
+      kargo: document.getElementById("fKargo").value.trim()
+    };
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, tamamla);
+    return;
   }
 
   if(tip === "yetkili"){
@@ -229,20 +367,23 @@ function formKaydet(){
     return;
   }
 
-  var baslik = document.getElementById("fBaslik").value.trim();
-  var detay = document.getElementById("fDetay").value.trim();
-  if(!baslik){ toastGoster("Etiket/başlık boş olamaz."); return; }
-
-  btn.disabled = true; btn.textContent = "Kaydediliyor...";
-
-  if(tip === "fatura" || tip === "teslimat"){
-    if(aktifEylem === "ekle") CustomerData.musteriAdresEkle(seciliMusteriAdi, tip, baslik, detay, tamamla);
-    else CustomerData.musteriAdresGuncelle(seciliMusteriAdi, tip, aktifIndex, baslik, detay, tamamla);
-  } else if(tip === "not"){
-    var notObj = {baslik: baslik, metin: detay};
+  if(tip === "not"){
+    var metin = document.getElementById("fDetay").value.trim();
+    if(!metin){ toastGoster("Not metni boş olamaz."); return; }
+    var notObj = {baslik: "", metin: metin};
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
     if(aktifEylem === "ekle") CustomerData.notEkle(seciliMusteriAdi, notObj, tamamla);
     else CustomerData.notGuncelle(seciliMusteriAdi, aktifIndex, notObj, tamamla);
+    return;
   }
+
+  // fatura / teslimat
+  var baslik = document.getElementById("fBaslik").value.trim();
+  var detay = document.getElementById("fDetay").value.trim();
+  if(!baslik){ toastGoster("Etiket boş olamaz."); return; }
+  btn.disabled = true; btn.textContent = "Kaydediliyor...";
+  if(aktifEylem === "ekle") CustomerData.musteriAdresEkle(seciliMusteriAdi, tip, baslik, detay, tamamla);
+  else CustomerData.musteriAdresGuncelle(seciliMusteriAdi, tip, aktifIndex, baslik, detay, tamamla);
 }
 
 window.addEventListener("error", function(ev){
@@ -259,28 +400,11 @@ document.addEventListener("DOMContentLoaded", function(){
   seciliMusteriAdi = secili.ad;
   alanlariDoldur(secili);
 
-  // Vade / Fatura / Kargo — tek değerli özet alanları, ayrı kaydet butonu
-  document.getElementById("btnOzetKaydet").onclick = function(){
-    var btn = this;
-    var eskiMetin = btn.textContent;
-    btn.disabled = true; btn.textContent = "Kaydediliyor...";
-    var guncelBilgi = {
-      vade: document.getElementById("ckVadeInput").value.trim(),
-      fatura: document.getElementById("ckFaturaTuruInput").value.trim(),
-      kargo: document.getElementById("ckKargoInput").value.trim()
-    };
-    CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, function(basarili, err){
-      btn.disabled = false; btn.textContent = eskiMetin;
-      if(!basarili) hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-      else toastGoster("Kaydedildi.");
-    });
+  document.getElementById("btnBilgiYonetAc").onclick = function(){
+    acikBolum = null;
+    akordiyonuRenderEt();
+    ac("bilgiYonetOverlay");
   };
-
-  // "Yeni Bilgi Ekle" ana buton + kategori seçim sheet'i
-  document.getElementById("btnYeniBilgiAc").onclick = function(){ ac("yeniBilgiOverlay"); };
-  document.getElementById("yeniBilgiOverlay").querySelectorAll(".yb-buton[data-tip][data-eylem]").forEach(function(btn){
-    btn.onclick = function(){ eylemBaslat(this.getAttribute("data-tip"), this.getAttribute("data-eylem")); };
-  });
 
   // Form Kaydet + Sil Onayla
   document.getElementById("formKaydetBtn").onclick = formKaydet;
@@ -317,21 +441,16 @@ document.addEventListener("DOMContentLoaded", function(){
     if(el) el.addEventListener("click", function(){ localStorage.removeItem("weiconv2_islem_yap_akisi"); });
   });
 
-  // Firebase'den taze veri gelince listeleri güncelle — Vade/Fatura/Kargo
-  // alanlarından biri o an odaktaysa (kullanıcı yazıyorsa) o üçüne
-  // dokunmadan sadece kart listelerini tazeler.
+  // Firebase'den taze veri gelince ana sayfayı ve (açıksa) akordiyonu tazele.
   CustomerData.listeDegistiginde(function(){
     var taze = CustomerData.musteriBul(seciliMusteriAdi);
     if(!taze) return;
     musteriVerisi = taze;
-    var aktifId = document.activeElement ? document.activeElement.id : null;
-    var ozetInputlar = ["ckVadeInput","ckFaturaTuruInput","ckKargoInput"];
     document.getElementById("cariKartAd").textContent = taze.ad;
-    if(ozetInputlar.indexOf(aktifId) === -1){
-      document.getElementById("ckVadeInput").value = taze.vade || "";
-      document.getElementById("ckFaturaTuruInput").value = taze.fatura || "";
-      document.getElementById("ckKargoInput").value = taze.kargo || "";
-    }
-    listeleriRenderEt();
+    document.getElementById("ozetVadeDeger").textContent = taze.vade || "—";
+    document.getElementById("ozetFaturaDeger").textContent = taze.fatura || "—";
+    document.getElementById("ozetKargoDeger").textContent = taze.kargo || "—";
+    anaSayfayiRenderEt();
+    if(!document.getElementById("bilgiYonetOverlay").hidden) akordiyonuRenderEt();
   });
 });

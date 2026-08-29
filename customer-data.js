@@ -236,9 +236,10 @@ var CustomerData = (function(){
     guvenliYaz(function(tazeListe){
       var idx = musteriIndexBul(tazeListe, musteriAd);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
-      tazeListe[idx].vade = guncelBilgi.vade;
-      tazeListe[idx].fatura = guncelBilgi.fatura;
-      tazeListe[idx].kargo = guncelBilgi.kargo;
+      if(guncelBilgi.vade !== undefined) tazeListe[idx].vade = guncelBilgi.vade;
+      if(guncelBilgi.fatura !== undefined) tazeListe[idx].fatura = guncelBilgi.fatura;
+      if(guncelBilgi.kargo !== undefined) tazeListe[idx].kargo = guncelBilgi.kargo;
+      if(guncelBilgi.sehir !== undefined) tazeListe[idx].sehir = guncelBilgi.sehir;
     }, geriBildir);
   }
 

@@ -35,6 +35,28 @@ bir cihazda hızlı erişimi engeller.
 
 ## Değişiklik Geçmişi
 
+### W230826.0824.08
+- **Cari Kart yeniden tasarlandı (akordiyon):** Ana sayfa artık tamamen
+  salt-görüntüleme — Vade/Fatura/Kargo yan yana (grid, artık her
+  ekranda doğru görünüyor), Fatura Adresi/Yetkili Kişi/Teslimat Adresi/
+  Not blokları sadece kart listesi, hiçbir buton yok. Tek eylem butonu:
+  **"✏️ Bilgiyi Düzenle"** — açtığı ekran 4 katlanır (akordiyon) bölüm
+  sunuyor: CARİ BİLGİLERİ, YETKİLİ KİŞİ, TESLİMAT ADRESİ, NOT. Bir
+  başlığa dokununca açılıp Ekle/Düzenle/Sil butonlarını gösteriyor.
+- **CARİ BİLGİLERİ** özel bölüm: Şehir/Vade/Fatura/Kargo + fatura adresi
+  listesini bir arada tutuyor. Ekle → yeni fatura adresi; Düzenle →
+  "Temel Bilgiler" veya belirli bir fatura adresi seçimi; Sil → hangi
+  fatura adresinin silineceğini soruyor.
+- Yetkili Kişi ve Not formlarından ayrı "başlık/etiket" alanı kaldırıldı
+  — sadece gerekli bilgi giriliyor. Fatura/Teslimat Adresi formunda
+  etiket alanı kaldı (örn. "Fabrika 2 Fatura Adresi").
+- Şehir artık Cari Kart'tan düzenlenebiliyor (`musteriGuncelle` güncellendi).
+- **Bilinçli olarak eklenmedi:** Müşteri ADI değiştirme. Uygulamada
+  sipariş/rapor/görev/km kayıtları müşteri adını anahtar olarak
+  kullanıyor — isim değişikliği bu bağlantıları koparabilir. Güvenli bir
+  "yeniden adlandırma" (geçmiş kayıtları da güncelleyen) ayrı bir
+  özellik olarak talep edilirse eklenebilir.
+
 ### W230826.0824.07
 - **Ürün kodu tek satırda:** Ürün Bilgisi sütunu genişletildi (SIRA %9→%6,
   ÜRÜN BİLGİSİ %28→%34), kod fontu 9px→8px ve `nowrap` yapıldı — "B
