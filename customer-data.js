@@ -236,6 +236,11 @@ var CustomerData = (function(){
     guvenliYaz(function(tazeListe){
       var idx = musteriIndexBul(tazeListe, musteriAd);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
+      // Ticari isim değişikliği burada YAPILMAZ — sipariş/rapor/görev
+      // kayıtlarının da eşzamanlı taşınması gerekir (bkz.
+      // ReportsData.kayitlariBirlestir); cari-kart-render.js bu ikisini
+      // birlikte, doğru sırayla çağırır.
+      if(guncelBilgi.ad !== undefined) tazeListe[idx].ad = guncelBilgi.ad;
       if(guncelBilgi.vade !== undefined) tazeListe[idx].vade = guncelBilgi.vade;
       if(guncelBilgi.fatura !== undefined) tazeListe[idx].fatura = guncelBilgi.fatura;
       if(guncelBilgi.kargo !== undefined) tazeListe[idx].kargo = guncelBilgi.kargo;

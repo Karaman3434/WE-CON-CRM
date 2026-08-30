@@ -210,11 +210,9 @@ function eylemBaslat(bolumId, eylem){
     var faturaListesi = kayitlariGetir(musteriVerisi, "fatura");
 
     if(eylem === "duzenle"){
-      var ogeler = [{baslik:"⚙️ Temel Bilgileri Düzenle", alt:"Şehir / Vade / Fatura / Kargo", onSecim:function(){ formAc("temel","duzenle"); }}];
-      faturaListesi.forEach(function(k, i){
-        ogeler.push({baslik: kayitBaslik("fatura",k), alt: kayitAltMetin("fatura",k), onSecim:function(){ formAc("fatura","duzenle", i); }});
-      });
-      pickerGoster("✏️ Ne düzenlemek istiyorsun?", "Temel bilgiler veya bir fatura adresi seç", ogeler);
+      // Artık ara bir "Ne düzenlemek istiyorsun?" seçim ekranı YOK —
+      // doğrudan tüm cari bilgileri (müşteri adı dahil) tek formda açılır.
+      formAc("cari-tam", "duzenle");
       return;
     }
 
@@ -237,18 +235,19 @@ function eylemBaslat(bolumId, eylem){
 
   var liste = kayitlariGetir(musteriVerisi, bolumId);
   if(liste.length === 0){ toastGoster("Henüz kayıtlı " + TIP_META[bolumId].tekil + " yok."); return; }
-  if(liste.length === 1){
-    if(eylem === "duzenle") formAc(bolumId, "duzenle", 0);
-    else silSor(bolumId, 0);
-    return;
-  }
+  // Yetkili Kişi ve Teslimat Adresi'nde de "cari" ile aynı sadeleştirme:
+  // Düzenle her zaman doğrudan ilk (tek) kayda gider — ara "hangisini
+  // düzenlemek istiyorsun?" sorusu yok. Birden fazla kayıt varsa bile
+  // en son eklenen/ilk kayıt üzerinden devam edilir; farklı bir kayıt
+  // için önce Sil, sonra Ekle kullanılabilir. Silme işleminde (birden
+  // fazla kayıt olması nadir olduğu için) seçim ekranı hâlâ geçerli.
+  if(eylem === "duzenle"){ formAc(bolumId, "duzenle", 0); return; }
+
+  if(liste.length === 1){ silSor(bolumId, 0); return; }
   var ogeler2 = liste.map(function(k, i){
-    return {baslik: kayitBaslik(bolumId,k), alt: kayitAltMetin(bolumId,k), onSecim:function(){
-      if(eylem === "duzenle") formAc(bolumId, "duzenle", i);
-      else silSor(bolumId, i);
-    }};
+    return {baslik: kayitBaslik(bolumId,k), alt: kayitAltMetin(bolumId,k), onSecim:function(){ silSor(bolumId, i); }};
   });
-  pickerGoster((eylem==="duzenle" ? "✏️ Hangisini düzenlemek istiyorsun?" : "🗑️ Hangisini silmek istiyorsun?"), TIP_META[bolumId].baslik + " — bir kayıt seç", ogeler2);
+  pickerGoster("🗑️ Hangisini silmek istiyorsun?", TIP_META[bolumId].baslik + " — bir kayıt seç", ogeler2);
 }
 
 function silSor(tip, i){
@@ -282,12 +281,25 @@ function silOnayla(){
 
 // ---- Ekle / Düzenle formu ----
 function formAlanlariHtml(tip){
-  if(tip === "temel"){
+  if(tip === "cari-tam"){
     var m = musteriVerisi;
-    return "<div class='form-etiket'>ŞEHİR</div><input class='form-input' id='fSehir' placeholder='Şehir' value=\"" + escapeText(m.sehir||"") + "\">"
-      + "<div class='form-etiket'>VADE</div><input class='form-input' id='fVade' placeholder='örn. 60 gün' value=\"" + escapeText(m.vade||"") + "\">"
-      + "<div class='form-etiket'>FATURA</div><input class='form-input' id='fFatura' placeholder='örn. EURO fatura' value=\"" + escapeText(m.fatura||"") + "\">"
-      + "<div class='form-etiket'>KARGO</div><input class='form-input' id='fKargo' placeholder='örn. Ücretsiz' value=\"" + escapeText(m.kargo||"") + "\">";
+    var ilkFatura = (kayitlariGetir(m,"fatura")[0]) || {};
+    return "<div class='form-etiket'>MÜŞTERİ (TİCARİ) İSMİ</div><input class='form-input' id='fAd' placeholder='Müşteri ismi' value=\"" + escapeText(m.ad||"") + "\">"
+      + "<p class='ck-not-aciklama' style='margin:-6px 0 10px'>Bu ismi değiştirirsen, geçmiş sipariş/teklif/görev kayıtları da otomatik olarak yeni isme taşınır.</p>"
+      + "<div class='form-etiket'>ŞEHİR</div><input class='form-input' id='fSehir' placeholder='Şehir' value=\"" + escapeText(m.sehir||"") + "\">"
+      + "<div class='form-satir-2'>"
+      + "<div><div class='form-etiket'>VADE</div><input class='form-input' id='fVade' placeholder='örn. 60 gün' value=\"" + escapeText(m.vade||"") + "\"></div>"
+      + "<div><div class='form-etiket'>FATURA</div><input class='form-input' id='fFatura' placeholder='örn. EURO fatura' value=\"" + escapeText(m.fatura||"") + "\"></div>"
+      + "</div>"
+      + "<div class='form-etiket'>KARGO</div><input class='form-input' id='fKargo' placeholder='örn. Ücretsiz' value=\"" + escapeText(m.kargo||"") + "\">"
+      + "<div class='form-etiket'>FATURA ADRESİ</div><textarea class='form-textarea' id='fDetay' rows='3' placeholder='Açık adres'>" + escapeText(ilkFatura.adres||"") + "</textarea>";
+  }
+  if(tip === "temel"){
+    var m2 = musteriVerisi;
+    return "<div class='form-etiket'>ŞEHİR</div><input class='form-input' id='fSehir' placeholder='Şehir' value=\"" + escapeText(m2.sehir||"") + "\">"
+      + "<div class='form-etiket'>VADE</div><input class='form-input' id='fVade' placeholder='örn. 60 gün' value=\"" + escapeText(m2.vade||"") + "\">"
+      + "<div class='form-etiket'>FATURA</div><input class='form-input' id='fFatura' placeholder='örn. EURO fatura' value=\"" + escapeText(m2.fatura||"") + "\">"
+      + "<div class='form-etiket'>KARGO</div><input class='form-input' id='fKargo' placeholder='örn. Ücretsiz' value=\"" + escapeText(m2.kargo||"") + "\">";
   }
   if(tip === "fatura" || tip === "teslimat"){
     return "<div class='form-etiket'>ETİKET (ör. Fabrika 2 Fatura Adresi)</div><input class='form-input' id='fBaslik' placeholder='Etiket'>"
@@ -309,11 +321,11 @@ function formAlanlariHtml(tip){
 function formAc(tip, eylem, index){
   aktifTip = tip; aktifEylem = eylem; aktifIndex = (index===undefined?null:index);
   kapat("pickerOverlay");
-  var baslikMetni = tip === "temel" ? "Temel Bilgiler" : TIP_META[tip].baslik;
-  document.getElementById("formBaslik").textContent = (tip === "temel" ? "⚙️ Temel Bilgileri Düzenle" : (eylem==="ekle" ? "➕ Yeni " + baslikMetni + " Ekle" : "✏️ " + baslikMetni + " Düzenle"));
+  var baslikMetni = (tip === "temel" || tip === "cari-tam") ? "Cari Bilgileri" : TIP_META[tip].baslik;
+  document.getElementById("formBaslik").textContent = (tip === "temel" ? "⚙️ Temel Bilgileri Düzenle" : (tip === "cari-tam" ? "✏️ Cari Bilgileri Düzenle" : (eylem==="ekle" ? "➕ Yeni " + baslikMetni + " Ekle" : "✏️ " + baslikMetni + " Düzenle")));
   document.getElementById("formIcerik").innerHTML = formAlanlariHtml(tip);
 
-  if(eylem === "duzenle" && tip !== "temel"){
+  if(eylem === "duzenle" && tip !== "temel" && tip !== "cari-tam"){
     var kayit = kayitlariGetir(musteriVerisi, tip)[index];
     if(tip === "yetkili"){
       document.getElementById("fIsim").value = kayit.isim || "";
@@ -339,7 +351,52 @@ function formKaydet(){
     btn.textContent = "✓ Kaydet";
     if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata")); return; }
     kapat("formOverlay");
-    toastGoster(tip === "temel" ? "Güncellendi." : (aktifEylem==="ekle" ? "Eklendi." : "Güncellendi."));
+    toastGoster(tip === "temel" || tip === "cari-tam" ? "Güncellendi." : (aktifEylem==="ekle" ? "Eklendi." : "Güncellendi."));
+  }
+
+  if(tip === "cari-tam"){
+    var yeniAd = document.getElementById("fAd").value.trim();
+    if(!yeniAd){ toastGoster("Müşteri ismi boş olamaz."); return; }
+    var eskiAd = musteriVerisi.ad;
+    var adres = document.getElementById("fDetay").value.trim();
+    var guncelBilgi2 = {
+      ad: yeniAd,
+      sehir: document.getElementById("fSehir").value.trim(),
+      vade: document.getElementById("fVade").value.trim(),
+      fatura: document.getElementById("fFatura").value.trim(),
+      kargo: document.getElementById("fKargo").value.trim()
+    };
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+
+    function temelVeAdresiKaydet(){
+      CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi2, function(basarili3, err3){
+        if(!basarili3){ tamamla(false, err3); return; }
+        seciliMusteriAdi = yeniAd; // artık kayıtları bu isimle arayacağız
+        var ilkFaturaVarMi = kayitlariGetir(musteriVerisi, "fatura").length > 0;
+        if(ilkFaturaVarMi){
+          CustomerData.musteriAdresGuncelle(yeniAd, "fatura", 0, "Fatura Adresi", adres, tamamla);
+        } else if(adres){
+          CustomerData.musteriAdresEkle(yeniAd, "fatura", "Fatura Adresi", adres, tamamla);
+        } else {
+          tamamla(true);
+        }
+      });
+    }
+
+    if(yeniAd !== eskiAd && typeof ReportsData !== "undefined"){
+      // İsim değişti — önce geçmiş sipariş/teklif/proforma/numune ve görev
+      // kayıtlarını yeni isme taşı (ReportsData.kayitlariBirlestir zaten
+      // musteriId eşleşmesini de destekliyor), SONRA cari kaydın kendisini
+      // güncelle. Bu sıra, taşıma sırasında eski kaydın "kaybolmuş" gibi
+      // görünmesini engeller.
+      ReportsData.kayitlariBirlestir(eskiAd, musteriVerisi.id||null, yeniAd, musteriVerisi.id||null, function(tasindiMi, tasimaErr){
+        if(!tasindiMi){ tamamla(false, tasimaErr); return; }
+        temelVeAdresiKaydet();
+      });
+    } else {
+      temelVeAdresiKaydet();
+    }
+    return;
   }
 
   if(tip === "temel"){
