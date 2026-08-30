@@ -63,7 +63,9 @@ var HareketTablo = (function(){
       + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit) + "</tbody></table></div>";
     if(opts.genelToplam != null){
       html += "<div class='belge-genel-toplam-serit'>"
-        + "<span class='belge-gt-etiket'>GENEL TOPLAM</span><span class='belge-gt-ayrac'></span><span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " €</span>"
+        + "<span class='belge-gt-etiket'>GENEL TOPLAM</span><span class='belge-gt-ayrac'></span>"
+        + (opts.kur ? "<span class='belge-gt-kur'>Kur: " + fmt(opts.kur) + " TL</span>" : "")
+        + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " €</span>"
         + "</div>";
     }
     return html;
