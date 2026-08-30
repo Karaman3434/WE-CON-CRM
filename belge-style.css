@@ -242,16 +242,21 @@
   background: #3569b8;
   color: #ffffff;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
-  gap: 12px;
+  padding: 10px 14px;
+  gap: 10px;
 }
-.belge-gt-etiket { font-size: 14px; font-weight: 900; letter-spacing: .5px; }
-.belge-gt-ayrac { width: 1px; align-self: stretch; background: rgba(255,255,255,.35); }
-.belge-gt-kur { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.85); margin-right: 6px; }
-.belge-gt-kur { font-size: 10px; font-weight: 700; opacity: .85; margin-right: 4px; }
-.belge-gt-deger { font-size: 20px; font-weight: 900; }
+.belge-gt-kur {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255,255,255,.9);
+  line-height: 1.3;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.belge-gt-etiket { font-size: 14px; font-weight: 900; letter-spacing: .5px; flex: 1; text-align: center; }
+.belge-gt-deger { font-size: 20px; font-weight: 900; flex-shrink: 0; }
 
 .belge-prim-serit {
   background: #16a085;

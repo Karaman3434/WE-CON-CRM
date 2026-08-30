@@ -74,53 +74,50 @@ var CustomerData = (function(){
     return liste.find(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(ad||"").toLocaleLowerCase("tr-TR"); }) || null;
   }
 
-  // ---- GÜVENLİ YAZMA ÇEKİRDEĞİ ----
-  // DOĞRULAMALI YAZMA: yazdıktan hemen sonra Firebase'den TEKRAR okuyup
-  // gönderdiğimiz veriyle karşılaştırıyoruz. Bu, "başarılı" denip aslında
-  // sunucuya işlemeyen sessiz hataları yakalamak için — böyle bir durum
-  // olursa kullanıcı net bir hata görür, yanlışlıkla "kaydedildi" sanmaz.
+  // ---- GÜVENLİ YAZMA ÇEKİRDEĞİ (Firebase transaction) ----
+  // Önceki "oku→yaz→doğrula" yöntemi, İKİ CİHAZ NEREDEYSE AYNI ANDA yazarsa
+  // (ikisi de aynı "taze" veriyi okuyup, ikisi de kendi değişikliğini
+  // uygulayıp SIRAYLA yazarsa) ikincinin birinciyi SESSİZCE ezmesine açıktı
+  // — çünkü doğrulama adımı sadece "benim yazdığım veri sunucuda mı"
+  // diye bakıyordu, "benimle aynı anda başka biri de yazdı mı" diye değil.
+  // Firebase'in gerçek transaction() API'si bunu ATOMIK olarak çözer: eğer
+  // veritabanı transaction fonksiyonunu çalıştırdığımız andan yazma anına
+  // kadar başka biri değiştirdiyse, fonksiyon GÜNCEL veriyle OTOMATİK
+  // TEKRAR çalıştırılır — hiçbir değişiklik sessizce kaybolmaz.
   function guvenliYaz(mutateFn, geriBildir){
     var cb = typeof geriBildir === "function" ? geriBildir : function(){};
-    if(typeof mutateFn !== "function") { cb(false, new Error("Geçersiz müşteri güncelleme işlemi.")); return; }
+    if(typeof mutateFn !== "function"){ cb(false, new Error("Geçersiz müşteri güncelleme işlemi.")); return; }
     try{
       var db = firebase.database();
       var ref = db.ref("musteriler");
       var mutateHatasi = null;
-      return ref.transaction(function(currentData){
+      ref.transaction(function(currentData){
         var tazeListe = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
         try{
           var sonuc = mutateFn(tazeListe);
           return (sonuc !== undefined) ? sonuc : tazeListe;
         }catch(e){
           mutateHatasi = e;
-          // Transaction'ı iptal et. Böylece hata durumunda mevcut veri
-          // kesinlikle Firebase'in üzerine boş/yarım veri olarak yazılmaz.
-          return;
+          return; // undefined dönmek transaction'ı İPTAL eder — yarım/hatalı veri asla yazılmaz.
         }
       }).then(function(result){
         if(mutateHatasi){
-          console.error("Müşteri güncelleme doğrulama hatası:", mutateHatasi);
+          console.error("Müşteri güncelleme hatası:", mutateHatasi);
           cb(false, mutateHatasi);
-          return false;
+          return;
         }
         if(!result || !result.committed){
-          var err = new Error("Müşteri kaydı güncellenemedi. Başka bir cihazdaki değişiklik nedeniyle işlem iptal edilmiş olabilir.");
-          cb(false, err);
-          return false;
+          cb(false, new Error("Kayıt güncellenemedi — başka bir cihazdaki değişiklikle çakıştı, lütfen tekrar dene."));
+          return;
         }
         var data = result.snapshot.val();
         var kaydedilenListe = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
         cb(true, kaydedilenListe);
-        return true;
       }).catch(function(err){
-        console.error("Müşteri transaction yazma hatası:", err);
+        console.error("Müşteri yazma hatası:", err);
         cb(false, err);
-        return false;
       });
-    }catch(e){
-      console.error("Müşteri yazma başlatma hatası:", e);
-      cb(false, e);
-    }
+    }catch(e){ cb(false, e); }
   }
 
   function musteriIndexBul(tazeListe, musteriAd){

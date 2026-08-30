@@ -270,6 +270,7 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   tilelariBagla();
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
   var secili = CustomerData.seciliyiOku();
   if(!secili){

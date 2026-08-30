@@ -214,7 +214,10 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
         : "<th style='width:6%;'>SIRA</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
-    + "<div class='belge-genel-toplam-serit'><span class='belge-gt-etiket'>GENEL TOPLAM</span><span class='belge-gt-ayrac'></span><span class='belge-gt-deger'>" + fmtG2(netEuro) + " €</span></div>"
+    + "<div class='belge-genel-toplam-serit'>"
+    + (kur ? "<span class='belge-gt-kur'>Günün Döviz Kuru<br>" + fmtG2(kur) + " Euro</span>" : "")
+    + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
+    + "<span class='belge-gt-deger'>" + fmtG2(netEuro) + " €</span></div>"
     + "</div>";
 }
 

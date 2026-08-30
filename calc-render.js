@@ -118,6 +118,8 @@ function hesaplaVeGoster(){
     document.getElementById("rIskontoluFiyat").textContent = CartData.fmt(h.iskontoluFiyat) + " €";
     document.getElementById("rTlBirimFiyat").textContent = CartData.fmt(h.tlBirimFiyat) + " TL";
     document.getElementById("rToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " €";
+    document.getElementById("rGenelToplamDeger").textContent = CartData.fmt(h.toplamEuro) + " €";
+    document.getElementById("rGenelToplamKur").innerHTML = kur ? ("Günün Döviz Kuru<br>" + CartData.fmt(kur) + " Euro") : "";
     document.getElementById("rFaturaToplam").textContent = CartData.fmt(h.faturaToplam) + " TL";
     document.getElementById("rPrimEuro").textContent = (h.mudurPrim===0 && urun.iskonto>60) ? "ÖZEL FİYAT" : (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim)+" €");
     var kur2 = kur||0;

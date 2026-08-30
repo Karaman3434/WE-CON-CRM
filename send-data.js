@@ -112,14 +112,19 @@ var SendData = (function(){
     return d1.getFullYear()===d2.getFullYear() && d1.getMonth()===d2.getMonth() && d1.getDate()===d2.getDate();
   }
 
-  function normalizeListe(data){
-    return data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
-  }
-
   function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, devralinanKod, geriBildir){
     var cb = typeof geriBildir === "function" ? geriBildir : function(){};
     try{
-      var urunlerKaydi = (sepetUrunleri||[]).map(function(u){
+      if(!musteri || !musteri.ad) throw new Error("Müşteri bilgisi eksik.");
+      if(!tip || ["numune","teklif","proforma","siparis"].indexOf(tip)===-1) throw new Error("Geçersiz belge türü.");
+      if(!sepetUrunleri || !sepetUrunleri.length) throw new Error("Sepette kayıt edilecek ürün yok.");
+
+      kur = kur || 0; // Firebase undefined kabul etmez — güvenli varsayılan.
+      // Firebase, obje içinde HERHANGİ bir "undefined" değer varsa TÜM
+      // yazmayı reddeder (ör. eski/zincirlenmiş revize kayıtlarında ürün
+      // adı bir şekilde boş kalmışsa). Bu yüzden her alanı güvenli bir
+      // varsayılana düşürüyoruz — asla undefined Firebase'e gitmesin.
+      var urunlerKaydi = sepetUrunleri.map(function(u){
         var h = CartData.hesapla(u, kur, kdv);
         return {
           ad: u.ad || "İsimsiz Ürün",
@@ -133,33 +138,32 @@ var SendData = (function(){
           toplamEuro: h.toplamEuro || 0
         };
       });
-      if(!musteri || !musteri.ad) throw new Error("Müşteri bilgisi eksik.");
-      if(!tip || ["numune","teklif","proforma","siparis"].indexOf(tip)===-1) throw new Error("Geçersiz belge türü.");
-      if(!urunlerKaydi.length) throw new Error("Sepette kayıt edilecek ürün yok.");
-
       var yeniImza = urunSetiImzaOlustur(urunlerKaydi);
       var simdi = Date.now();
+      // Bir önceki aşamadan (Numune→Teklif→Sipariş) devralınan kod varsa,
+      // tarih.saat kısmı korunur — sadece önek yeni türe göre değişir.
       var devralinanTarihSaat = devralinanKod ? kodTarihSaatKismiAyikla(devralinanKod) : null;
+
+      // GÜVENLİ YAZMA (transaction): iki cihaz neredeyse aynı anda kayıt
+      // yaparsa, Firebase güncel veriyle fonksiyonu otomatik tekrar
+      // çalıştırır — sessizce birbirini ezme riski yok.
       var db = firebase.database();
+      var ref = db.ref("arsiv/" + tip);
       var otomatikRevizeMi = false;
       var kaydedilenKayit = null;
-      var ref = db.ref("arsiv/" + tip);
       var mutateHatasi = null;
 
-      return ref.transaction(function(currentData){
-        var liste = normalizeListe(currentData);
-        otomatikRevizeMi = false;
-        kaydedilenKayit = null;
-        mutateHatasi = null;
+      ref.transaction(function(currentData){
         try{
-          // Aynı gün + aynı müşteri + aynı ürün seti ise mevcut kaydı revize et.
+          var liste = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
+
+          // AYNI GÜN + AYNI MÜŞTERİ + BİREBİR AYNI ÜRÜN SETİ (Berta/Abas) varsa,
+          // yeni kayıt açmak yerine mevcut kaydı REVİZE olarak güncelle.
           var eslesenIdx = -1;
           for(var i=0;i<liste.length;i++){
             var aday = liste[i];
             if(!aday || !aday.ts) continue;
-            var ayniMusteriMi = musteri.id && aday.musteriId
-              ? (aday.musteriId===musteri.id)
-              : ((aday.musteri||"").trim().toLocaleLowerCase("tr-TR") === (musteri.ad||"").trim().toLocaleLowerCase("tr-TR"));
+            var ayniMusteriMi = musteri.id && aday.musteriId ? (aday.musteriId===musteri.id) : (aday.musteri===musteri.ad);
             if(!ayniMusteriMi) continue;
             if(!ayniGunMu(aday.ts, simdi)) continue;
             if(urunSetiImzaOlustur(aday.urunler) !== yeniImza) continue;
@@ -169,17 +173,13 @@ var SendData = (function(){
 
           if(eslesenIdx >= 0){
             var eskiKayit = liste[eslesenIdx];
-            var eskiToplam = (eskiKayit.urunler||[]).reduce(function(s,u){ return s+(parseFloat(u.toplamEuro)||0); }, 0);
+            var eskiToplam = (eskiKayit.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
             if(!eskiKayit.revizeGecmisi) eskiKayit.revizeGecmisi = [];
-            eskiKayit.revizeGecmisi.push({
-              ts: eskiKayit.revizeZamani||eskiKayit.ts,
-              toplamEuro: eskiToplam,
-              urunSayisi: (eskiKayit.urunler||[]).length
-            });
+            eskiKayit.revizeGecmisi.push({ts: eskiKayit.revizeZamani||eskiKayit.ts, toplamEuro:eskiToplam, urunSayisi:(eskiKayit.urunler||[]).length});
             eskiKayit.urunler = urunlerKaydi;
             eskiKayit.revizeZamani = simdi;
-            eskiKayit.kur = parseFloat(kur)||0;
-            eskiKayit.kdv = parseFloat(kdv)||0;
+            eskiKayit.kur = kur; // her revize, o anki kuru kalıcı olarak günceller
+            eskiKayit.kdv = kdv || 0;
             if(adresler && adresler.faturaAdresi) eskiKayit.faturaAdresi = adresler.faturaAdresi;
             if(adresler && adresler.teslimatAdresi) eskiKayit.teslimatAdresi = adresler.teslimatAdresi;
             if(!eskiKayit.musteriId && musteri.id) eskiKayit.musteriId = musteri.id;
@@ -187,43 +187,35 @@ var SendData = (function(){
             kaydedilenKayit = eskiKayit;
           } else {
             kaydedilenKayit = {
-              tarih: tarihStr(),
-              ts: simdi,
-              kod: kodUret(tip, devralinanTarihSaat),
-              musteri: musteri.ad,
-              musteriId: musteri.id || null,
-              sehir: musteri.sehir || "",
-              mod: tip,
-              kur: parseFloat(kur)||0,
-              kdv: parseFloat(kdv)||0,
-              urunler: urunlerKaydi,
+              tarih: tarihStr(), ts: simdi, kod: kodUret(tip, devralinanTarihSaat),
+              musteri: musteri.ad, musteriId: musteri.id || null, sehir: musteri.sehir || "",
+              mod: tip, urunler: urunlerKaydi, kur: kur, kdv: kdv || 0,
               faturaAdresi: (adresler && adresler.faturaAdresi) || null,
               teslimatAdresi: (adresler && adresler.teslimatAdresi) || null
             };
             liste.unshift(kaydedilenKayit);
+            otomatikRevizeMi = false;
           }
+
           liste.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
           return liste;
         }catch(e){
           mutateHatasi = e;
-          return;
+          return; // undefined = transaction'ı iptal et, yarım veri yazılmaz.
         }
       }).then(function(result){
-        if(mutateHatasi){ cb(false, mutateHatasi); return false; }
+        if(mutateHatasi){ cb(false, mutateHatasi); return; }
         if(!result || !result.committed){
-          var err = new Error("İşlem kaydı Firebase'e yazılamadı. Lütfen tekrar deneyin.");
-          cb(false, err);
-          return false;
+          cb(false, new Error("Kayıt işlenemedi — başka bir cihazdaki değişiklikle çakıştı, lütfen tekrar dene."));
+          return;
         }
         cb(true, kaydedilenKayit, otomatikRevizeMi);
-        return true;
       }).catch(function(err){
-        console.error("Arşive transaction kaydetme hatası:", err);
+        console.error("Arşive kaydetme hatası:", err);
         cb(false, err);
-        return false;
       });
     }catch(e){
-      console.error("Kaydet başlatma hatası:", e);
+      console.error("Kaydet hatası:", e);
       cb(false, e);
     }
   }
@@ -231,27 +223,19 @@ var SendData = (function(){
   function kaynakSil(tip, ts, geriBildir){
     var cb = typeof geriBildir === "function" ? geriBildir : function(){};
     try{
-      var ref = firebase.database().ref("arsiv/" + tip);
+      var db = firebase.database();
       var mutateHatasi = null;
-      return ref.transaction(function(currentData){
+      db.ref("arsiv/" + tip).transaction(function(currentData){
         try{
-          var liste = normalizeListe(currentData);
-          var yeniListe = liste.filter(function(k){ return k && k.ts !== ts; });
-          if(yeniListe.length === liste.length) return;
-          return yeniListe;
-        }catch(e){
-          mutateHatasi = e;
-          return;
-        }
+          var liste = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
+          return liste.filter(function(k){ return k.ts !== ts; });
+        }catch(e){ mutateHatasi = e; return; }
       }).then(function(result){
-        if(mutateHatasi){ cb(false, mutateHatasi); return false; }
-        if(!result || !result.committed){ cb(false, new Error("Silinecek kayıt bulunamadı veya işlem iptal edildi.")); return false; }
+        if(mutateHatasi){ cb(false, mutateHatasi); return; }
+        if(!result || !result.committed){ cb(false, new Error("Silme işlemi çakıştı, lütfen tekrar dene.")); return; }
         cb(true);
-        return true;
       }).catch(function(err){
-        console.error("Arşiv kayıt silme hatası:", err);
         cb(false, err);
-        return false;
       });
     }catch(e){ cb(false, e); }
   }

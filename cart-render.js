@@ -108,7 +108,6 @@ function sayfayiCiz(){
       cariBilgiOzetiHtml(musteri) +
       HareketTablo.grupHtml({
         etiket: "🟢 HESAPLANDI",
-        etiketRozet: "EURO KUR: " + CartData.fmt(kur),
         urunler: hesaplananlar,
         hesapla: hesapla,
         zeminSinifi: "hareket-satir--yesil",
@@ -176,18 +175,16 @@ function anomaliUyarilariniTopla(sepet, kur, kdv){
 }
 
 function kurTazeligeGetir(devamFn){
-  // Eski/eksik AyarlarSync API'si yüzünden kayıt akışının kırılmasını engelle.
-  // Geçerli bir kur varsa ve zaman damgası yoksa mevcut kuru kullanırız.
+  // Savunmacı kontrol: AyarlarSync herhangi bir sebeple (eksik dosya, eski
+  // sürüm, yükleme sırası hatası) beklenen fonksiyonları sağlamıyorsa,
+  // Kaydet/Gönder akışı SESSİZCE bir JS hatasıyla kırılmasın — mevcut
+  // kur geçerliyse onunla devam et, değilse kullanıcıdan elle iste.
   if(typeof AyarlarSync === "undefined" || typeof AyarlarSync.kurBayatMi !== "function"){
     if(CartData.kurOku() > 0){ devamFn(); return; }
     hataGoster("EUR/TL kuru bulunamadı. Ayarlar sayfasından kur girin.");
     return;
   }
-  if(!AyarlarSync.kurBayatMi()){
-    if(CartData.kurOku() > 0){ devamFn(); return; }
-    hataGoster("EUR/TL kuru bulunamadı. Ayarlar sayfasından kur girin.");
-    return;
-  }
+  if(!AyarlarSync.kurBayatMi()){ devamFn(); return; }
   if(typeof AyarlarSync.otomatikKurGetir !== "function"){
     kurElleSorVeDevamEt(devamFn);
     return;
@@ -199,7 +196,7 @@ function kurTazeligeGetir(devamFn){
 }
 
 function kurElleSorVeDevamEt(devamFn){
-  var girilen = prompt("⚠️ Merkezi EUR/TL kuru alınamadı.\n\nKayıt için geçerli EUR→TL kurunu gir:", CartData.kurOku()||"");
+  var girilen = prompt("⚠️ Güncel kur otomatik çekilemedi (internet bağlantısını kontrol et).\n\nBu satışın merkez ofisle tutarlı olması için bugünün EUR→TL kurunu elle gir:", CartData.kurOku()||"");
   var sayisalDeger = parseFloat((girilen||"").replace(",","."));
   if(!girilen || isNaN(sayisalDeger) || sayisalDeger<=0){
     hataGoster("Geçerli bir kur girilmeden kayıt/gönderim yapılamaz.");

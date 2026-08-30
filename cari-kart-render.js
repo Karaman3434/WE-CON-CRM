@@ -449,7 +449,20 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
+function tarihiGuncelle(){
+  try{
+    var el = document.getElementById("gunTarihi");
+    if(!el) return;
+    var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+    var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+    var d = new Date();
+    el.textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
+  }catch(e){}
+}
+
 document.addEventListener("DOMContentLoaded", function(){
+  tarihiGuncelle();
+  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   var secili = CustomerData.seciliyiOku();
   if(!secili){
     hataGoster("Müşteri seçilmemiş, listeye dönülüyor.");

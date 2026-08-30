@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — ui-render-fix.js içindeki yorum satırıyla
 // senkron tutulmalıdır. Format: W(YYMMDD).(HHMM).(sıra no)
-var APP_VERSION = "W260830.2345.01";
+var APP_VERSION = "WG.260831.0053.46";
 
 function hataGoster(mesaj){
   console.error(mesaj);
