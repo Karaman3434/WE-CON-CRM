@@ -43,7 +43,7 @@ var TIP_META = {
 // adresi listesini + tekil temel bilgileri bir arada tutar).
 var AKORDIYON_TANIM = [
   {id:"cari",     ikon:"🏢", baslik:"CARİ BİLGİLERİ"},
-  {id:"yetkili",  ikon:"👤", baslik:"YETKİLİ KİŞİ"},
+  {id:"yetkili",  ikon:"👤", baslik:"YETKİLİ BİLGİSİ"},
   {id:"teslimat", ikon:"🚚", baslik:"TESLİMAT ADRESİ"},
   {id:"not",      ikon:"📝", baslik:"NOT"}
 ];
@@ -73,7 +73,9 @@ function kayitBaslik(tip, kayit){
 function kayitAltMetin(tip, kayit){
   if(tip === "yetkili") return [kayit.gorev, kayit.telefon, kayit.eposta].filter(Boolean).join(" · ");
   if(tip === "not") return kayit.metin || "";
-  return kayit.adres || "";
+  var adres = kayit.adres || "";
+  var sehir = (musteriVerisi && musteriVerisi.sehir) || "";
+  return sehir && adres ? (adres + ", " + sehir) : adres;
 }
 
 function anaSayfayiRenderEt(){

@@ -94,21 +94,23 @@ function belgeyiCiz(kayit, musteri){
     var teslimatAdr = kayit.teslimatAdresi ? (kayit.teslimatAdresi.adres || "") : "";
     var yetkililer = (musteri && musteri.iletisimler) || [];
 
-    var ustBaslikHtml = "<div class='belge-ust-baslik'>"
-      + "<div class='belge-logo-satir'><span class='belge-logo-mini'>WEICON</span><span class='belge-tur-baslik'>" + (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + " FORMU</span></div>"
-      + "<span class='belge-tarih-kompakt'>" + htmlEsc(kayit.tarih) + (kayit.revizeZamani ? "<span class='revize-rozet'>🔄 REVİZE</span>" : "") + "</span>"
+    var ustBaslikHtml = "<div class='belge-ust-baslik belge-ust-baslik--logo-tek'>"
+      + "<span class='belge-logo-mini'>WEICON</span>"
       + "</div>";
 
-    var musteriBlokHtml = "<div class='belge-musteri-baslik'>MÜŞTERİ BİLGİLERİ</div>"
+    var sehir = (musteri && musteri.sehir) || "";
+    var yetkiliBilgiHtml = yetkililer.map(function(k){ return yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
+
+    var musteriBlokHtml = "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad'>" + htmlEsc(kayit.musteri) + "</div>"
-      + (faturaAdr ? "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + htmlEsc(faturaAdr) + "</div>" : "")
       + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + kosulKutusuHtml("📅","VADE",vade) + kosulKutusuHtml("📄","FATURA",faturaTuru) + kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
-      + yetkililer.map(function(k){ return yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("")
-      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
+      + (faturaAdr ? "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + htmlEsc(faturaAdr) + (sehir?", "+htmlEsc(sehir):"") + "</div>" : "")
+      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (sehir?", "+htmlEsc(sehir):"") + "</div>" : "")
+      + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
       + "</div>";
 
-    var belgeBaslikMetni = (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + (kayit.kod ? " · " + kayit.kod : " DETAYLARI");
+    var belgeBaslikMetni = (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + (kayit.kod ? " · " + kayit.kod : "") + " · " + htmlEsc(kayit.tarih) + (kayit.revizeZamani ? " · 🔄 REVİZE" : "");
 
     var html = "<div class='belge-kutu" + (sorunluMu?" belge-kutu--sorunlu":"") + "'>"
       + durumRozetHtml

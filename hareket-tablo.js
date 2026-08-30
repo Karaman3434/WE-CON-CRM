@@ -29,7 +29,6 @@ var HareketTablo = (function(){
       var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
       if(basit){
         return "<tr class='" + (zeminSinifi||"") + "'>"
-          + "<td class='belge-td-sira'>" + (i+1) + "</td>"
           + urunHucre
           + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
           + "<td>" + (toplamVarMi ? fmt(h.iskontoluFiyat)+" €" : "-") + "</td>"
@@ -57,7 +56,7 @@ var HareketTablo = (function(){
     var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#fff9e6" : "#eafaf0";
     var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'>" + opts.etiket + "</div>";
     var basHucreler = basit
-      ? "<th style='width:8%;'>SIRA</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
+      ? "<th style='width:50%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
       : "<th style='width:6%;'>SIRA</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th>";
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"

@@ -30,20 +30,24 @@
   gap: 8px;
   border-bottom: 2px solid #3569b8;
 }
+.belge-ust-baslik--logo-tek {
+  justify-content: center;
+  border-bottom: 2px solid #3569b8;
+}
 .belge-logo-satir { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
 .belge-logo-mini {
   background: #3569b8;
   color: #ffffff;
   font-weight: 900;
-  font-size: 11px;
-  letter-spacing: 2px;
-  padding: 4px 7px;
-  border-radius: 4px;
+  font-size: 15px;
+  letter-spacing: 3px;
+  padding: 7px 16px;
+  border-radius: 6px;
   flex-shrink: 0;
 }
 .belge-tur-baslik { font-size: 13px; font-weight: 900; color: #3569b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* Tarih artık ayrı büyük kutulu bir tablo değil — WEICON/form adıyla aynı
-   satırda, sağda, sade ve küçük bir metin (v7). */
+/* Tarih/kod artık ayrı bir satır değil — belge türüyle birlikte SADECE
+   tablo başlık şeridinde görünür (bkz. .belge-belge-baslik-serit). */
 .belge-tarih-kompakt { font-size: 11px; font-weight: 800; color: #556170; white-space: nowrap; flex-shrink: 0; }
 .belge-tarih-kompakt .revize-rozet { color: #c0392b; font-weight: 900; margin-left: 4px; }
 
@@ -74,6 +78,15 @@
   color: #3a4a5c;
   font-weight: 700;
   line-height: 1.35;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #dde3ea;
+}
+.belge-adres-etiket-yetkili { color: #1a5276; font-size: 11px; display: block; margin-bottom: 4px; font-weight: 900; }
+.belge-yetkili-blok {
+  font-size: 12px;
+  color: #3a4a5c;
+  font-weight: 700;
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px dashed #dde3ea;
@@ -129,35 +142,37 @@
 }
 
 .data-table-container { overflow-x: auto; width: 100%; }
-.belge-urun-tablo { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; }
+.belge-urun-tablo { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
 .belge-urun-tablo th {
   background: #cfe2f3;
-  color: #3569b8;
+  color: #0c447c;
   border: 1px solid #3569b8;
   padding: 5px 2px;
   text-align: center;
   font-size: 10px;
+  font-weight: 900;
 }
 .belge-urun-tablo td {
   border: 1px solid #3569b8;
   padding: 5px 2px;
   text-align: center;
   vertical-align: middle;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-weight: 800;
+  color: #111111;
+  font-size: 11px;
 }
-.belge-td-sira { color: #3569b8; font-weight: 800; }
+.belge-td-sira { color: #0c447c; font-weight: 900; }
 .belge-td-urun { text-align: left; }
-.belge-td-urun-kod { font-size: 8px; color: #2d3540; line-height: 1.3; white-space: nowrap; overflow: hidden; }
+.belge-td-urun-kod { font-size: 8px; color: #2d3540; line-height: 1.3; white-space: nowrap; overflow: hidden; font-weight: 700; }
 /* B (Berta) / A (Abas) kod harfleri — bkz product-style.css .kod-harf için
    aynı tasarım dili: tam kelime yerine tek harf rozeti, kalın ve büyük. */
 .kod-harf { font-weight: 900; font-size: 1.3em; padding: 0 1px; }
 .kod-harf--b { color: #c0392b; }
 .kod-harf--a { color: #003a70; }
-.belge-td-urun-ad { font-weight: 800; color: #222; margin-top: 2px; font-size: 11px; line-height: 1.25; }
-.belge-td-toplam { color: #16a085; font-weight: 900; }
-.belge-td-prim { font-size: 9px; }
-.belge-td-isk { color: #c0392b; font-weight: 900; }
+.belge-td-urun-ad { font-weight: 900; color: #111; margin-top: 2px; font-size: 12px; line-height: 1.25; }
+.belge-td-toplam { color: #0e6b34; font-weight: 900; }
+.belge-td-prim { font-size: 10px; font-weight: 800; }
+.belge-td-isk { color: #a32d2d; font-weight: 900; }
 
 .hareket-grup-etiket {
   font-size: 11px;

@@ -189,15 +189,16 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
   var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";
   var teslimatAdr = seciliAdresler.teslimatAdresi ? (seciliAdresler.teslimatAdresi.adres||"") : "";
   var yetkililer = musteri.iletisimler || [];
+  var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
   var t = CartData.genelToplam(kur, kdv);
 
-  var html = "<div class='belge-musteri-baslik'>MÜŞTERİ BİLGİLERİ</div>"
+  var html = "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
     + "<div class='belge-musteri-govde'>"
     + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-    + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + "</div>"
     + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
-    + yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("")
-    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
+    + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
+    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
+    + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
     + "</div>";
 
   html += HareketTablo.grupHtml({
@@ -251,7 +252,7 @@ function fmtG2(n){
 }
 
 function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
-  var basit = kanal === "whatsapp"; // WhatsApp'a giden görsel: LİSTE/İSK/PRİM içermez
+  var basit = kanal === "whatsapp"; // WhatsApp'a giden görsel: Cari Bilgi yok, LİSTE/İSK/SIRA/PRİM yok
   var satirlarHtml = "";
   var netEuro = 0;
   sepet.forEach(function(u, i){
@@ -260,7 +261,6 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
     var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
     if(basit){
       satirlarHtml += "<tr>"
-        + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
         + "<td>" + fmtG2(h.iskontoluFiyat) + " €</td>"
@@ -289,25 +289,30 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
   var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";
   var teslimatAdr = seciliAdresler.teslimatAdresi ? (seciliAdresler.teslimatAdresi.adres||"") : "";
   var yetkililer = musteri.iletisimler || [];
+  var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
-  return "<div class='belge-kutu' style='margin:0;'>"
-    + "<div class='belge-ust-baslik'>"
-    + "<div class='belge-logo-satir'><span class='belge-logo-mini'>WEICON</span><span class='belge-tur-baslik'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " FORMU</span></div>"
-    + "<span class='belge-tarih-kompakt'>" + tarihStr + "</span>"
-    + "</div>"
-    + "<div class='belge-musteri-baslik'>MÜŞTERİ BİLGİLERİ</div>"
+  // Mail'de ve WhatsApp'ta belge kodu ASLA görünmez (sadece program içinde
+  // görünür) — bu yüzden tablo başlığında sadece tür + tarih var, kod yok.
+  var tabloBasligi = (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " · " + tarihStr;
+
+  // WhatsApp'a giden görselde Cari Bilgi bloğu HİÇ yok — sadece ürün tablosu.
+  var cariBilgiHtml = basit ? "" :
+    "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
     + "<div class='belge-musteri-govde'>"
     + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-    + (musteri.sehir ? "<div style='font-size:12px;color:#2d3540;'>" + htmlEsc(musteri.sehir) + "</div>" : "")
-    + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + "</div>"
     + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
-    + yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("")
-    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
-    + "</div>"
-    + "<div class='belge-belge-baslik-serit'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + "</div>"
+    + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
+    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
+    + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
+    + "</div>";
+
+  return "<div class='belge-kutu' style='margin:0;'>"
+    + "<div class='belge-ust-baslik belge-ust-baslik--logo-tek'><span class='belge-logo-mini'>WEICON</span></div>"
+    + cariBilgiHtml
+    + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo'>"
     + "<thead><tr>" + (basit
-        ? "<th style='width:8%;'>SIRA</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
+        ? "<th style='width:52%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
         : "<th style='width:6%;'>SIRA</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
