@@ -75,17 +75,29 @@ var CustomerData = (function(){
   }
 
   // ---- GÜVENLİ YAZMA ÇEKİRDEĞİ ----
+  // DOĞRULAMALI YAZMA: yazdıktan hemen sonra Firebase'den TEKRAR okuyup
+  // gönderdiğimiz veriyle karşılaştırıyoruz. Bu, "başarılı" denip aslında
+  // sunucuya işlemeyen sessiz hataları yakalamak için — böyle bir durum
+  // olursa kullanıcı net bir hata görür, yanlışlıkla "kaydedildi" sanmaz.
   function guvenliYaz(mutateFn, geriBildir){
     try{
       var db = firebase.database();
+      var beklenenSonuc = null;
       db.ref("musteriler").once("value").then(function(snap){
         var data = snap.val();
         var tazeListe = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
         var sonuc = mutateFn(tazeListe);
         var yazilacak = (sonuc !== undefined) ? sonuc : tazeListe;
-        return db.ref("musteriler").set(yazilacak).then(function(){ return sonuc; });
-      }).then(function(sonuc){
-        geriBildir(true, sonuc);
+        beklenenSonuc = yazilacak;
+        return db.ref("musteriler").set(yazilacak).then(function(){ return db.ref("musteriler").once("value"); });
+      }).then(function(dogrulamaSnap){
+        var dogrulananVeri = dogrulamaSnap.val();
+        var dogrulananListe = dogrulananVeri ? (Array.isArray(dogrulananVeri) ? dogrulananVeri.filter(Boolean) : Object.values(dogrulananVeri)) : [];
+        if(JSON.stringify(dogrulananListe) !== JSON.stringify(beklenenSonuc)){
+          geriBildir(false, new Error("Yazma doğrulanamadı — sunucudaki veri gönderilenle eşleşmiyor. Lütfen tekrar deneyin."));
+          return;
+        }
+        geriBildir(true, beklenenSonuc);
       }).catch(function(err){
         console.error("Müşteri yazma hatası:", err);
         geriBildir(false, err);
