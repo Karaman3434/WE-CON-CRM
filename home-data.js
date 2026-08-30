@@ -13,7 +13,7 @@
 var WeiconData = (function(){
 
   var firebaseConfig = {
-    apiKey: "AIzaSyC08oE1LE7TdQl8gG2H9raZQek211Dxd60",
+    apiKey: "AIzaSyC08Oe1LE7TdQl8gG2H9raZQek211Dxd60",
     authDomain: "weicon-asist.firebaseapp.com",
     databaseURL: "https://weicon-asist-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "weicon-asist",
