@@ -350,11 +350,18 @@ var ReportsData = (function(){
   function revizeBaslat(kayit){
     var secenekler = SONRAKI_ASAMALAR[kayit.tip];
     if(!secenekler){ return false; }
+    // Eski kayıtta Dip Fiyat 0/boş kalmışsa (geçmiş bir hata nedeniyle),
+    // sessizce 0 olarak taşımak yerine — %36,35 kuralıyla öner AMA
+    // "hesaplandı" sayma; kullanıcı Sepet'te bu ürüne dokunup Hesapla
+    // ekranında gözden geçirip onaylamadan Kaydet/Gönder'e giremesin.
+    var DIP_ORANI = 0.3635;
     var sepet = (kayit.urunler||[]).map(function(u, i){
+      var dipEksikMi = !u.dipFiyat;
+      var dipFiyat = dipEksikMi ? Math.round((u.listeFiyat||0)*DIP_ORANI*100)/100 : u.dipFiyat;
       return {
         idx:i, ad: u.ad || "İsimsiz Ürün", berta: u.berta||"", abas: u.abas||"",
-        listeFiyat: u.listeFiyat||0, dipFiyat: u.dipFiyat||0, iskonto: u.iskonto||0, adet: u.adet||0,
-        hesaplandi:true
+        listeFiyat: u.listeFiyat||0, dipFiyat: dipFiyat, iskonto: u.iskonto||0, adet: u.adet||0,
+        hesaplandi: !dipEksikMi
       };
     });
     localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));

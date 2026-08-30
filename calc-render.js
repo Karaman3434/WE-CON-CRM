@@ -70,7 +70,15 @@ function duzenlemeModunuKontrolEt(){
     document.getElementById("seciliUrunAd").textContent = u.ad;
     document.getElementById("seciliUrunKutu").hidden = false;
     document.getElementById("hesListeFiyat").value = u.listeFiyat || 0;
-    document.getElementById("hesDipFiyat").value = u.dipFiyat || 0;
+    // Sepetten "düzenle" ile gelindiğinde, ürün Ürün Bul'dan eklenmiş ve
+    // henüz hiç hesaplanmamışsa dipFiyat 0 olarak gelir — bunu olduğu gibi
+    // göstermek yerine (Dip=0 → Marj=Net Fiyat'ın tamamı → prim çok
+    // şişer), aynı urunSec()'teki gibi otomatik öneriyi uygula.
+    if(u.dipFiyat){
+      document.getElementById("hesDipFiyat").value = u.dipFiyat;
+    } else {
+      dipFiyatiOner();
+    }
     document.getElementById("hesIskonto").value = u.iskonto || 0;
     document.getElementById("hesAdet").value = u.adet || 1;
     document.getElementById("btnHesapSepeteEkle").textContent = "➕ LİSTEYE EKLE";
