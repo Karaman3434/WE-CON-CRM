@@ -61,14 +61,16 @@ function yetkiliSatiriHtml(isim, tel, eposta){
 function belgeyiCiz(kayit, musteri){
   try{
     var urunler = kayit.urunler || [];
-    var netEuro = 0, toplamPrim = 0;
+    var kaydinKuru = kayit.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
+    var netEuro = 0, toplamPrim = 0, toplamPrimTl = 0;
     var satirlarHtml = urunler.map(function(item, i){
       var toplamEuro = item.toplamEuro!==undefined ? item.toplamEuro : ((item.iskBirim||0)*(item.adet||0));
       netEuro += toplamEuro;
       var mk = (item.iskBirim||0)-(item.dipFiyat||0);
       var ozelFiyatMi = (item.iskonto||0) > 60;
       var satirPrim = ozelFiyatMi ? 0 : mk*(item.adet||0)*0.22;
-      if(satirPrim > 0) toplamPrim += satirPrim;
+      var satirPrimTl = satirPrim * kaydinKuru;
+      if(satirPrim > 0){ toplamPrim += satirPrim; toplamPrimTl += satirPrimTl; }
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
@@ -77,7 +79,7 @@ function belgeyiCiz(kayit, musteri){
         + "<td class='belge-td-isk'>%" + (item.iskonto||0) + "</td>"
         + "<td>" + fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)) + " €</td>"
         + "<td class='belge-td-toplam'>" + fmt(toplamEuro) + " €</td>"
-        + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "ÖZEL FİYAT" : (satirPrim<0 ? "Yok" : fmt(satirPrim)+" €")) + "</td>"
+        + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "ÖZEL FİYAT" : (satirPrim<0 ? "Yok" : fmt(satirPrimTl)+" TL")) + "</td>"
         + "</tr>";
     }).join("");
 
@@ -127,7 +129,7 @@ function belgeyiCiz(kayit, musteri){
       + "<span class='belge-gt-deger'>" + fmt(netEuro) + " €</span>"
       + "</div>"
       + "<div class='belge-prim-serit'>"
-      + "<span class='belge-prim-etiket'>MÜDÜR PRİMİ (TOPLAM)</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":fmt(toplamPrim)+" €") + "</span>"
+      + "<span class='belge-prim-etiket'>MÜDÜR PRİMİ (TOPLAM)</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":fmt(toplamPrimTl)+" TL") + "</span>"
       + "</div>"
       + "</div>";
 

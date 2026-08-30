@@ -82,7 +82,10 @@ var WeiconData = (function(){
         toplamEuro += u.toplamEuro||0;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
         var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
-        if(satirPrimi>0) toplamPrim += satirPrimi;
+        // Müdür primi işlemin YAPILDIĞI günün kuruyla TL'ye çevrilir —
+        // kayıtta kur yoksa (çok eski kayıt) o anki güncel kur yedek olarak kullanılır.
+        var kKuru = k.kur || guncelKurYedek();
+        if(satirPrimi>0) toplamPrim += satirPrimi*kKuru;
       }
     }
     return {ayAd:buAyAd, yil:buYil, toplamEuro:toplamEuro, toplamPrim:toplamPrim};
@@ -106,10 +109,16 @@ var WeiconData = (function(){
         toplamEuro += u.toplamEuro||0;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
         var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
-        if(satirPrimi>0) toplamPrim += satirPrimi;
+        var kKuru = k.kur || guncelKurYedek();
+        if(satirPrimi>0) toplamPrim += satirPrimi*kKuru;
       }
     }
     return {toplamEuro:toplamEuro, toplamPrim:toplamPrim, aktifMi:true};
+  }
+
+  function guncelKurYedek(){
+    var v = parseFloat(localStorage.getItem("weicon_kur"));
+    return isNaN(v) ? 0 : v;
   }
 
   function fmt(n){

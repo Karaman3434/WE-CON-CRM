@@ -43,7 +43,7 @@ var HareketTablo = (function(){
         + "<td class='belge-td-isk'>" + (u.iskonto!=null ? "%"+u.iskonto : "-") + "</td>"
         + "<td>" + (toplamVarMi ? fmt(h.iskontoluFiyat)+" €" : "-") + "</td>"
         + "<td class='belge-td-toplam'>" + (toplamVarMi ? fmt(h.toplamEuro)+" €" : "-") + "</td>"
-        + "<td class='belge-td-prim'>" + (toplamVarMi ? ((u.iskonto>60) ? "ÖZEL FİYAT" : fmt(h.mudurPrim)+" €") : "-") + "</td>"
+        + "<td class='belge-td-prim'>" + (toplamVarMi ? ((u.iskonto>60) ? "ÖZEL FİYAT" : fmt(h.mudurPrimTL)+" TL") : "-") + "</td>"
         + "</tr>";
     }).join("");
   }

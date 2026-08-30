@@ -154,30 +154,39 @@ var ReportsData = (function(){
     var aylar = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
     var ayAd = aylar[hedefAy.getMonth()];
     var yil = hedefAy.getFullYear().toString();
-    var toplam = 0, prim = 0, sayi = 0;
+    var toplam = 0, prim = 0, primTl = 0, sayi = 0;
     tumSiparisler().forEach(function(k){
       if(!k.tarih) return;
       var parca = k.tarih.split(" ");
       if((parca[1]||"")!==ayAd || (parca[2]||"")!==yil) return;
       sayi++;
+      var kKuru = k.kur || guncelKurYedek();
       (k.urunler||[]).forEach(function(u){
         toplam += u.toplamEuro||0;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
         var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
-        if(satirPrimi>0) prim += satirPrimi; // eski uygulamayla aynı: negatif primli satırlar toplama katılmaz
+        if(satirPrimi>0){
+          prim += satirPrimi; // eski uygulamayla aynı: negatif primli satırlar toplama katılmaz
+          primTl += satirPrimi * kKuru; // müdür primi işlemin YAPILDIĞI günün kuruyla TL'ye çevrilir
+        }
       });
     });
-    return {ayAd:ayAd, yil:yil, toplam:toplam, prim:prim, sayi:sayi};
+    return {ayAd:ayAd, yil:yil, toplam:toplam, prim:prim, primTl:primTl, sayi:sayi};
+  }
+
+  function guncelKurYedek(){
+    var v = parseFloat(localStorage.getItem("weicon_kur"));
+    return isNaN(v) ? 0 : v;
   }
 
   // Eski uygulamanın "Aylık Sipariş & Prim Özeti" tablosuyla BİREBİR aynı:
-  // son 12 ay, AY|SATIŞ|PRİM|TL PRİM sütunları, mevcut kurla TL karşılığı.
+  // son 12 ay, AY|SATIŞ|PRİM|TL PRİM sütunları. TL PRİM artık her işlemin
+  // KENDİ kaydettiği kurla hesaplanıyor (bkz. ayToplami) — tüm ayı tek bir
+  // güncel kurla çarpmak yerine, merkez ofisin o günkü faturasıyla tutarlı.
   function aylikPrimOzeti12(){
     var sonuc = [];
     for(var i=0;i<12;i++){ sonuc.push(ayToplami(i)); }
-    var kur = parseFloat(localStorage.getItem("weicon_kur")) || 0;
-    sonuc.forEach(function(ay){ ay.primTl = ay.prim * kur; });
-    return {aylar: sonuc, kur: kur};
+    return {aylar: sonuc, kur: guncelKurYedek()};
   }
 
   function son6Ay(){
@@ -197,20 +206,21 @@ var ReportsData = (function(){
     var sonuc = [];
     for(var y=0; y<3; y++){
       var hedefYil = (buYil - y).toString();
-      var toplam = 0, prim = 0, sayi = 0;
+      var toplam = 0, prim = 0, primTl = 0, sayi = 0;
       tumSiparisler().forEach(function(k){
         if(!k.tarih) return;
         var parca = k.tarih.split(" ");
         if((parca[2]||"") !== hedefYil) return;
         sayi++;
+        var kKuru = k.kur || guncelKurYedek();
         (k.urunler||[]).forEach(function(u){
           toplam += u.toplamEuro||0;
           var mk = (u.iskBirim||0)-(u.dipFiyat||0);
           var sp = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
-          if(sp>0) prim += sp;
+          if(sp>0){ prim += sp; primTl += sp*kKuru; }
         });
       });
-      sonuc.push({yil:hedefYil, toplam:toplam, prim:prim, sayi:sayi});
+      sonuc.push({yil:hedefYil, toplam:toplam, prim:prim, primTl:primTl, sayi:sayi});
     }
     return sonuc;
   }

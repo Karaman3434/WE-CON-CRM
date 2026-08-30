@@ -81,6 +81,8 @@ function siparisGecmisiniCiz(){
         var ozelFiyatMi = (u.iskonto||0) > 60;
         var prim = ozelFiyatMi ? 0 : mk*(u.adet||0)*0.22;
         if(prim<0) prim = 0;
+        var kaydinKuru = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
+        var primTl = prim * kaydinKuru;
         var satirBg = kacanMi ? "#fac9c5" : (TIP_ZEMIN_GECMIS[k.tip]||"#ffffff");
         satirlar += "<tr class='gecmis-tablo-satir' data-tip='" + k.tip + "' data-ts='" + k.ts + "' style='background:" + satirBg + ";'>"
           + "<td>" + (j===0 ? "<span class='gecmis-kod-mini'>" + TIP_KOD_GECMIS[k.tip] + "</span>" + (kacanMi?"<div class='gecmis-durum-mini'>❌ KAÇTI</div>":"") : "") + "</td>"
@@ -91,7 +93,7 @@ function siparisGecmisiniCiz(){
           + "<td class='gecmis-td-isk'>%" + (u.iskonto||0) + "</td>"
           + "<td style='color:" + TIP_RENK_GECMIS[k.tip] + ";'>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</td>"
           + "<td class='gecmis-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
-          + "<td class='gecmis-td-prim'>" + (ozelFiyatMi ? "ÖZEL FİYAT" : fmtG(prim)+"€") + "</td>"
+          + "<td class='gecmis-td-prim'>" + (ozelFiyatMi ? "ÖZEL FİYAT" : fmtG(primTl)+"TL") + "</td>"
           + "<td>" + (j===0 ? "<button class='gecmis-sil-btn' data-sil-tip='" + k.tip + "' data-sil-ts='" + k.ts + "'>🗑️</button>" : "") + "</td>"
           + "</tr>";
       });
