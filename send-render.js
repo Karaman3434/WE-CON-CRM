@@ -1,10 +1,12 @@
 /*
   send-render.js
   ==============
-  Müşteri + hareket tablosunu gösterir (belge türü ve müşteri artık BURADA
-  seçilmiyor — İşlem Yap akışından seçili gelir). Kaydet/Gönder ikisi de
-  SendData.kaydet() çağırır; kaydedilince "Formu Görüntüle" ile tam
-  önizleme + "Geri" ile Sepet'e dönüp düzeltme imkânı sunar.
+  ARTIK SADECE gönderme paneli — kaydetme işi cart.html'e taşındı. Sayfa
+  açılışında "weiconv2_son_kaydedilen_belge" localStorage anahtarını okur
+  (cart.html'in az önce yazdığı kayıt bağlamı); bu yoksa cart.html'e geri
+  yönlendirir. "Formu Görüntüle" ile tam önizleme + "Geri" ile Sepet'e
+  dönüp düzeltme imkânı sunar (aynı gün+müşteri+ürün seti eşleştiğinde
+  SendData.kaydet zaten revize eder, yeni kayıt açmaz).
 */
 
 function hataGoster(mesaj){
@@ -32,109 +34,14 @@ function htmlEsc(s){
 }
 
 var TIP_ETIKET_ROZET = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
-var secilenTip = "siparis";
-var seciliAdresler = {}; // {faturaAdresi, teslimatAdresi} — otomatik ilk adres
+var seciliAdresler = {};
+var gonderBaglam = null;
+var sonKaydedilenBelge = null;
 
 function adresleriBelirle(musteri){
   seciliAdresler = {};
   if(musteri.faturaAdresleri && musteri.faturaAdresleri.length) seciliAdresler.faturaAdresi = musteri.faturaAdresleri[0];
   if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length) seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[0];
-}
-
-function hareketTablosunuCiz(){
-  var sepet = CartData.liste();
-  var kur = CartData.kurOku();
-  var kdv = CartData.kdvOku();
-  var t = CartData.genelToplam(kur, kdv);
-  document.getElementById("hareketTabloAlani").innerHTML = HareketTablo.grupHtml({
-    etiket: "🟢 HAREKET — " + (TIP_ETIKET_ROZET[secilenTip]||""),
-    urunler: sepet,
-    hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
-    zeminSinifi: "hareket-satir--yesil",
-    genelToplam: t.toplamEuro
-  });
-}
-
-function ozetiCiz(){
-  try{
-    var musteri = CustomerData.seciliyiOku();
-    if(!musteri){
-      hataGoster("Önce bir müşteri seçmelisiniz.");
-      document.getElementById("btnKaydet").disabled = true;
-      document.getElementById("btnGonder").disabled = true;
-      return;
-    }
-    document.getElementById("ozetMusteriAd").textContent = musteri.ad;
-    document.getElementById("ozetMusteriSehir").textContent = musteri.sehir || "";
-    document.getElementById("ozetTipRozet").textContent = TIP_ETIKET_ROZET[secilenTip] || "";
-    adresleriBelirle(musteri);
-
-    var sepet = CartData.liste();
-    if(sepet.length === 0){
-      hataGoster("Sepetiniz boş, önce Ürün Bul'dan ürün seçin.");
-      document.getElementById("btnKaydet").disabled = true;
-      document.getElementById("btnGonder").disabled = true;
-      return;
-    }
-    hareketTablosunuCiz();
-  }catch(e){ hataGoster("Özet çizilemedi: " + e.message); }
-}
-
-function anomaliUyarilariniTopla(sepet, kur, kdv){
-  var uyarilar = [];
-  sepet.forEach(function(u){
-    if(u.iskonto && u.iskonto > 50){
-      uyarilar.push("⚠️ " + u.ad + " için iskonto %" + u.iskonto + " — çok yüksek görünüyor.");
-    }
-    var h = CartData.hesapla(u, kur, kdv);
-    if(u.dipFiyat && h.iskontoluFiyat < u.dipFiyat){
-      uyarilar.push("🔴 " + u.ad + " dip maliyetin (" + CartData.fmt(u.dipFiyat) + " €) altında satılıyor (net: " + CartData.fmt(h.iskontoluFiyat) + " €) — zararına satış olabilir.");
-    }
-  });
-  return uyarilar;
-}
-
-function kaydetTiklandi(){
-  try{
-    var musteri = CustomerData.seciliyiOku();
-    var sepet = CartData.liste();
-    if(!musteri || sepet.length === 0) return;
-
-    var kur = CartData.kurOku();
-    var kdv = CartData.kdvOku();
-
-    var uyarilar = anomaliUyarilariniTopla(sepet, kur, kdv);
-    if(uyarilar.length > 0){
-      var devamMi = confirm("⚠️ Anomali Uyarısı\n\n" + uyarilar.join("\n\n") + "\n\nYine de kaydetmek istiyor musunuz?");
-      if(!devamMi) return;
-    }
-
-    document.getElementById("btnKaydet").disabled = true;
-    document.getElementById("btnGonder").disabled = true;
-    document.getElementById("btnKaydet").textContent = "Kaydediliyor...";
-
-    var kaynak = ilerletKaynagiOku();
-    var devralinanKod = (kaynak && kaynak.kod) ? kaynak.kod : null;
-    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, seciliAdresler, devralinanKod, function(basarili, sonuc, revizeMi){
-      if(basarili){
-        sonKaydedilenBelge = {kayit: sonuc, musteri: musteri};
-        if(revizeMi){
-          document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
-        }
-        if(kaynak){
-          SendData.kaynakSil(kaynak.tip, kaynak.ts, function(){});
-          localStorage.removeItem("weiconv2_ilerlet_kaynak");
-        }
-        document.getElementById("onKaydetButonSatiri").hidden = true;
-        gonderKutusunuGoster(musteri, sepet, secilenTip, kur, kdv);
-      } else {
-        document.getElementById("btnKaydet").disabled = false;
-        document.getElementById("btnGonder").disabled = false;
-        document.getElementById("btnKaydet").textContent = "✓ Kaydet";
-        hataGoster("Kaydetme başarısız: " + (sonuc && sonuc.message ? sonuc.message : "bilinmeyen hata"));
-      }
-    });
-  }catch(e){ hataGoster("Kaydet işlemi başarısız: " + e.message); }
 }
 
 function sablonOku(kanal){
@@ -171,16 +78,11 @@ function mesajMetniOlustur(musteri, sepet, tip, kanal){
     }
     metin = govde;
   }
-  // Müşteri kartında bir NOT girilmişse, mesaj metninin en altına eklenir;
-  // not yoksa hiçbir şey eklenmez (etiket dahi görünmez).
   if(musteri.not && musteri.not.trim()){
     metin += "\nNOT: " + musteri.not.trim() + "\n";
   }
   return metin;
 }
-
-var gonderBaglam = null;
-var sonKaydedilenBelge = null;
 
 function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
   var vade = musteri.vade || "";
@@ -206,7 +108,8 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
     urunler: sepet,
     hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
     zeminSinifi: "hareket-satir--yesil",
-    genelToplam: t.toplamEuro
+    genelToplam: t.toplamEuro,
+    kur: kur
   });
   return html;
 }
@@ -229,8 +132,6 @@ function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
       secim.hidden = true;
       kisiAlanlariniDoldur(kisiler[0] || {});
     }
-
-    document.getElementById("gonderKutu").hidden = false;
   }catch(e){ hataGoster("Gönderim alanı hazırlanamadı: " + e.message); }
 }
 
@@ -291,11 +192,8 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
   var yetkililer = musteri.iletisimler || [];
   var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
-  // Mail'de ve WhatsApp'ta belge kodu ASLA görünmez (sadece program içinde
-  // görünür) — bu yüzden tablo başlığında sadece tür + tarih var, kod yok.
   var tabloBasligi = (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " · " + tarihStr;
 
-  // WhatsApp'a giden görselde Cari Bilgi bloğu HİÇ yok — sadece ürün tablosu.
   var cariBilgiHtml = basit ? "" :
     "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
     + "<div class='belge-musteri-govde'>"
@@ -347,16 +245,13 @@ function mailOnizlemeAc(){
       urunler: g.sepet,
       hesapla: function(u){ return CartData.hesapla(u, g.kur, g.kdv); },
       zeminSinifi: "hareket-satir--yesil",
-      genelToplam: CartData.genelToplam(g.kur, g.kdv).toplamEuro
+      genelToplam: CartData.genelToplam(g.kur, g.kdv).toplamEuro,
+      kur: g.kur
     });
     document.getElementById("mailOnizlemeOverlay").hidden = false;
   }catch(e){ hataGoster("Mail önizleme açılamadı: " + e.message); }
 }
 
-// WhatsApp mesaj metni mail'den bağımsız — mesajMetniOlustur(...,"whatsapp")
-// tekil/çoğul ürün durumuna göre otomatik metin üretir (bkz send-render.js
-// mesajMetniOlustur). Tablo da HareketTablo.grupHtml'e kanal:"whatsapp"
-// verilerek fiyat detayı (LİSTE/İSK/PRİM) olmadan sade üretiliyor.
 function whatsappOnizlemeAc(){
   try{
     var g = gonderBaglam;
@@ -368,6 +263,7 @@ function whatsappOnizlemeAc(){
       hesapla: function(u){ return CartData.hesapla(u, g.kur, g.kdv); },
       zeminSinifi: "hareket-satir--yesil",
       genelToplam: CartData.genelToplam(g.kur, g.kdv).toplamEuro,
+      kur: g.kur,
       kanal: "whatsapp"
     });
     document.getElementById("whatsappOnizlemeOverlay").hidden = false;
@@ -379,8 +275,6 @@ function gonderTiklandi(kanal, ozelKonu){
     var metin = document.getElementById("gonderMetin").value;
     var g = gonderBaglam;
     var TIP_ETIKET4 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
-    // Mail ve WhatsApp için ayrı önizleme ekranlarında zaten onay alındı —
-    // burada tekrar sormuyoruz.
 
     var dosyaAdi = TIP_ETIKET4[g.tip].replace(/\s/g,"_") + "_" + g.musteri.ad.replace(/[^a-zA-Z0-9]+/g,"_") + ".png";
     var konuMetni = ozelKonu || ("*** " + TIP_ETIKET4[g.tip] + " *** " + g.musteri.ad);
@@ -431,71 +325,25 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
-function ilerletKaynagiOku(){
-  try{
-    var v = localStorage.getItem("weiconv2_ilerlet_kaynak");
-    return v ? JSON.parse(v) : null;
-  }catch(e){ return null; }
-}
-
-var revizeSecimBekleniyor = null; // sonrakiAsamaSecenekleri.length>1 ise seçenek dizisi
-
-function ilerletKaynagiVarsaSekmeAyarla(){
-  var kaynak = ilerletKaynagiOku();
-  if(!kaynak || !kaynak.sonrakiAsamaSecenekleri || kaynak.sonrakiAsamaSecenekleri.length===0) return;
-  var secenekler = kaynak.sonrakiAsamaSecenekleri;
-  var uyari = document.createElement("div");
-  uyari.className = "ilerlet-bilgi-kutu";
-  if(secenekler.length === 1){
-    secilenTip = secenekler[0];
-    uyari.textContent = "▶️ İlerletiliyor — kayıt tamamlanınca önceki aşamanın belgesi otomatik silinecek.";
-  } else {
-    revizeSecimBekleniyor = secenekler;
-    uyari.textContent = "🔄 Revize ediliyor — Gönder/Kaydet'e basınca hangi aşamaya (" + secenekler.map(function(s){return TIP_ETIKET_ROZET[s];}).join(" / ") + ") dönüşeceğini seçeceksin.";
-  }
-  document.getElementById("hareketTabloAlani").insertAdjacentElement("beforebegin", uyari);
-}
-
-function asamaSecimPopupunuAc(devamFn){
-  var overlay = document.getElementById("asamaSecimOverlay");
-  var kapsayici = document.getElementById("asamaSecimButonlari");
-  kapsayici.innerHTML = revizeSecimBekleniyor.map(function(s){
-    return "<button class='tip-btn tip-btn--" + s + "' data-secim='" + s + "'>" + TIP_ETIKET_ROZET[s] + "</button>";
-  }).join("");
-  kapsayici.querySelectorAll("[data-secim]").forEach(function(btn){
-    btn.onclick = function(){
-      secilenTip = this.getAttribute("data-secim");
-      revizeSecimBekleniyor = null;
-      overlay.hidden = true;
-      document.getElementById("ozetTipRozet").textContent = TIP_ETIKET_ROZET[secilenTip] || "";
-      devamFn();
-    };
-  });
-  document.getElementById("btnAsamaSecimVazgec").onclick = function(){ overlay.hidden = true; };
-  overlay.hidden = false;
-}
-
-function oncedenSecilenTipVarsaUygula(){
-  try{
-    var tip = localStorage.getItem("weiconv2_onceden_secilen_tip");
-    if(!tip) return;
-    secilenTip = tip;
-  }catch(e){}
-}
-
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  oncedenSecilenTipVarsaUygula();
-  ilerletKaynagiVarsaSekmeAyarla();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-  document.getElementById("btnKaydet").onclick = function(){
-    if(revizeSecimBekleniyor){ asamaSecimPopupunuAc(kaydetTiklandi); return; }
-    kaydetTiklandi();
-  };
-  document.getElementById("btnGonder").onclick = function(){
-    if(revizeSecimBekleniyor){ asamaSecimPopupunuAc(kaydetTiklandi); return; }
-    kaydetTiklandi();
-  };
+
+  // cart.html'in az önce yazdığı kayıt bağlamını oku — yoksa (örn. sayfaya
+  // doğrudan URL ile girildiyse) Sepet'e geri gönder.
+  var kayitliBaglam = null;
+  try{ kayitliBaglam = JSON.parse(localStorage.getItem("weiconv2_son_kaydedilen_belge")||"null"); }catch(e){}
+  if(!kayitliBaglam || !kayitliBaglam.musteri || !kayitliBaglam.sepet){
+    window.location.href = "cart.html";
+    return;
+  }
+  sonKaydedilenBelge = {kayit: kayitliBaglam.kayit, musteri: kayitliBaglam.musteri};
+  adresleriBelirle(kayitliBaglam.musteri);
+  if(kayitliBaglam.revizeMi){
+    document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
+  }
+  gonderKutusunuGoster(kayitliBaglam.musteri, kayitliBaglam.sepet, kayitliBaglam.tip, kayitliBaglam.kur, kayitliBaglam.kdv);
+
   document.getElementById("btnWhatsapp").onclick = function(){ whatsappOnizlemeAc(); };
   document.getElementById("btnEposta").onclick = function(){ mailOnizlemeAc(); };
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
@@ -509,7 +357,6 @@ document.addEventListener("DOMContentLoaded", function(){
   });
   document.getElementById("whatsappOnizlemeVazgecBtn").onclick = function(){ document.getElementById("whatsappOnizlemeOverlay").hidden = true; };
   document.getElementById("whatsappOnizlemeGonderBtn").onclick = function(){
-    // Önizlemede düzenlenmiş olabilecek metni asıl paylaşılan metne yansıt.
     document.getElementById("gonderMetin").value = document.getElementById("whatsappOnizlemeMetin").value;
     document.getElementById("whatsappOnizlemeOverlay").hidden = true;
     gonderTiklandi("whatsapp");
@@ -525,13 +372,11 @@ document.addEventListener("DOMContentLoaded", function(){
     var acikMi = !alan.hidden;
     if(acikMi){
       alan.hidden = true;
-      geriBtn.hidden = true;
       this.textContent = "👁 Formu Görüntüle";
     } else {
       var g = gonderBaglam;
       alan.innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv);
       alan.hidden = false;
-      geriBtn.hidden = false;
       this.textContent = "👁 Formu Gizle";
     }
   };
@@ -542,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function(){
     try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
     try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
     window.location.href = "home.html";
   };
-  ozetiCiz();
 });

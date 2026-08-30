@@ -54,7 +54,8 @@ var HareketTablo = (function(){
     var basit = opts.kanal === "whatsapp";
     var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#8a6d1a" : "#0e6b34";
     var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#fff9e6" : "#eafaf0";
-    var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'>" + opts.etiket + "</div>";
+    var etiketRozetHtml = opts.etiketRozet ? "<span class='hareket-grup-etiket-rozet'>" + opts.etiketRozet + "</span>" : "";
+    var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>";
     var basHucreler = basit
       ? "<th style='width:50%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
       : "<th style='width:6%;'>SIRA</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th>";

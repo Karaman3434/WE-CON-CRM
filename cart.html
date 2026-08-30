@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.260830.2045.43 — cart.html -->
 <!--
-  WEICON ASİST — SEPET / HAREKET FORMU v4
-  ==========================================
-  Ürün Bul'dan seçilen ürünler burada iki gruba ayrılır: HESAPLANACAK
-  (sarı) ve HESAPLANDI (yeşil) — ikisi de belge-tablosu tasarımıyla
-  (SIRA/ÜRÜN BİLGİSİ/ADET/LİSTE/İSK/NET/TOPLAM/PRİM). Bir ürüne dokununca
-  TEK hesaplama ekranı olan calc.html'e (Hızlı Hesapla) gidilir; orada
-  hesaplanıp "Listeye Ekle" ile buraya, hesaplandı grubuna döner. Tüm
-  ürünler hesaplanmadan Kaydet/Gönder aktif olmaz.
+  WEICON ASİST — SEPET / HAREKET FORMU v5 (TEK ADIMDA KAYDET)
+  ================================================================
+  Artık Sepet ve Gönder ekranları BİRLEŞTİ: Cari Bilgi (müşteri adı+şehir
+  +işlem türü rozeti, kompakt tek satır) burada, hemen HESAPLANACAK/
+  HESAPLANDI gruplarının üstünde. Kaydet/Gönder'e basınca GERÇEKTEN
+  kaydedilir (kur tazelik kontrolü + anomali uyarısı + varsa aşama seçimi
+  dahil) — ikinci bir "onay ekranı" yok. Başarılı kayıt sonrası doğrudan
+  send.html'e (artık SADECE mail/WhatsApp gönderme paneli) geçilir.
 -->
 <html lang="tr">
 <head>
@@ -18,6 +19,7 @@
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="belge-style.css">
 <link rel="stylesheet" href="cart-style.css">
+<link rel="stylesheet" href="detail-style.css">
 </head>
 <body>
 
@@ -34,10 +36,7 @@
 
 <main class="sayfa">
 
-  <div class="kur-satiri">
-    <label for="kurInput">Güncel Kur (EUR→TL)</label>
-    <input type="number" id="kurInput" step="0.0001" placeholder="örn. 34.50">
-  </div>
+  <div id="ilerletBilgiAlani"></div>
 
   <div id="grupSariAlani"></div>
   <div id="grupYesilAlani"></div>
@@ -51,6 +50,17 @@
   <button class="sepet-iptal-btn" id="btnSepetIptal" hidden>🗑️ İşlemi İptal Et — Sepeti Boşalt</button>
   <p class="devam-uyari" id="devamUyari" hidden>⚠️ Devam etmeden önce sarı gruptaki tüm ürünleri hesapla.</p>
 
+  <!-- Revize/İlerletme aşama seçimi: Numune→Proforma/Teklif veya
+       Teklif→Proforma/Sipariş gibi birden çok seçenek varken Kaydet/
+       Gönder'e basınca açılır. -->
+  <div class="tip-secim-overlay" id="asamaSecimOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">Bu kayıt hangi aşamaya dönüşsün?</div>
+      <div class="tip-secim" id="asamaSecimButonlari"></div>
+      <button class="tip-secim-vazgec-btn" id="btnAsamaSecimVazgec">Vazgeç</button>
+    </div>
+  </div>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -60,6 +70,8 @@
 <script src="ayarlar-sync.js"></script>
 <script src="hareket-tablo.js"></script>
 <script src="cart-data.js"></script>
+<script src="customer-data.js"></script>
+<script src="send-data.js"></script>
 <script src="cart-render.js"></script>
 <script src="yarim-kalan-uyari.js"></script>
 </body>

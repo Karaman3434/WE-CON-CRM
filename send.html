@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — GÖNDER v3
-  ===========================
-  Sepet'ten (tüm ürünler hesaplandıktan sonra) gelinir. Müşteri ve belge
-  türü artık BURADA seçilmiyor — İşlem Yap akışında baştan seçilmiş olarak
-  gelir. Sadece: müşteri kartı + hareket tablosu (belge-tablosu tasarımı)
-  + Kaydet/Gönder. Kaydedilince "Formu Görüntüle" ile tam önizleme
-  (vade/fatura/kargo/adres/yetkili + tablo + mesaj metni) açılabilir; bir
-  hata görülürse "Geri" ile Sepet'e dönülüp düzeltme yapılabilir — aynı
-  gün + aynı müşteri + aynı ürün seti olduğu için tekrar Kaydet'e
-  basıldığında yeni kayıt AÇILMAZ, mevcut kayıt revize edilir.
+  WEICON ASİST — GÖNDER v4 (SADECE GÖNDERME PANELİ)
+  =====================================================
+  Kaydetme işi artık cart.html'de (Sepet ekranında) yapılıyor — buraya
+  SADECE başarılı bir kayıttan sonra gelinir. Bu sayfa açılışta
+  "weiconv2_son_kaydedilen_belge" localStorage anahtarını okuyup
+  doğrudan gönderme panelini gösterir; kayıt yoksa (örn. sayfaya
+  doğrudan URL ile girildiyse) cart.html'e geri yönlendirir.
 -->
 <html lang="tr">
 <head>
@@ -38,25 +35,12 @@
 
 <main class="sayfa">
 
-  <section class="musteri-ozet-kutu">
-    <div class="musteri-ozet-ad" id="ozetMusteriAd">—</div>
-    <div class="musteri-ozet-sehir" id="ozetMusteriSehir"></div>
-    <div class="musteri-ozet-tip" id="ozetTipRozet"></div>
-  </section>
-
-  <div id="hareketTabloAlani"></div>
-
-  <div class="sepet-alt-buton-satir" id="onKaydetButonSatiri">
-    <button class="sepet-kaydet-btn" id="btnKaydet">✓ Kaydet</button>
-    <button class="sepet-gonder-btn" id="btnGonder">📤 Gönder</button>
-  </div>
-
-  <section class="gonder-kutu" id="gonderKutu" hidden>
+  <section class="gonder-kutu" id="gonderKutu">
     <div class="gonder-baslik" id="gonderBaslikYazi">✓ Kaydedildi — İstersen müşteriye gönder</div>
 
     <button class="formu-goruntule-btn" id="btnFormuGoruntule">👁 Formu Görüntüle</button>
     <div id="tamOnizlemeAlani" hidden></div>
-    <button class="geri-duzelt-btn" id="btnGeriDuzelt" hidden>‹ Geri — Sepete Dön ve Düzelt</button>
+    <button class="geri-duzelt-btn" id="btnGeriDuzelt">‹ Geri — Sepete Dön ve Düzelt</button>
 
     <select class="gonder-kisi-secim" id="gonderKisiSecim" hidden></select>
     <textarea id="gonderMetin" rows="6"></textarea>
@@ -132,22 +116,10 @@
     </div>
   </div>
 
-
   <!-- Görsel oluşturma için ekran dışına gizlenmiş belge alanı — html2canvas
        bunu PNG'ye çevirip WhatsApp/Mail ile paylaşacak. Kullanıcı bunu
        görmez, sadece render için var. -->
   <div id="belgeGorselAlani" style="position:fixed; left:-9999px; top:0; width:380px;"></div>
-
-  <!-- Revize/İlerletme aşama seçimi: Numune→Proforma/Teklif veya
-       Teklif→Proforma/Sipariş gibi birden çok seçenek varken Gönder/Kaydet
-       anında açılır. -->
-  <div class="tip-secim-overlay" id="asamaSecimOverlay" hidden>
-    <div class="tip-secim-kutu">
-      <div class="tip-secim-baslik">Bu kayıt hangi aşamaya dönüşsün?</div>
-      <div class="tip-secim" id="asamaSecimButonlari"></div>
-      <button class="tip-secim-vazgec-btn" id="btnAsamaSecimVazgec">Vazgeç</button>
-    </div>
-  </div>
 
 </main>
 
