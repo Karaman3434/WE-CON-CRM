@@ -113,13 +113,14 @@ function kaydetTiklandi(){
     document.getElementById("btnGonder").disabled = true;
     document.getElementById("btnKaydet").textContent = "Kaydediliyor...";
 
-    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, seciliAdresler, function(basarili, sonuc, revizeMi){
+    var kaynak = ilerletKaynagiOku();
+    var devralinanKod = (kaynak && kaynak.kod) ? kaynak.kod : null;
+    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, seciliAdresler, devralinanKod, function(basarili, sonuc, revizeMi){
       if(basarili){
         sonKaydedilenBelge = {kayit: sonuc, musteri: musteri};
         if(revizeMi){
           document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
         }
-        var kaynak = ilerletKaynagiOku();
         if(kaynak){
           SendData.kaynakSil(kaynak.tip, kaynak.ts, function(){});
           localStorage.removeItem("weiconv2_ilerlet_kaynak");
@@ -303,7 +304,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
     + yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("")
     + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
     + "</div>"
-    + "<div class='belge-belge-baslik-serit'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + (kod ? " · " + kod : "") + "</div>"
+    + "<div class='belge-belge-baslik-serit'>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo'>"
     + "<thead><tr>" + (basit
         ? "<th style='width:8%;'>SIRA</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"

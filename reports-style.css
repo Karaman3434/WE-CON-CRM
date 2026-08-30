@@ -68,11 +68,12 @@
 }
 .islem-kod-rozet {
   color: #ffffff;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 900;
-  padding: 3px 9px;
+  padding: 3px 7px;
   border-radius: 5px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 .islem-tarih-buyuk {
   font-size: 13px;

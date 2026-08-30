@@ -43,13 +43,17 @@ function ilerletTiklandi(k){
 function ayDetayiniAc(ayVerisi){
   try{
     if(!ayVerisi) return;
+    // Sadece SİPARİŞ'ler sayılır ve listelenir — Numune/Fiyat Teklifi/
+    // Proforma bu ekranda gösterilmez (hepsi zaten "Son İşlemler"de
+    // ayrıca görünüyor). "AY TOPLAMI" gerçek satış hacmini yansıtsın diye.
     var kayitlarBuAy = ReportsData.sonIslemler().filter(function(k){
       if(!k.tarih) return false;
+      if(k.tip !== "siparis") return false;
       var parca = k.tarih.split(" ");
       return (parca[1]||"")===ayVerisi.ayAd && (parca[2]||"")===ayVerisi.yil;
     });
     if(kayitlarBuAy.length === 0){
-      alert("Bu ayda kayıt yok.");
+      alert("Bu ayda sipariş kaydı yok.");
       return;
     }
 
@@ -58,14 +62,14 @@ function ayDetayiniAc(ayVerisi){
     }, 0);
 
     document.getElementById("ayDetayBaslik").textContent = "📅 " + ayVerisi.ayAd + " " + ayVerisi.yil + " Kayıtları";
-    document.getElementById("ayDetayToplamEtiket").textContent = "🧮 AY TOPLAMI (" + kayitlarBuAy.length + " kayıt)";
+    document.getElementById("ayDetayToplamEtiket").textContent = "🧮 SİPARİŞ TOPLAMI (" + kayitlarBuAy.length + " kayıt)";
     document.getElementById("ayDetayToplamDeger").textContent = fmt(ayToplamEuro) + " €";
 
     document.getElementById("ayDetayListesi").innerHTML = "<div class='musteri-liste-kutu'>" + kayitlarBuAy.map(function(k, i){
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
       var kacanMi = k.durum === "kacan";
-      var kod = TIP_KOD[k.tip] || "?";
-      var renk = kacanMi ? "#c0392b" : (KOD_RENK[kod] || "#3569b8");
+      var kodBilgi = kodRozetVeRenkGetir(k);
+      var kod = kodBilgi.kod, renk = kodBilgi.renk;
       var durumEk = "";
       if(kacanMi) durumEk = " ❌ KAÇTI";
       if(k.revizeZamani) durumEk += " 🔄 REVİZE";
@@ -149,8 +153,25 @@ function istatistikleriCiz(){
   }catch(e){ hataGoster("İstatistikler çizilemedi: " + e.message); }
 }
 
-var TIP_KOD = {numune:"NUM", teklif:"TEK", proforma:"PRO", siparis:"SIP"};
-var KOD_RENK = {SIP:"#003a70", TEK:"#28a745", PRO:"#8e44ad", NUM:"#b7601f"};
+// Rozet artık .kod alanının kendisi (örn. "F.TEK.010126.1300") — TIP_KOD
+// eski kısa harfler yerine gerçek önek üretir, KOD_RENK önek bazında renk
+// verir. .kod hâlâ yoksa (çok eski kayıt) TIP_KOD_YEDEK ile geriye dönük
+// uyumluluk sağlanır.
+var TIP_KOD_YEDEK = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
+var KOD_RENK = {"SİP":"#003a70", "F.TEK":"#28a745", "P.FAT":"#8e44ad", "NUM":"#b7601f"};
+function kodOnekiAyikla(kod){
+  if(!kod) return null;
+  // Son iki nokta ayraçlı parça (GGAAYY.SSDD) hariç, kalan kısım önektir.
+  var parcalar = kod.split(".");
+  if(parcalar.length < 3) return kod; // beklenmeyen format — olduğu gibi göster
+  return parcalar.slice(0, parcalar.length-2).join(".");
+}
+function kodRozetVeRenkGetir(k){
+  var kod = k.kod || TIP_KOD_YEDEK[k.tip] || "?";
+  var onek = kodOnekiAyikla(k.kod) || TIP_KOD_YEDEK[k.tip] || "?";
+  var renk = (k.durum === "kacan") ? "#c0392b" : (KOD_RENK[onek] || "#3569b8");
+  return {kod: kod, renk: renk};
+}
 
 function islemleriCiz(){
   try{
@@ -175,8 +196,8 @@ function islemleriCiz(){
     kapsayici.innerHTML = liste.map(function(k, i){
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
       var kacanMi = k.durum === "kacan";
-      var kod = TIP_KOD[k.tip] || "?";
-      var renk = kacanMi ? "#c0392b" : (KOD_RENK[kod] || "#3569b8");
+      var kodBilgi = kodRozetVeRenkGetir(k);
+      var kod = kodBilgi.kod, renk = kodBilgi.renk;
       var durumEk = "";
       if(kacanMi) durumEk = " — ❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"");
       if(k.revizeZamani) durumEk += " — 🔄 REVİZE";

@@ -35,6 +35,26 @@ bir cihazda hızlı erişimi engeller.
 
 ## Değişiklik Geçmişi
 
+### W230826.0824.09
+- **Yeni belge kodu formatı:** `ÖNEK.GGAAYY.SSDD` — örn. `SİP.010126.1300`.
+  Önekler: Numune→**NUM**, Fiyat Teklifi→**F.TEK**, Proforma Fatura→
+  **P.FAT**, Sipariş→**SİP**. Bu kod artık Son İşlemler'deki rozette
+  görünen ile arka planda saklanan tek ve aynı değer (önceden ikisi
+  birbirinden bağımsızdı).
+- **Belge zincirleme:** Bir belge "İlerlet" ile Numune→Teklif→Sipariş
+  aşamalarından geçerken artık **tarih.saat kısmı sabit kalıyor**,
+  sadece önek güncelleniyor (örn. `NUM.010126.1300` →
+  `F.TEK.010126.1300` → `SİP.010126.1300`). Liste her zaman son hâli
+  gösteriyor (önceki aşama otomatik silindiği için — bu davranış zaten
+  vardı, sadece kod artık kalıcı).
+- **Ay Toplamı düzeltildi:** Raporlar → aylık "[Ay] [Yıl] Kayıtları"
+  ekranındaki toplam ve liste artık **sadece Sipariş**'leri sayıyor;
+  Numune/Fiyat Teklifi/Proforma bu toplama dahil edilmiyor.
+- **Belge kodu müşteriden gizlendi:** Mail ve WhatsApp'a giden sipariş/
+  teklif görselinde belge kodu artık hiç görünmüyor — sadece uygulama
+  içinde (Son İşlemler, aylık kayıtlar, dahili Belgeyi Görüntüle)
+  gösteriliyor.
+
 ### W230826.0824.08
 - **Cari Kart yeniden tasarlandı (akordiyon):** Ana sayfa artık tamamen
   salt-görüntüleme — Vade/Fatura/Kargo yan yana (grid, artık her

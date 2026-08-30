@@ -37,18 +37,39 @@ var SendData = (function(){
       String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
   }
 
-  // Belge kodu formatı: {TK|PF|SP|NU}{GGAAYY}.{sıra:2} — örn. "TK010126.01"
-  // (o müşterinin o gün ilk teklifi), "TK010126.02" (o gün, aynı müşteri,
-  // farklı ürün için ikinci teklif). Sıra numarası aynı müşteri + aynı gün +
-  // aynı belge türündeki MEVCUT kayıt sayısına göre hesaplanır — eski format
-  // kodlar (TEK-20260815-3421 gibi) da sayıma dahil edilir ki numaralar
-  // çakışmasın.
-  function kodUret(tip, musteriAd, gunIcindekiAyniTurSayisi){
-    var onEk = {numune:"NU", teklif:"TK", proforma:"PF", siparis:"SP"}[tip] || "KY";
-    var d = new Date();
-    var tarihKismi = String(d.getDate()).padStart(2,"0") + String(d.getMonth()+1).padStart(2,"0") + String(d.getFullYear()).slice(-2);
-    var sira = (gunIcindekiAyniTurSayisi||0) + 1;
-    return onEk + tarihKismi + "." + String(sira).padStart(2,"0");
+  // Belge kodu formatı (v2): {ÖNEK}.{GGAAYY}.{SSDD} — örn. "SİP.010126.1300"
+  // (01.01.26 günü, saat 13:00'te oluşturulan sipariş). Önekler:
+  // Numune→NUM, Fiyat Teklifi→F.TEK, Proforma Fatura→P.FAT, Sipariş→SİP.
+  // Bu önek, belgenin O ANKİ türünü gösterir; bir belge Numune'den
+  // Teklif'e, Teklif'ten Sipariş'e İLERLEDİKÇE tarih.saat kısmı SABİT
+  // kalır (bkz. reports-data.js revizeBaslat/ilerletmeyiTamamla), sadece
+  // önek güncellenir — böylece aynı iş fırsatı hep aynı "numara" ile
+  // takip edilebilir.
+  var KOD_ONEK = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
+
+  // varTarihSaatKismi verilirse (bir önceki aşamadan devralınan belge),
+  // yeni tarih/saat üretmek yerine onu aynen korur — sadece önek değişir.
+  function kodUret(tip, varTarihSaatKismi){
+    var onek = KOD_ONEK[tip] || "KY";
+    var tarihSaatKismi = varTarihSaatKismi;
+    if(!tarihSaatKismi){
+      var d = new Date();
+      var tarihKismi = String(d.getDate()).padStart(2,"0") + String(d.getMonth()+1).padStart(2,"0") + String(d.getFullYear()).slice(-2);
+      var saatKismi = String(d.getHours()).padStart(2,"0") + String(d.getMinutes()).padStart(2,"0");
+      tarihSaatKismi = tarihKismi + "." + saatKismi;
+    }
+    return onek + "." + tarihSaatKismi;
+  }
+
+  // Bir kod string'inden ("F.TEK.010126.1300") tarih.saat kısmını
+  // ("010126.1300") ayıklar — önekin kaç parça olduğuna bakmaksızın,
+  // son iki noktalı parçayı alır (GGAAYY ve SSDD her zaman sabit
+  // uzunlukta: 6 ve 4 rakam).
+  function kodTarihSaatKismiAyikla(kod){
+    if(!kod) return null;
+    var parcalar = kod.split(".");
+    if(parcalar.length < 2) return null;
+    return parcalar[parcalar.length-2] + "." + parcalar[parcalar.length-1];
   }
 
   function urunSetiImzaOlustur(urunler){
@@ -91,7 +112,7 @@ var SendData = (function(){
     return d1.getFullYear()===d2.getFullYear() && d1.getMonth()===d2.getMonth() && d1.getDate()===d2.getDate();
   }
 
-  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, geriBildir){
+  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, devralinanKod, geriBildir){
     try{
       // Firebase, obje içinde HERHANGİ bir "undefined" değer varsa TÜM
       // yazmayı reddeder (ör. eski/zincirlenmiş revize kayıtlarında ürün
@@ -113,6 +134,9 @@ var SendData = (function(){
       });
       var yeniImza = urunSetiImzaOlustur(urunlerKaydi);
       var simdi = Date.now();
+      // Bir önceki aşamadan (Numune→Teklif→Sipariş) devralınan kod varsa,
+      // tarih.saat kısmı korunur — sadece önek yeni türe göre değişir.
+      var devralinanTarihSaat = devralinanKod ? kodTarihSaatKismiAyikla(devralinanKod) : null;
 
       var db = firebase.database();
       db.ref("arsiv/" + tip).once("value").then(function(snap){
@@ -149,13 +173,8 @@ var SendData = (function(){
           otomatikRevizeMi = true;
           kaydedilenKayit = eskiKayit;
         } else {
-          var buGunAyniMusteriAyniTurSayisi = liste.filter(function(k){
-            if(!k || !k.ts) return false;
-            var ayniMusteriMi2 = musteri.id && k.musteriId ? (k.musteriId===musteri.id) : (k.musteri===musteri.ad);
-            return ayniMusteriMi2 && ayniGunMu(k.ts, simdi);
-          }).length;
           kaydedilenKayit = {
-            tarih: tarihStr(), ts: simdi, kod: kodUret(tip, musteri.ad, buGunAyniMusteriAyniTurSayisi),
+            tarih: tarihStr(), ts: simdi, kod: kodUret(tip, devralinanTarihSaat),
             musteri: musteri.ad, musteriId: musteri.id || null, sehir: musteri.sehir || "",
             mod: tip, urunler: urunlerKaydi,
             faturaAdresi: (adresler && adresler.faturaAdresi) || null,
