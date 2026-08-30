@@ -1,0 +1,47 @@
+WE-CON-CRM — DÜZELTİLMİŞ DOSYALAR
+Sürüm: W260830.2345.01
+
+Bu paket, 30.08.2026 tarihinde tespit edilen kayıt sorunları için hazırlanmıştır.
+
+DÜZELTİLEN DOSYALAR
+1) ayarlar-sync.js
+   - Eksik kurBayatMi() eklendi.
+   - Eksik otomatikKurGetir() eklendi.
+   - Merkezi Firebase kur senkronu güvenli hale getirildi.
+   - Kur zaman damgası tutuluyor.
+
+2) cart-render.js
+   - AyarlarSync API eksik olduğunda sepet kayıt akışının JavaScript TypeError ile
+     tamamen kırılması engellendi.
+   - Geçerli kur varsa doğrudan devam ediyor.
+   - Kur yoksa kullanıcıdan güvenli şekilde kur isteniyor.
+
+3) customer-data.js
+   - Müşteri kayıt/güncelleme/silme işlemleri stale read -> set yerine Firebase
+     Realtime Database transaction kullanacak şekilde değiştirildi.
+   - Aynı anda iki cihazdan yapılan değişikliklerin birbirini ezme riski azaltıldı.
+   - Hatalı mutation durumunda mevcut veri yanlışlıkla boş/yarım listeye çevrilmiyor.
+
+4) send-data.js
+   - İşlem/arşiv kayıt ve silme işlemleri transaction yapısına geçirildi.
+   - Aynı anda iki cihazdan işlem kaydı oluşturulurken veri ezilmesi riski azaltıldı.
+   - Yeni ve revize kayıtlara kur ve kdv değerleri kaydediliyor.
+   - Belge türü/müşteri/sepet doğrulamaları eklendi.
+
+5) ayarlar-render.js
+   - Uygulama sürümü W260830.2345.01 olarak güncellendi.
+
+6) README.md
+   - Yeni sürüm ve değişiklik kaydı eklendi.
+
+DAĞITIM
+- Bu ZIP içindeki JS dosyalarını mevcut WE-CON-CRM kök dizinindeki aynı isimli
+  dosyalarla değiştirin.
+- README.md sadece değişiklik kaydı içindir; zorunlu değildir.
+- DEGISIKLIKLER.txt dağıtım notudur.
+
+ÖNEMLİ
+- Firebase Database Rules değiştirilmedi.
+- Mevcut müşteri ve işlem verileri silinmez.
+- Yeni veri modeli değiştirilmedi; mevcut arşiv/müşteri yolları korunmuştur.
+- Yayından sonra tarayıcı cache nedeniyle eski JS çalışırsa sayfayı tamamen yenileyin.

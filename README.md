@@ -35,6 +35,13 @@ bir cihazda hızlı erişimi engeller.
 
 ## Değişiklik Geçmişi
 
+### W260830.2345.01
+- **Kritik kayıt hatası düzeltildi:** `cart-render.js` içindeki `AyarlarSync.kurBayatMi()` / `otomatikKurGetir()` çağrıları ile `ayarlar-sync.js` arasındaki API uyumsuzluğu giderildi.
+- **Müşteri kayıt güvenliği:** `customer-data.js` müşteri yazmalarında Realtime Database transaction (işlemsel güncelleme) kullanıyor; eşzamanlı cihaz değişikliklerinin birbirini ezme riski azaltıldı.
+- **İşlem kayıt güvenliği:** `send-data.js` arşiv yazma/silme işlemlerinde transaction kullanıyor.
+- **Tarihsel kur doğruluğu:** Yeni/revize işlem kayıtlarına `kur` ve `kdv` değerleri kaydediliyor.
+- **Merkezi kur senkronu:** Firebase'deki merkezi kur ve kur zaman damgası ile kayıt öncesi kur kontrolü güvenli hale getirildi.
+
 ### W230826.0824.09
 - **Yeni belge kodu formatı:** `ÖNEK.GGAAYY.SSDD` — örn. `SİP.010126.1300`.
   Önekler: Numune→**NUM**, Fiyat Teklifi→**F.TEK**, Proforma Fatura→

@@ -80,29 +80,47 @@ var CustomerData = (function(){
   // sunucuya işlemeyen sessiz hataları yakalamak için — böyle bir durum
   // olursa kullanıcı net bir hata görür, yanlışlıkla "kaydedildi" sanmaz.
   function guvenliYaz(mutateFn, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    if(typeof mutateFn !== "function") { cb(false, new Error("Geçersiz müşteri güncelleme işlemi.")); return; }
     try{
       var db = firebase.database();
-      var beklenenSonuc = null;
-      db.ref("musteriler").once("value").then(function(snap){
-        var data = snap.val();
-        var tazeListe = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
-        var sonuc = mutateFn(tazeListe);
-        var yazilacak = (sonuc !== undefined) ? sonuc : tazeListe;
-        beklenenSonuc = yazilacak;
-        return db.ref("musteriler").set(yazilacak).then(function(){ return db.ref("musteriler").once("value"); });
-      }).then(function(dogrulamaSnap){
-        var dogrulananVeri = dogrulamaSnap.val();
-        var dogrulananListe = dogrulananVeri ? (Array.isArray(dogrulananVeri) ? dogrulananVeri.filter(Boolean) : Object.values(dogrulananVeri)) : [];
-        if(JSON.stringify(dogrulananListe) !== JSON.stringify(beklenenSonuc)){
-          geriBildir(false, new Error("Yazma doğrulanamadı — sunucudaki veri gönderilenle eşleşmiyor. Lütfen tekrar deneyin."));
+      var ref = db.ref("musteriler");
+      var mutateHatasi = null;
+      return ref.transaction(function(currentData){
+        var tazeListe = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
+        try{
+          var sonuc = mutateFn(tazeListe);
+          return (sonuc !== undefined) ? sonuc : tazeListe;
+        }catch(e){
+          mutateHatasi = e;
+          // Transaction'ı iptal et. Böylece hata durumunda mevcut veri
+          // kesinlikle Firebase'in üzerine boş/yarım veri olarak yazılmaz.
           return;
         }
-        geriBildir(true, beklenenSonuc);
+      }).then(function(result){
+        if(mutateHatasi){
+          console.error("Müşteri güncelleme doğrulama hatası:", mutateHatasi);
+          cb(false, mutateHatasi);
+          return false;
+        }
+        if(!result || !result.committed){
+          var err = new Error("Müşteri kaydı güncellenemedi. Başka bir cihazdaki değişiklik nedeniyle işlem iptal edilmiş olabilir.");
+          cb(false, err);
+          return false;
+        }
+        var data = result.snapshot.val();
+        var kaydedilenListe = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+        cb(true, kaydedilenListe);
+        return true;
       }).catch(function(err){
-        console.error("Müşteri yazma hatası:", err);
-        geriBildir(false, err);
+        console.error("Müşteri transaction yazma hatası:", err);
+        cb(false, err);
+        return false;
       });
-    }catch(e){ geriBildir(false, e); }
+    }catch(e){
+      console.error("Müşteri yazma başlatma hatası:", e);
+      cb(false, e);
+    }
   }
 
   function musteriIndexBul(tazeListe, musteriAd){

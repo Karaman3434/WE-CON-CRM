@@ -176,19 +176,43 @@ function anomaliUyarilariniTopla(sepet, kur, kdv){
 }
 
 function kurTazeligeGetir(devamFn){
-  if(typeof AyarlarSync === "undefined" || !AyarlarSync.kurBayatMi()){ devamFn(); return; }
+  // Eski/eksik AyarlarSync API'si yüzünden kayıt akışının kırılmasını engelle.
+  // Geçerli bir kur varsa ve zaman damgası yoksa mevcut kuru kullanırız.
+  if(typeof AyarlarSync === "undefined" || typeof AyarlarSync.kurBayatMi !== "function"){
+    if(CartData.kurOku() > 0){ devamFn(); return; }
+    hataGoster("EUR/TL kuru bulunamadı. Ayarlar sayfasından kur girin.");
+    return;
+  }
+  if(!AyarlarSync.kurBayatMi()){
+    if(CartData.kurOku() > 0){ devamFn(); return; }
+    hataGoster("EUR/TL kuru bulunamadı. Ayarlar sayfasından kur girin.");
+    return;
+  }
+  if(typeof AyarlarSync.otomatikKurGetir !== "function"){
+    kurElleSorVeDevamEt(devamFn);
+    return;
+  }
   AyarlarSync.otomatikKurGetir(true, function(basarili){
-    if(basarili){ sayfayiCiz(); devamFn(); return; }
-    var girilen = prompt("⚠️ Güncel kur otomatik çekilemedi (internet bağlantısını kontrol et).\n\nBu satışın merkez ofisle tutarlı olması için bugünün EUR→TL kurunu elle gir:", CartData.kurOku()||"");
-    var sayisalDeger = parseFloat((girilen||"").replace(",","."));
-    if(!girilen || isNaN(sayisalDeger) || sayisalDeger<=0){
-      hataGoster("Geçerli bir kur girilmeden kayıt/gönderim yapılamaz.");
-      return;
-    }
-    AyarlarSync.kurKaydet(sayisalDeger);
-    sayfayiCiz();
-    devamFn();
+    if(basarili && CartData.kurOku() > 0){ sayfayiCiz(); devamFn(); return; }
+    kurElleSorVeDevamEt(devamFn);
   });
+}
+
+function kurElleSorVeDevamEt(devamFn){
+  var girilen = prompt("⚠️ Merkezi EUR/TL kuru alınamadı.\n\nKayıt için geçerli EUR→TL kurunu gir:", CartData.kurOku()||"");
+  var sayisalDeger = parseFloat((girilen||"").replace(",","."));
+  if(!girilen || isNaN(sayisalDeger) || sayisalDeger<=0){
+    hataGoster("Geçerli bir kur girilmeden kayıt/gönderim yapılamaz.");
+    return;
+  }
+  try{
+    AyarlarSync.kurKaydet(sayisalDeger);
+  }catch(e){
+    hataGoster("Kur kaydedilemedi: " + e.message);
+    return;
+  }
+  sayfayiCiz();
+  devamFn();
 }
 
 function ilerletKaynagiOku(){
