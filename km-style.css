@@ -21,8 +21,9 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-bottom: 10px;
+  min-width: 0;
 }
-.hesap-alan { display: flex; flex-direction: column; gap: 3px; }
+.hesap-alan { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .hesap-alan label { font-size: 11px; font-weight: 800; color: #556170; text-transform: uppercase; }
 .hesap-alan input {
   border: 2px solid #cbd5e1;
@@ -31,6 +32,9 @@
   font-size: 16px;
   font-weight: 700;
   color: #003a70;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 .hesap-alan input:focus { outline: none; border-color: #003a70; }
 .hesap-alan--tek { margin-bottom: 10px; }
@@ -131,10 +135,24 @@
   align-items: center;
   margin-bottom: 10px;
 }
+.km-tablo-baslik-butonlar {
+  display: flex;
+  gap: 6px;
+}
 .excel-buton {
   background: #e9f7ee;
   color: #16a34a;
   border: 1px solid #1f9d55;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.km-kaydet-buton {
+  background: #eaf2fc;
+  color: #003a70;
+  border: 1px solid #3569b8;
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 12px;

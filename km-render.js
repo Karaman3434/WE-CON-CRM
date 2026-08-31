@@ -285,6 +285,21 @@ document.addEventListener("DOMContentLoaded", function(){
   kategoriSecimBagla();
   document.getElementById("btnKmKaydet").onclick = kmKaydetTiklandi;
   document.getElementById("btnExcel").onclick = excelAktar;
+  document.getElementById("btnKmTabloKaydet").onclick = function(){
+    // Tablodaki hücreler zaten yazarken (blur olunca) otomatik kaydediyor —
+    // bu tuş, o an düzenlemede olan (henüz blur olmamış) bir hücre varsa
+    // onu zorla kaydettirip kullanıcıya açık bir onay gösteriyor.
+    var btn = this;
+    if(document.activeElement && document.activeElement.hasAttribute && document.activeElement.hasAttribute("contenteditable")){
+      document.activeElement.blur();
+    }
+    setTimeout(function(){
+      var eskiMetin = btn.textContent;
+      btn.textContent = "✓ Kaydedildi";
+      btn.disabled = true;
+      setTimeout(function(){ btn.textContent = eskiMetin; btn.disabled = false; }, 1500);
+    }, 150);
+  };
   document.getElementById("btnTabloGoster").onclick = function(){
     var bolum = document.getElementById("kmTabloBolum");
     bolum.hidden = !bolum.hidden;
