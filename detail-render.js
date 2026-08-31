@@ -77,9 +77,6 @@ function siparisGecmisiniCiz(){
     document.getElementById("badgeGecmis").textContent = bunaAit.length;
     document.getElementById("gecmisAlt").textContent = bunaAit.length>0 ? (bunaAit.length + " kayıtlı işlem") : "Henüz kayıt yok";
 
-    // Bu müşteriye ait kayıtlardan biri, güncel Cari Bilgi ismiyle TAM
-    // eşleşmiyorsa (eski/kısaltılmış bir isim varyantı taşıyorsa),
-    // kullanıcının tek tıkla düzeltebilmesi için bir uyarı kutusu göster.
     var farkliIsimliKayit = bunaAit.find(function(k){
       return (k.musteri||"").trim() !== (seciliMusteriAdi||"").trim();
     });
@@ -101,77 +98,101 @@ function siparisGecmisiniCiz(){
     }
     bos.hidden = true;
 
-    var TIP_KOD_GECMIS = {numune:"NUM", teklif:"TEK", proforma:"PRO", siparis:"SIP"};
-    var TIP_ZEMIN_GECMIS = {siparis:"#dbe9f9", teklif:"#cdf3de", proforma:"#e5cdf7", numune:"#ffe3bf"};
-    var TIP_RENK_GECMIS = {siparis:"#003a70", teklif:"#0e6b34", proforma:"#6a1b9a", numune:"#a8590c"};
+    var TIP_ETIKET_G = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
+    var TIP_IKON_G = {numune:"🧪", teklif:"📝", proforma:"📋", siparis:"📦"};
+    var TIP_RENK_G = {siparis:"#003a70", teklif:"#0e6b34", proforma:"#6a1b9a", numune:"#a8590c"};
 
-    var satirlar = "";
-    bunaAit.forEach(function(k){
+    // Her işlem (sipariş/teklif/vb.) kendi grubu: üstte tür+tarih+kod
+    // başlığı (kod artık her satırda değil, TEK SEFER burada), altında
+    // programın standart belge tablosu (Sepet/Belge Önizleme ile birebir
+    // aynı stil), en altta kur+toplam şeridi. Herhangi bir satırı sağa/
+    // sola kaydırınca o İŞLEMİN TAMAMI için silme onayı çıkar.
+    kapsayici.innerHTML = bunaAit.map(function(k){
       var kacanMi = k.durum === "kacan";
-      (k.urunler||[]).forEach(function(u, j){
+      var renk = TIP_RENK_G[k.tip]||"#003a70";
+      var toplamEuro = 0, toplamTl = 0;
+      var kaydinKuru = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
+
+      var satirlarHtml = (k.urunler||[]).map(function(u, i){
+        toplamEuro += u.toplamEuro||0;
+        toplamTl += (u.toplamEuro||0) * kaydinKuru;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
         var ozelFiyatMi = (u.iskonto||0) > 60;
         var prim = ozelFiyatMi ? 0 : mk*(u.adet||0)*0.22;
         if(prim<0) prim = 0;
-        var kaydinKuru = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
-        var primTl = prim * kaydinKuru;
-        var satirBg = kacanMi ? "#fac9c5" : (TIP_ZEMIN_GECMIS[k.tip]||"#ffffff");
-        satirlar += "<tr class='gecmis-tablo-satir' data-tip='" + k.tip + "' data-ts='" + k.ts + "' style='background:" + satirBg + ";'>"
-          + "<td>" + (j===0 ? "<span class='gecmis-kod-mini'>" + TIP_KOD_GECMIS[k.tip] + "</span>" + (kacanMi?"<div class='gecmis-durum-mini'>❌ KAÇTI</div>":"") : "") + "</td>"
-          + "<td>" + (j===0 ? htmlEsc(k.tarih.split(" ").slice(0,2).join(" ")) : "") + "</td>"
-          + "<td class='gecmis-td-urun'><div class='gecmis-td-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='gecmis-td-ad'>" + htmlEsc(u.ad) + "</div></td>"
+        var primTl = Math.round(prim * kaydinKuru);
+        return "<tr>"
+          + "<td class='belge-td-sira'>" + (i+1) + "</td>"
+          + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>"
           + "<td>" + (u.adet||0) + "</td>"
           + "<td>" + fmtG(u.listeFiyat||0) + "€</td>"
-          + "<td class='gecmis-td-isk'>%" + (u.iskonto||0) + "</td>"
-          + "<td style='color:" + TIP_RENK_GECMIS[k.tip] + ";'>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</td>"
-          + "<td class='gecmis-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
-          + "<td class='gecmis-td-prim'>" + (ozelFiyatMi ? "ÖZEL FİYAT" : fmtG(primTl)+"TL") + "</td>"
-          + "<td>" + (j===0 ? "<button class='gecmis-sil-btn' data-sil-tip='" + k.tip + "' data-sil-ts='" + k.ts + "'>🗑️</button>" : "") + "</td>"
+          + "<td class='belge-td-isk'>%" + (u.iskonto||0) + "</td>"
+          + "<td>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</td>"
+          + "<td class='belge-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
+          + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "Ö.F" : ("<div>"+primTl.toLocaleString("tr-TR")+"</div><div class='belge-td-prim-birim'>TL</div>")) + "</td>"
           + "</tr>";
+      }).join("");
+
+      return "<div class='gecmis-grup' data-tip='" + k.tip + "' data-ts='" + k.ts + "'>"
+        + "<div class='gecmis-grup-govde'>"
+        + "<div class='gecmis-grup-baslik' style='background:" + renk + ";'>"
+        + "<span>" + TIP_IKON_G[k.tip] + " " + TIP_ETIKET_G[k.tip] + " · " + htmlEsc(k.tarih.split(" ").slice(0,2).join(" ")) + " · " + htmlEsc(k.kod||"") + "</span>"
+        + (kacanMi ? "<span class='gecmis-kacan-rozet'>❌ KAÇTI</span>" : "")
+        + (k.revizeZamani ? "<span class='gecmis-revize-rozet'>🔄 REVİZE</span>" : "")
+        + "</div>"
+        + "<div class='data-table-container'><table class='belge-urun-tablo gecmis-standart-tablo'>"
+        + "<thead><tr><th style='width:6%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
+        + "<tbody>" + satirlarHtml + "</tbody></table></div>"
+        + "<div class='belge-genel-toplam-serit'>"
+        + (kaydinKuru ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmtG(kaydinKuru) + " Euro</span>" : "")
+        + "<span class='belge-gt-etiket'>TOPLAM</span>"
+        + "<span class='belge-gt-deger'>" + fmtG(toplamEuro) + " €</span>"
+        + "</div>"
+        + "</div>"
+        + "<div class='gecmis-grup-sil-arkaplan'>🗑 Sil</div>"
+        + "</div>";
+    }).join("");
+
+    // Tıklama = belgeyi görüntüle (kaydırma DEĞİLSE)
+    kapsayici.querySelectorAll(".gecmis-grup-govde").forEach(function(govde){
+      var grup = govde.closest(".gecmis-grup");
+      var basladiX = null, kaydiriliyorMu = false;
+      govde.addEventListener("pointerdown", function(e){ basladiX = e.clientX; kaydiriliyorMu = false; });
+      govde.addEventListener("pointermove", function(e){
+        if(basladiX===null) return;
+        var fark = e.clientX - basladiX;
+        if(Math.abs(fark) > 8) kaydiriliyorMu = true;
+        if(Math.abs(fark) > 6){
+          govde.style.transform = "translateX(" + Math.max(-90, Math.min(90, fark)) + "px)";
+        }
       });
-    });
-
-    kapsayici.innerHTML = "<div class='data-table-container'><table class='gecmis-urun-tablo'>"
-      + "<thead><tr><th>KOD</th><th>TARİH</th><th>ÜRÜN İSMİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th><th></th></tr></thead>"
-      + "<tbody>" + satirlar + "</tbody></table></div>";
-
-    var genelToplamEuro = 0, genelToplamTl = 0;
-    bunaAit.forEach(function(k){
-      var kaydinKuru2 = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
-      (k.urunler||[]).forEach(function(u){
-        genelToplamEuro += u.toplamEuro||0;
-        genelToplamTl += (u.toplamEuro||0) * kaydinKuru2;
-      });
-    });
-    kapsayici.innerHTML += "<div class='belge-genel-toplam-serit' style='border-radius:8px; margin-top:8px;'>"
-      + "<span class='belge-gt-kur'>Toplam (" + bunaAit.length + " kayıt)</span>"
-      + "<span class='belge-gt-etiket' style='font-size:12px;'>" + fmtG(genelToplamEuro) + " €</span>"
-      + "<span class='belge-gt-deger' style='font-size:14px;'>≈ " + fmtG(genelToplamTl) + " TL</span>"
-      + "</div>";
-
-    kapsayici.querySelectorAll(".gecmis-tablo-satir").forEach(function(tr){
-      tr.onclick = function(){
-        var t = this.getAttribute("data-tip");
-        var ts = this.getAttribute("data-ts");
-        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:t, ts:parseFloat(ts)}));
-        window.location.href = "belge-onizleme.html";
-      };
-    });
-    kapsayici.querySelectorAll(".gecmis-sil-btn").forEach(function(btn){
-      btn.onclick = function(e){
-        e.stopPropagation();
-        var t = this.getAttribute("data-sil-tip");
-        var ts = parseFloat(this.getAttribute("data-sil-ts"));
-        if(!confirm("Bu kayıt tamamen silinsin mi? Bu geri alınamaz.")) return;
-        this.disabled = true;
-        ReportsData.kaydiSil(t, ts, function(basarili, err){
-          if(!basarili){
-            hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-          }
-        });
-      };
+      function birak(e){
+        if(basladiX===null) return;
+        var fark = (e.clientX||basladiX) - basladiX;
+        basladiX = null;
+        govde.style.transition = "transform .2s";
+        govde.style.transform = "translateX(0)";
+        setTimeout(function(){ govde.style.transition = ""; }, 200);
+        if(Math.abs(fark) > 60){
+          silOnayiSor(grup.getAttribute("data-tip"), parseFloat(grup.getAttribute("data-ts")));
+          return;
+        }
+        if(!kaydiriliyorMu){
+          localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:grup.getAttribute("data-tip"), ts:parseFloat(grup.getAttribute("data-ts"))}));
+          window.location.href = "belge-onizleme.html";
+        }
+      }
+      govde.addEventListener("pointerup", birak);
+      govde.addEventListener("pointercancel", function(){ basladiX = null; govde.style.transform = "translateX(0)"; });
     });
   }catch(e){ hataGoster("Sipariş geçmişi çizilemedi: " + e.message); }
+}
+
+function silOnayiSor(tip, ts){
+  if(!confirm("Bu işlem tamamen silinsin mi? Bu geri alınamaz.")) return;
+  ReportsData.kaydiSil(tip, ts, function(basarili, err){
+    if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+  });
 }
 
 function ziyaretGecmisiniCiz(musteri){

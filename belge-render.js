@@ -69,17 +69,18 @@ function belgeyiCiz(kayit, musteri){
       var mk = (item.iskBirim||0)-(item.dipFiyat||0);
       var ozelFiyatMi = (item.iskonto||0) > 60;
       var satirPrim = ozelFiyatMi ? 0 : mk*(item.adet||0)*0.22;
-      var satirPrimTl = satirPrim * kaydinKuru;
+      var satirPrimTl = Math.round(satirPrim * kaydinKuru);
       if(satirPrim > 0){ toplamPrim += satirPrim; toplamPrimTl += satirPrimTl; }
+      var primHucre = ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<div>"+satirPrimTl.toLocaleString("tr-TR")+"</div><div class='belge-td-prim-birim'>TL</div>"));
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
-        + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
+        + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
         + "<td>" + fmt(item.listeFiyat||0) + " €</td>"
         + "<td class='belge-td-isk'>%" + (item.iskonto||0) + "</td>"
         + "<td>" + fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)) + " €</td>"
         + "<td class='belge-td-toplam'>" + fmt(toplamEuro) + " €</td>"
-        + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "ÖZEL FİYAT" : (satirPrim<0 ? "Yok" : fmt(satirPrimTl)+" TL")) + "</td>"
+        + "<td class='belge-td-prim'>" + primHucre + "</td>"
         + "</tr>";
     }).join("");
 
@@ -120,7 +121,7 @@ function belgeyiCiz(kayit, musteri){
       + musteriBlokHtml
       + "<div class='belge-belge-baslik-serit'>" + htmlEsc(belgeBaslikMetni) + "</div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:6%;'>SIRA</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"
@@ -129,7 +130,7 @@ function belgeyiCiz(kayit, musteri){
       + "<span class='belge-gt-deger'>" + fmt(netEuro) + " €</span>"
       + "</div>"
       + "<div class='belge-prim-serit'>"
-      + "<span class='belge-prim-etiket'>MÜDÜR PRİMİ (TOPLAM)</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":fmt(toplamPrimTl)+" TL") + "</span>"
+      + "<span class='belge-prim-etiket'>MÜDÜR PRİMİ (TOPLAM)</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":Math.round(toplamPrimTl).toLocaleString("tr-TR")+" TL") + "</span>"
       + "</div>"
       + "</div>";
 
