@@ -192,6 +192,34 @@ var KmData = (function(){
       .map(function(k){ return Object.assign({anahtar:k}, kayitlar[k]); });
   }
 
+  // Belirli bir "YYYY-MM" ayının kayıtlarını döndürür — Ağustos ayının
+  // takvim değişse bile ARŞİVDEN kaybolmaması, istendiğinde geriye dönüp
+  // görüntülenebilmesi/Excel'e aktarılabilmesi için.
+  function ayinKayitlari(yilAy){
+    return Object.keys(kayitlar)
+      .filter(function(k){ return k.indexOf(yilAy)===0; })
+      .sort()
+      .reverse()
+      .map(function(k){ return Object.assign({anahtar:k}, kayitlar[k]); });
+  }
+
+  // Kayıt bulunan TÜM ayları ("YYYY-MM") en yeniden en eskiye sıralı
+  // döndürür — ay seçici menüsünü doldurmak için. Bu ayda hiç kayıt
+  // olmasa bile mevcut ay listeye eklenir (seçenek olarak görünsün diye).
+  function kayitliAylar(){
+    var aySeti = {};
+    Object.keys(kayitlar).forEach(function(k){ aySeti[k.slice(0,7)] = true; });
+    var simdi = new Date();
+    aySeti[simdi.getFullYear()+"-"+("0"+(simdi.getMonth()+1)).slice(-2)] = true;
+    return Object.keys(aySeti).sort().reverse();
+  }
+
+  function ayAdiUret(yilAy){
+    var AYLAR2 = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+    var parca = yilAy.split("-");
+    return AYLAR2[parseInt(parca[1],10)-1] + " " + parca[0];
+  }
+
   function ayarlarOku(geriBildir){
     try{
       var db = firebase.database();
@@ -242,6 +270,9 @@ var KmData = (function(){
     ziyaretYerleriniKaydet: ziyaretYerleriniKaydet,
     hucreGuncelle: hucreGuncelle,
     buAyinKayitlari: buAyinKayitlari,
+    ayinKayitlari: ayinKayitlari,
+    kayitliAylar: kayitliAylar,
+    ayAdiUret: ayAdiUret,
     ayarlarOku: ayarlarOku,
     ayarlarKaydet: ayarlarKaydet,
     baslangicGerekliMi: baslangicGerekliMi,

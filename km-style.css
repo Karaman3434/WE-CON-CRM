@@ -139,6 +139,17 @@
   display: flex;
   gap: 6px;
 }
+.km-ay-secici {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #003a70;
+  background: #fff;
+  margin-bottom: 10px;
+}
 .excel-buton {
   background: #e9f7ee;
   color: #16a34a;
