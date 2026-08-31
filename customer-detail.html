@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="customer-style.css">
 <link rel="stylesheet" href="detail-style.css">
 <link rel="stylesheet" href="send-style.css">
+<link rel="stylesheet" href="belge-style.css">
 </head>
 <body>
 
@@ -87,10 +88,38 @@
     </div>
   </div>
 
+  <div class="islemler-tile" id="tileUrunGecmisi">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--mor">📦 Ürün Geçmişi</div>
+      <div class="islemler-tile-alt" id="urunGecmisiAlt">Bu müşteriye satılan ürünler</div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-rozet islemler-rozet--mor" id="badgeUrunGecmisi">0</span>
+      <span class="islemler-ok islemler-ok--mor">›</span>
+    </div>
+  </div>
+
   <div class="islemler-alt-buton-satir">
     <button class="islemler-birlestir-btn" id="btnBirlestirAc">🔀 Birleştir</button>
     <button class="islemler-sil-btn" id="btnMusteriSil">🗑 Sil</button>
     <a class="islemler-kapat-btn" href="customer.html">Kapat</a>
+  </div>
+
+  <!-- ÜRÜN GEÇMİŞİ — önce ürün listesi, bir ürüne dokununca o ürünün
+       tarih tarih liste fiyatı/iskonto/net fiyat tablosu. -->
+  <div class="tip-secim-overlay" id="urunGecmisiOverlay" hidden>
+    <div class="tip-secim-kutu" style="max-height:80vh; overflow-y:auto;">
+      <div class="tip-secim-baslik" id="urunGecmisiBaslik">📦 Ürün Geçmişi</div>
+      <div id="urunGecmisiListesi"></div>
+      <div id="urunGecmisiDetay" hidden>
+        <button class="ck-duzenle-btn" id="btnUrunGecmisiGeri" style="width:100%; margin-bottom:10px;">‹ Ürün Listesine Dön</button>
+        <div class="data-table-container"><table class="belge-urun-tablo" style="font-size:10px;">
+          <thead><tr><th>TARİH</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th></tr></thead>
+          <tbody id="urunGecmisiTabloGovde"></tbody>
+        </table></div>
+      </div>
+      <button class="tip-secim-vazgec-btn" id="btnUrunGecmisiKapat">Kapat</button>
+    </div>
   </div>
 
   <!-- MÜŞTERİ BİRLEŞTİRME — açılır bölüm, 2 aşamalı (ara→seç, sonra onay) -->

@@ -34,10 +34,12 @@ function kartlariGuncelle(){
     var bugun = WeiconData.bugununVerisi();
 
     setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro));
+    setText("anaSayfaSatisToplamTl", "≈ " + WeiconData.fmt(ay.toplamEuroTl) + " TL");
     setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim));
     setText("anaSayfaAyEtiketi", "EUR · " + ay.ayAd + " " + ay.yil);
 
     setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro));
+    setText("anaSayfaBugunSatisTl", "≈ " + WeiconData.fmt(bugun.toplamEuroTl) + " TL");
     setText("anaSayfaBugunPrim", WeiconData.fmt(bugun.toplamPrim));
 
   }catch(e){ hataGoster("Kartlar güncellenemedi: " + e.message); }

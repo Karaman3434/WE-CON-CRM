@@ -22,7 +22,7 @@
 </header>
 
 <nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="raporlar.html">Geri</a>
+  <button class="nav-btn nav-btn--geri" id="btnGeriAkilli">Geri</button>
   <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
   <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
 </nav>
@@ -45,7 +45,7 @@
   <div class="istatistik-bolum-baslik">📅 Aylık Sipariş &amp; Prim Özeti (Son 12 Ay)</div>
   <div class="data-table-container">
     <table class="aylik-ozet-tablo">
-      <thead><tr><th>AY</th><th>SATIŞ</th><th>PRİM</th><th>TL PRİM</th></tr></thead>
+      <thead><tr><th>AY</th><th>SATIŞ (€)</th><th>SATIŞ (TL)</th><th>PRİM</th><th>TL PRİM</th></tr></thead>
       <tbody id="istAylikListe"></tbody>
       <tfoot><tr class="aylik-ozet-toplam-satir">
         <td>TOPLAM (12 Ay)</td>

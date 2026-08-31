@@ -103,6 +103,20 @@ function siparisGecmisiniCiz(){
       + "<thead><tr><th>KOD</th><th>TARİH</th><th>ÜRÜN İSMİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th><th></th></tr></thead>"
       + "<tbody>" + satirlar + "</tbody></table></div>";
 
+    var genelToplamEuro = 0, genelToplamTl = 0;
+    bunaAit.forEach(function(k){
+      var kaydinKuru2 = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
+      (k.urunler||[]).forEach(function(u){
+        genelToplamEuro += u.toplamEuro||0;
+        genelToplamTl += (u.toplamEuro||0) * kaydinKuru2;
+      });
+    });
+    kapsayici.innerHTML += "<div class='belge-genel-toplam-serit' style='border-radius:8px; margin-top:8px;'>"
+      + "<span class='belge-gt-kur'>Toplam (" + bunaAit.length + " kayıt)</span>"
+      + "<span class='belge-gt-etiket' style='font-size:12px;'>" + fmtG(genelToplamEuro) + " €</span>"
+      + "<span class='belge-gt-deger' style='font-size:14px;'>≈ " + fmtG(genelToplamTl) + " TL</span>"
+      + "</div>";
+
     kapsayici.querySelectorAll(".gecmis-tablo-satir").forEach(function(tr){
       tr.onclick = function(){
         var t = this.getAttribute("data-tip");
@@ -176,6 +190,62 @@ function tilelariBagla(){
     localStorage.setItem("weiconv2_islem_yap_akisi", "1");
     window.location.href = "customer-cari-kart.html";
   };
+
+  document.getElementById("tileUrunGecmisi").onclick = urunGecmisiniAc;
+  document.getElementById("btnUrunGecmisiKapat").onclick = function(){ document.getElementById("urunGecmisiOverlay").hidden = true; };
+  document.getElementById("btnUrunGecmisiGeri").onclick = function(){
+    document.getElementById("urunGecmisiDetay").hidden = true;
+    document.getElementById("urunGecmisiListesi").hidden = false;
+    document.getElementById("urunGecmisiBaslik").textContent = "📦 Ürün Geçmişi";
+  };
+}
+
+function urunGecmisiniAc(){
+  try{
+    if(typeof ReportsData === "undefined" || typeof ReportsData.musteriUrunGecmisi !== "function"){
+      hataGoster("Ürün geçmişi şu an yüklenemedi.");
+      return;
+    }
+    var musteri = CustomerData.musteriBul(seciliMusteriAdi);
+    var gruplar = ReportsData.musteriUrunGecmisi(seciliMusteriAdi, musteri ? musteri.id : null);
+    var listesiEl = document.getElementById("urunGecmisiListesi");
+    var detayEl = document.getElementById("urunGecmisiDetay");
+    var baslikEl = document.getElementById("urunGecmisiBaslik");
+
+    detayEl.hidden = true;
+    listesiEl.hidden = false;
+    baslikEl.textContent = "📦 Ürün Geçmişi";
+    document.getElementById("badgeUrunGecmisi").textContent = gruplar.length;
+
+    if(gruplar.length === 0){
+      listesiEl.innerHTML = "<p style='text-align:center;color:#44494f;padding:16px 0;'>Bu müşteriye henüz sipariş olarak satılmış bir ürün yok.</p>";
+    } else {
+      listesiEl.innerHTML = gruplar.map(function(g, i){
+        return "<div class='satir-tiklanabilir' data-urun-i='" + i + "' style='background:#f4f7fb;border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;'>"
+          + "<span style='font-size:12px;font-weight:800;color:#111;'>" + htmlEsc(g.ad) + "</span>"
+          + "<span style='font-size:10px;color:#8e44ad;font-weight:800;'>" + g.kayitlar.length + " kez ›</span>"
+          + "</div>";
+      }).join("");
+      listesiEl.querySelectorAll("[data-urun-i]").forEach(function(el){
+        el.onclick = function(){
+          var g = gruplar[parseInt(this.getAttribute("data-urun-i"),10)];
+          baslikEl.textContent = "📦 " + g.ad;
+          document.getElementById("urunGecmisiTabloGovde").innerHTML = g.kayitlar.map(function(k){
+            return "<tr>"
+              + "<td>" + htmlEsc((k.tarih||"").split(" ").slice(0,2).join(" ")) + "</td>"
+              + "<td>" + (k.adet||0) + "</td>"
+              + "<td>" + fmtG(k.listeFiyat) + "€</td>"
+              + "<td class='belge-td-isk'>%" + k.iskonto + "</td>"
+              + "<td class='belge-td-toplam'>" + fmtG(k.netFiyat) + "€</td>"
+              + "</tr>";
+          }).join("");
+          listesiEl.hidden = true;
+          detayEl.hidden = false;
+        };
+      });
+    }
+    document.getElementById("urunGecmisiOverlay").hidden = false;
+  }catch(e){ hataGoster("Ürün geçmişi açılamadı: " + e.message); }
 }
 
 function musteriGorevleriniCiz(){

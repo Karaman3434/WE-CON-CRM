@@ -127,6 +127,12 @@ body {
   margin-top: 4px;
   opacity: .85;
 }
+.kart-tl-alt {
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 2px;
+  opacity: .8;
+}
 
 .kart--koyu-mavi { background: #0e2038; }
 .kart--koyu-mavi .kart-baslik { color: #7fd6ff; }

@@ -244,7 +244,21 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
+// Akıllı Geri: bu sayfaya BAŞKA bir sayfadan (Raporlar, Müşteri Kartı vb.)
+// gerçek bir tıklamayla gelindiyse, tarayıcı geçmişinde bir adım geri gider
+// (kaç adım ileri gidildiyse o kadar geri gelir). Sayfa doğrudan bir
+// bağlantıdan/yer imi ile açıldıysa (geçmiş yoksa) Raporlar'a düşer.
+function akilliGeriBagla(yedekSayfa){
+  var btn = document.getElementById("btnGeriAkilli");
+  if(!btn) return;
+  btn.onclick = function(){
+    if(window.history.length > 1) window.history.back();
+    else window.location.href = yedekSayfa;
+  };
+}
+
 document.addEventListener("DOMContentLoaded", function(){
+  akilliGeriBagla("reports.html");
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnYazdir").onclick = function(){ window.print(); };

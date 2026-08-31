@@ -109,6 +109,34 @@ var ReportsData = (function(){
     return arsiv.siparis || [];
   }
 
+  // Bir müşterinin bugüne kadar aldığı (SİPARİŞ olarak kaydedilmiş) tüm
+  // ürünleri, ürün adına göre gruplayıp her ürünün tarih tarih fiyat/
+  // iskonto geçmişini döndürür. Müşteri Kartı'ndaki "📦 Ürün Geçmişi"
+  // ekranı bunu kullanır.
+  function musteriUrunGecmisi(musteriAd, musteriId){
+    var gruplar = {}; // ürün adı -> [{tarih, listeFiyat, iskonto, netFiyat, adet, ts}]
+    tumSiparisler().forEach(function(k){
+      var ayniMusteriMi = musteriId && k.musteriId ? (k.musteriId===musteriId) : (k.musteri===musteriAd);
+      if(!ayniMusteriMi) return;
+      (k.urunler||[]).forEach(function(u){
+        var ad = u.ad || "İsimsiz Ürün";
+        if(!gruplar[ad]) gruplar[ad] = [];
+        gruplar[ad].push({
+          tarih: k.tarih, ts: k.ts,
+          listeFiyat: u.listeFiyat||0, iskonto: u.iskonto||0,
+          netFiyat: u.iskBirim!=null?u.iskBirim:(u.listeFiyat||0),
+          adet: u.adet||0
+        });
+      });
+    });
+    var sonuc = Object.keys(gruplar).map(function(ad){
+      var kayitlar = gruplar[ad].sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+      return {ad: ad, kayitlar: kayitlar, sonAlisTs: kayitlar[0].ts};
+    });
+    sonuc.sort(function(a,b){ return (b.sonAlisTs||0)-(a.sonAlisTs||0); });
+    return sonuc;
+  }
+
   function kaydiKacanIsaretle(tip, ts, sebep, rakip, geriBildir){
     try{
       var db = firebase.database();
@@ -154,7 +182,7 @@ var ReportsData = (function(){
     var aylar = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
     var ayAd = aylar[hedefAy.getMonth()];
     var yil = hedefAy.getFullYear().toString();
-    var toplam = 0, prim = 0, primTl = 0, sayi = 0;
+    var toplam = 0, toplamTl = 0, prim = 0, primTl = 0, sayi = 0;
     tumSiparisler().forEach(function(k){
       if(!k.tarih) return;
       var parca = k.tarih.split(" ");
@@ -163,6 +191,7 @@ var ReportsData = (function(){
       var kKuru = k.kur || guncelKurYedek();
       (k.urunler||[]).forEach(function(u){
         toplam += u.toplamEuro||0;
+        toplamTl += (u.toplamEuro||0) * kKuru; // satış tutarı işlemin YAPILDIĞI günün kuruyla TL'ye çevrilir
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
         var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
         if(satirPrimi>0){
@@ -171,7 +200,7 @@ var ReportsData = (function(){
         }
       });
     });
-    return {ayAd:ayAd, yil:yil, toplam:toplam, prim:prim, primTl:primTl, sayi:sayi};
+    return {ayAd:ayAd, yil:yil, toplam:toplam, toplamTl:toplamTl, prim:prim, primTl:primTl, sayi:sayi};
   }
 
   function guncelKurYedek(){
@@ -394,6 +423,7 @@ var ReportsData = (function(){
     kacanOzetBuAy: kacanOzetBuAy,
     kaydiSil: kaydiSil,
     kayitlariBirlestir: kayitlariBirlestir,
+    musteriUrunGecmisi: musteriUrunGecmisi,
     kaydiGuncelle: kaydiGuncelle,
     SONRAKI_ASAMALAR: SONRAKI_ASAMALAR,
     revizeBaslat: revizeBaslat

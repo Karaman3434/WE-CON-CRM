@@ -70,16 +70,18 @@ var WeiconData = (function(){
     var buAyAd = AYLAR[now.getMonth()];
     var buYil = now.getFullYear().toString();
     var siparisler = arsivData.siparis || [];
-    var toplamEuro = 0, toplamPrim = 0;
+    var toplamEuro = 0, toplamEuroTl = 0, toplamPrim = 0;
     for(var i=0;i<siparisler.length;i++){
       var k = siparisler[i];
       if(!k.tarih) continue;
       var parca = k.tarih.split(" ");
       var ayAd = parca[1]||"", yil = parca[2]||"";
       if(ayAd!==buAyAd || yil!==buYil) continue;
+      var kKuru0 = k.kur || guncelKurYedek();
       if(k.urunler) for(var j=0;j<k.urunler.length;j++){
         var u = k.urunler[j];
         toplamEuro += u.toplamEuro||0;
+        toplamEuroTl += (u.toplamEuro||0) * kKuru0; // satış tutarı işlemin YAPILDIĞI günün kuruyla TL'ye çevrilir
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
         var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
         // Müdür primi işlemin YAPILDIĞI günün kuruyla TL'ye çevrilir —
@@ -88,7 +90,7 @@ var WeiconData = (function(){
         if(satirPrimi>0) toplamPrim += satirPrimi*kKuru;
       }
     }
-    return {ayAd:buAyAd, yil:buYil, toplamEuro:toplamEuro, toplamPrim:toplamPrim};
+    return {ayAd:buAyAd, yil:buYil, toplamEuro:toplamEuro, toplamEuroTl:toplamEuroTl, toplamPrim:toplamPrim};
   }
 
   function bugununVerisi(){
@@ -98,22 +100,24 @@ var WeiconData = (function(){
     var ayAd = AYLAR[isGunu.getMonth()];
     var yil = isGunu.getFullYear().toString();
     var siparisler = arsivData.siparis || [];
-    var toplamEuro = 0, toplamPrim = 0;
+    var toplamEuro = 0, toplamEuroTl = 0, toplamPrim = 0;
     for(var i=0;i<siparisler.length;i++){
       var k = siparisler[i];
       if(!k.tarih) continue;
       var parca = k.tarih.split(" ");
       if((parca[0]||"")!==gunNo || (parca[1]||"")!==ayAd || (parca[2]||"")!==yil) continue;
+      var kKuru0 = k.kur || guncelKurYedek();
       if(k.urunler) for(var j=0;j<k.urunler.length;j++){
         var u = k.urunler[j];
         toplamEuro += u.toplamEuro||0;
+        toplamEuroTl += (u.toplamEuro||0) * kKuru0;
         var mk = (u.iskBirim||0)-(u.dipFiyat||0);
         var satirPrimi = ((u.iskonto||0) > 60) ? 0 : mk*(u.adet||1)*0.22;
         var kKuru = k.kur || guncelKurYedek();
         if(satirPrimi>0) toplamPrim += satirPrimi*kKuru;
       }
     }
-    return {toplamEuro:toplamEuro, toplamPrim:toplamPrim, aktifMi:true};
+    return {toplamEuro:toplamEuro, toplamEuroTl:toplamEuroTl, toplamPrim:toplamPrim, aktifMi:true};
   }
 
   function guncelKurYedek(){

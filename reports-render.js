@@ -60,10 +60,14 @@ function ayDetayiniAc(ayVerisi){
     var ayToplamEuro = kayitlarBuAy.reduce(function(s,k){
       return s + (k.urunler||[]).reduce(function(ss,u){ return ss+(u.toplamEuro||0); }, 0);
     }, 0);
+    var ayToplamTl = kayitlarBuAy.reduce(function(s,k){
+      var kKuru = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
+      return s + (k.urunler||[]).reduce(function(ss,u){ return ss+((u.toplamEuro||0)*kKuru); }, 0);
+    }, 0);
 
     document.getElementById("ayDetayBaslik").textContent = "📅 " + ayVerisi.ayAd + " " + ayVerisi.yil + " Kayıtları";
     document.getElementById("ayDetayToplamEtiket").textContent = "🧮 SİPARİŞ TOPLAMI (" + kayitlarBuAy.length + " kayıt)";
-    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayToplamEuro) + " €";
+    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayToplamEuro) + " € · ≈ " + fmt(ayToplamTl) + " TL";
 
     document.getElementById("ayDetayListesi").innerHTML = "<div class='musteri-liste-kutu'>" + kayitlarBuAy.map(function(k, i){
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
@@ -112,13 +116,14 @@ function istatistikleriCiz(){
     document.getElementById("istGecenAySiparisSayisi").textContent = gecenAy.sayi + " sipariş";
 
     var ozet = ReportsData.aylikPrimOzeti12();
-    var genelToplam=0, genelPrim=0, genelPrimTl=0;
+    var genelToplam=0, genelToplamTl=0, genelPrim=0, genelPrimTl=0;
     document.getElementById("istAylikListe").innerHTML = ozet.aylar.map(function(a, i){
-      genelToplam += a.toplam; genelPrim += a.prim; genelPrimTl += a.primTl;
+      genelToplam += a.toplam; genelToplamTl += a.toplamTl; genelPrim += a.prim; genelPrimTl += a.primTl;
       var mevcutAySinifi = i===0 ? " aylik-ozet-satir--mevcut-ay" : "";
       return "<tr class='" + mevcutAySinifi.trim() + "'>"
         + "<td class='aylik-ozet-ay-hucre'>" + a.ayAd + " " + a.yil + "</td>"
         + "<td>" + fmt(a.toplam) + " €</td>"
+        + "<td class='aylik-ozet-satirtl-hucre'>" + fmt(a.toplamTl) + " ₺</td>"
         + "<td class='aylik-ozet-prim-hucre'>" + fmt(a.prim) + " €</td>"
         + "<td class='aylik-ozet-primtl-hucre'>" + fmt(a.primTl) + " ₺</td>"
         + "</tr>";
@@ -211,7 +216,7 @@ function islemleriCiz(){
         + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
         + "<span class='islem-toplam-satirici'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</span>"
         + "</div>"
-        + "<div class='islem-musteri-satir islem-tiklanabilir' data-ac-i='" + i + "'>"
+        + "<div class='islem-musteri-satir islem-musteri-tiklanabilir' data-belge-i='" + i + "'>"
         + "<span class='islem-musteri-buyuk'>" + htmlEsc(k.musteri) + "</span>"
         + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
         + "</div>"
@@ -230,7 +235,7 @@ function islemleriCiz(){
         + "</div>";
     }).join("");
 
-    kapsayici.querySelectorAll(".islem-belge-btn").forEach(function(btn){
+    kapsayici.querySelectorAll(".islem-belge-btn, .islem-musteri-tiklanabilir").forEach(function(btn){
       btn.onclick = function(){
         var i = parseInt(this.getAttribute("data-belge-i"), 10);
         var k = liste[i];
@@ -403,6 +408,16 @@ function duzenlemeKaydet(){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  // Akıllı Geri: Raporlar (raporlar.html) üzerinden gerçekten buraya
+  // gelindiyse tarayıcı geçmişinde bir adım geri gider; geçmiş yoksa
+  // (doğrudan bağlantıyla açıldıysa) Raporlar'a düşer.
+  (function(){
+    var btn = document.getElementById("btnGeriAkilli");
+    if(btn) btn.onclick = function(){
+      if(window.history.length > 1) window.history.back();
+      else window.location.href = "raporlar.html";
+    };
+  })();
 
   document.getElementById("btnDuzenleVazgec").onclick = function(){ document.getElementById("duzenleOverlay").hidden = true; duzenlenenKayit = null; };
   document.getElementById("btnDuzenleKaydet").onclick = duzenlemeKaydet;

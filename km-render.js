@@ -105,6 +105,12 @@ function tabloyuCiz(){
       if(k.ozelKm!=null) toplamOzel += k.ozelKm;
       var bugunMu = k.anahtar === bugunAnahtar;
       var satirSinifi = bugunMu ? " class='km-satir--bugun'" : "";
+      // Hafta sonu / tatil / rapor / izin / bayram gibi özel kullanım
+      // günlerini fark etmek için satırın tamamı sarı zemin olur.
+      var ozelGunAnahtarKelimeler = ["HAFTA SONU","TATİL","TATIL","RAPOR","İZİN","IZIN","BAYRAM","RESMİ TATİL","RESMI TATIL"];
+      var satirMetniBuyuk = ((k.guzergah||"") + " " + (k.ziyaretYerleri||"")).toLocaleUpperCase("tr-TR");
+      var ozelGunMu = ozelGunAnahtarKelimeler.some(function(kelime){ return satirMetniBuyuk.indexOf(kelime) !== -1; });
+      if(ozelGunMu && !bugunMu) satirSinifi = " class='km-satir--ozelgun'";
       var baslangicSinifi = bugunMu ? " km-td-baslangic-bugun" : "";
       // Saat: "09:00-18:00" gibi aralık girilmişse iki satır (üstte
       // başlangıç, altta bitiş); tek saat varsa tek satır.
