@@ -1,9 +1,10 @@
 // Tek merkezi sürüm bilgisi — ui-render-fix.js içindeki yorum satırıyla
 // senkron tutulmalıdır. Format: W(YYMMDD).(HHMM).(sıra no)
-var APP_VERSION = "WG.260831.1821.54";
+var APP_VERSION = "WG.260831.2109.56";
 
 function hataGoster(mesaj){
   console.error(mesaj);
+  if(typeof HataLog !== "undefined") HataLog.kaydet(mesaj);
   var kutu = document.createElement("div");
   kutu.textContent = "⚠️ " + mesaj;
   kutu.style.cssText = "position:fixed;top:8px;left:8px;right:8px;background:#c0392b;color:#fff;padding:10px;border-radius:8px;font-size:13px;z-index:99999;";

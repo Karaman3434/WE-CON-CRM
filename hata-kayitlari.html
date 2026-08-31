@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — HATA KAYITLARI v1
+  ====================================
+  hata-log.js'in Firebase'e sessizce yazdığı tüm hataları (programın
+  HERHANGİ bir sayfasında oluşan) geriye dönük listeler. Amaç: "fark
+  edilene kadar hiçbir yerde görünmeyen" sorunları (kur API'sinin
+  sessizce bozulması gibi) erken yakalayabilmek. Son 200 kayıt, en
+  yeniden eskiye; tarihe göre filtrelenebilir; tek tek veya toplu silinebilir.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Hata Kayıtları</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="hata-kayitlari-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="menu.html">Geri</a>
+  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="hk-baslik-serit">
+    <span>🐞 Hata Kayıtları</span>
+    <span class="hk-sayac" id="hkSayac">0</span>
+  </div>
+  <p class="hk-aciklama">Programın herhangi bir sayfasında oluşan hatalar burada otomatik listelenir — kur güncellemesi başarısız olması, kayıt hataları vb. Sorun yaşamadıysan bu liste boş kalır, bu normaldir.</p>
+
+  <div class="hk-filtre-satir">
+    <select id="hkGunFiltre">
+      <option value="7">Son 7 gün</option>
+      <option value="30" selected>Son 30 gün</option>
+      <option value="9999">Tümü</option>
+    </select>
+    <button class="hk-hepsini-sil-btn" id="btnHkHepsiniSil">🗑 Hepsini Temizle</button>
+  </div>
+
+  <div id="hkListesi"></div>
+  <p class="bos-mesaj" id="hkBos" hidden>Bu aralıkta kayıtlı hata yok. 🎉</p>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+<script src="hata-log.js"></script>
+<script src="hata-kayitlari-render.js"></script>
+</body>
+</html>

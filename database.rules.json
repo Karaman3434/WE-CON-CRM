@@ -35,6 +35,10 @@
       ".read": "auth != null",
       ".write": "auth != null"
     },
+    "hatalar": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
 
     "$other": {
       ".read": "auth != null",
