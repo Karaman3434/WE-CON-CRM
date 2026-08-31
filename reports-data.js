@@ -116,7 +116,17 @@ var ReportsData = (function(){
   function musteriUrunGecmisi(musteriAd, musteriId){
     var gruplar = {}; // ürün adı -> [{tarih, listeFiyat, iskonto, netFiyat, adet, ts}]
     tumSiparisler().forEach(function(k){
-      var ayniMusteriMi = musteriId && k.musteriId ? (k.musteriId===musteriId) : (k.musteri===musteriAd);
+      // Sadece isim birebir eşleşmesi YETERSİZ — müşteri ismi sonradan
+      // düzenlenmiş (kısaltılmış/uzatılmış) olabilir. Önce Müşteri Kodu
+      // (ID) ile, o da yoksa "biri diğerinin içinde geçiyor mu" kontrolüyle.
+      var ayniMusteriMi;
+      if(musteriId && k.musteriId){
+        ayniMusteriMi = k.musteriId === musteriId;
+      } else {
+        var a = (k.musteri||"").toLocaleLowerCase("tr-TR").trim();
+        var b = (musteriAd||"").toLocaleLowerCase("tr-TR").trim();
+        ayniMusteriMi = !!a && !!b && (a===b || a.indexOf(b)===0 || b.indexOf(a)===0);
+      }
       if(!ayniMusteriMi) return;
       (k.urunler||[]).forEach(function(u){
         var ad = u.ad || "İsimsiz Ürün";

@@ -52,15 +52,47 @@ function ustBilgiyiCiz(musteri){
   document.getElementById("temasAlt").textContent = ziyaretSayisi>0 ? (ziyaretSayisi + " kayıtlı temas") : "Henüz temas kaydı yok";
 }
 
+function ayniMusteriKaydiMi(kayitMusteriAdi, kayitMusteriId, seciliAd, seciliId){
+  // Sadece isim birebir eşleşmesi YETERSİZ — müşteri ismi sonradan
+  // düzenlenmiş (kısaltılmış/uzatılmış) olabilir, o zaman eski kayıtlar
+  // görünmez olur. Önce Müşteri Kodu (ID) ile, o yoksa isimle, o da tam
+  // eşleşmezse "biri diğerinin içinde geçiyor mu" kontrolüyle eşleştir.
+  if(seciliId && kayitMusteriId) return kayitMusteriId === seciliId;
+  var a = (kayitMusteriAdi||"").toLocaleLowerCase("tr-TR").trim();
+  var b = (seciliAd||"").toLocaleLowerCase("tr-TR").trim();
+  if(!a || !b) return false;
+  if(a === b) return true;
+  return a.indexOf(b) === 0 || b.indexOf(a) === 0;
+}
+
 function siparisGecmisiniCiz(){
   try{
+    var seciliMusteri = CustomerData.musteriBul(seciliMusteriAdi);
+    var seciliId = seciliMusteri ? seciliMusteri.id : null;
     var tumu = ReportsData.sonIslemler();
-    var bunaAit = tumu.filter(function(k){ return (k.musteri||"").toLocaleLowerCase("tr-TR") === (seciliMusteriAdi||"").toLocaleLowerCase("tr-TR"); });
+    var bunaAit = tumu.filter(function(k){ return ayniMusteriKaydiMi(k.musteri, k.musteriId, seciliMusteriAdi, seciliId); });
     var kapsayici = document.getElementById("detaySiparisListesi");
     var bos = document.getElementById("detaySiparisBos");
 
     document.getElementById("badgeGecmis").textContent = bunaAit.length;
     document.getElementById("gecmisAlt").textContent = bunaAit.length>0 ? (bunaAit.length + " kayıtlı işlem") : "Henüz kayıt yok";
+
+    // Bu müşteriye ait kayıtlardan biri, güncel Cari Bilgi ismiyle TAM
+    // eşleşmiyorsa (eski/kısaltılmış bir isim varyantı taşıyorsa),
+    // kullanıcının tek tıkla düzeltebilmesi için bir uyarı kutusu göster.
+    var farkliIsimliKayit = bunaAit.find(function(k){
+      return (k.musteri||"").trim() !== (seciliMusteriAdi||"").trim();
+    });
+    var uyusmazlikKutu = document.getElementById("isimUyusmazlikKutu");
+    if(farkliIsimliKayit){
+      uyusmazlikKutu.hidden = false;
+      document.getElementById("isimUyusmazlikMetin").textContent =
+        "⚠️ Bazı eski kayıtlarda farklı bir isim var: \"" + farkliIsimliKayit.musteri + "\". "
+        + "Bu kayıtlar gösteriliyor ama isimleri güncel Cari Bilgi (\"" + seciliMusteriAdi + "\") ile eşleşmiyor.";
+      document.getElementById("btnIsimUyusmazlikDuzelt").onclick = isimleriEsitleTiklandi;
+    } else {
+      uyusmazlikKutu.hidden = true;
+    }
 
     if(bunaAit.length === 0){
       kapsayici.innerHTML = "";
@@ -246,6 +278,43 @@ function urunGecmisiniAc(){
     }
     document.getElementById("urunGecmisiOverlay").hidden = false;
   }catch(e){ hataGoster("Ürün geçmişi açılamadı: " + e.message); }
+}
+
+function isimleriEsitleTiklandi(){
+  try{
+    var seciliMusteri = CustomerData.musteriBul(seciliMusteriAdi);
+    var seciliId = seciliMusteri ? seciliMusteri.id : null;
+    var tumu = ReportsData.sonIslemler();
+    var bunaAit = tumu.filter(function(k){ return ayniMusteriKaydiMi(k.musteri, k.musteriId, seciliMusteriAdi, seciliId); });
+    var farkliIsimler = [];
+    bunaAit.forEach(function(k){
+      var isim = (k.musteri||"").trim();
+      if(isim && isim !== (seciliMusteriAdi||"").trim() && farkliIsimler.indexOf(isim)===-1) farkliIsimler.push(isim);
+    });
+    if(farkliIsimler.length === 0) return;
+
+    if(!confirm("Şu eski isim varyant(lar)ı bulundu:\n\n" + farkliIsimler.join("\n") + "\n\nBunlara ait TÜM kayıtlar (sipariş/teklif/görev), güncel isim \"" + seciliMusteriAdi + "\" ile eşitlenecek. Devam edilsin mi?")) return;
+
+    var btn = document.getElementById("btnIsimUyusmazlikDuzelt");
+    btn.disabled = true; btn.textContent = "Eşitleniyor...";
+
+    var sirayla = function(i){
+      if(i >= farkliIsimler.length){
+        btn.disabled = false; btn.textContent = "✓ İsimleri Eşitle";
+        siparisGecmisiniCiz();
+        return;
+      }
+      ReportsData.kayitlariBirlestir(farkliIsimler[i], null, seciliMusteriAdi, seciliId, function(basarili, err){
+        if(!basarili){
+          btn.disabled = false; btn.textContent = "✓ İsimleri Eşitle";
+          hataGoster("Eşitlenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+          return;
+        }
+        sirayla(i+1);
+      });
+    };
+    sirayla(0);
+  }catch(e){ hataGoster("İsimler eşitlenemedi: " + e.message); }
 }
 
 function musteriGorevleriniCiz(){
