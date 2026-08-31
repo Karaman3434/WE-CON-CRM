@@ -19,6 +19,24 @@
   color: #003a70;
 }
 .ayar-kutu input:focus { outline: none; border-color: #003a70; }
+.kur-son-guncelleme {
+  font-size: 11px;
+  color: #44494f;
+  font-weight: 700;
+  margin: 8px 0 0;
+}
+.kur-simdi-dene-btn {
+  width: 100%;
+  background: #fff4e5;
+  color: #b7601f;
+  border: 1.5px solid #e0730f;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
 .tcmb-link {
   display: block;
   margin-top: 8px;

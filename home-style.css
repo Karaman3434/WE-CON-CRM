@@ -86,6 +86,33 @@ body {
 }
 
 /* ---------- Bildirim banner ---------- */
+.anasayfa-kur-serit {
+  background: #0b1f3a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.anasayfa-kur-sol { display: flex; align-items: baseline; gap: 8px; }
+.anasayfa-kur-etiket { font-size: 11px; font-weight: 800; color: #9db4d6; }
+.anasayfa-kur-deger { font-size: 20px; font-weight: 900; color: #7fd6ff; }
+.anasayfa-kur-sag { display: flex; align-items: center; gap: 8px; }
+.anasayfa-kur-zaman { font-size: 10px; font-weight: 700; color: #9db4d6; text-align: right; }
+.anasayfa-kur-serit--bayat .anasayfa-kur-zaman { color: #ffb84d; }
+.anasayfa-kur-serit--bayat .anasayfa-kur-deger { color: #ffb84d; }
+.anasayfa-kur-yenile-btn {
+  background: rgba(255,255,255,.12);
+  border: none;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+}
+
 .banner {
   border-radius: 10px;
   padding: 14px 16px;

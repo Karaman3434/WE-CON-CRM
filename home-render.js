@@ -96,6 +96,28 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
+function kurSeridiniGuncelle(){
+  try{
+    var el = document.getElementById("anasayfaKurSerit");
+    if(!el) return;
+    var kur = parseFloat(localStorage.getItem("weicon_kur"));
+    document.getElementById("anasayfaKurDeger").textContent = isNaN(kur) ? "—" : WeiconData.fmt(kur) + " TL";
+
+    var zaman = parseFloat(localStorage.getItem("weicon_kur_zaman"));
+    var zamanEl = document.getElementById("anasayfaKurZaman");
+    var bayatMi = typeof AyarlarSync !== "undefined" && AyarlarSync.kurBayatMi();
+    if(isNaN(zaman) || zaman<=0){
+      zamanEl.textContent = "hiç güncellenmedi";
+    } else {
+      var farkDk = Math.round((Date.now() - zaman) / 60000);
+      if(farkDk < 1) zamanEl.textContent = "az önce güncellendi";
+      else if(farkDk < 60) zamanEl.textContent = farkDk + " dk önce güncellendi";
+      else zamanEl.textContent = Math.floor(farkDk/60) + " sa " + (farkDk%60) + " dk önce güncellendi";
+    }
+    el.classList.toggle("anasayfa-kur-serit--bayat", !!bayatMi);
+  }catch(e){}
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   butonlariBagla();
@@ -106,4 +128,24 @@ document.addEventListener("DOMContentLoaded", function(){
   // Firebase verisi henüz gelmemiş olabilir; ilk anda da bir kez dene.
   kartlariGuncelle();
   if(typeof KmData !== "undefined"){ KmData.degistiginde(kmDurumuGuncelle); kmDurumuGuncelle(); }
+
+  // Ana Sayfa'daki kur şeridi — sayfa her açıldığında güncel bilgiyi
+  // gösterir; "🔄" tuşuyla elle de tazelenebilir.
+  kurSeridiniGuncelle();
+  if(typeof AyarlarSync !== "undefined"){
+    AyarlarSync.degistiginde(kurSeridiniGuncelle);
+    setInterval(kurSeridiniGuncelle, 60000); // sayfa açık kalırsa "X dk önce" yazısını da tazele
+  }
+  document.getElementById("btnAnasayfaKurYenile").onclick = function(){
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = "⏳";
+    if(typeof AyarlarSync === "undefined"){ btn.disabled = false; btn.textContent = "🔄"; return; }
+    AyarlarSync.otomatikKurGetir(true, function(basarili){
+      kurSeridiniGuncelle();
+      btn.disabled = false;
+      btn.textContent = basarili ? "✓" : "✕";
+      setTimeout(function(){ btn.textContent = "🔄"; }, 1500);
+    });
+  };
 });

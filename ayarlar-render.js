@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — ui-render-fix.js içindeki yorum satırıyla
 // senkron tutulmalıdır. Format: W(YYMMDD).(HHMM).(sıra no)
-var APP_VERSION = "WG.260831.0053.46";
+var APP_VERSION = "WG.260831.1622.53";
 
 function hataGoster(mesaj){
   console.error(mesaj);
@@ -28,7 +28,24 @@ function ayarlariDoldur(){
     var kdv = parseFloat(localStorage.getItem("weicon_kdv_orani"));
     document.getElementById("kurInput").value = isNaN(kur) ? "" : kur;
     document.getElementById("kdvInput").value = isNaN(kdv) ? 20 : kdv;
+    sonGuncellemeYazisiniGoster();
   }catch(e){ hataGoster("Ayarlar okunamadı: " + e.message); }
+}
+
+function sonGuncellemeYazisiniGoster(){
+  var el = document.getElementById("kurSonGuncelleme");
+  if(!el) return;
+  var zaman = parseFloat(localStorage.getItem("weicon_kur_zaman"));
+  if(isNaN(zaman) || zaman<=0){
+    el.textContent = "Son otomatik güncelleme: hiç yapılmadı";
+    return;
+  }
+  var farkDk = Math.round((Date.now() - zaman) / 60000);
+  var metin;
+  if(farkDk < 1) metin = "az önce";
+  else if(farkDk < 60) metin = farkDk + " dakika önce";
+  else metin = Math.floor(farkDk/60) + " saat " + (farkDk%60) + " dakika önce";
+  el.textContent = "Son güncelleme: " + metin;
 }
 
 function ayarlariKaydet(){
@@ -56,6 +73,26 @@ document.addEventListener("DOMContentLoaded", function(){
   ayarlariDoldur();
   document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  document.getElementById("btnKurSimdiDene").onclick = function(){
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = "⏳ Deneniyor...";
+    if(typeof AyarlarSync === "undefined"){
+      btn.disabled = false; btn.textContent = "🔄 Şimdi Dene (Otomatik Çek)";
+      hataGoster("Kur senkron modülü yüklenemedi.");
+      return;
+    }
+    AyarlarSync.otomatikKurGetir(true, function(basarili, kur, kaynak){
+      btn.disabled = false;
+      if(basarili){
+        btn.textContent = "✓ Başarılı — " + kur.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:4}) + " (" + (kaynak==="yedek"?"yedek kaynak":"Frankfurter") + ")";
+        ayarlariDoldur();
+      } else {
+        btn.textContent = "✕ Başarısız — internet bağlantısını kontrol et";
+      }
+      setTimeout(function(){ btn.textContent = "🔄 Şimdi Dene (Otomatik Çek)"; }, 3000);
+    });
+  };
   if(typeof AyarlarSync !== "undefined") AyarlarSync.degistiginde(ayarlariDoldur);
   var surumEl = document.getElementById("surumBilgisi");
   if(surumEl) surumEl.textContent = "Sürüm " + APP_VERSION;

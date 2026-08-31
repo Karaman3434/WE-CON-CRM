@@ -66,23 +66,40 @@ var AyarlarSync = (function(){
   }
 
   // Ücretsiz, API anahtarı gerektirmeyen, tarayıcıdan doğrudan çağrılabilen
-  // (CORS'a açık) Frankfurter.app kur servisinden EUR→TRY çeker. Sadece kur
-  // bayatsa (2 saatten eski) devreye girer — elle girilmiş taze bir kuru
-  // asla ezmez.
+  // (CORS'a açık) EUR→TRY kur servislerinden çeker. Önce Frankfurter.dev
+  // (ECB kaynaklı) denenir; o başarısız olursa (adres değişmiş/kapanmış
+  // olabilir) open.er-api.com yedek kaynağı denenir. Sadece kur bayatsa
+  // (2 saatten eski) devreye girer — elle girilmiş taze bir kuru asla ezmez.
+  function tekKaynaktanDene(url, ayikla, basariCb, hataCb){
+    fetch(url)
+      .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function(veri){
+        var kur = ayikla(veri);
+        if(!kur || isNaN(kur) || kur<=0) throw new Error("Kur verisi geçersiz");
+        basariCb(kur);
+      })
+      .catch(hataCb);
+  }
+
   function otomatikKurGetir(zorlaMi, geriBildir){
     if(!zorlaMi && !kurBayatMi()){ if(geriBildir) geriBildir(true); return; }
-    fetch("https://api.frankfurter.app/latest?from=EUR&to=TRY")
-      .then(function(r){ return r.json(); })
-      .then(function(veri){
-        var yeniKur = veri && veri.rates && veri.rates.TRY;
-        if(!yeniKur || isNaN(yeniKur)){ if(geriBildir) geriBildir(false); return; }
-        kurKaydet(yeniKur);
-        if(geriBildir) geriBildir(true, yeniKur);
-      })
-      .catch(function(err){
-        console.error("Otomatik kur çekilemedi:", err);
-        if(geriBildir) geriBildir(false, null, err);
-      });
+    tekKaynaktanDene(
+      "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=TRY",
+      function(v){ return v && v.rates && v.rates.TRY; },
+      function(kur){ kurKaydet(kur); if(geriBildir) geriBildir(true, kur, "frankfurter"); },
+      function(err1){
+        console.error("Frankfurter'dan kur çekilemedi, yedek kaynak deneniyor:", err1);
+        tekKaynaktanDene(
+          "https://open.er-api.com/v6/latest/EUR",
+          function(v){ return v && v.rates && v.rates.TRY; },
+          function(kur){ kurKaydet(kur); if(geriBildir) geriBildir(true, kur, "yedek"); },
+          function(err2){
+            console.error("Yedek kaynaktan da kur çekilemedi:", err2);
+            if(geriBildir) geriBildir(false, null, err2);
+          }
+        );
+      }
+    );
   }
 
   function otomatikKurGuncellemeyiBaslat(){
