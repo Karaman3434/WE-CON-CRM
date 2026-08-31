@@ -142,7 +142,7 @@ function siparisGecmisiniCiz(){
         + (k.revizeZamani ? "<span class='gecmis-revize-rozet'>🔄 REVİZE</span>" : "")
         + "</div>"
         + "<div class='data-table-container'><table class='belge-urun-tablo gecmis-standart-tablo'>"
-        + "<thead><tr><th style='width:6%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th></tr></thead>"
+        + "<thead><tr><th style='width:4%;'>SR</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:9%;'>TOPLAM</th><th style='width:7%;'>PRİM</th></tr></thead>"
         + "<tbody>" + satirlarHtml + "</tbody></table></div>"
         + "<div class='belge-genel-toplam-serit'>"
         + (kaydinKuru ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmtG(kaydinKuru) + " Euro</span>" : "")

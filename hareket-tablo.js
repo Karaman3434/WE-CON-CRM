@@ -61,8 +61,8 @@ var HareketTablo = (function(){
     var etiketRozetHtml = opts.etiketRozet ? "<span class='hareket-grup-etiket-rozet'>" + opts.etiketRozet + "</span>" : "";
     var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>";
     var basHucreler = basit
-      ? "<th style='width:50%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
-      : "<th style='width:4%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th><th>PRİM</th>";
+      ? "<th style='width:52%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:18%;'>NET</th><th style='width:18%;'>TOPLAM</th>"
+      : "<th style='width:4%;'>SR</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:9%;'>TOPLAM</th><th style='width:7%;'>PRİM</th>";
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"
       + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit) + "</tbody></table></div>";

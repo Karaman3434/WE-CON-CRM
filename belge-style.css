@@ -178,9 +178,9 @@
   background: #c0392b;
   color: #ffffff;
   font-weight: 900;
-  padding: 3px 7px;
-  border-radius: 5px;
-  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 9px;
   white-space: nowrap;
 }
 .rozet-net {
@@ -188,9 +188,9 @@
   background: #0e6b34;
   color: #ffffff;
   font-weight: 900;
-  padding: 3px 7px;
-  border-radius: 5px;
-  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 9px;
   white-space: nowrap;
 }
 

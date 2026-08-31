@@ -211,8 +211,8 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
     + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo'>"
     + "<thead><tr>" + (basit
-        ? "<th style='width:52%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>NET</th><th>TOPLAM</th>"
-        : "<th style='width:4%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th>ADET</th><th>LİSTE</th><th>İSK</th><th>NET</th><th>TOPLAM</th>") + "</tr></thead>"
+        ? "<th style='width:52%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:18%;'>NET</th><th style='width:18%;'>TOPLAM</th>"
+        : "<th style='width:5%;'>SR</th><th style='width:43%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>ADET</th><th style='width:11%;'>LİSTE</th><th style='width:13%;'>İSK</th><th style='width:14%;'>NET</th><th style='width:7%;'>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
     + "<div class='belge-genel-toplam-serit'>"
