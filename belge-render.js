@@ -124,7 +124,7 @@ function belgeyiCiz(kayit, musteri){
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"
-      + (kayit.kur ? "<span class='belge-gt-kur'>Günün Döviz Kuru<br>" + fmt(kayit.kur) + " Euro</span>" : "")
+      + (kayit.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(kayit.kur) + " Euro</span>" : "")
       + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
       + "<span class='belge-gt-deger'>" + fmt(netEuro) + " €</span>"
       + "</div>"

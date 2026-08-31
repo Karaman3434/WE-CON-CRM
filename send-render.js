@@ -215,7 +215,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
     + "<div class='belge-genel-toplam-serit'>"
-    + (kur ? "<span class='belge-gt-kur'>Günün Döviz Kuru<br>" + fmtG2(kur) + " Euro</span>" : "")
+    + (kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmtG2(kur) + " Euro</span>" : "")
     + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
     + "<span class='belge-gt-deger'>" + fmtG2(netEuro) + " €</span></div>"
     + "</div>";
