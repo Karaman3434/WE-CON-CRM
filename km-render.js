@@ -52,12 +52,16 @@ function dunOzetiniCiz(){
     var ozet = KmData.dunOzeti();
     var el = document.getElementById("kmDunOzet");
     if(!ozet){
-      el.innerHTML = "Dünkü kayıt henüz yok.";
+      el.innerHTML = "Henüz önceki bir kayıt yok.";
       return;
     }
-    el.innerHTML = "Dün: <strong>" + (ozet.baslangic!=null?ozet.baslangic:"-") + " km</strong> → <strong>" + ozet.bitis + " km</strong>"
+    // "Dün" yerine kaydın GERÇEK tarihini gösteriyoruz — araç günlerdir
+    // çıkmamışsa (hafta sonu/tatil/izin), bu "dün" olmayabilir.
+    var parca = ozet.tarihAnahtari.split("-"); // YYYY-MM-DD
+    var etiketTarih = parca[2] + "." + parca[1] + "." + parca[0];
+    el.innerHTML = "Önceki kayıt (" + etiketTarih + "): <strong>" + (ozet.baslangic!=null?ozet.baslangic:"-") + " km</strong> → <strong>" + ozet.bitis + " km</strong>"
       + " = <strong>" + (ozet.mesafe!=null?ozet.mesafe:"-") + " km</strong> yapıldı";
-  }catch(e){ hataGoster("Dün özeti çizilemedi: " + e.message); }
+  }catch(e){ hataGoster("Önceki kayıt özeti çizilemedi: " + e.message); }
 }
 
 function formuDoldur(){

@@ -60,6 +60,21 @@ var KmData = (function(){
 
   function kaydiOku(anahtar){ return kayitlar[anahtar] || null; }
 
+  // Bugünden ÖNCEKİ en son GERÇEK kilometre kaydını bulur — tam olarak
+  // "dün" (1 gün önce) değil, aradaki boş günler (araç hiç çıkmamış hafta
+  // sonu/tatil/izin günleri) kaç tane olursa olsun, kronolojik olarak en
+  // son girilmiş kaydı esas alır. `haricAnahtar` verilirse o gün hariç
+  // tutulur (bugünün kendisini "önceki kayıt" saymamak için).
+  function sonKayitliGunAnahtari(haricAnahtar){
+    var enSon = null;
+    Object.keys(kayitlar).forEach(function(k){
+      if(k === haricAnahtar) return;
+      if(!kayitlar[k] || kayitlar[k].km===undefined || kayitlar[k].km===null || kayitlar[k].km==="") return;
+      if(!enSon || k > enSon) enSon = k;
+    });
+    return enSon;
+  }
+
   function farkHesapla(bitis, baslangic){
     if(bitis===undefined||bitis===null||bitis===""||baslangic===undefined||baslangic===null||baslangic==="") return null;
     var b = parseFloat(bitis), a = parseFloat(baslangic);
@@ -68,32 +83,36 @@ var KmData = (function(){
     return f<0 ? 0 : f;
   }
 
-  // Dünün özet bilgisi: [önceki günün KM'si] → [dünün KM'si] = mesafe.
+  // Önceki kayıtlı günün özeti: [ondan önceki kayıt] → [önceki kayıt] = mesafe.
+  // "Dün" (takvimde tam 1 gün önce) DEĞİL — kronolojik olarak en son
+  // kilometre girilmiş gün esas alınır (araç günlerce çıkmamış olabilir).
   // Sadece görüntüleme/referans amaçlı, bugünün girişine bağımlı DEĞİL.
   function dunOzeti(){
-    var dun = dunAnahtari();
-    var dunKaydi = kayitlar[dun];
-    if(!dunKaydi || dunKaydi.km===undefined || dunKaydi.km===null || dunKaydi.km===""){
-      return null;
-    }
-    var oncekiAnahtar = null;
+    var bugun = bugunAnahtari();
+    var oncekiKayitliGun = sonKayitliGunAnahtari(bugun);
+    if(!oncekiKayitliGun) return null;
+    var dunKaydi = kayitlar[oncekiKayitliGun];
+
+    // "Önceki kayıtlı günden ÖNCEKİ" kaydı bul (özet satırının başlangıç
+    // değeri için) — yine kronolojik en son, "dünden önceki gün" değil.
+    var oncekiOncesiAnahtar = null;
     Object.keys(kayitlar).forEach(function(k){
-      if(k >= dun) return;
+      if(k >= oncekiKayitliGun) return;
       if(kayitlar[k] && kayitlar[k].km!==undefined && kayitlar[k].km!==null && kayitlar[k].km!==""){
-        if(!oncekiAnahtar || k > oncekiAnahtar) oncekiAnahtar = k;
+        if(!oncekiOncesiAnahtar || k > oncekiOncesiAnahtar) oncekiOncesiAnahtar = k;
       }
     });
-    var baslangic = oncekiAnahtar ? kayitlar[oncekiAnahtar].km : null;
+
+    var baslangic = oncekiOncesiAnahtar ? kayitlar[oncekiOncesiAnahtar].km : null;
     var bitis = dunKaydi.km;
     var mesafe = farkHesapla(bitis, baslangic);
-    return {baslangic:baslangic, bitis:bitis, mesafe:mesafe};
+    return {baslangic:baslangic, bitis:bitis, mesafe:mesafe, tarihAnahtari:oncekiKayitliGun};
   }
 
   function gununKmGir(bugunkuKm, kategori, saat, guzergah, geriBildir){
     try{
       var db = firebase.database();
       var bugun = bugunAnahtari();
-      var dun = dunAnahtari();
 
       var bugunKaydi = Object.assign({}, kayitlar[bugun]||{}, {
         km: bugunkuKm,
@@ -105,16 +124,20 @@ var KmData = (function(){
       var guncellemeler = {};
       guncellemeler["kmTakip/" + bugun] = bugunKaydi;
 
-      var dunKaydi = kayitlar[dun];
-      if(dunKaydi && dunKaydi.km!==undefined && dunKaydi.km!==null && dunKaydi.km!==""){
-        var fark = farkHesapla(bugunkuKm, dunKaydi.km);
-        var dunKategori = dunKaydi.kmKategori || "is";
-        var yeniDunKaydi = Object.assign({}, dunKaydi, {
+      // "Dün" (tam 1 gün önce) yerine, kronolojik olarak en son kilometre
+      // girilmiş günü buluyoruz — araç günlerdir çıkmamış olsa bile
+      // (hafta sonu, tatil, izin) doğru önceki kayda bağlanır.
+      var oncekiKayitliGun = sonKayitliGunAnahtari(bugun);
+      var oncekiKayit = oncekiKayitliGun ? kayitlar[oncekiKayitliGun] : null;
+      if(oncekiKayit && oncekiKayit.km!==undefined && oncekiKayit.km!==null && oncekiKayit.km!==""){
+        var fark = farkHesapla(bugunkuKm, oncekiKayit.km);
+        var oncekiKategori = oncekiKayit.kmKategori || "is";
+        var yeniOncekiKayit = Object.assign({}, oncekiKayit, {
           bitisKm: bugunkuKm,
-          isKm: dunKategori==="is" ? fark : null,
-          ozelKm: dunKategori==="ozel" ? fark : null
+          isKm: oncekiKategori==="is" ? fark : null,
+          ozelKm: oncekiKategori==="ozel" ? fark : null
         });
-        guncellemeler["kmTakip/" + dun] = yeniDunKaydi;
+        guncellemeler["kmTakip/" + oncekiKayitliGun] = yeniOncekiKayit;
       }
 
       db.ref().update(guncellemeler).then(function(){
@@ -211,6 +234,7 @@ var KmData = (function(){
     tarihAnahtari: tarihAnahtari,
     bugunAnahtari: bugunAnahtari,
     dunAnahtari: dunAnahtari,
+    sonKayitliGunAnahtari: sonKayitliGunAnahtari,
     kaydiOku: kaydiOku,
     farkHesapla: farkHesapla,
     dunOzeti: dunOzeti,
