@@ -16,6 +16,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="belge-style.css">
+<link rel="stylesheet" href="reports-style.css">
 </head>
 <body>
 
@@ -25,17 +26,29 @@
 </header>
 
 <nav class="app-nav">
-  <button class="nav-btn nav-btn--geri" id="btnGeriAkilli">Geri</button>
-  <a class="nav-btn nav-btn--ana" href="home.html">Ana Sayfa</a>
-  <button class="nav-btn nav-btn--menu" id="btnMenu">Menü</button>
+  <button class="nav-btn nav-btn--geri" id="btnGeriAkilli"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></button>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 
 <main class="sayfa">
   <div id="belgeIcerik"></div>
   <div class="belge-gecmis-kutu" id="belgeGecmisiKutu" hidden></div>
   <button class="belge-yazdir-buton" id="btnYazdir">🖨 Yazdır</button>
+  <button class="belge-duzenle-buton" id="btnBelgeDuzenle">✏️ Düzenle</button>
   <button class="belge-revize-buton" id="btnRevizeEt" hidden>🔄 Revize Et</button>
   <button class="belge-sil-buton" id="btnBelgeSil">🗑️ Kaydı Sil</button>
+
+  <div class="duzenle-overlay" id="duzenleOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">Kaydı Düzenle</div>
+      <div id="duzenleUrunListesi"></div>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnDuzenleVazgec">Kapat</button>
+        <button class="duzenle-kaydet-btn" id="btnDuzenleKaydet">Kaydet</button>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>

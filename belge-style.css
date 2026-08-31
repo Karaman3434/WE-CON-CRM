@@ -325,6 +325,18 @@
   cursor: pointer;
   margin-top: 8px;
 }
+.belge-duzenle-buton {
+  width: 100%;
+  background: #eaf2fc;
+  color: #003a70;
+  border: 1.5px solid #3569b8;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: 8px;
+}
 
 /* Belge Geçmişi — dikey zaman çizgisi */
 .belge-gecmis-kutu {
@@ -371,5 +383,5 @@
 .belge-gecmis-kart-alt { font-size: 11px; font-weight: 700; opacity: .8; margin-top: 2px; }
 
 @media print {
-  .app-header, .app-nav, .belge-yazdir-buton, .belge-revize-buton, .belge-sil-buton, .belge-gecmis-kutu { display: none !important; }
+  .app-header, .app-nav, .belge-yazdir-buton, .belge-duzenle-buton, .belge-revize-buton, .belge-sil-buton, .belge-gecmis-kutu { display: none !important; }
 }

@@ -200,39 +200,27 @@ function islemleriCiz(){
     bos.hidden = true;
 
     kapsayici.innerHTML = liste.map(function(k, i){
-      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
       var kacanMi = k.durum === "kacan";
       var kodBilgi = kodRozetVeRenkGetir(k);
       var kod = kodBilgi.kod, renk = kodBilgi.renk;
       var durumEk = "";
       if(kacanMi) durumEk = " — ❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"");
       if(k.revizeZamani) durumEk += " — 🔄 REVİZE";
-      var urunDetayHtml = (k.urunler||[]).map(function(u){
-        return "<div class='urun-detay-satir'><span>" + htmlEsc(u.ad) + " (" + (u.adet||1) + " adet)</span><span>" + (u.toplamEuro||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</span></div>";
-      }).join("");
       return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
-        + "<div class='islem-rozet-satir islem-tiklanabilir' data-ac-i='" + i + "'>"
+        + "<div class='islem-rozet-satir'>"
         + "<span class='islem-kod-rozet' style='background:" + renk + ";'>" + kod + "</span>"
         + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
         + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
-        + "<span class='islem-toplam-satirici'>" + toplam.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EUR</span>"
         + "</div>"
         + "<div class='islem-musteri-satir islem-musteri-tiklanabilir' data-belge-i='" + i + "'>"
         + "<span class='islem-musteri-buyuk'>" + htmlEsc(k.musteri) + "</span>"
         + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
         + "</div>"
-        + "<div class='islem-detay islem-tiklanabilir' data-ac-i='" + i + "'>" + (k.urunler||[]).length + " ürün <span class='islem-ac-ikon'>▾</span></div>"
-        + "<div class='urun-detay-kutu' id='urunDetay-" + i + "' hidden>" + urunDetayHtml + "</div>"
         + (!kacanMi
               ? ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
               + (ReportsData.SONRAKI_ASAMALAR[k.tip] ? "<button class='islem-ilerlet-btn' data-ilerlet-i='"+i+"'>▶️ " + (ReportsData.SONRAKI_ASAMALAR[k.tip].length>1 ? "İlerlet" : "İlerlet — " + TIP_ETIKET[ReportsData.SONRAKI_ASAMALAR[k.tip][0]]) + "</button>" : "")
               : ""
            )
-        + "<div class='islem-3buton-satir'>"
-        + "<button class='islem-belge-btn' data-belge-i='" + i + "'>📄 Belge</button>"
-        + "<button class='islem-duzenle-btn' data-duzenle-i='" + i + "'>✏️ Düzenle</button>"
-        + "<button class='islem-sil-btn' data-sil-i='" + i + "'>🗑️ Sil</button>"
-        + "</div>"
         + "</div>";
     }).join("");
 
@@ -245,36 +233,10 @@ function islemleriCiz(){
       };
     });
 
-    kapsayici.querySelectorAll(".islem-tiklanabilir").forEach(function(el){
-      el.onclick = function(){
-        var i = this.getAttribute("data-ac-i");
-        var detay = document.getElementById("urunDetay-" + i);
-        if(detay) detay.hidden = !detay.hidden;
-      };
-    });
-
     kapsayici.querySelectorAll(".islem-ilerlet-btn").forEach(function(btn){
       btn.onclick = function(){
         var i = parseInt(this.getAttribute("data-ilerlet-i"), 10);
         ilerletTiklandi(liste[i]);
-      };
-    });
-
-    kapsayici.querySelectorAll(".islem-duzenle-btn").forEach(function(btn){
-      btn.onclick = function(){
-        var i = parseInt(this.getAttribute("data-duzenle-i"), 10);
-        duzenlemeAc(liste[i]);
-      };
-    });
-
-    kapsayici.querySelectorAll(".islem-sil-btn").forEach(function(btn){
-      btn.onclick = function(){
-        var i = parseInt(this.getAttribute("data-sil-i"), 10);
-        var k = liste[i];
-        if(!confirm(k.musteri + " — " + k.tarih + " kaydı tamamen silinsin mi? Bu geri alınamaz.")) return;
-        ReportsData.kaydiSil(k.tip, k.ts, function(basarili, err){
-          if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-        });
       };
     });
 
@@ -333,79 +295,6 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
-var duzenlenenKayit = null;
-var duzenlemeSilinenIndeksler = [];
-
-function duzenlemeAc(k){
-  duzenlenenKayit = k;
-  duzenlemeSilinenIndeksler = [];
-  var kapsayici = document.getElementById("duzenleUrunListesi");
-  kapsayici.innerHTML = (k.urunler||[]).map(function(u, i){
-    return "<div class='duzenle-urun-satir' id='duzenleSatir-" + i + "'>"
-      + "<div class='duzenle-urun-baslik-satir'>"
-      + "<div class='duzenle-urun-ad'>" + htmlEsc(u.ad) + "</div>"
-      + "<button class='duzenle-urun-sil-btn' data-urun-sil-i='" + i + "'>🗑️</button>"
-      + "</div>"
-      + "<div class='duzenle-alan-grid'>"
-      + "<input type='number' step='0.01' data-alan='listeFiyat' data-i='" + i + "' value='" + (u.listeFiyat||0) + "' placeholder='Liste Fiyat'>"
-      + "<input type='number' step='0.1' data-alan='iskonto' data-i='" + i + "' value='" + (u.iskonto||0) + "' placeholder='İskonto %'>"
-      + "<input type='number' step='1' data-alan='adet' data-i='" + i + "' value='" + (u.adet||1) + "' placeholder='Adet'>"
-      + "<input type='number' step='0.01' data-alan='dipFiyat' data-i='" + i + "' value='" + (u.dipFiyat||0) + "' placeholder='Dip Fiyat'>"
-      + "</div>"
-      + "</div>";
-  }).join("");
-
-  kapsayici.querySelectorAll(".duzenle-urun-sil-btn").forEach(function(btn){
-    btn.onclick = function(){
-      var i = parseInt(this.getAttribute("data-urun-sil-i"), 10);
-      if((duzenlenenKayit.urunler||[]).length - duzenlemeSilinenIndeksler.length <= 1){
-        alert("Bir kayıtta en az 1 ürün kalmalı. Tüm ürünleri silmek istiyorsan, kaydı tamamen 'Sil' butonuyla kaldır.");
-        return;
-      }
-      duzenlemeSilinenIndeksler.push(i);
-      var satir = document.getElementById("duzenleSatir-" + i);
-      if(satir) satir.remove();
-    };
-  });
-
-  document.getElementById("duzenleOverlay").hidden = false;
-}
-
-function duzenlemeKaydet(){
-  try{
-    if(!duzenlenenKayit) return;
-    var yeniUrunler = [];
-    (duzenlenenKayit.urunler||[]).forEach(function(u, i){
-      if(duzenlemeSilinenIndeksler.indexOf(i) >= 0) return; // silinmiş ürün, atla
-      var listeFiyat = parseFloat(document.querySelector("[data-alan='listeFiyat'][data-i='"+i+"']").value)||0;
-      var iskonto = parseFloat(document.querySelector("[data-alan='iskonto'][data-i='"+i+"']").value)||0;
-      var adet = parseFloat(document.querySelector("[data-alan='adet'][data-i='"+i+"']").value)||1;
-      var dipFiyat = parseFloat(document.querySelector("[data-alan='dipFiyat'][data-i='"+i+"']").value)||0;
-      var iskontoluFiyat = listeFiyat - (listeFiyat*iskonto/100);
-      yeniUrunler.push({
-        ad: u.ad, berta: u.berta, abas: u.abas,
-        listeFiyat: listeFiyat, iskonto: iskonto, adet: adet, dipFiyat: dipFiyat,
-        iskBirim: iskontoluFiyat,
-        toplamEuro: iskontoluFiyat * adet
-      });
-    });
-    var btn = document.getElementById("btnDuzenleKaydet");
-    btn.disabled = true;
-    btn.textContent = "Kaydediliyor...";
-    ReportsData.kaydiGuncelle(duzenlenenKayit.tip, duzenlenenKayit.ts, yeniUrunler, function(basarili, err){
-      btn.disabled = false;
-      btn.textContent = "Kaydet";
-      if(basarili){
-        document.getElementById("duzenleOverlay").hidden = true;
-        duzenlenenKayit = null;
-        alert("✓ Güncellendi.");
-      } else {
-        hataGoster("Güncellenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-      }
-    });
-  }catch(e){ hataGoster("Düzenleme kaydedilemedi: " + e.message); }
-}
-
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
@@ -420,8 +309,6 @@ document.addEventListener("DOMContentLoaded", function(){
     };
   })();
 
-  document.getElementById("btnDuzenleVazgec").onclick = function(){ document.getElementById("duzenleOverlay").hidden = true; duzenlenenKayit = null; };
-  document.getElementById("btnDuzenleKaydet").onclick = duzenlemeKaydet;
   document.getElementById("islemAra").addEventListener("input", islemleriCiz);
   document.getElementById("islemTipFiltre").addEventListener("change", islemleriCiz);
   document.getElementById("btnIslemlerExcel").onclick = islemlerExcelAktar;
