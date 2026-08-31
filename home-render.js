@@ -104,15 +104,19 @@ function kurSeridiniGuncelle(){
     document.getElementById("anasayfaKurDeger").textContent = isNaN(kur) ? "—" : WeiconData.fmt(kur) + " TL";
 
     var zaman = parseFloat(localStorage.getItem("weicon_kur_zaman"));
+    var kaynak = localStorage.getItem("weicon_kur_kaynak");
+    var kaynakAdi = kaynak==="tcmb" ? "TCMB" : (kaynak==="yedek" ? "yedek kaynak" : (kaynak==="frankfurter" ? "Frankfurter" : ""));
     var zamanEl = document.getElementById("anasayfaKurZaman");
     var bayatMi = typeof AyarlarSync !== "undefined" && AyarlarSync.kurBayatMi();
     if(isNaN(zaman) || zaman<=0){
       zamanEl.textContent = "hiç güncellenmedi";
     } else {
       var farkDk = Math.round((Date.now() - zaman) / 60000);
-      if(farkDk < 1) zamanEl.textContent = "az önce güncellendi";
-      else if(farkDk < 60) zamanEl.textContent = farkDk + " dk önce güncellendi";
-      else zamanEl.textContent = Math.floor(farkDk/60) + " sa " + (farkDk%60) + " dk önce güncellendi";
+      var zamanMetni;
+      if(farkDk < 1) zamanMetni = "az önce";
+      else if(farkDk < 60) zamanMetni = farkDk + " dk önce";
+      else zamanMetni = Math.floor(farkDk/60) + " sa " + (farkDk%60) + " dk önce";
+      zamanEl.textContent = zamanMetni + (kaynakAdi ? " · " + kaynakAdi : "");
     }
     el.classList.toggle("anasayfa-kur-serit--bayat", !!bayatMi);
   }catch(e){}

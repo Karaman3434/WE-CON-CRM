@@ -45,6 +45,7 @@ var AyarlarSync = (function(){
         if(v.kur!=null) localStorage.setItem("weicon_kur", v.kur);
         if(v.kdv!=null) localStorage.setItem("weicon_kdv_orani", v.kdv);
         if(v.kurZaman!=null) localStorage.setItem("weicon_kur_zaman", v.kurZaman);
+        if(v.kurKaynak!=null) localStorage.setItem("weicon_kur_kaynak", v.kurKaynak);
         dinleyiciler.forEach(function(fn){
           try{ fn(); }catch(e){ console.error("Ayar senkron dinleyicisi hatası:", e); }
         });
@@ -65,37 +66,63 @@ var AyarlarSync = (function(){
     return (Date.now() - zaman) > IKI_SAAT_MS;
   }
 
-  // Ücretsiz, API anahtarı gerektirmeyen, tarayıcıdan doğrudan çağrılabilen
-  // (CORS'a açık) EUR→TRY kur servislerinden çeker. Önce Frankfurter.dev
-  // (ECB kaynaklı) denenir; o başarısız olursa (adres değişmiş/kapanmış
-  // olabilir) open.er-api.com yedek kaynağı denenir. Sadece kur bayatsa
-  // (2 saatten eski) devreye girer — elle girilmiş taze bir kuru asla ezmez.
+  // Ücretsiz, API anahtarı gerektirmeyen EUR→TRY kur servislerinden çeker.
+  // SIRALAMA (en isabetliden en garantiliye):
+  //  1) TCMB (Türkiye Cumhuriyet Merkez Bankası) — merkez ofisin muhtemelen
+  //     esas aldığı GERÇEK resmi Türk kuru. Tarayıcıdan (CORS) erişilebilir
+  //     mi kesin garanti yok — başarısız olursa (ağ/CORS engeli) otomatik
+  //     olarak aşağıdaki kaynaklara düşülür.
+  //  2) Frankfurter.dev (ECB/Avrupa Merkez Bankası kaynaklı) — CORS'a açık,
+  //     güvenilir ama TCMB'den küçük farklarla ayrılabilir.
+  //  3) open.er-api.com — son çare yedek kaynak.
+  // Sadece kur bayatsa (2 saatten eski) devreye girer — elle girilmiş taze
+  // bir kuru asla ezmez.
   function tekKaynaktanDene(url, ayikla, basariCb, hataCb){
     fetch(url)
-      .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return ayikla.xml ? r.text() : r.json(); })
       .then(function(veri){
-        var kur = ayikla(veri);
+        var kur = ayikla.xml ? ayikla.xml(veri) : ayikla(veri);
         if(!kur || isNaN(kur) || kur<=0) throw new Error("Kur verisi geçersiz");
         basariCb(kur);
       })
       .catch(hataCb);
   }
 
+  function tcmbXmldenKurAyikla(xmlMetin){
+    var dp = new DOMParser();
+    var dom = dp.parseFromString(xmlMetin, "text/xml");
+    if(dom.querySelector("parsererror")) return null;
+    var currencyNode = Array.prototype.find.call(dom.getElementsByTagName("Currency"), function(n){
+      return n.getAttribute("Kod") === "EUR" || n.getAttribute("CurrencyCode") === "EUR";
+    });
+    if(!currencyNode) return null;
+    var satisNode = currencyNode.getElementsByTagName("ForexSelling")[0];
+    return satisNode ? parseFloat(satisNode.textContent.replace(",",".")) : null;
+  }
+
   function otomatikKurGetir(zorlaMi, geriBildir){
     if(!zorlaMi && !kurBayatMi()){ if(geriBildir) geriBildir(true); return; }
     tekKaynaktanDene(
-      "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=TRY",
-      function(v){ return v && v.rates && v.rates.TRY; },
-      function(kur){ kurKaydet(kur); if(geriBildir) geriBildir(true, kur, "frankfurter"); },
-      function(err1){
-        console.error("Frankfurter'dan kur çekilemedi, yedek kaynak deneniyor:", err1);
+      "https://www.tcmb.gov.tr/kurlar/today.xml",
+      {xml: tcmbXmldenKurAyikla},
+      function(kur){ kurKaydet(kur,"tcmb"); if(geriBildir) geriBildir(true, kur, "tcmb"); },
+      function(errTcmb){
+        console.error("TCMB'den kur çekilemedi (CORS/ağ olabilir), Frankfurter deneniyor:", errTcmb);
         tekKaynaktanDene(
-          "https://open.er-api.com/v6/latest/EUR",
+          "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=TRY",
           function(v){ return v && v.rates && v.rates.TRY; },
-          function(kur){ kurKaydet(kur); if(geriBildir) geriBildir(true, kur, "yedek"); },
-          function(err2){
-            console.error("Yedek kaynaktan da kur çekilemedi:", err2);
-            if(geriBildir) geriBildir(false, null, err2);
+          function(kur){ kurKaydet(kur,"frankfurter"); if(geriBildir) geriBildir(true, kur, "frankfurter"); },
+          function(err1){
+            console.error("Frankfurter'dan da kur çekilemedi, yedek kaynak deneniyor:", err1);
+            tekKaynaktanDene(
+              "https://open.er-api.com/v6/latest/EUR",
+              function(v){ return v && v.rates && v.rates.TRY; },
+              function(kur){ kurKaydet(kur,"yedek"); if(geriBildir) geriBildir(true, kur, "yedek"); },
+              function(err2){
+                console.error("Yedek kaynaktan da kur çekilemedi:", err2);
+                if(geriBildir) geriBildir(false, null, err2);
+              }
+            );
           }
         );
       }
@@ -111,12 +138,13 @@ var AyarlarSync = (function(){
     if(typeof fn === "function" && dinleyiciler.indexOf(fn)===-1) dinleyiciler.push(fn);
   }
 
-  function kurKaydet(v){
+  function kurKaydet(v, kaynak){
     var zaman = Date.now();
     localStorage.setItem("weicon_kur", v);
     localStorage.setItem("weicon_kur_zaman", zaman);
+    if(kaynak) localStorage.setItem("weicon_kur_kaynak", kaynak);
     try{
-      firebase.database().ref("ayarlar").update({kur:v, kurZaman:zaman});
+      firebase.database().ref("ayarlar").update({kur:v, kurZaman:zaman, kurKaynak:kaynak||null});
     }catch(e){}
   }
 

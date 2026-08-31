@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — ui-render-fix.js içindeki yorum satırıyla
 // senkron tutulmalıdır. Format: W(YYMMDD).(HHMM).(sıra no)
-var APP_VERSION = "WG.260831.1622.53";
+var APP_VERSION = "WG.260831.1821.54";
 
 function hataGoster(mesaj){
   console.error(mesaj);
@@ -85,7 +85,8 @@ document.addEventListener("DOMContentLoaded", function(){
     AyarlarSync.otomatikKurGetir(true, function(basarili, kur, kaynak){
       btn.disabled = false;
       if(basarili){
-        btn.textContent = "✓ Başarılı — " + kur.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:4}) + " (" + (kaynak==="yedek"?"yedek kaynak":"Frankfurter") + ")";
+        var kaynakAdi = kaynak==="tcmb" ? "TCMB" : (kaynak==="yedek" ? "yedek kaynak" : "Frankfurter");
+        btn.textContent = "✓ Başarılı — " + kur.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:4}) + " (" + kaynakAdi + ")";
         ayarlariDoldur();
       } else {
         btn.textContent = "✕ Başarısız — internet bağlantısını kontrol et";
