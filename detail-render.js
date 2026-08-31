@@ -127,8 +127,8 @@ function siparisGecmisiniCiz(){
           + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>"
           + "<td>" + (u.adet||0) + "</td>"
           + "<td>" + fmtG(u.listeFiyat||0) + "€</td>"
-          + "<td class='belge-td-isk'>%" + (u.iskonto||0) + "</td>"
-          + "<td>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</td>"
+          + "<td><span class='rozet-isk'>%" + (u.iskonto||0) + "</span></td>"
+          + "<td><span class='rozet-net'>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</span></td>"
           + "<td class='belge-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
           + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "Ö.F" : ("<div>"+primTl.toLocaleString("tr-TR")+"</div><div class='belge-td-prim-birim'>TL</div>")) + "</td>"
           + "</tr>";
@@ -289,8 +289,8 @@ function urunGecmisiniAc(){
               + "<td>" + htmlEsc((k.tarih||"").split(" ").slice(0,2).join(" ")) + "</td>"
               + "<td>" + (k.adet||0) + "</td>"
               + "<td>" + fmtG(k.listeFiyat) + "€</td>"
-              + "<td class='belge-td-isk'>%" + k.iskonto + "</td>"
-              + "<td class='belge-td-toplam'>" + fmtG(k.netFiyat) + "€</td>"
+              + "<td><span class='rozet-isk'>%" + k.iskonto + "</span></td>"
+              + "<td><span class='rozet-net'>" + fmtG(k.netFiyat) + "€</span></td>"
               + "</tr>";
           }).join("");
           listesiEl.hidden = true;

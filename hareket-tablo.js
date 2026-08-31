@@ -31,7 +31,7 @@ var HareketTablo = (function(){
         return "<tr class='" + (zeminSinifi||"") + "'>"
           + urunHucre
           + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
-          + "<td>" + (toplamVarMi ? fmt(h.iskontoluFiyat)+" €" : "-") + "</td>"
+          + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+fmt(h.iskontoluFiyat)+" €</span>" : "-") + "</td>"
           + "<td class='belge-td-toplam'>" + (toplamVarMi ? fmt(h.toplamEuro)+" €" : "-") + "</td>"
           + "</tr>";
       }
@@ -44,8 +44,8 @@ var HareketTablo = (function(){
         + urunHucre
         + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
         + "<td>" + (u.listeFiyat!=null ? fmt(u.listeFiyat)+" €" : "-") + "</td>"
-        + "<td class='belge-td-isk'>" + (u.iskonto!=null ? "%"+u.iskonto : "-") + "</td>"
-        + "<td>" + (toplamVarMi ? fmt(h.iskontoluFiyat)+" €" : "-") + "</td>"
+        + "<td>" + (u.iskonto!=null ? "<span class='rozet-isk'>%"+u.iskonto+"</span>" : "-") + "</td>"
+        + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+fmt(h.iskontoluFiyat)+" €</span>" : "-") + "</td>"
         + "<td class='belge-td-toplam'>" + (toplamVarMi ? fmt(h.toplamEuro)+" €" : "-") + "</td>"
         + "<td class='belge-td-prim'>" + primHucre + "</td>"
         + "</tr>";

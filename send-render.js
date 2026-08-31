@@ -165,7 +165,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
       satirlarHtml += "<tr>"
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
-        + "<td>" + fmtG2(h.iskontoluFiyat) + " €</td>"
+        + "<td><span class='rozet-net'>" + fmtG2(h.iskontoluFiyat) + " €</span></td>"
         + "<td class='belge-td-toplam'>" + fmtG2(h.toplamEuro) + " €</td>"
         + "</tr>";
     } else {
@@ -174,8 +174,8 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
         + "<td>" + fmtG2(u.listeFiyat||0) + " €</td>"
-        + "<td class='belge-td-isk'>%" + (u.iskonto||0) + "</td>"
-        + "<td>" + fmtG2(h.iskontoluFiyat) + " €</td>"
+        + "<td><span class='rozet-isk'>%" + (u.iskonto||0) + "</span></td>"
+        + "<td><span class='rozet-net'>" + fmtG2(h.iskontoluFiyat) + " €</span></td>"
         + "<td class='belge-td-toplam'>" + fmtG2(h.toplamEuro) + " €</td>"
         + "</tr>";
     }

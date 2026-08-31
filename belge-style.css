@@ -173,6 +173,26 @@
 .belge-td-toplam { color: #0e6b34; font-weight: 900; }
 .belge-td-prim { font-size: 10px; font-weight: 800; }
 .belge-td-isk { color: #a32d2d; font-weight: 900; }
+.rozet-isk {
+  display: inline-block;
+  background: #c0392b;
+  color: #ffffff;
+  font-weight: 900;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.rozet-net {
+  display: inline-block;
+  background: #0e6b34;
+  color: #ffffff;
+  font-weight: 900;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  white-space: nowrap;
+}
 
 .hareket-grup-etiket {
   font-size: 11px;
