@@ -84,18 +84,27 @@ function avTaslagiKaydet(){
   });
 }
 
-// Dönem seçiciyi doldurur: cari yıl + bir önceki/sonraki yılın ayları,
-// ZATEN KAPATILMIŞ olanlar listelenmez (onlar Kayıt Geçmişi'nde).
+// Dönem seçiciyi doldurur: AÇIK DÖNEM'in doğal başlangıç noktasından
+// (hiç kayıt yokken "bir önceki ay") itibaren 18 ay ileriye kadar — geçmiş
+// yıllar listelenmez. ZATEN KAPATILMIŞ aylar da listelenmez (onlar Kayıt
+// Geçmişi'nde; yanlışlıkla kapatıldıysa oradan silinip buraya geri gelir).
+function avBaslangicNoktasi(){
+  var simdi = new Date();
+  var ay = simdi.getMonth(); // 0-index = zaten "bir önceki ay"ın 1-index karşılığı
+  var yil = simdi.getFullYear();
+  if(ay < 1){ ay = 12; yil -= 1; }
+  return {ay:ay, yil:yil};
+}
+
 function avDonemSeciciDoldur(){
   var sel = document.getElementById("avDonemSecici");
-  var simdi = new Date();
+  var baslangic = avBaslangicNoktasi();
   var secenekler = [];
-  [simdi.getFullYear()-1, simdi.getFullYear(), simdi.getFullYear()+1].forEach(function(yil){
-    for(var ay=1; ay<=12; ay++){
-      if(AvansKayitData.kapaliKaydiBul(ay, yil)) continue;
-      secenekler.push({ay:ay, yil:yil});
-    }
-  });
+  var ay = baslangic.ay, yil = baslangic.yil;
+  for(var i=0; i<18; i++){
+    if(!AvansKayitData.kapaliKaydiBul(ay, yil)) secenekler.push({ay:ay, yil:yil});
+    ay++; if(ay>12){ ay=1; yil++; }
+  }
   sel.innerHTML = secenekler.map(function(s){
     return "<option value='" + s.ay + "-" + s.yil + "'" + (s.ay===avSeciliAy && s.yil===avSeciliYil ? " selected" : "") + ">" + AY_ADLARI_AV[s.ay] + " " + s.yil + "</option>";
   }).join("");
@@ -157,7 +166,18 @@ function avGecmisDetayGoster(anahtar){
     + "<div class='mh-sonuc-satir'><span>İş Avansı Alınan</span><b>" + fmtTL_AV(t.isToplam) + "</b></div>"
     + "<div class='mh-sonuc-satir'><span>Belgelenen</span><b>" + fmtTL_AV(t.belgelenenToplam) + "</b></div>"
     + "<div class='mh-sonuc-satir'><span>Kalan İş Avansı</span><b>" + fmtTL_AV(t.isKesilecek) + "</b></div>"
-    + "<div class='mh-sonuc-satir mh-sonuc-satir--toplam'><span>TOPLAM KESİNTİ</span><b>" + fmtTL_AV(t.toplamKesinti) + "</b></div>";
+    + "<div class='mh-sonuc-satir mh-sonuc-satir--toplam'><span>TOPLAM KESİNTİ</span><b>" + fmtTL_AV(t.toplamKesinti) + "</b></div>"
+    + "<button type='button' id='btnAvGecmisSil' class='mh-gecmis-sil-btn'>🗑 Bu Kaydı Sil (ayı yeniden açar)</button>";
+  document.getElementById("btnAvGecmisSil").onclick = function(){
+    if(!confirm(AY_ADLARI_AV[k.ay] + " " + k.yil + " avans kaydını silmek istediğine emin misin? Bu ay tekrar Dönem listesinde açık olarak görünecek.")) return;
+    AvansKayitData.kaydiSil(k.anahtar, function(basarili, err){
+      if(!basarili){ alert("Silinemedi: " + (err && err.message)); return; }
+      detay.innerHTML = "";
+      document.getElementById("avGecmisAySecici").value = "";
+      avGecmisSeciciDoldur();
+      avDonemSeciciDoldur();
+    });
+  };
 }
 
 document.addEventListener("DOMContentLoaded", function(){
