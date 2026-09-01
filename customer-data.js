@@ -120,7 +120,15 @@ var CustomerData = (function(){
     }catch(e){ cb(false, e); }
   }
 
-  function musteriIndexBul(tazeListe, musteriAd){
+  // musteriId verilmişse ÖNCE sabit koduyla (örn. M00008) arar — bu asla
+  // değişmez. Sadece id yokken (eski çağrılar / id'siz eski kayıtlar) isme
+  // göre arar. Bu sayede müşteri adı o an sayfada güncel değilse (yeniden
+  // adlandırma, senkron gecikmesi vb.) kayıt "bulunamadı" diye kaybolmaz.
+  function musteriIndexBul(tazeListe, musteriAd, musteriId){
+    if(musteriId){
+      var idIdx = tazeListe.findIndex(function(m){ return m.id === musteriId; });
+      if(idIdx !== -1) return idIdx;
+    }
     return tazeListe.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
   }
 
@@ -143,11 +151,11 @@ var CustomerData = (function(){
     return sonuc;
   }
 
-  function ziyaretEkle(musteriAd, not, tur, hatirlatmaTarihi, geriBildir){
+  function ziyaretEkle(musteriAd, not, tur, hatirlatmaTarihi, geriBildir, musteriId){
     // Geriye uyumluluk: eski çağrılar ziyaretEkle(ad, not, geriBildir) şeklindeydi.
     if(typeof tur === "function"){ geriBildir = tur; tur = "ziyaret"; hatirlatmaTarihi = null; }
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].ziyaretGecmisi) tazeListe[idx].ziyaretGecmisi = [];
       var kayit = {ts:Date.now(), not: not || "", tur: tur || "ziyaret"};
@@ -259,9 +267,9 @@ var CustomerData = (function(){
     });
   }
 
-  function musteriGuncelle(musteriAd, guncelBilgi, geriBildir){
+  function musteriGuncelle(musteriAd, guncelBilgi, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       // Ticari isim değişikliği burada YAPILMAZ — sipariş/rapor/görev
       // kayıtlarının da eşzamanlı taşınması gerekir (bkz.
@@ -275,9 +283,9 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function musteriAdresEkle(musteriAd, tip, etiket, adres, geriBildir){
+  function musteriAdresEkle(musteriAd, tip, etiket, adres, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       if(!tazeListe[idx][alan]) tazeListe[idx][alan] = [];
@@ -285,9 +293,9 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function musteriAdresSil(musteriAd, tip, adresIdx, geriBildir){
+  function musteriAdresSil(musteriAd, tip, adresIdx, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       if(!tazeListe[idx][alan]) tazeListe[idx][alan] = [];
@@ -295,9 +303,9 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function musteriAdresGuncelle(musteriAd, tip, adresIdx, etiket, adres, geriBildir){
+  function musteriAdresGuncelle(musteriAd, tip, adresIdx, etiket, adres, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       if(!tazeListe[idx][alan] || !tazeListe[idx][alan][adresIdx]) throw new Error("Adres bulunamadı");
@@ -305,27 +313,27 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function yetkiliEkle(musteriAd, kisi, geriBildir){
+  function yetkiliEkle(musteriAd, kisi, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].iletisimler) tazeListe[idx].iletisimler = [];
       tazeListe[idx].iletisimler.push(kisi);
     }, geriBildir);
   }
 
-  function yetkiliSil(musteriAd, kisiIdx, geriBildir){
+  function yetkiliSil(musteriAd, kisiIdx, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].iletisimler) tazeListe[idx].iletisimler = [];
       tazeListe[idx].iletisimler.splice(kisiIdx, 1);
     }, geriBildir);
   }
 
-  function yetkiliGuncelle(musteriAd, kisiIdx, kisi, geriBildir){
+  function yetkiliGuncelle(musteriAd, kisiIdx, kisi, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].iletisimler || !tazeListe[idx].iletisimler[kisiIdx]) throw new Error("Kişi bulunamadı");
       tazeListe[idx].iletisimler[kisiIdx] = kisi;
@@ -337,51 +345,51 @@ var CustomerData = (function(){
   // ve opsiyonel TEK notu olur (liste değil). Var olan diziyi her zaman
   // tek elemanlı [obje] ile değiştirir; böylece eski çoklu-kayıt verisi
   // varsa bile ilk kayıt korunur, üzerine yazınca dizi sadeleşir.
-  function musteriTekAdresKaydet(musteriAd, tip, adres, geriBildir){
+  function musteriTekAdresKaydet(musteriAd, tip, adres, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       tazeListe[idx][alan] = [{etiket: tip==="fatura"?"Fatura Adresi":"Teslimat Adresi", adres: adres||""}];
     }, geriBildir);
   }
 
-  function musteriTekAdresSil(musteriAd, tip, geriBildir){
+  function musteriTekAdresSil(musteriAd, tip, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       tazeListe[idx][alan] = [];
     }, geriBildir);
   }
 
-  function musteriTekYetkiliKaydet(musteriAd, kisi, geriBildir){
+  function musteriTekYetkiliKaydet(musteriAd, kisi, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       tazeListe[idx].iletisimler = [kisi];
     }, geriBildir);
   }
 
-  function musteriTekYetkiliSil(musteriAd, geriBildir){
+  function musteriTekYetkiliSil(musteriAd, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       tazeListe[idx].iletisimler = [];
     }, geriBildir);
   }
 
-  function musteriNotKaydet(musteriAd, not, geriBildir){
+  function musteriNotKaydet(musteriAd, not, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       tazeListe[idx].not = not||"";
     }, geriBildir);
   }
 
-  function musteriNotSil(musteriAd, geriBildir){
+  function musteriNotSil(musteriAd, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       tazeListe[idx].not = "";
     }, geriBildir);
@@ -397,9 +405,9 @@ var CustomerData = (function(){
     kayit.not = notlar.map(function(n){ return n.metin; }).filter(Boolean).join("\n");
   }
 
-  function notEkle(musteriAd, not, geriBildir){
+  function notEkle(musteriAd, not, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].notlar) tazeListe[idx].notlar = [];
       tazeListe[idx].notlar.push(not);
@@ -407,9 +415,9 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function notSil(musteriAd, notIdx, geriBildir){
+  function notSil(musteriAd, notIdx, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].notlar) tazeListe[idx].notlar = [];
       tazeListe[idx].notlar.splice(notIdx, 1);
@@ -417,9 +425,9 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function notGuncelle(musteriAd, notIdx, not, geriBildir){
+  function notGuncelle(musteriAd, notIdx, not, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].notlar || !tazeListe[idx].notlar[notIdx]) throw new Error("Not bulunamadı");
       tazeListe[idx].notlar[notIdx] = not;
@@ -427,9 +435,9 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
-  function musteriSil(musteriAd, geriBildir){
+  function musteriSil(musteriAd, geriBildir, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       tazeListe.splice(idx, 1);
     }, geriBildir);
@@ -478,9 +486,9 @@ var CustomerData = (function(){
 
   // Bir müşteri kartı açıldığında çağrılır — eski uygulamayla aynı: arama
   // sonuçlarını "en son görüntülenen üstte" sıralayabilmek için.
-  function sonGoruntulendi(musteriAd){
+  function sonGoruntulendi(musteriAd, musteriId){
     guvenliYaz(function(tazeListe){
-      var idx = musteriIndexBul(tazeListe, musteriAd);
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) return;
       tazeListe[idx].sonGoruntuleme = Date.now();
     }, function(){});

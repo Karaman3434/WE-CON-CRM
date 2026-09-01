@@ -268,14 +268,14 @@ function silOnayla(){
     toastGoster("Silindi.");
   }
   if(silTip === "fatura" || silTip === "teslimat"){
-    CustomerData.musteriAdresSil(seciliMusteriAdi, silTip, silIndex, tamamla);
+    CustomerData.musteriAdresSil(seciliMusteriAdi, silTip, silIndex, tamamla, musteriVerisi.id);
   } else if(silTip === "yetkili"){
-    CustomerData.yetkiliSil(seciliMusteriAdi, silIndex, tamamla);
+    CustomerData.yetkiliSil(seciliMusteriAdi, silIndex, tamamla, musteriVerisi.id);
   } else if(silTip === "not"){
     if(musteriVerisi.notlar && musteriVerisi.notlar.length){
-      CustomerData.notSil(seciliMusteriAdi, silIndex, tamamla);
+      CustomerData.notSil(seciliMusteriAdi, silIndex, tamamla, musteriVerisi.id);
     } else {
-      CustomerData.musteriNotSil(seciliMusteriAdi, tamamla);
+      CustomerData.musteriNotSil(seciliMusteriAdi, tamamla, musteriVerisi.id);
     }
   }
 }
@@ -375,13 +375,13 @@ function formKaydet(){
         seciliMusteriAdi = yeniAd; // artık kayıtları bu isimle arayacağız
         var ilkFaturaVarMi = kayitlariGetir(musteriVerisi, "fatura").length > 0;
         if(ilkFaturaVarMi){
-          CustomerData.musteriAdresGuncelle(yeniAd, "fatura", 0, "Fatura Adresi", adres, tamamla);
+          CustomerData.musteriAdresGuncelle(yeniAd, "fatura", 0, "Fatura Adresi", adres, tamamla, musteriVerisi.id);
         } else if(adres){
-          CustomerData.musteriAdresEkle(yeniAd, "fatura", "Fatura Adresi", adres, tamamla);
+          CustomerData.musteriAdresEkle(yeniAd, "fatura", "Fatura Adresi", adres, tamamla, musteriVerisi.id);
         } else {
           tamamla(true);
         }
-      });
+      }, musteriVerisi.id);
     }
 
     if(yeniAd !== eskiAd && typeof ReportsData !== "undefined"){
@@ -408,7 +408,7 @@ function formKaydet(){
       kargo: document.getElementById("fKargo").value.trim()
     };
     btn.disabled = true; btn.textContent = "Kaydediliyor...";
-    CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, tamamla);
+    CustomerData.musteriGuncelle(seciliMusteriAdi, guncelBilgi, tamamla, musteriVerisi.id);
     return;
   }
 
@@ -422,8 +422,8 @@ function formKaydet(){
       eposta: document.getElementById("fEposta").value.trim()
     };
     btn.disabled = true; btn.textContent = "Kaydediliyor...";
-    if(aktifEylem === "ekle") CustomerData.yetkiliEkle(seciliMusteriAdi, kisi, tamamla);
-    else CustomerData.yetkiliGuncelle(seciliMusteriAdi, aktifIndex, kisi, tamamla);
+    if(aktifEylem === "ekle") CustomerData.yetkiliEkle(seciliMusteriAdi, kisi, tamamla, musteriVerisi.id);
+    else CustomerData.yetkiliGuncelle(seciliMusteriAdi, aktifIndex, kisi, tamamla, musteriVerisi.id);
     return;
   }
 
@@ -432,8 +432,8 @@ function formKaydet(){
     if(!metin){ toastGoster("Not metni boş olamaz."); return; }
     var notObj = {baslik: "", metin: metin};
     btn.disabled = true; btn.textContent = "Kaydediliyor...";
-    if(aktifEylem === "ekle") CustomerData.notEkle(seciliMusteriAdi, notObj, tamamla);
-    else CustomerData.notGuncelle(seciliMusteriAdi, aktifIndex, notObj, tamamla);
+    if(aktifEylem === "ekle") CustomerData.notEkle(seciliMusteriAdi, notObj, tamamla, musteriVerisi.id);
+    else CustomerData.notGuncelle(seciliMusteriAdi, aktifIndex, notObj, tamamla, musteriVerisi.id);
     return;
   }
 
@@ -442,8 +442,8 @@ function formKaydet(){
   var detay = document.getElementById("fDetay").value.trim();
   if(!baslik){ toastGoster("Etiket boş olamaz."); return; }
   btn.disabled = true; btn.textContent = "Kaydediliyor...";
-  if(aktifEylem === "ekle") CustomerData.musteriAdresEkle(seciliMusteriAdi, tip, baslik, detay, tamamla);
-  else CustomerData.musteriAdresGuncelle(seciliMusteriAdi, tip, aktifIndex, baslik, detay, tamamla);
+  if(aktifEylem === "ekle") CustomerData.musteriAdresEkle(seciliMusteriAdi, tip, baslik, detay, tamamla, musteriVerisi.id);
+  else CustomerData.musteriAdresGuncelle(seciliMusteriAdi, tip, aktifIndex, baslik, detay, tamamla, musteriVerisi.id);
 }
 
 window.addEventListener("error", function(ev){
