@@ -57,10 +57,19 @@ function dunOzetiniCiz(){
       return;
     }
     // "Dün" yerine kaydın GERÇEK tarihini gösteriyoruz — araç günlerdir
-    // çıkmamışsa (hafta sonu/tatil/izin), bu "dün" olmayabilir.
+    // çıkmamışsa (hafta sonu/tatil/izin), bu "dün" olmayabilir. Mesafenin
+    // hangi TARİH ARALIĞINDA biriktiğini de gösteriyoruz (sadece bitiş
+    // tarihini göstermek, örn. sadece "31.08.2026", yanıltıcı olabilir —
+    // 794 km aslında 29.08'den 31.08'e kadar birikmiş olabilir).
     var parca = ozet.tarihAnahtari.split("-"); // YYYY-MM-DD
     var etiketTarih = parca[2] + "." + parca[1] + "." + parca[0];
-    el.innerHTML = "Önceki kayıt (" + etiketTarih + "): <strong>" + (ozet.baslangic!=null?ozet.baslangic:"-") + " km</strong> → <strong>" + ozet.bitis + " km</strong>"
+    var araligiEtiketi = etiketTarih;
+    if(ozet.baslangicTarihAnahtari){
+      var parcaBas = ozet.baslangicTarihAnahtari.split("-");
+      var etiketBas = parcaBas[2] + "." + parcaBas[1] + "." + parcaBas[0];
+      if(etiketBas !== etiketTarih) araligiEtiketi = etiketBas + " → " + etiketTarih;
+    }
+    el.innerHTML = "Önceki kayıt (" + araligiEtiketi + "): <strong>" + (ozet.baslangic!=null?ozet.baslangic:"-") + " km</strong> → <strong>" + ozet.bitis + " km</strong>"
       + " = <strong>" + (ozet.mesafe!=null?ozet.mesafe:"-") + " km</strong> yapıldı";
   }catch(e){ hataGoster("Önceki kayıt özeti çizilemedi: " + e.message); }
 }

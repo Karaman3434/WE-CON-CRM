@@ -106,7 +106,11 @@ var KmData = (function(){
     var baslangic = oncekiOncesiAnahtar ? kayitlar[oncekiOncesiAnahtar].km : null;
     var bitis = dunKaydi.km;
     var mesafe = farkHesapla(bitis, baslangic);
-    return {baslangic:baslangic, bitis:bitis, mesafe:mesafe, tarihAnahtari:oncekiKayitliGun};
+    // baslangicTarihAnahtari: bu mesafenin GERÇEKTE hangi tarihten itibaren
+    // biriktiğini göstermek için — sadece bitiş tarihini göstermek (örn.
+    // "31.08.2026: 794 km") yanıltıcı olabilir, çünkü araç 30.08'de hiç
+    // çıkmamışsa bu mesafe aslında 29.08'den 31.08'e kadar birikmiştir.
+    return {baslangic:baslangic, bitis:bitis, mesafe:mesafe, tarihAnahtari:oncekiKayitliGun, baslangicTarihAnahtari:oncekiOncesiAnahtar};
   }
 
   function gununKmGir(bugunkuKm, kategori, saat, guzergah, geriBildir){

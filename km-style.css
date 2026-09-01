@@ -105,8 +105,8 @@
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 14px;
-  font-size: 15px;
+  padding: 18px;
+  font-size: 20px;
   font-weight: 900;
   cursor: pointer;
 }
@@ -160,7 +160,7 @@
   font-weight: 800;
   cursor: pointer;
 }
-.km-kaydet-buton {
+.km-tablo-kaydet-buton {
   background: #eaf2fc;
   color: #003a70;
   border: 1px solid #3569b8;
