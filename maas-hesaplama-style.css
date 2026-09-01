@@ -1,0 +1,93 @@
+.mh-etiket {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  color: #556170;
+  margin: 14px 0 6px;
+}
+.mh-select {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #003a70;
+}
+.mh-input {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+}
+
+.mh-prim-kutu {
+  background: #fff8e6;
+  border: 1.5px solid #f0dca0;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 14px;
+}
+.mh-prim-ust-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mh-prim-ust-satir .mh-etiket { margin: 0; }
+.mh-prim-degistir-btn {
+  background: none;
+  border: none;
+  color: #b7601f;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.mh-prim-deger {
+  font-size: 20px;
+  font-weight: 900;
+  color: #7a5b00;
+  margin-top: 2px;
+}
+.mh-prim-giris {
+  width: 100%;
+  border: 1.5px solid #e0b800;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #7a5b00;
+  margin-top: 2px;
+}
+.mh-prim-kaynak {
+  font-size: 10px;
+  color: #8a6d1a;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.mh-sonuc-kutu { background: #eafaf0; border-color: #b8e0c5; }
+.mh-sonuc-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #d5e8dc;
+  font-size: 12px;
+  color: #0e5c3f;
+}
+.mh-sonuc-satir:last-child { border-bottom: none; }
+.mh-sonuc-satir b { font-size: 13px; font-weight: 900; color: #0e6b34; }
+.mh-sonuc-satir--toplam { }
+.mh-sonuc-satir--toplam span { font-weight: 900; }
+.mh-sonuc-satir--toplam b { font-size: 16px; }
+
+.mh-not {
+  font-size: 10px;
+  color: #8a8f98;
+  line-height: 1.4;
+  margin: 0 2px 20px;
+}

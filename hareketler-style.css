@@ -43,6 +43,11 @@
   color: #ffffff;
 }
 .hareketler-tile--komisyon .hareketler-tile-baslik { color: #ffffff; }
+.hareketler-tile--maas {
+  background: #c78a00;
+  color: #ffffff;
+}
+.hareketler-tile--maas .hareketler-tile-baslik { color: #ffffff; }
 .hareketler-tile--genis {
   width: 100%;
   margin-top: 14px;

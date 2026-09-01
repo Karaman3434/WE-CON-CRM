@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST V2 — VERSİYON: WG.010926.1926.72 — maas-hesaplama.html
+  =====================================================================
+  MAAŞ + PRİM HESAPLAMA — Abdullah'ın kendi net maaş + net prim tahminini
+  görebildiği kişisel bir hesaplayıcı. Ay seçilince o ayın brüt primi
+  Ödenebilir Komisyon tablosundan otomatik çekilir (üzerine dokunup elle de
+  değiştirilebilir). Hesap KÜMÜLATİF vergi matrahı yöntemiyle yapılır (bkz.
+  maas-hesaplama-data.js). Bu bir TAHMİN aracıdır, resmi bordro yerine geçmez.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Maaş + Prim Hesaplama</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css">
+<link rel="stylesheet" href="maas-hesaplama-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="raporlar.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="ok-baslik-serit" style="background:#c78a00;">
+    <span>🧮 Maaş + Prim Hesaplama</span>
+  </div>
+  <p class="ok-aciklama" style="background:#fff8e6; border-color:#f0dca0; color:#7a5b00;">Bu bir TAHMİN aracıdır — 2026 kümülatif vergi matrahı yöntemiyle hesaplar. Kesin rakam için gerçek bordronla karşılaştır.</p>
+
+  <section class="ok-kutu">
+    <label class="mh-etiket">AY SEÇ</label>
+    <select id="mhAySecim" class="mh-select"></select>
+
+    <div class="mh-prim-kutu" id="mhPrimKutu">
+      <div class="mh-prim-ust-satir">
+        <span class="mh-etiket">BRÜT PRİM</span>
+        <button type="button" id="mhPrimDegistirBtn" class="mh-prim-degistir-btn">✏️ Değiştir</button>
+      </div>
+      <div class="mh-prim-deger" id="mhPrimDeger">0,00 TL</div>
+      <input type="text" inputmode="decimal" id="mhPrimGiris" class="mh-prim-giris" hidden>
+      <div class="mh-prim-kaynak" id="mhPrimKaynak">Ödenebilir Komisyon'da kayıt yok — elle gir.</div>
+    </div>
+
+    <label class="mh-etiket">BRÜT SABİT MAAŞ</label>
+    <input type="text" inputmode="decimal" id="mhBrutSabit" class="mh-input" placeholder="Örn: 35560">
+
+    <label class="mh-etiket">AVANS / DİĞER KESİNTİ</label>
+    <input type="text" inputmode="decimal" id="mhAvans" class="mh-input" placeholder="0">
+  </section>
+
+  <section class="ok-kutu mh-sonuc-kutu">
+    <div class="mh-sonuc-satir">
+      <span>NET SABİT MAAŞ (prim hariç)</span>
+      <b id="mhSonucSabit">0,00 TL</b>
+    </div>
+    <div class="mh-sonuc-satir">
+      <span>NET PRİM</span>
+      <b id="mhSonucPrim">0,00 TL</b>
+    </div>
+    <div class="mh-sonuc-satir mh-sonuc-satir--toplam">
+      <span>TOPLAM NET HAKEDİŞ</span>
+      <b id="mhSonucToplam">0,00 TL</b>
+    </div>
+    <div class="mh-sonuc-satir">
+      <span>Avans sonrası bankaya yatacak</span>
+      <b id="mhSonucBanka">0,00 TL</b>
+    </div>
+  </section>
+
+  <p class="mh-not">Not: Avans/diğer kesinti net maaş ve net prim tutarlarını değiştirmez, sadece ödeme mahsup kalemidir. Gelir vergisi dilim geçiş ayında resmi bordro yazılımları burada gösterilenden birkaç TL farklı sonuç verebilir.</p>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js?v=WG.010926.1926.72"></script>
+<script src="ayarlar-sync.js?v=WG.010926.1926.72"></script>
+<script src="odenebilir-komisyon-data.js?v=WG.010926.1926.72"></script>
+<script src="maas-hesaplama-data.js?v=WG.010926.1926.72"></script>
+<script src="maas-hesaplama-render.js?v=WG.010926.1926.72"></script>
+</body>
+</html>

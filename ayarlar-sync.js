@@ -46,6 +46,7 @@ var AyarlarSync = (function(){
         if(v.kdv!=null) localStorage.setItem("weicon_kdv_orani", v.kdv);
         if(v.kurZaman!=null) localStorage.setItem("weicon_kur_zaman", v.kurZaman);
         if(v.kurKaynak!=null) localStorage.setItem("weicon_kur_kaynak", v.kurKaynak);
+        if(v.brutSabitMaas!=null) localStorage.setItem("weicon_brut_sabit_maas", v.brutSabitMaas);
         dinleyiciler.forEach(function(fn){
           try{ fn(); }catch(e){ console.error("Ayar senkron dinleyicisi hatası:", e); }
         });
@@ -153,11 +154,17 @@ var AyarlarSync = (function(){
     try{ firebase.database().ref("ayarlar/kdv").set(v); }catch(e){}
   }
 
+  function brutSabitMaasKaydet(v){
+    localStorage.setItem("weicon_brut_sabit_maas", v);
+    try{ firebase.database().ref("ayarlar/brutSabitMaas").set(v); }catch(e){}
+  }
+
   return {
     baslat: baslat,
     degistiginde: degistiginde,
     kurKaydet: kurKaydet,
     kdvKaydet: kdvKaydet,
+    brutSabitMaasKaydet: brutSabitMaasKaydet,
     kurBayatMi: kurBayatMi,
     otomatikKurGetir: otomatikKurGetir
   };
