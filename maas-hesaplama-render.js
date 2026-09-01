@@ -2,28 +2,18 @@
   maas-hesaplama-render.js
   ==========================
   Açık dönemi (MaasKayitData.acikDonem) gösterir, Brüt Prim'i Ödenebilir
-  Komisyon'un güncel toplamı ile son kayıtlı dönemin referans toplamı
-  arasındaki farktan otomatik hesaplar, İş Avansı harcama tablosunu yönetir
-  ve "Dönemi Kayıt Et ve Kapat" ile MaasKayitData'ya kalıcı kayıt yazar.
+  Komisyon'un güncel toplamı ile referans nokta arasındaki farktan otomatik
+  hesaplar. Avans/Kesinti artık BU sayfada girilmiyor — Avans Takibi
+  sayfasından (kapalı kayıt varsa onu, yoksa açık taslağı) otomatik okunur.
+  "Kapat ve Kayıt Et" hem Maaş kaydını hem — hâlâ açıksa — aynı ayın Avans
+  Takibi'ni senkron kapatır.
 */
 
 var AY_ADLARI_MH = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-var mhHarcamalar = []; // {tarih, cesit, tutar} — açık dönemin henüz kaydedilmemiş iş avansı harcamaları
 var mhGuncelHesap = null; // en son mhHesaplaVeCiz() çıktısı — Kayıt Et bunu kullanır
 
 function fmtTL_MH(n){
   return (n||0).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " TL";
-}
-function htmlEsc_MH(s){
-  return (s==null?"":String(s)).replace(/[&<>"']/g, function(c){
-    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
-  });
-}
-function fmtTarihKisa_MH(iso){
-  if(!iso) return "-";
-  var p = iso.split("-");
-  if(p.length!==3) return iso;
-  return p[2] + "." + p[1] + "." + p[0].slice(2);
 }
 
 function tarihiGuncelle_MH(){
@@ -36,22 +26,34 @@ function tarihiGuncelle_MH(){
   }catch(e){}
 }
 
+function mhAylarToplamiHesapla(aylar){
+  var toplam = 0;
+  for(var ay=1; ay<=12; ay++) toplam += parseFloat(aylar && aylar[ay]) || 0;
+  return toplam;
+}
+
 // Ödenebilir Komisyon'un EN GÜNCEL kaydındaki 12 ayın toplamı.
 function mhGuncelKomisyonToplami(){
   try{
     var kayitlar = KomisyonData.tumKayitlar();
     if(!kayitlar || !kayitlar.length) return 0;
-    var aylar = kayitlar[0].aylar || {};
-    var toplam = 0;
-    for(var ay=1; ay<=12; ay++) toplam += parseFloat(aylar[ay]) || 0;
-    return toplam;
+    return mhAylarToplamiHesapla(kayitlar[0].aylar);
   }catch(e){ return 0; }
 }
 
-// Kümülatif vergi hesaplaması için Ocak'tan açık döneme kadar her ayın brüt
-// primini toplar — geçmiş aylar için kayıtlı maaş kayıtlarındaki brutPrim
-// kullanılır (kayıt yoksa 0 varsayılır), açık dönem için canlı hesaplanan
-// değer kullanılır.
+// Brüt Prim'in referans noktası: son kapatılan maaş döneminde geçerli olan
+// komisyon toplamı. Hiç maaş kaydı yoksa (ilk kullanım), en güncel Ödenebilir
+// Komisyon kaydından BİR ÖNCEKİ kaydın toplamı referans alınır.
+function mhReferansKomisyonToplamiHesapla(){
+  try{
+    var maasKayitlari = MaasKayitData.tumKayitlar();
+    if(maasKayitlari.length) return maasKayitlari[0].komisyonReferansToplam || 0;
+    var komisyonKayitlari = KomisyonData.tumKayitlar();
+    if(komisyonKayitlari.length > 1) return mhAylarToplamiHesapla(komisyonKayitlari[1].aylar);
+    return 0;
+  }catch(e){ return 0; }
+}
+
 function mhBrutPrimDizisiOlustur(acikAy, acikYil, acikBrutPrim){
   var dizi = {};
   try{
@@ -66,65 +68,69 @@ function mhBrutPrimDizisiOlustur(acikAy, acikYil, acikBrutPrim){
 function mhAcikDonemEtiketiGuncelle(){
   var acik = MaasKayitData.acikDonem();
   document.getElementById("mhDonemSerit").textContent = "Açık Dönem: " + AY_ADLARI_MH[acik.ay] + " " + acik.yil;
-  document.getElementById("btnAyiKayitEt").textContent = "✓ " + AY_ADLARI_MH[acik.ay] + "'ı Kayıt Et ve Kapat";
+  document.getElementById("mhKartBaslikAy").textContent = AY_ADLARI_MH[acik.ay] + " " + acik.yil;
+  document.getElementById("btnAyiKayitEt").textContent = "✓ " + AY_ADLARI_MH[acik.ay] + "'ı Kapat ve Kayıt Et";
   return acik;
 }
 
-function mhHarcamaTablosunuCiz(){
-  var govde = document.getElementById("mhHarcamaTabloGovde");
-  govde.innerHTML = mhHarcamalar.map(function(h, idx){
-    return "<tr><td>" + fmtTarihKisa_MH(h.tarih) + "</td>"
-      + "<td><span class='mh-harcama-etiket-rozet'>" + htmlEsc_MH(h.cesit) + "</span></td>"
-      + "<td>" + fmtTL_MH(h.tutar) + "</td>"
-      + "<td><button type='button' class='mh-harcama-sil-btn' data-idx='" + idx + "'>🗑</button></td></tr>";
-  }).join("");
-  document.getElementById("mhHarcamaBos").hidden = mhHarcamalar.length > 0;
-  govde.querySelectorAll(".mh-harcama-sil-btn").forEach(function(btn){
-    btn.onclick = function(){
-      mhHarcamalar.splice(parseInt(this.getAttribute("data-idx"), 10), 1);
-      mhHarcamaTablosunuCiz();
-      mhHesaplaVeCiz();
-    };
-  });
+function mhBrutSabitGoster(){
+  var v = parseFloat(localStorage.getItem("weicon_brut_sabit_maas")) || 0;
+  document.getElementById("mhBrutSabitDeger").textContent = fmtTL_MH(v);
+  return v;
+}
+
+// Avans Takibi'nden bu ay/yıl için toplamları okur: önce KAPALI kayda bakar
+// (kesin), yoksa AÇIK TASLAĞA (henüz kapatılmadı notuyla).
+function mhAvansToplamlariniOku(ay, yil){
+  var kapali = null, taslakMi = false;
+  try{ kapali = AvansKayitData.kapaliKaydiBul(ay, yil); }catch(e){}
+  var veri;
+  if(kapali){
+    veri = kapali;
+  } else {
+    taslakMi = true;
+    try{ veri = AvansKayitData.taslakOku(); }catch(e){ veri = {ozelAvansGirisleri:[], isAvansiGirisleri:[], isAvansiHarcamalar:[]}; }
+  }
+  var ozelToplam = (veri.ozelAvansGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+  var isToplam = (veri.isAvansiGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+  var belgelenenToplam = (veri.isAvansiHarcamalar||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+  var isKesilecek = Math.max(0, isToplam - belgelenenToplam);
+  var toplamKesinti = ozelToplam + isKesilecek;
+  return {ozelToplam:ozelToplam, isKesilecek:isKesilecek, toplamKesinti:toplamKesinti, taslakMi:taslakMi, kapaliVarMi: !!kapali};
 }
 
 function mhHesaplaVeCiz(){
   var acik = mhAcikDonemEtiketiGuncelle();
-  var brutSabit = parseFloat((document.getElementById("mhBrutSabit").value||"0").replace(",",".")) || 0;
+  var brutSabit = mhBrutSabitGoster();
 
   var komisyonToplam = mhGuncelKomisyonToplami();
-  var referans = 0;
-  try{ referans = MaasKayitData.sonReferansKomisyonToplami(); }catch(e){}
+  var referans = mhReferansKomisyonToplamiHesapla();
   var brutPrim = Math.max(0, komisyonToplam - referans);
 
   document.getElementById("mhPrimDeger").textContent = fmtTL_MH(brutPrim);
   document.getElementById("mhPrimKaynak").textContent =
-    "Güncel Ödenebilir Komisyon toplamı " + fmtTL_MH(komisyonToplam) + " − son kayıtlı referans " + fmtTL_MH(referans);
+    "Komisyon toplamı " + fmtTL_MH(komisyonToplam) + " − referans " + fmtTL_MH(referans);
 
   var primDizisi = mhBrutPrimDizisiOlustur(acik.ay, acik.yil, brutPrim);
   var sonuc = MaasHesaplamaData.ayHesapla(acik.ay, brutSabit, primDizisi);
 
-  var ozelAvans = parseFloat((document.getElementById("mhOzelAvans").value||"0").replace(",",".")) || 0;
-  var isAvansiTutar = parseFloat((document.getElementById("mhIsAvansiTutar").value||"0").replace(",",".")) || 0;
-  var belgelenenToplam = mhHarcamalar.reduce(function(s,h){ return s + (h.tutar||0); }, 0);
-  var isAvansiKesilecek = Math.max(0, isAvansiTutar - belgelenenToplam);
-  var toplamKesinti = ozelAvans + isAvansiKesilecek;
-  var hesabaYatacak = sonuc.netToplam - toplamKesinti;
+  var av = mhAvansToplamlariniOku(acik.ay, acik.yil);
+  document.getElementById("mhAvansToplamOzel").textContent = fmtTL_MH(av.ozelToplam);
+  document.getElementById("mhAvansToplamIs").textContent = fmtTL_MH(av.isKesilecek);
+  document.getElementById("mhAvansToplamGenel").textContent = fmtTL_MH(av.toplamKesinti);
+  document.getElementById("mhAvansDurum").textContent = av.kapaliVarMi
+    ? "✓ Avans Takibi bu dönem için kapatıldı."
+    : (av.taslakMi && (av.ozelToplam||av.isKesilecek) ? "⏳ Avans Takibi'nde taslak var, henüz kapatılmadı." : "Avans Takibi'nde bu dönem için henüz kayıt yok.");
 
-  document.getElementById("mhBelgelenenToplam").textContent = fmtTL_MH(belgelenenToplam);
-  document.getElementById("mhIsAvansiKesilecek").textContent = fmtTL_MH(isAvansiKesilecek);
+  var hesabaYatacak = sonuc.netToplam - av.toplamKesinti;
 
-  document.getElementById("mhSonucSabit").textContent = fmtTL_MH(sonuc.netSabitMaas);
-  document.getElementById("mhSonucPrim").textContent = fmtTL_MH(sonuc.netPrim);
-  document.getElementById("mhSonucToplam").textContent = fmtTL_MH(sonuc.netToplam);
-  document.getElementById("mhSonucKesinti").textContent = fmtTL_MH(toplamKesinti);
-  document.getElementById("mhSonucBanka").textContent = fmtTL_MH(hesabaYatacak);
+  document.getElementById("mhKartNetMaas").textContent = fmtTL_MH(sonuc.netSabitMaas);
+  document.getElementById("mhKartNetPrim").textContent = fmtTL_MH(sonuc.netPrim);
+  document.getElementById("mhKartHesabaYatacak").textContent = fmtTL_MH(hesabaYatacak);
 
   mhGuncelHesap = {
     acik: acik, brutSabit: brutSabit, komisyonToplam: komisyonToplam, brutPrim: brutPrim,
-    sonuc: sonuc, ozelAvans: ozelAvans, isAvansiTutar: isAvansiTutar,
-    belgelenenToplam: belgelenenToplam, isAvansiKesilecek: isAvansiKesilecek,
-    toplamKesinti: toplamKesinti, hesabaYatacak: hesabaYatacak
+    sonuc: sonuc, avans: av, hesabaYatacak: hesabaYatacak
   };
 }
 
@@ -139,7 +145,7 @@ function mhGecmisiCiz(){
       + "<span class='mh-gecmis-tutar'>" + fmtTL_MH(k.hesabaYatacak) + "</span>"
       + "</div>"
       + "<div class='mh-gecmis-detay' hidden>"
-      + "<div class='mh-sonuc-satir'><span>Net Sabit Maaş</span><b>" + fmtTL_MH(k.netSabitMaas) + "</b></div>"
+      + "<div class='mh-sonuc-satir'><span>Net Maaş</span><b>" + fmtTL_MH(k.netSabitMaas) + "</b></div>"
       + "<div class='mh-sonuc-satir'><span>Net Prim (Brüt: " + fmtTL_MH(k.brutPrim) + ")</span><b>" + fmtTL_MH(k.netPrim) + "</b></div>"
       + "<div class='mh-sonuc-satir'><span>Toplam Kesinti</span><b>" + fmtTL_MH(k.toplamKesinti) + "</b></div>"
       + "<div class='mh-sonuc-satir mh-sonuc-satir--toplam'><span>Hesaba Yatan</span><b>" + fmtTL_MH(k.hesabaYatacak) + "</b></div>"
@@ -167,72 +173,72 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_MH();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
-  var brutKayitli = localStorage.getItem("weicon_brut_sabit_maas");
-  if(brutKayitli) document.getElementById("mhBrutSabit").value = brutKayitli;
-
-  mhHarcamaTablosunuCiz();
   mhHesaplaVeCiz();
   mhGecmisiCiz();
 
-  document.getElementById("mhBrutSabit").onchange = function(){
-    var v = parseFloat((this.value||"0").replace(",",".")) || 0;
+  document.getElementById("btnBrutSabitGuncelle").onclick = function(){
+    var mevcut = parseFloat(localStorage.getItem("weicon_brut_sabit_maas")) || 0;
+    var girilen = prompt("Yeni brüt sabit maaşı gir:", mevcut ? mevcut.toString().replace(".", ",") : "");
+    if(girilen == null) return;
+    var v = parseFloat(girilen.replace(",", ".")) || 0;
+    if(v <= 0){ alert("Geçerli bir tutar gir."); return; }
     try{ AyarlarSync.brutSabitMaasKaydet(v); }catch(e){}
-    mhHesaplaVeCiz();
-  };
-  document.getElementById("mhOzelAvans").oninput = mhHesaplaVeCiz;
-  document.getElementById("mhIsAvansiTutar").oninput = mhHesaplaVeCiz;
-
-  document.getElementById("btnHarcamaEkle").onclick = function(){
-    var tarih = document.getElementById("mhHarcamaTarih").value;
-    var cesit = document.getElementById("mhHarcamaCesit").value.trim();
-    var tutar = parseFloat((document.getElementById("mhHarcamaTutar").value||"0").replace(",",".")) || 0;
-    if(!tarih || !cesit || tutar<=0){ alert("Tarih, çeşit ve tutar (0'dan büyük) gerekli."); return; }
-    mhHarcamalar.push({tarih:tarih, cesit:cesit, tutar:tutar});
-    document.getElementById("mhHarcamaTarih").value = "";
-    document.getElementById("mhHarcamaCesit").value = "";
-    document.getElementById("mhHarcamaTutar").value = "";
-    mhHarcamaTablosunuCiz();
+    localStorage.setItem("weicon_brut_sabit_maas", v);
     mhHesaplaVeCiz();
   };
 
   document.getElementById("btnAyiKayitEt").onclick = function(){
     if(!mhGuncelHesap) return;
     var h = mhGuncelHesap;
-    if(!confirm(AY_ADLARI_MH[h.acik.ay] + " " + h.acik.yil + " dönemini kayıt edip kapatmak istediğine emin misin?\n\nHesaba Yatacak: " + fmtTL_MH(h.hesabaYatacak) + "\n\nKayıt edildikten sonra sistem otomatik bir sonraki aya geçer.")) return;
-
-    var kayitObj = {
-      ay: h.acik.ay, yil: h.acik.yil,
-      brutSabitAylik: h.brutSabit,
-      brutPrim: h.brutPrim,
-      komisyonReferansToplam: h.komisyonToplam,
-      ozelAvans: h.ozelAvans,
-      isAvansiTutar: h.isAvansiTutar,
-      isAvansiHarcamalar: mhHarcamalar,
-      isAvansiBelgesizKalan: h.isAvansiKesilecek,
-      toplamKesinti: h.toplamKesinti,
-      netSabitMaas: h.sonuc.netSabitMaas,
-      netPrim: h.sonuc.netPrim,
-      netToplam: h.sonuc.netToplam,
-      hesabaYatacak: h.hesabaYatacak,
-      kayitZamani: Date.now()
-    };
+    var avansUyari = h.avans.kapaliVarMi ? "" : "\n\nNot: Avans Takibi bu dönem için henüz kapatılmadı — onu da otomatik kapatacağım.";
+    if(!confirm(AY_ADLARI_MH[h.acik.ay] + " " + h.acik.yil + " dönemini kapatıp kayıt etmek istediğine emin misin?\n\nHesaba Yatacak: " + fmtTL_MH(h.hesabaYatacak) + avansUyari + "\n\nKayıt edildikten sonra sistem otomatik bir sonraki aya geçer.")) return;
 
     document.getElementById("btnAyiKayitEt").disabled = true;
-    MaasKayitData.kaydet(kayitObj, function(basarili, err){
-      document.getElementById("btnAyiKayitEt").disabled = false;
-      if(!basarili){ alert("Kaydedilemedi: " + (err && err.message)); return; }
-      mhHarcamalar = [];
-      document.getElementById("mhOzelAvans").value = "";
-      document.getElementById("mhIsAvansiTutar").value = "";
-      mhHarcamaTablosunuCiz();
-      // MaasKayitData.degistiginde dinleyicisi zaten mhHesaplaVeCiz + mhGecmisiCiz'i tetikleyecek.
-    });
+
+    function maasiKaydet(){
+      var kayitObj = {
+        ay: h.acik.ay, yil: h.acik.yil,
+        brutSabitAylik: h.brutSabit,
+        brutPrim: h.brutPrim,
+        komisyonReferansToplam: h.komisyonToplam,
+        toplamKesinti: h.avans.toplamKesinti,
+        netSabitMaas: h.sonuc.netSabitMaas,
+        netPrim: h.sonuc.netPrim,
+        netToplam: h.sonuc.netToplam,
+        hesabaYatacak: h.hesabaYatacak,
+        kayitZamani: Date.now()
+      };
+      MaasKayitData.kaydet(kayitObj, function(basarili, err){
+        document.getElementById("btnAyiKayitEt").disabled = false;
+        if(!basarili){ alert("Kaydedilemedi: " + (err && err.message)); return; }
+        // MaasKayitData.degistiginde dinleyicisi mhHesaplaVeCiz + mhGecmisiCiz'i tetikleyecek.
+      });
+    }
+
+    // Avans Takibi aynı ay için hâlâ açıksa (kapalı kaydı yoksa), önce onu
+    // senkron kapatıp SONRA Maaş kaydını yazıyoruz.
+    if(!h.avans.kapaliVarMi){
+      var taslak = AvansKayitData.taslakOku();
+      var avansKayitObj = {
+        ay: h.acik.ay, yil: h.acik.yil,
+        ozelAvansGirisleri: taslak.ozelAvansGirisleri||[],
+        isAvansiGirisleri: taslak.isAvansiGirisleri||[],
+        isAvansiHarcamalar: taslak.isAvansiHarcamalar||[],
+        ozelAvansToplam: h.avans.ozelToplam,
+        isAvansiBelgesizKalan: h.avans.isKesilecek,
+        toplamKesinti: h.avans.toplamKesinti,
+        kayitZamani: Date.now()
+      };
+      AvansKayitData.kaydet(avansKayitObj, function(basariliAv, errAv){
+        if(!basariliAv){ document.getElementById("btnAyiKayitEt").disabled=false; alert("Avans Takibi kapatılamadı: " + (errAv && errAv.message)); return; }
+        maasiKaydet();
+      });
+    } else {
+      maasiKaydet();
+    }
   };
 
-  try{
-    KomisyonData.degistiginde(function(){ mhHesaplaVeCiz(); });
-  }catch(e){}
-  try{
-    MaasKayitData.degistiginde(function(){ mhHesaplaVeCiz(); mhGecmisiCiz(); });
-  }catch(e){}
+  try{ KomisyonData.degistiginde(function(){ mhHesaplaVeCiz(); }); }catch(e){}
+  try{ MaasKayitData.degistiginde(function(){ mhHesaplaVeCiz(); mhGecmisiCiz(); }); }catch(e){}
+  try{ AvansKayitData.degistiginde(function(){ mhHesaplaVeCiz(); }); }catch(e){}
 });

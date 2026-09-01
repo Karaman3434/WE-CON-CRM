@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST V2 — VERSİYON: WG.010926.2021.75 — avans-takibi.html
+  =====================================================================
+  AVANS TAKİBİ — Özel Avans ve İş Avansı (+ belgeleme harcamaları) için
+  bağımsız, kendi "ay kapat" döngüsüne sahip manuel giriş sayfası. Her
+  ekleme/silme ANINDA taslak olarak Firebase'e yazılır (bkz.
+  avans-kayit-data.js). Maaş Hesaplama bu sayfanın verisini (kapalı kayıt
+  veya açık taslak) otomatik okur; Maaş Hesaplama'yı kapatmak bu sayfayı da
+  senkron kapatır.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Avans Takibi</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css">
+<link rel="stylesheet" href="maas-hesaplama-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="maas-hesaplama.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="ok-baslik-serit" style="background:#8e44ad;">
+    <span>🧾 Avans Takibi</span>
+  </div>
+  <p class="ok-aciklama" style="background:#f5eafc; border-color:#e0c9f0; color:#5a2d7a;">Her satır eklediğinde anında kaydedilir. "Kapat ve Kayıt Et" dediğinde Maaş Hesaplama'daki dönem de otomatik kapanır.</p>
+
+  <div class="mh-donem-serit" id="avDonemSerit" style="background:#8e44ad;">Açık Dönem: —</div>
+
+  <section class="ok-kutu">
+    <div class="mh-kutu-baslik-satir">ÖZEL AVANS</div>
+    <div class="mh-harcama-giris-satir" style="grid-template-columns:1fr 1.4fr 1fr auto;">
+      <input type="date" id="avOzelTarih" class="mh-harcama-tarih">
+      <input type="text" id="avOzelAciklama" class="mh-harcama-cesit" placeholder="Açıklama">
+      <input type="text" inputmode="decimal" id="avOzelTutar" class="mh-harcama-tutar" placeholder="Tutar">
+      <button type="button" id="btnOzelEkle" class="mh-harcama-ekle-btn">+</button>
+    </div>
+    <table class="mh-harcama-tablo">
+      <thead><tr><th>TARİH</th><th>AÇIKLAMA</th><th>TUTAR</th><th></th></tr></thead>
+      <tbody id="avOzelTabloGovde"></tbody>
+    </table>
+    <p class="bos-mesaj" id="avOzelBos">Henüz özel avans girilmedi.</p>
+    <div class="mh-sonuc-satir mh-sonuc-satir--toplam">
+      <span>ÖZEL AVANS TOPLAMI</span>
+      <b id="avOzelToplam">0,00 TL</b>
+    </div>
+  </section>
+
+  <section class="ok-kutu">
+    <div class="mh-kutu-baslik-satir">İŞ AVANSI (aldıkların)</div>
+    <div class="mh-harcama-giris-satir" style="grid-template-columns:1fr 1.4fr 1fr auto;">
+      <input type="date" id="avIsTarih" class="mh-harcama-tarih">
+      <input type="text" id="avIsAciklama" class="mh-harcama-cesit" placeholder="Açıklama">
+      <input type="text" inputmode="decimal" id="avIsTutar" class="mh-harcama-tutar" placeholder="Tutar">
+      <button type="button" id="btnIsEkle" class="mh-harcama-ekle-btn">+</button>
+    </div>
+    <table class="mh-harcama-tablo">
+      <thead><tr><th>TARİH</th><th>AÇIKLAMA</th><th>TUTAR</th><th></th></tr></thead>
+      <tbody id="avIsTabloGovde"></tbody>
+    </table>
+    <p class="bos-mesaj" id="avIsBos">Henüz iş avansı girilmedi.</p>
+    <div class="mh-sonuc-satir">
+      <span>Alınan İş Avansı Toplamı</span>
+      <b id="avIsToplam">0,00 TL</b>
+    </div>
+
+    <span class="mh-etiket">HARCAMALAR (belgelediklerin)</span>
+    <div class="mh-harcama-giris-satir">
+      <input type="date" id="avHarcamaTarih" class="mh-harcama-tarih">
+      <input type="text" id="avHarcamaCesit" class="mh-harcama-cesit" placeholder="Otel, Yemek, Yıkama..." list="avCesitListesi">
+      <datalist id="avCesitListesi">
+        <option value="Otel"><option value="Yemek"><option value="Yıkama"><option value="Ulaşım"><option value="Diğer">
+      </datalist>
+      <input type="text" inputmode="decimal" id="avHarcamaTutar" class="mh-harcama-tutar" placeholder="Tutar">
+      <button type="button" id="btnHarcamaEkle" class="mh-harcama-ekle-btn">+</button>
+    </div>
+    <table class="mh-harcama-tablo">
+      <thead><tr><th>TARİH</th><th>ÇEŞİT</th><th>TUTAR</th><th></th></tr></thead>
+      <tbody id="avHarcamaTabloGovde"></tbody>
+    </table>
+    <p class="bos-mesaj" id="avHarcamaBos">Henüz harcama eklenmedi.</p>
+
+    <div class="mh-sonuc-satir">
+      <span>Belgelenen toplam</span>
+      <b id="avBelgelenenToplam">0,00 TL</b>
+    </div>
+    <div class="mh-sonuc-satir mh-sonuc-satir--vurgu">
+      <span>Maaştan kesilecek (belgesiz kalan)</span>
+      <b id="avIsKesilecek">0,00 TL</b>
+    </div>
+  </section>
+
+  <div class="mh-avans-toplam-kutu">
+    <div class="mh-sonuc-satir"><span>Özel Avans</span><b id="avToplamOzel">0,00 TL</b></div>
+    <div class="mh-sonuc-satir"><span>İş Avansı (belgesiz kalan)</span><b id="avToplamIs">0,00 TL</b></div>
+    <div class="mh-sonuc-satir mh-sonuc-satir--toplam"><span>TOPLAM KESİNTİ</span><b id="avToplamGenel">0,00 TL</b></div>
+  </div>
+
+  <button type="button" id="btnAviKapatKayitEt" class="mh-kayit-et-btn" style="background:#8e44ad; margin-top:16px;">✓ Kapat ve Kayıt Et</button>
+
+  <section class="ok-kutu">
+    <div class="ok-kutu-baslik">🕘 Kayıt Geçmişi</div>
+    <div class="ok-karsilastir-secim-satir">
+      <select id="avGecmisAySecici"><option value="">Ay seç…</option></select>
+    </div>
+    <div id="avGecmisDetay"></div>
+    <p class="bos-mesaj" id="avGecmisBos" hidden>Henüz kayıt yok.</p>
+  </section>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js?v=WG.010926.2021.75"></script>
+<script src="avans-kayit-data.js?v=WG.010926.2021.75"></script>
+<script src="avans-takibi-render.js?v=WG.010926.2021.75"></script>
+</body>
+</html>

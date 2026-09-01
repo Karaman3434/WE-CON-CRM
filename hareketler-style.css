@@ -48,6 +48,11 @@
   color: #ffffff;
 }
 .hareketler-tile--maas .hareketler-tile-baslik { color: #ffffff; }
+.hareketler-tile--avans {
+  background: #8e44ad;
+  color: #ffffff;
+}
+.hareketler-tile--avans .hareketler-tile-baslik { color: #ffffff; }
 .hareketler-tile--genis {
   width: 100%;
   margin-top: 14px;

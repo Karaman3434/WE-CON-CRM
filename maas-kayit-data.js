@@ -51,15 +51,22 @@ var MaasKayitData = (function(){
   }
 
   // Henüz kayıt edilmemiş, şu an üzerinde çalışılan "açık dönem"i bulur:
-  // en son kayıtlı ayın bir sonrası (hiç kayıt yoksa bugünün ayı).
+  // en son kayıtlı ayın bir sonrası. Hiç kayıt yoksa BİR ÖNCEKİ ayı açık
+  // dönem sayar — çünkü bir ay, o ay bittikten SONRA kapatılır (bugün 1
+  // Eylülse, kapatılacak olan Ağustos'tur, henüz başlamamış Eylül değil).
   function acikDonem(){
     var liste = tumKayitlar();
     var simdi = new Date();
-    if(!liste.length) return {ay: simdi.getMonth()+1, yil: simdi.getFullYear()};
+    if(!liste.length){
+      var ay = simdi.getMonth(); // getMonth() 0-index olduğu için zaten "bir önceki ay" (1-index karşılığı)
+      var yil = simdi.getFullYear();
+      if(ay < 1){ ay = 12; yil -= 1; }
+      return {ay: ay, yil: yil};
+    }
     var son = liste[0];
-    var ay = (son.ay||simdi.getMonth()+1) + 1, yil = son.yil||simdi.getFullYear();
-    if(ay > 12){ ay = 1; yil += 1; }
-    return {ay: ay, yil: yil};
+    var ay2 = (son.ay||simdi.getMonth()+1) + 1, yil2 = son.yil||simdi.getFullYear();
+    if(ay2 > 12){ ay2 = 1; yil2 += 1; }
+    return {ay: ay2, yil: yil2};
   }
 
   // Bir sonraki dönemin brüt primini bulmak için referans noktası: en son
