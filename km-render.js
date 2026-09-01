@@ -50,28 +50,32 @@ function kategoriSecimBagla(){
 
 function dunOzetiniCiz(){
   try{
-    var ozet = KmData.dunOzeti();
     var el = document.getElementById("kmDunOzet");
+    var girilenDeger = parseFloat(document.getElementById("kmBugun").value);
+
+    if(isNaN(girilenDeger)){
+      el.innerHTML = "Bugünün kilometresini girdiğinde, bir önceki tarihte yapılan mesafe burada hesaplanacak.";
+      return;
+    }
+
+    var ozet = KmData.oncekiTarihinMesafesi(girilenDeger);
     if(!ozet){
       el.innerHTML = "Henüz önceki bir kayıt yok.";
       return;
     }
-    // "Dün" yerine kaydın GERÇEK tarihini gösteriyoruz — araç günlerdir
-    // çıkmamışsa (hafta sonu/tatil/izin), bu "dün" olmayabilir. Mesafenin
-    // hangi TARİH ARALIĞINDA biriktiğini de gösteriyoruz (sadece bitiş
-    // tarihini göstermek, örn. sadece "31.08.2026", yanıltıcı olabilir —
-    // 794 km aslında 29.08'den 31.08'e kadar birikmiş olabilir).
     var parca = ozet.tarihAnahtari.split("-"); // YYYY-MM-DD
     var etiketTarih = parca[2] + "." + parca[1] + "." + parca[0];
-    var araligiEtiketi = etiketTarih;
-    if(ozet.baslangicTarihAnahtari){
-      var parcaBas = ozet.baslangicTarihAnahtari.split("-");
-      var etiketBas = parcaBas[2] + "." + parcaBas[1] + "." + parcaBas[0];
-      if(etiketBas !== etiketTarih) araligiEtiketi = etiketBas + " → " + etiketTarih;
+    if(ozet.oncekiKm===undefined || ozet.oncekiKm===null || ozet.oncekiKm===""){
+      el.innerHTML = "Önceki tarih (" + etiketTarih + ") için kilometre kaydı yok, mesafe hesaplanamıyor.";
+      return;
     }
-    el.innerHTML = "Önceki kayıt (" + araligiEtiketi + "): <strong>" + (ozet.baslangic!=null?ozet.baslangic:"-") + " km</strong> → <strong>" + ozet.bitis + " km</strong>"
-      + " = <strong>" + (ozet.mesafe!=null?ozet.mesafe:"-") + " km</strong> yapıldı";
-  }catch(e){ hataGoster("Önceki kayıt özeti çizilemedi: " + e.message); }
+    if(ozet.mesafe===null){
+      el.innerHTML = "Önceki tarih (" + etiketTarih + "): <strong>" + ozet.oncekiKm + " km</strong> — bugünkü değer geçersiz.";
+      return;
+    }
+    el.innerHTML = "Önceki tarih (" + etiketTarih + "): <strong>" + ozet.oncekiKm + " km</strong> → <strong>" + ozet.bugunkuDeger + " km</strong>"
+      + " = <strong>" + ozet.mesafe + " km</strong> yapılmış";
+  }catch(e){ hataGoster("Önceki tarih özeti çizilemedi: " + e.message); }
 }
 
 function formuDoldur(){
@@ -311,6 +315,7 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   kategoriSecimBagla();
+  document.getElementById("kmBugun").addEventListener("input", dunOzetiniCiz);
   document.getElementById("btnKmKaydet").onclick = kmKaydetTiklandi;
   document.getElementById("btnExcel").onclick = excelAktar;
   document.getElementById("btnKmTabloKaydet").onclick = function(){

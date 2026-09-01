@@ -83,34 +83,19 @@ var KmData = (function(){
     return f<0 ? 0 : f;
   }
 
-  // Önceki kayıtlı günün özeti: [ondan önceki kayıt] → [önceki kayıt] = mesafe.
-  // "Dün" (takvimde tam 1 gün önce) DEĞİL — kronolojik olarak en son
-  // kilometre girilmiş gün esas alınır (araç günlerce çıkmamış olabilir).
-  // Sadece görüntüleme/referans amaçlı, bugünün girişine bağımlı DEĞİL.
-  function dunOzeti(){
+  // Bir önceki tarihte yapılan kilometre: [en son kayıtlı günün KM'si] →
+  // [BUGÜN GİRİLEN — henüz kaydedilmemiş olsa bile] KM'si = mesafe.
+  // "Bugünün başlangıç KM'si = önceki tarihin bitiş KM'si" mantığıyla,
+  // bugün yazdığın değerden en son kayıtlı tarihin KM'sini çıkararak, O
+  // ÖNCEKİ TARİHTE yapılan mesafeyi CANLI (kaydetmeden önce) gösterir.
+  function oncekiTarihinMesafesi(bugunkuGirilenDeger){
     var bugun = bugunAnahtari();
     var oncekiKayitliGun = sonKayitliGunAnahtari(bugun);
     if(!oncekiKayitliGun) return null;
-    var dunKaydi = kayitlar[oncekiKayitliGun];
-
-    // "Önceki kayıtlı günden ÖNCEKİ" kaydı bul (özet satırının başlangıç
-    // değeri için) — yine kronolojik en son, "dünden önceki gün" değil.
-    var oncekiOncesiAnahtar = null;
-    Object.keys(kayitlar).forEach(function(k){
-      if(k >= oncekiKayitliGun) return;
-      if(kayitlar[k] && kayitlar[k].km!==undefined && kayitlar[k].km!==null && kayitlar[k].km!==""){
-        if(!oncekiOncesiAnahtar || k > oncekiOncesiAnahtar) oncekiOncesiAnahtar = k;
-      }
-    });
-
-    var baslangic = oncekiOncesiAnahtar ? kayitlar[oncekiOncesiAnahtar].km : null;
-    var bitis = dunKaydi.km;
-    var mesafe = farkHesapla(bitis, baslangic);
-    // baslangicTarihAnahtari: bu mesafenin GERÇEKTE hangi tarihten itibaren
-    // biriktiğini göstermek için — sadece bitiş tarihini göstermek (örn.
-    // "31.08.2026: 794 km") yanıltıcı olabilir, çünkü araç 30.08'de hiç
-    // çıkmamışsa bu mesafe aslında 29.08'den 31.08'e kadar birikmiştir.
-    return {baslangic:baslangic, bitis:bitis, mesafe:mesafe, tarihAnahtari:oncekiKayitliGun, baslangicTarihAnahtari:oncekiOncesiAnahtar};
+    var oncekiKayit = kayitlar[oncekiKayitliGun];
+    var oncekiKm = oncekiKayit.km;
+    var mesafe = farkHesapla(bugunkuGirilenDeger, oncekiKm);
+    return {tarihAnahtari: oncekiKayitliGun, oncekiKm: oncekiKm, bugunkuDeger: bugunkuGirilenDeger, mesafe: mesafe};
   }
 
   function gununKmGir(bugunkuKm, kategori, saat, guzergah, geriBildir){
@@ -269,7 +254,7 @@ var KmData = (function(){
     sonKayitliGunAnahtari: sonKayitliGunAnahtari,
     kaydiOku: kaydiOku,
     farkHesapla: farkHesapla,
-    dunOzeti: dunOzeti,
+    oncekiTarihinMesafesi: oncekiTarihinMesafesi,
     gununKmGir: gununKmGir,
     ziyaretYerleriniKaydet: ziyaretYerleriniKaydet,
     hucreGuncelle: hucreGuncelle,
