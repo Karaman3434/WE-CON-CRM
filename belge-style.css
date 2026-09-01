@@ -175,9 +175,10 @@
   font-weight: 800;
   color: #111111;
   font-size: 11px;
+  white-space: nowrap;
 }
 .belge-td-sira { color: #0c447c; font-weight: 900; }
-.belge-td-urun { text-align: left; }
+.belge-td-urun { text-align: left; white-space: normal; }
 .belge-td-urun-kod { font-size: 8px; color: #2d3540; line-height: 1.3; white-space: nowrap; overflow: hidden; font-weight: 700; }
 /* B (Berta) / A (Abas) kod harfleri — bkz product-style.css .kod-harf için
    aynı tasarım dili: tam kelime yerine tek harf rozeti, kalın ve büyük. */
