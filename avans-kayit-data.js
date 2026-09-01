@@ -85,12 +85,14 @@ var AvansKayitData = (function(){
 
   function anahtarOlustur(ay, yil){ return yil + "-" + ("0"+ay).slice(-2); }
 
-  // Açık dönemin taslağını okur — hiç girilmemişse boş bir taslak döner.
-  function taslakOku(){
-    var acik = acikDonem();
-    var anahtar = anahtarOlustur(acik.ay, acik.yil);
+  // Verilen (veya belirtilmemişse açık dönemin) taslağını okur — hiç
+  // girilmemişse boş bir taslak döner.
+  function taslakOku(ay, yil){
+    var hedefAy = ay, hedefYil = yil;
+    if(!hedefAy || !hedefYil){ var acik = acikDonem(); hedefAy = acik.ay; hedefYil = acik.yil; }
+    var anahtar = anahtarOlustur(hedefAy, hedefYil);
     var t = taslaklar[anahtar];
-    return t || {ay: acik.ay, yil: acik.yil, ozelAvansGirisleri: [], isAvansiGirisleri: [], isAvansiHarcamalar: []};
+    return t || {ay: hedefAy, yil: hedefYil, ozelAvansGirisleri: [], isAvansiGirisleri: [], isAvansiHarcamalar: []};
   }
 
   // Kapatılmış bir kayıt var mı diye bakar (verilen ay/yıl için).
@@ -99,13 +101,14 @@ var AvansKayitData = (function(){
     return kayitlar[anahtar] ? Object.assign({anahtar:anahtar}, kayitlar[anahtar]) : null;
   }
 
-  // Her ekleme/silmede çağrılır — taslağı ANINDA Firebase'e yazar.
-  function taslakGuncelle(veriObj, geriBildir){
+  // Her ekleme/silmede çağrılır — DÜZENLENEN dönemin taslağını ANINDA
+  // Firebase'e yazar (ay/yıl artık kullanıcı tarafından seçilebilir, açık
+  // dönemle aynı olmak zorunda değil).
+  function taslakGuncelle(ay, yil, veriObj, geriBildir){
     var cb = typeof geriBildir === "function" ? geriBildir : function(){};
     try{
-      var acik = acikDonem();
-      var anahtar = anahtarOlustur(acik.ay, acik.yil);
-      var yazilacak = Object.assign({ay: acik.ay, yil: acik.yil}, veriObj);
+      var anahtar = anahtarOlustur(ay, yil);
+      var yazilacak = Object.assign({ay: ay, yil: yil}, veriObj);
       firebase.database().ref("avansTaslak/" + anahtar).set(yazilacak)
         .then(function(){ cb(true); }).catch(function(err){ cb(false, err); });
     }catch(e){ cb(false, e); }

@@ -15,6 +15,14 @@ var mhGuncelHesap = null; // en son mhHesaplaVeCiz() çıktısı — Kayıt Et b
 function fmtTL_MH(n){
   return (n||0).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " TL";
 }
+// Türkçe tutar biçimi: binlik ayraç "." , ondalık ayraç ",". "35.560" -> 35560.
+function tutarParse_MH(s){
+  s = (s||"").toString().trim();
+  if(!s) return 0;
+  s = s.replace(/\./g, "").replace(",", ".");
+  var v = parseFloat(s);
+  return isNaN(v) ? 0 : v;
+}
 
 function tarihiGuncelle_MH(){
   try{
@@ -89,7 +97,7 @@ function mhAvansToplamlariniOku(ay, yil){
     veri = kapali;
   } else {
     taslakMi = true;
-    try{ veri = AvansKayitData.taslakOku(); }catch(e){ veri = {ozelAvansGirisleri:[], isAvansiGirisleri:[], isAvansiHarcamalar:[]}; }
+    try{ veri = AvansKayitData.taslakOku(ay, yil); }catch(e){ veri = {ozelAvansGirisleri:[], isAvansiGirisleri:[], isAvansiHarcamalar:[]}; }
   }
   var ozelToplam = (veri.ozelAvansGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
   var isToplam = (veri.isAvansiGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
@@ -180,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var mevcut = parseFloat(localStorage.getItem("weicon_brut_sabit_maas")) || 0;
     var girilen = prompt("Yeni brüt sabit maaşı gir:", mevcut ? mevcut.toString().replace(".", ",") : "");
     if(girilen == null) return;
-    var v = parseFloat(girilen.replace(",", ".")) || 0;
+    var v = tutarParse_MH(girilen);
     if(v <= 0){ alert("Geçerli bir tutar gir."); return; }
     try{ AyarlarSync.brutSabitMaasKaydet(v); }catch(e){}
     localStorage.setItem("weicon_brut_sabit_maas", v);
@@ -218,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function(){
     // Avans Takibi aynı ay için hâlâ açıksa (kapalı kaydı yoksa), önce onu
     // senkron kapatıp SONRA Maaş kaydını yazıyoruz.
     if(!h.avans.kapaliVarMi){
-      var taslak = AvansKayitData.taslakOku();
+      var taslak = AvansKayitData.taslakOku(h.acik.ay, h.acik.yil);
       var avansKayitObj = {
         ay: h.acik.ay, yil: h.acik.yil,
         ozelAvansGirisleri: taslak.ozelAvansGirisleri||[],

@@ -1,9 +1,11 @@
 /*
   avans-takibi-render.js
   ========================
-  Özel Avans / İş Avansı / İş Avansı Harcamaları listelerini yönetir. Her
-  ekleme/silme ANINDA AvansKayitData.taslakGuncelle() ile Firebase'e yazılır.
-  "Kapat ve Kayıt Et" taslağı resmi kayda çevirir, listeleri sıfırlar.
+  Özel Avans / İş Avansı / İş Avansı Harcamaları listelerini yönetir.
+  Dönem artık ELLE SEÇİLEBİLİR (avDonemSecici) — otomatik hesaplanan açık
+  dönem sadece başlangıç önerisi ve "kapat"tan sonraki öneridir, kapatılmamış
+  herhangi bir aya geçip orada da giriş yapılabilir. Her ekleme/silme ANINDA
+  AvansKayitData.taslakGuncelle() ile seçili dönemin taslağına yazılır.
 */
 
 var AY_ADLARI_AV = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
@@ -11,6 +13,8 @@ var AY_ADLARI_AV = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz
 var avOzelListe = [];
 var avIsListe = [];
 var avHarcamaListe = [];
+var avSeciliAy = null;
+var avSeciliYil = null;
 
 function fmtTL_AV(n){
   return (n||0).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " TL";
@@ -25,6 +29,14 @@ function fmtTarihKisa_AV(iso){
   var p = iso.split("-");
   if(p.length!==3) return iso;
   return p[2] + "." + p[1] + "." + p[0].slice(2);
+}
+// Türkçe tutar biçimi: binlik ayraç "." , ondalık ayraç ",". "20.000" -> 20000.
+function tutarParse_AV(s){
+  s = (s||"").toString().trim();
+  if(!s) return 0;
+  s = s.replace(/\./g, "").replace(",", ".");
+  var v = parseFloat(s);
+  return isNaN(v) ? 0 : v;
 }
 
 function tarihiGuncelle_AV(){
@@ -41,8 +53,6 @@ function avToplamHesapla(liste){
   return liste.reduce(function(s,x){ return s + (x.tutar||0); }, 0);
 }
 
-// Verilen {ozelAvansGirisleri, isAvansiGirisleri, isAvansiHarcamalar} verisinden
-// tüm toplamları hesaplar — hem taslak hem kapalı kayıt görüntülemede kullanılır.
 function avToplamlariHesapla(veri){
   var ozelToplam = avToplamHesapla(veri.ozelAvansGirisleri||[]);
   var isToplam = avToplamHesapla(veri.isAvansiGirisleri||[]);
@@ -65,7 +75,7 @@ function avTabloCiz(govdeId, bosId, liste, kolonEtiket){
 }
 
 function avTaslagiKaydet(){
-  AvansKayitData.taslakGuncelle({
+  AvansKayitData.taslakGuncelle(avSeciliAy, avSeciliYil, {
     ozelAvansGirisleri: avOzelListe,
     isAvansiGirisleri: avIsListe,
     isAvansiHarcamalar: avHarcamaListe
@@ -74,10 +84,35 @@ function avTaslagiKaydet(){
   });
 }
 
+// Dönem seçiciyi doldurur: cari yıl + bir önceki/sonraki yılın ayları,
+// ZATEN KAPATILMIŞ olanlar listelenmez (onlar Kayıt Geçmişi'nde).
+function avDonemSeciciDoldur(){
+  var sel = document.getElementById("avDonemSecici");
+  var simdi = new Date();
+  var secenekler = [];
+  [simdi.getFullYear()-1, simdi.getFullYear(), simdi.getFullYear()+1].forEach(function(yil){
+    for(var ay=1; ay<=12; ay++){
+      if(AvansKayitData.kapaliKaydiBul(ay, yil)) continue;
+      secenekler.push({ay:ay, yil:yil});
+    }
+  });
+  sel.innerHTML = secenekler.map(function(s){
+    return "<option value='" + s.ay + "-" + s.yil + "'" + (s.ay===avSeciliAy && s.yil===avSeciliYil ? " selected" : "") + ">" + AY_ADLARI_AV[s.ay] + " " + s.yil + "</option>";
+  }).join("");
+}
+
+function avDonemeGec(ay, yil){
+  avSeciliAy = ay; avSeciliYil = yil;
+  var taslak = AvansKayitData.taslakOku(ay, yil);
+  avOzelListe = taslak.ozelAvansGirisleri || [];
+  avIsListe = taslak.isAvansiGirisleri || [];
+  avHarcamaListe = taslak.isAvansiHarcamalar || [];
+  avDonemSeciciDoldur();
+  avCiz();
+}
+
 function avCiz(){
-  var acik = AvansKayitData.acikDonem();
-  document.getElementById("avDonemSerit").textContent = "Açık Dönem: " + AY_ADLARI_AV[acik.ay] + " " + acik.yil;
-  document.getElementById("btnAviKapatKayitEt").textContent = "✓ " + AY_ADLARI_AV[acik.ay] + "'ı Kapat ve Kayıt Et";
+  document.getElementById("btnAviKapatKayitEt").textContent = "✓ " + AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil + "'ı Kapat ve Kayıt Et";
 
   var govdeOzel = avTabloCiz("avOzelTabloGovde", "avOzelBos", avOzelListe, "aciklama");
   govdeOzel.querySelectorAll(".mh-harcama-sil-btn").forEach(function(btn){
@@ -121,7 +156,7 @@ function avGecmisDetayGoster(anahtar){
   detay.innerHTML = "<div class='mh-sonuc-satir'><span>Özel Avans</span><b>" + fmtTL_AV(t.ozelToplam) + "</b></div>"
     + "<div class='mh-sonuc-satir'><span>İş Avansı Alınan</span><b>" + fmtTL_AV(t.isToplam) + "</b></div>"
     + "<div class='mh-sonuc-satir'><span>Belgelenen</span><b>" + fmtTL_AV(t.belgelenenToplam) + "</b></div>"
-    + "<div class='mh-sonuc-satir'><span>İş Avansı Belgesiz Kalan</span><b>" + fmtTL_AV(t.isKesilecek) + "</b></div>"
+    + "<div class='mh-sonuc-satir'><span>Kalan İş Avansı</span><b>" + fmtTL_AV(t.isKesilecek) + "</b></div>"
     + "<div class='mh-sonuc-satir mh-sonuc-satir--toplam'><span>TOPLAM KESİNTİ</span><b>" + fmtTL_AV(t.toplamKesinti) + "</b></div>";
 }
 
@@ -129,17 +164,19 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_AV();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
-  var taslak = AvansKayitData.taslakOku();
-  avOzelListe = taslak.ozelAvansGirisleri || [];
-  avIsListe = taslak.isAvansiGirisleri || [];
-  avHarcamaListe = taslak.isAvansiHarcamalar || [];
-  avCiz();
+  var acik = AvansKayitData.acikDonem();
+  avDonemeGec(acik.ay, acik.yil);
   avGecmisSeciciDoldur();
+
+  document.getElementById("avDonemSecici").onchange = function(){
+    var p = this.value.split("-");
+    avDonemeGec(parseInt(p[0],10), parseInt(p[1],10));
+  };
 
   document.getElementById("btnOzelEkle").onclick = function(){
     var tarih = document.getElementById("avOzelTarih").value;
     var aciklama = document.getElementById("avOzelAciklama").value.trim();
-    var tutar = parseFloat((document.getElementById("avOzelTutar").value||"0").replace(",",".")) || 0;
+    var tutar = tutarParse_AV(document.getElementById("avOzelTutar").value);
     if(!tarih || !aciklama || tutar<=0){ alert("Tarih, açıklama ve tutar (0'dan büyük) gerekli."); return; }
     avOzelListe.push({tarih:tarih, aciklama:aciklama, tutar:tutar});
     document.getElementById("avOzelTarih").value = "";
@@ -151,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnIsEkle").onclick = function(){
     var tarih = document.getElementById("avIsTarih").value;
     var aciklama = document.getElementById("avIsAciklama").value.trim();
-    var tutar = parseFloat((document.getElementById("avIsTutar").value||"0").replace(",",".")) || 0;
+    var tutar = tutarParse_AV(document.getElementById("avIsTutar").value);
     if(!tarih || !aciklama || tutar<=0){ alert("Tarih, açıklama ve tutar (0'dan büyük) gerekli."); return; }
     avIsListe.push({tarih:tarih, aciklama:aciklama, tutar:tutar});
     document.getElementById("avIsTarih").value = "";
@@ -163,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnHarcamaEkle").onclick = function(){
     var tarih = document.getElementById("avHarcamaTarih").value;
     var cesit = document.getElementById("avHarcamaCesit").value.trim();
-    var tutar = parseFloat((document.getElementById("avHarcamaTutar").value||"0").replace(",",".")) || 0;
+    var tutar = tutarParse_AV(document.getElementById("avHarcamaTutar").value);
     if(!tarih || !cesit || tutar<=0){ alert("Tarih, çeşit ve tutar (0'dan büyük) gerekli."); return; }
     avHarcamaListe.push({tarih:tarih, cesit:cesit, tutar:tutar});
     document.getElementById("avHarcamaTarih").value = "";
@@ -173,31 +210,30 @@ document.addEventListener("DOMContentLoaded", function(){
   };
 
   document.getElementById("btnAviKapatKayitEt").onclick = function(){
-    var acik = AvansKayitData.acikDonem();
     var t = avToplamlariHesapla({ozelAvansGirisleri:avOzelListe, isAvansiGirisleri:avIsListe, isAvansiHarcamalar:avHarcamaListe});
-    if(!confirm(AY_ADLARI_AV[acik.ay] + " " + acik.yil + " avans dönemini kapatıp kayıt etmek istediğine emin misin?\n\nToplam Kesinti: " + fmtTL_AV(t.toplamKesinti))) return;
+    if(!confirm(AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil + " avans dönemini kapatıp kayıt etmek istediğine emin misin?\n\nToplam Kesinti: " + fmtTL_AV(t.toplamKesinti))) return;
     var kayitObj = {
-      ay: acik.ay, yil: acik.yil,
+      ay: avSeciliAy, yil: avSeciliYil,
       ozelAvansGirisleri: avOzelListe, isAvansiGirisleri: avIsListe, isAvansiHarcamalar: avHarcamaListe,
       ozelAvansToplam: t.ozelToplam, isAvansiToplam: t.isToplam, isAvansiBelgelenenToplam: t.belgelenenToplam,
       isAvansiBelgesizKalan: t.isKesilecek, toplamKesinti: t.toplamKesinti, kayitZamani: Date.now()
     };
     document.getElementById("btnAviKapatKayitEt").disabled = true;
+    var kapatilanAy = avSeciliAy, kapatilanYil = avSeciliYil;
     AvansKayitData.kaydet(kayitObj, function(basarili, err){
       document.getElementById("btnAviKapatKayitEt").disabled = false;
       if(!basarili){ alert("Kaydedilemedi: " + (err && err.message)); return; }
-      avOzelListe = []; avIsListe = []; avHarcamaListe = [];
-      avCiz(); avGecmisSeciciDoldur();
+      var sonrakiAy = kapatilanAy+1, sonrakiYil = kapatilanYil;
+      if(sonrakiAy>12){ sonrakiAy=1; sonrakiYil+=1; }
+      avDonemeGec(sonrakiAy, sonrakiYil);
+      avGecmisSeciciDoldur();
     });
   };
 
   document.getElementById("avGecmisAySecici").onchange = function(){ avGecmisDetayGoster(this.value); };
 
   AvansKayitData.degistiginde(function(){
-    // Başka bir sekmeden/cihazdan değişirse, KENDİ yazdığımız taslağı
-    // ezmemek için sadece geçmiş listesini ve (kapanmışsa) dönemi tazeler.
     avGecmisSeciciDoldur();
-    document.getElementById("btnAviKapatKayitEt").textContent = "✓ " + AY_ADLARI_AV[AvansKayitData.acikDonem().ay] + "'ı Kapat ve Kayıt Et";
-    document.getElementById("avDonemSerit").textContent = "Açık Dönem: " + AY_ADLARI_AV[AvansKayitData.acikDonem().ay] + " " + AvansKayitData.acikDonem().yil;
+    avDonemSeciciDoldur();
   });
 });

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.010926.2021.75 — avans-takibi.html
+  WEICON ASİST V2 — VERSİYON: WG.010926.2039.76 — avans-takibi.html
   =====================================================================
   AVANS TAKİBİ — Özel Avans ve İş Avansı (+ belgeleme harcamaları) için
   bağımsız, kendi "ay kapat" döngüsüne sahip manuel giriş sayfası. Her
@@ -39,7 +39,10 @@
   </div>
   <p class="ok-aciklama" style="background:#f5eafc; border-color:#e0c9f0; color:#5a2d7a;">Her satır eklediğinde anında kaydedilir. "Kapat ve Kayıt Et" dediğinde Maaş Hesaplama'daki dönem de otomatik kapanır.</p>
 
-  <div class="mh-donem-serit" id="avDonemSerit" style="background:#8e44ad;">Açık Dönem: —</div>
+  <div class="mh-donem-secici-satir">
+    <label class="mh-etiket" style="margin:0 0 4px;">DÖNEM (istediğin ayı seçebilirsin)</label>
+    <select id="avDonemSecici" class="mh-donem-select"></select>
+  </div>
 
   <section class="ok-kutu">
     <div class="mh-kutu-baslik-satir">ÖZEL AVANS</div>
@@ -99,14 +102,14 @@
       <b id="avBelgelenenToplam">0,00 TL</b>
     </div>
     <div class="mh-sonuc-satir mh-sonuc-satir--vurgu">
-      <span>Maaştan kesilecek (belgesiz kalan)</span>
+      <span>Kalan İş Avansı (belgesiz — maaştan kesilecek)</span>
       <b id="avIsKesilecek">0,00 TL</b>
     </div>
   </section>
 
   <div class="mh-avans-toplam-kutu">
     <div class="mh-sonuc-satir"><span>Özel Avans</span><b id="avToplamOzel">0,00 TL</b></div>
-    <div class="mh-sonuc-satir"><span>İş Avansı (belgesiz kalan)</span><b id="avToplamIs">0,00 TL</b></div>
+    <div class="mh-sonuc-satir"><span>Kalan İş Avansı</span><b id="avToplamIs">0,00 TL</b></div>
     <div class="mh-sonuc-satir mh-sonuc-satir--toplam"><span>TOPLAM KESİNTİ</span><b id="avToplamGenel">0,00 TL</b></div>
   </div>
 
@@ -126,8 +129,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.010926.2021.75"></script>
-<script src="avans-kayit-data.js?v=WG.010926.2021.75"></script>
-<script src="avans-takibi-render.js?v=WG.010926.2021.75"></script>
+<script src="auth.js?v=WG.010926.2039.76"></script>
+<script src="avans-kayit-data.js?v=WG.010926.2039.76"></script>
+<script src="avans-takibi-render.js?v=WG.010926.2039.76"></script>
 </body>
 </html>
