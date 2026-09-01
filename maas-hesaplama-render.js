@@ -24,6 +24,26 @@ function tutarParse_MH(s){
   return isNaN(v) ? 0 : v;
 }
 
+// Kalibrasyon: gerçek bordrodan alınan "Önceki Ay Matrah" rakamı, hangi
+// ayın SONU itibariyle geçerli olduğuyla birlikte saklanır. Sadece açık
+// dönemin TAM BİR ÖNCESİ ayla eşleştiğinde kullanılır — eşleşmezse (örn.
+// kapatılmadan araya ay girdiyse) eski tahmini yönteme dönülür.
+function mhMatrahBazOku(){
+  try{ return JSON.parse(localStorage.getItem("weicon_matrah_baz")||"null"); }catch(e){ return null; }
+}
+function mhOncekiAyHesapla(ay, yil){
+  var oncekiAy = ay - 1, oncekiYil = yil;
+  if(oncekiAy < 1){ oncekiAy = 12; oncekiYil -= 1; }
+  return {ay:oncekiAy, yil:oncekiYil};
+}
+function mhMatrahOnceOverride(acikAy, acikYil){
+  var baz = mhMatrahBazOku();
+  if(!baz) return null;
+  var onceki = mhOncekiAyHesapla(acikAy, acikYil);
+  if(baz.ay === onceki.ay && baz.yil === onceki.yil) return baz.matrah;
+  return null;
+}
+
 function tarihiGuncelle_MH(){
   try{
     var el = document.getElementById("gunTarihi");
@@ -120,7 +140,13 @@ function mhHesaplaVeCiz(){
     "Komisyon toplamı " + fmtTL_MH(komisyonToplam) + " − referans " + fmtTL_MH(referans);
 
   var primDizisi = mhBrutPrimDizisiOlustur(acik.ay, acik.yil, brutPrim);
-  var sonuc = MaasHesaplamaData.ayHesapla(acik.ay, brutSabit, primDizisi);
+  var matrahOverride = mhMatrahOnceOverride(acik.ay, acik.yil);
+  var sonuc = MaasHesaplamaData.ayHesapla(acik.ay, brutSabit, primDizisi, matrahOverride);
+
+  var oncekiAy = mhOncekiAyHesapla(acik.ay, acik.yil);
+  document.getElementById("mhMatrahDurum").textContent = matrahOverride!=null
+    ? "✓ Kalibre edildi (" + AY_ADLARI_MH[oncekiAy.ay] + " " + oncekiAy.yil + " sonu itibariyle: " + fmtTL_MH(matrahOverride) + ")"
+    : "Kalibrasyon yok — Ocak'tan tahmini hesaplanıyor. Bordrondaki \"Önceki Ay Matrah\" rakamını girerek doğruluğu artırabilirsin.";
 
   var av = mhAvansToplamlariniOku(acik.ay, acik.yil);
   document.getElementById("mhAvansToplamOzel").textContent = fmtTL_MH(av.ozelToplam);
@@ -195,6 +221,23 @@ document.addEventListener("DOMContentLoaded", function(){
     mhHesaplaVeCiz();
   };
 
+  document.getElementById("btnMatrahKalibreEt").onclick = function(){
+    if(!mhGuncelHesap) return;
+    var onceki = mhOncekiAyHesapla(mhGuncelHesap.acik.ay, mhGuncelHesap.acik.yil);
+    var mevcut = mhMatrahBazOku();
+    var girilen = prompt(
+      "Gerçek bordrondaki \"" + AY_ADLARI_MH[onceki.ay] + " " + onceki.yil + "\" dönemine ait \"Önceki Ay Matrah\" + o ayın kendi vergi matrahı toplamını (bordroda \"Yıl İçi Toplam\" olarak da geçebilir) gir — yani " + AY_ADLARI_MH[onceki.ay] + " " + onceki.yil + " SONU itibariyle kümülatif vergi matrahı:",
+      mevcut && mevcut.matrah ? mevcut.matrah.toString().replace(".", ",") : ""
+    );
+    if(girilen == null) return;
+    var v = tutarParse_MH(girilen);
+    if(v <= 0){ alert("Geçerli bir tutar gir."); return; }
+    var baz = {matrah: v, ay: onceki.ay, yil: onceki.yil};
+    try{ AyarlarSync.matrahBazKaydet(baz); }catch(e){}
+    localStorage.setItem("weicon_matrah_baz", JSON.stringify(baz));
+    mhHesaplaVeCiz();
+  };
+
   document.getElementById("btnAyiKayitEt").onclick = function(){
     if(!mhGuncelHesap) return;
     var h = mhGuncelHesap;
@@ -219,6 +262,11 @@ document.addEventListener("DOMContentLoaded", function(){
       MaasKayitData.kaydet(kayitObj, function(basarili, err){
         document.getElementById("btnAyiKayitEt").disabled = false;
         if(!basarili){ alert("Kaydedilemedi: " + (err && err.message)); return; }
+        // Kalibrasyonu otomatik ilerlet: artık bu ayın sonu itibariyle
+        // kümülatif matrah biliniyor — bir dahaki sefere elle girmesin.
+        var yeniBaz = {matrah: h.sonuc.kumulatifMatrahSimdi, ay: h.acik.ay, yil: h.acik.yil};
+        try{ AyarlarSync.matrahBazKaydet(yeniBaz); }catch(e){}
+        localStorage.setItem("weicon_matrah_baz", JSON.stringify(yeniBaz));
         // MaasKayitData.degistiginde dinleyicisi mhHesaplaVeCiz + mhGecmisiCiz'i tetikleyecek.
       });
     }

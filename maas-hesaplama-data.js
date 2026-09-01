@@ -27,7 +27,7 @@ var MaasHesaplamaData = (function(){
   var SGK_ORANI = 0.14;
   var ISSIZLIK_ORANI = 0.01;
   var DAMGA_ORANI = 0.00759;
-  var AU_GELIR_VERGISI_ISTISNASI = 4211.33; // aylık, sabit (2026)
+  var AU_GELIR_VERGISI_ISTISNASI = 5615.10; // aylık, sabit — Abdullah'ın 08/2026 bordro pusulasındaki gerçek "Asgari Ücret Gelir Vergisi" rakamı esas alındı (genel GİB kaynaklarındaki 4.211,33 TL değil — WEICON'un bordro sistemi bu rakamı kullanıyor).
   var AU_DAMGA_VERGISI_ISTISNASI = 250.70;  // aylık, sabit (2026)
 
   // Ücretliler için 2026 kümülatif yıllık matrah dilimleri.
@@ -61,7 +61,15 @@ var MaasHesaplamaData = (function(){
   // ayNo: 1-12 (hesaplanacak ay). brutSabitAylik: her ay aynı varsayılan
   // brüt sabit maaş. brutPrimDizisi: {1:.., 2:.., ..., 12:..} o yılın OCAK'tan
   // itibaren her ayının brüt primi (Ödenebilir Komisyon'dan).
-  function ayHesapla(ayNo, brutSabitAylik, brutPrimDizisi){
+  // "Kalibrasyon": Ocak'tan itibaren tahmini toplamak yerine, gerçek
+  // bordrodan alınan kümülatif matrahı doğrudan kullanmak için opsiyonel
+  // override. Verilirse, TOPLAM (sabit+prim) akışının "ÖNCE" (bu ay hariç,
+  // yılbaşından bir önceki aya kadarki) kümülatif matrahı olarak KULLANILIR
+  // — Ocak'tan itibaren tahmini toplama devre dışı kalır. "SADECE SABİT"
+  // taban çizgisi (netSabitMaas) hâlâ eski yöntemle hesaplanır (bu bir
+  // basitleştirme — kalibrasyon esas olarak TOPLAM/gerçek net rakamı
+  // doğrulamak için var).
+  function ayHesapla(ayNo, brutSabitAylik, brutPrimDizisi, kumulatifMatrahOnceOverride){
     brutSabitAylik = parseFloat(brutSabitAylik) || 0;
     brutPrimDizisi = brutPrimDizisi || {};
 
@@ -91,7 +99,17 @@ var MaasHesaplamaData = (function(){
     var buAyBrutToplam = brutSabitAylik + buAyPrim;
 
     // ---- TOPLAM akış (sabit + prim birlikte, gerçek bordro mantığı) ----
-    var gvToplam = marjinalGelirVergisi(kumBrutToplamSimdi, kumBrutToplamOnce);
+    // "ÖNCE" (bu ay hariç) kümülatif matrah: kalibrasyon varsa ondan, yoksa
+    // Ocak'tan tahmini toplamdan. "ŞİMDİ" (bu ay dahil) HER ZAMAN "önce" +
+    // bu ayın kendi katkısı olarak kurulur — override sadece "önce"ye değil
+    // "şimdi"ye de tutarlı şekilde yansısın diye.
+    var kumMatrahOnceToplam = kumulatifMatrahOnceOverride!=null ? kumulatifMatrahOnceOverride : sgkIssizlikSonrasi(kumBrutToplamOnce);
+    var kumMatrahSimdiToplam = kumMatrahOnceToplam + sgkIssizlikSonrasi(buAyBrutToplam);
+    var vSimdiToplam = kademeliVergi(kumMatrahSimdiToplam);
+    var vOnceToplam = kademeliVergi(kumMatrahOnceToplam);
+    var gvToplamIstisnasiz = Math.max(0, vSimdiToplam - vOnceToplam);
+    var gvToplamIstisna = Math.min(AU_GELIR_VERGISI_ISTISNASI, gvToplamIstisnasiz);
+    var gvToplam = Math.max(0, gvToplamIstisnasiz - gvToplamIstisna);
     var dvToplamIstisnasiz = buAyBrutToplam * DAMGA_ORANI;
     var dvToplam = Math.max(0, dvToplamIstisnasiz - AU_DAMGA_VERGISI_ISTISNASI);
     var netToplam = buAyBrutToplam - (buAyBrutToplam*SGK_ORANI) - (buAyBrutToplam*ISSIZLIK_ORANI) - gvToplam - dvToplam;
@@ -111,7 +129,11 @@ var MaasHesaplamaData = (function(){
       brutToplam: buAyBrutToplam,
       netSabitMaas: netSabitMaas,
       netPrim: netPrim,
-      netToplam: netToplam
+      netToplam: netToplam,
+      // Bu ay dahil, SGK/işsizlik SONRASI kümülatif vergi matrahı — bir
+      // sonraki ayın kalibrasyon referansı olarak kullanılır (bkz.
+      // maas-hesaplama-render.js: kapatınca kalibrasyon otomatik ilerler).
+      kumulatifMatrahSimdi: kumMatrahSimdiToplam
     };
   }
 

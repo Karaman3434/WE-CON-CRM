@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.010926.2054.78 — maas-hesaplama.html
+  WEICON ASİST V2 — VERSİYON: WG.010926.2127.79 — maas-hesaplama.html
   =====================================================================
   MAAŞ + PRİM HESAPLAMA v3 — açık dönem otomatik ilerler (hiç kayıt yokken
   BİR ÖNCEKİ ay açık sayılır, çünkü bir ay ancak bittikten sonra kapatılır).
@@ -54,6 +54,14 @@
     <span class="mh-etiket" style="margin-top:0;">BRÜT PRİM (otomatik)</span>
     <div class="mh-ust-bilgi-deger mh-ust-bilgi-deger--vurgu" id="mhPrimDeger">0,00 TL</div>
     <div class="mh-ust-bilgi-not" id="mhPrimKaynak">—</div>
+
+    <div class="mh-ust-bilgi-ayrac"></div>
+
+    <div class="mh-ust-bilgi-satir">
+      <span class="mh-etiket" style="margin-top:0;">VERGİ MATRAHI KALİBRASYONU</span>
+      <button type="button" id="btnMatrahKalibreEt" class="mh-guncelle-btn">🎯 Kalibre Et</button>
+    </div>
+    <div class="mh-ust-bilgi-not" id="mhMatrahDurum">—</div>
   </div>
 
   <section class="ok-kutu">
@@ -101,12 +109,12 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.010926.2054.78"></script>
-<script src="ayarlar-sync.js?v=WG.010926.2054.78"></script>
-<script src="odenebilir-komisyon-data.js?v=WG.010926.2054.78"></script>
-<script src="avans-kayit-data.js?v=WG.010926.2054.78"></script>
-<script src="maas-kayit-data.js?v=WG.010926.2054.78"></script>
-<script src="maas-hesaplama-data.js?v=WG.010926.2054.78"></script>
-<script src="maas-hesaplama-render.js?v=WG.010926.2054.78"></script>
+<script src="auth.js?v=WG.010926.2127.79"></script>
+<script src="ayarlar-sync.js?v=WG.010926.2127.79"></script>
+<script src="odenebilir-komisyon-data.js?v=WG.010926.2127.79"></script>
+<script src="avans-kayit-data.js?v=WG.010926.2127.79"></script>
+<script src="maas-kayit-data.js?v=WG.010926.2127.79"></script>
+<script src="maas-hesaplama-data.js?v=WG.010926.2127.79"></script>
+<script src="maas-hesaplama-render.js?v=WG.010926.2127.79"></script>
 </body>
 </html>
