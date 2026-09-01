@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST V2 — VERSİYON: WG.260901.1252.67 — odenebilir-komisyon.html
+  =================================================================================
+  ÖDENEBİLİR KOMİSYON TAKİBİ — merkez ofisin programındaki (engomoweb) "Ödenebilir
+  Komisyon" tablosunun anlık görüntülerini (fotoğraf/ekran görüntüsü → OCR ile
+  cihaz üzerinde, sunucu/abonelik GEREKTİRMEDEN okunur) haftalık/istediğin
+  sıklıkta kaydeder; iki tarih arasındaki farkı ay ay gösterir. Kaynak
+  fotoğraf/görüntü ASLA saklanmaz, sadece OCR'dan geçip kullanıcının onayladığı
+  12 sayı + tarih Firebase'e kaydedilir.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Ödenebilir Komisyon</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="menu.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+
+<main class="sayfa">
+
+  <div class="ok-baslik-serit">
+    <span>💰 Ödenebilir Komisyon Takibi</span>
+  </div>
+  <p class="ok-aciklama">Merkez programındaki "Ödenebilir Komisyon" tablosunun fotoğrafını/ekran görüntüsünü yükle — cihazın kendi içinde (internete/sunucuya göndermeden) okunur. Sen gözden geçirip onaylamadan hiçbir şey kaydedilmez.</p>
+
+  <section class="ok-kutu">
+    <div class="ok-kutu-baslik">➕ Yeni Kayıt Ekle</div>
+
+    <label class="ok-yukle-alan" id="okYukleAlan">
+      <span class="ok-yukle-ikon">📷</span>
+      <span class="ok-yukle-metin">Fotoğraf çek / Ekran görüntüsü yükle</span>
+      <input type="file" accept="image/*" id="okDosyaSecici" hidden>
+    </label>
+    <div class="ok-ocr-durum" id="okOcrDurum" hidden></div>
+
+    <div id="okFormAlani" hidden>
+      <div class="ok-tarih-satir">
+        <label>TARİH</label>
+        <input type="date" id="okTarihGiris">
+      </div>
+      <table class="ok-giris-tablo">
+        <thead><tr><th>AY</th><th>ÖDENEBİLİR KOMİSYON (TL)</th></tr></thead>
+        <tbody id="okGirisTabloGovde"></tbody>
+      </table>
+      <button class="ok-onayla-btn" id="btnOkOnayla">✓ Bu Kaydı Onayla ve Kaydet</button>
+    </div>
+  </section>
+
+  <section class="ok-kutu">
+    <div class="ok-kutu-baslik">📊 Karşılaştırma</div>
+    <div class="ok-karsilastir-secim-satir">
+      <select id="okOncekiSecim"></select>
+      <span class="ok-karsilastir-ok">→</span>
+      <select id="okSonrakiSecim"></select>
+    </div>
+    <div id="okKarsilastirmaSonuc"></div>
+    <p class="bos-mesaj" id="okKarsilastirmaBos" hidden>Karşılaştırma için en az 2 kayıt gerekiyor.</p>
+  </section>
+
+  <section class="ok-kutu">
+    <div class="ok-kutu-baslik">🕘 Kayıt Geçmişi</div>
+    <div id="okGecmisListesi"></div>
+    <p class="bos-mesaj" id="okGecmisBos" hidden>Henüz kayıt yok.</p>
+  </section>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+<script src="auth.js?v=WG.260901.1252.67"></script>
+<script src="hata-log.js?v=WG.260901.1252.67"></script>
+<script src="odenebilir-komisyon-data.js?v=WG.260901.1252.67"></script>
+<script src="odenebilir-komisyon-render.js?v=WG.260901.1252.67"></script>
+</body>
+</html>

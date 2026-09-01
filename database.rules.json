@@ -39,6 +39,10 @@
       ".read": "auth != null",
       ".write": "auth != null"
     },
+    "odenebilirKomisyon": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
 
     "$other": {
       ".read": "auth != null",
