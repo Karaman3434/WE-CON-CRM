@@ -91,3 +91,116 @@
   line-height: 1.4;
   margin: 0 2px 20px;
 }
+
+.mh-donem-serit {
+  background: #003a70;
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+.mh-kutu-baslik-satir {
+  font-size: 12px;
+  font-weight: 900;
+  color: #003a70;
+  margin-bottom: 8px;
+}
+.mh-not-kucuk {
+  font-size: 10px;
+  color: #8a8f98;
+  margin-top: 6px;
+}
+.mh-is-avansi-kutu { border-color: #f0dca0; background: #fffdf5; }
+
+.mh-harcama-giris-satir {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr auto;
+  gap: 6px;
+  margin: 6px 0 10px;
+}
+.mh-harcama-giris-satir input {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 6px;
+  font-size: 11px;
+  width: 100%;
+}
+.mh-harcama-ekle-btn {
+  background: #c78a00;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.mh-harcama-tablo { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 6px; }
+.mh-harcama-tablo th {
+  background: #fdf3d9;
+  color: #7a5b00;
+  padding: 5px 4px;
+  font-size: 9px;
+  font-weight: 900;
+  text-align: left;
+}
+.mh-harcama-tablo th:last-child, .mh-harcama-tablo td:last-child { text-align: right; width: 24px; }
+.mh-harcama-tablo th:nth-child(3), .mh-harcama-tablo td:nth-child(3) { text-align: right; }
+.mh-harcama-tablo td { border-bottom: 1px solid #f0ede0; padding: 6px 4px; }
+.mh-harcama-etiket-rozet {
+  display: inline-block;
+  background: #eaf2fc;
+  color: #003a70;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 800;
+}
+.mh-harcama-sil-btn { background: none; border: none; color: #c0392b; font-size: 13px; cursor: pointer; }
+
+.mh-sonuc-satir--vurgu { color: #a32d2d; font-weight: 800; }
+.mh-sonuc-satir--vurgu b { color: #c0392b; }
+
+.mh-kayit-et-btn {
+  width: 100%;
+  background: #c78a00;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.mh-gecmis-karti {
+  background: #f4f7fb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.mh-gecmis-ust {
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.mh-gecmis-ay { font-size: 12px; font-weight: 900; color: #003a70; }
+.mh-gecmis-tutar { font-size: 12px; font-weight: 900; color: #0e6b34; }
+.mh-gecmis-detay { padding: 0 12px 12px; }
+.mh-gecmis-sil-btn {
+  width: 100%;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 1px solid #f0b8b3;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 6px;
+}

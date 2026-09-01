@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.010926.1926.72 — maas-hesaplama.html
+  WEICON ASİST V2 — VERSİYON: WG.010926.1953.73 — maas-hesaplama.html
   =====================================================================
-  MAAŞ + PRİM HESAPLAMA — Abdullah'ın kendi net maaş + net prim tahminini
-  görebildiği kişisel bir hesaplayıcı. Ay seçilince o ayın brüt primi
-  Ödenebilir Komisyon tablosundan otomatik çekilir (üzerine dokunup elle de
-  değiştirilebilir). Hesap KÜMÜLATİF vergi matrahı yöntemiyle yapılır (bkz.
-  maas-hesaplama-data.js). Bu bir TAHMİN aracıdır, resmi bordro yerine geçmez.
+  MAAŞ + PRİM HESAPLAMA v2 — dönem otomatik ilerler (Dönemi Kayıt Et ve
+  Kapat ile bir sonrakine geçilir). Brüt Prim, Ödenebilir Komisyon'un
+  güncel toplamı ile son kayıtlı dönemin referans toplamı arasındaki FARK
+  olarak otomatik hesaplanır. Avans/Kesinti: Özel Avans (düz tutar) + İş
+  Avansı (belgelenen harcamalar tablosuyla — belgelenemeyen kısım
+  maaştan kesilir).
 -->
 <html lang="tr">
 <head>
@@ -38,25 +39,54 @@
   </div>
   <p class="ok-aciklama" style="background:#fff8e6; border-color:#f0dca0; color:#7a5b00;">Bu bir TAHMİN aracıdır — 2026 kümülatif vergi matrahı yöntemiyle hesaplar. Kesin rakam için gerçek bordronla karşılaştır.</p>
 
-  <section class="ok-kutu">
-    <label class="mh-etiket">AY SEÇ</label>
-    <select id="mhAySecim" class="mh-select"></select>
+  <div class="mh-donem-serit" id="mhDonemSerit">Açık Dönem: —</div>
 
+  <section class="ok-kutu">
     <div class="mh-prim-kutu" id="mhPrimKutu">
-      <div class="mh-prim-ust-satir">
-        <span class="mh-etiket">BRÜT PRİM</span>
-        <button type="button" id="mhPrimDegistirBtn" class="mh-prim-degistir-btn">✏️ Değiştir</button>
-      </div>
+      <span class="mh-etiket" style="margin-top:0;">BRÜT PRİM (otomatik)</span>
       <div class="mh-prim-deger" id="mhPrimDeger">0,00 TL</div>
-      <input type="text" inputmode="decimal" id="mhPrimGiris" class="mh-prim-giris" hidden>
-      <div class="mh-prim-kaynak" id="mhPrimKaynak">Ödenebilir Komisyon'da kayıt yok — elle gir.</div>
+      <div class="mh-prim-kaynak" id="mhPrimKaynak">—</div>
     </div>
 
     <label class="mh-etiket">BRÜT SABİT MAAŞ</label>
     <input type="text" inputmode="decimal" id="mhBrutSabit" class="mh-input" placeholder="Örn: 35560">
+  </section>
 
-    <label class="mh-etiket">AVANS / DİĞER KESİNTİ</label>
-    <input type="text" inputmode="decimal" id="mhAvans" class="mh-input" placeholder="0">
+  <section class="ok-kutu">
+    <div class="mh-kutu-baslik-satir">ÖZEL AVANS</div>
+    <input type="text" inputmode="decimal" id="mhOzelAvans" class="mh-input" placeholder="0">
+    <div class="mh-not-kucuk">Doğrudan maaştan düşülür — belge gerekmez.</div>
+  </section>
+
+  <section class="ok-kutu mh-is-avansi-kutu">
+    <div class="mh-kutu-baslik-satir">İŞ AVANSI</div>
+    <input type="text" inputmode="decimal" id="mhIsAvansiTutar" class="mh-input" placeholder="Aldığın toplam iş avansı">
+
+    <span class="mh-etiket" style="margin:14px 0 0;">HARCAMALAR</span>
+    <div class="mh-harcama-giris-satir">
+      <input type="date" id="mhHarcamaTarih" class="mh-harcama-tarih">
+      <input type="text" id="mhHarcamaCesit" class="mh-harcama-cesit" placeholder="Otel, Yemek, Yıkama..." list="mhCesitListesi">
+      <datalist id="mhCesitListesi">
+        <option value="Otel"><option value="Yemek"><option value="Yıkama"><option value="Ulaşım"><option value="Diğer">
+      </datalist>
+      <input type="text" inputmode="decimal" id="mhHarcamaTutar" class="mh-harcama-tutar" placeholder="Tutar">
+      <button type="button" id="btnHarcamaEkle" class="mh-harcama-ekle-btn">+</button>
+    </div>
+
+    <table class="mh-harcama-tablo">
+      <thead><tr><th>TARİH</th><th>ÇEŞİT</th><th>TUTAR</th><th></th></tr></thead>
+      <tbody id="mhHarcamaTabloGovde"></tbody>
+    </table>
+    <p class="bos-mesaj" id="mhHarcamaBos">Henüz harcama eklenmedi.</p>
+
+    <div class="mh-sonuc-satir">
+      <span>Belgelenen toplam</span>
+      <b id="mhBelgelenenToplam">0,00 TL</b>
+    </div>
+    <div class="mh-sonuc-satir mh-sonuc-satir--vurgu">
+      <span>Maaştan kesilecek (belgesiz kalan)</span>
+      <b id="mhIsAvansiKesilecek">0,00 TL</b>
+    </div>
   </section>
 
   <section class="ok-kutu mh-sonuc-kutu">
@@ -68,27 +98,40 @@
       <span>NET PRİM</span>
       <b id="mhSonucPrim">0,00 TL</b>
     </div>
-    <div class="mh-sonuc-satir mh-sonuc-satir--toplam">
+    <div class="mh-sonuc-satir">
       <span>TOPLAM NET HAKEDİŞ</span>
       <b id="mhSonucToplam">0,00 TL</b>
     </div>
     <div class="mh-sonuc-satir">
-      <span>Avans sonrası bankaya yatacak</span>
+      <span>Toplam kesinti (Özel + İş avansı belgesiz)</span>
+      <b id="mhSonucKesinti">0,00 TL</b>
+    </div>
+    <div class="mh-sonuc-satir mh-sonuc-satir--toplam">
+      <span>HESABA YATACAK TUTAR</span>
       <b id="mhSonucBanka">0,00 TL</b>
     </div>
   </section>
 
+  <button type="button" id="btnAyiKayitEt" class="mh-kayit-et-btn">✓ Dönemi Kayıt Et ve Kapat</button>
+
   <p class="mh-not">Not: Avans/diğer kesinti net maaş ve net prim tutarlarını değiştirmez, sadece ödeme mahsup kalemidir. Gelir vergisi dilim geçiş ayında resmi bordro yazılımları burada gösterilenden birkaç TL farklı sonuç verebilir.</p>
+
+  <section class="ok-kutu">
+    <div class="ok-kutu-baslik">🕘 Kayıt Geçmişi</div>
+    <div id="mhGecmisListesi"></div>
+    <p class="bos-mesaj" id="mhGecmisBos" hidden>Henüz kayıt yok.</p>
+  </section>
 
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.010926.1926.72"></script>
-<script src="ayarlar-sync.js?v=WG.010926.1926.72"></script>
-<script src="odenebilir-komisyon-data.js?v=WG.010926.1926.72"></script>
-<script src="maas-hesaplama-data.js?v=WG.010926.1926.72"></script>
-<script src="maas-hesaplama-render.js?v=WG.010926.1926.72"></script>
+<script src="auth.js?v=WG.010926.1953.73"></script>
+<script src="ayarlar-sync.js?v=WG.010926.1953.73"></script>
+<script src="odenebilir-komisyon-data.js?v=WG.010926.1953.73"></script>
+<script src="maas-kayit-data.js?v=WG.010926.1953.73"></script>
+<script src="maas-hesaplama-data.js?v=WG.010926.1953.73"></script>
+<script src="maas-hesaplama-render.js?v=WG.010926.1953.73"></script>
 </body>
 </html>
