@@ -97,6 +97,8 @@ function belgeyiCiz(kayit, musteri){
     var faturaAdr = kayit.faturaAdresi ? (kayit.faturaAdresi.adres || "") : "";
     var teslimatAdr = kayit.teslimatAdresi ? (kayit.teslimatAdresi.adres || "") : "";
     var yetkililer = (musteri && musteri.iletisimler) || [];
+    var sehir = (musteri && musteri.sehir) || "";
+    var yetkiliBilgiHtml = yetkililer.map(function(k){ return yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
     var musteriBlokHtml = "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='belge-musteri-govde'>"
