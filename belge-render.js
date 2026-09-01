@@ -72,7 +72,7 @@ function belgeyiCiz(kayit, musteri){
       var satirPrim = ozelFiyatMi ? 0 : mk*(item.adet||0)*0.22;
       var satirPrimTl = Math.round(satirPrim * kaydinKuru);
       if(satirPrim > 0){ toplamPrim += satirPrim; toplamPrimTl += satirPrimTl; }
-      var primHucre = ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<div>"+satirPrimTl.toLocaleString("tr-TR")+"</div><div class='belge-td-prim-birim'>TL</div>"));
+      var primHucre = ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<span class='belge-td-prim-tek'>"+satirPrimTl.toLocaleString("tr-TR")+" TL</span>"));
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
@@ -98,14 +98,7 @@ function belgeyiCiz(kayit, musteri){
     var teslimatAdr = kayit.teslimatAdresi ? (kayit.teslimatAdresi.adres || "") : "";
     var yetkililer = (musteri && musteri.iletisimler) || [];
 
-    var ustBaslikHtml = "<div class='belge-ust-baslik belge-ust-baslik--logo-tek'>"
-      + "<span class='belge-logo-mini'>WEICON</span>"
-      + "</div>";
-
-    var sehir = (musteri && musteri.sehir) || "";
-    var yetkiliBilgiHtml = yetkililer.map(function(k){ return yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
-
-    var musteriBlokHtml = "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
+    var musteriBlokHtml = "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad'>" + htmlEsc(kayit.musteri) + "</div>"
       + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + kosulKutusuHtml("📅","VADE",vade) + kosulKutusuHtml("📄","FATURA",faturaTuru) + kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
@@ -118,17 +111,16 @@ function belgeyiCiz(kayit, musteri){
 
     var html = "<div class='belge-kutu" + (sorunluMu?" belge-kutu--sorunlu":"") + "'>"
       + durumRozetHtml
-      + ustBaslikHtml
       + musteriBlokHtml
       + "<div class='belge-belge-baslik-serit'>" + htmlEsc(belgeBaslikMetni) + "</div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:9%;'>TOPLAM</th><th style='width:7%;'>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"
       + (kayit.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(kayit.kur) + " Euro</span>" : "")
       + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
-      + "<span class='belge-gt-deger'>" + fmt(netEuro) + " €</span>"
+      + "<span class='belge-gt-deger'>" + fmt(netEuro) + " €<span class='belge-gt-deger-alt'>≈ " + Math.round(netEuro*(kayit.kur||0)).toLocaleString("tr-TR") + " TL</span></span>"
       + "</div>"
       + "<div class='belge-prim-serit'>"
       + "<span class='belge-prim-etiket'>MÜDÜR PRİMİ (TOPLAM)</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":Math.round(toplamPrimTl).toLocaleString("tr-TR")+" TL") + "</span>"

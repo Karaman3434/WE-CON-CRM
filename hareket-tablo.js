@@ -38,7 +38,7 @@ var HareketTablo = (function(){
       var primHucre;
       if(!toplamVarMi){ primHucre = "-"; }
       else if(u.iskonto>60){ primHucre = "Ö.F"; }
-      else { primHucre = "<div>" + Math.round(h.mudurPrimTL).toLocaleString("tr-TR") + "</div><div class='belge-td-prim-birim'>TL</div>"; }
+      else { primHucre = "<span class='belge-td-prim-tek'>" + Math.round(h.mudurPrimTL).toLocaleString("tr-TR") + " TL</span>"; }
       return "<tr class='" + (zeminSinifi||"") + "'>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + urunHucre
@@ -62,7 +62,7 @@ var HareketTablo = (function(){
     var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>";
     var basHucreler = basit
       ? "<th style='width:52%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:18%;'>NET</th><th style='width:18%;'>TOPLAM</th>"
-      : "<th style='width:4%;'>SR</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:9%;'>TOPLAM</th><th style='width:7%;'>PRİM</th>";
+      : "<th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th>";
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"
       + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit) + "</tbody></table></div>";
@@ -70,7 +70,7 @@ var HareketTablo = (function(){
       html += "<div class='belge-genel-toplam-serit'>"
         + (opts.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(opts.kur) + " Euro</span>" : "")
         + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
-        + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " €</span>"
+        + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " €" + (opts.kur ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(opts.genelToplam*opts.kur).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"
         + "</div>";
     }
     return html;

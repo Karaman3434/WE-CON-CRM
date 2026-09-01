@@ -130,7 +130,7 @@ function siparisGecmisiniCiz(){
           + "<td><span class='rozet-isk'>%" + (u.iskonto||0) + "</span></td>"
           + "<td><span class='rozet-net'>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</span></td>"
           + "<td class='belge-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
-          + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "Ö.F" : ("<div>"+primTl.toLocaleString("tr-TR")+"</div><div class='belge-td-prim-birim'>TL</div>")) + "</td>"
+          + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "Ö.F" : ("<span class='belge-td-prim-tek'>"+primTl.toLocaleString("tr-TR")+" TL</span>")) + "</td>"
           + "</tr>";
       }).join("");
 
@@ -142,12 +142,12 @@ function siparisGecmisiniCiz(){
         + (k.revizeZamani ? "<span class='gecmis-revize-rozet'>🔄 REVİZE</span>" : "")
         + "</div>"
         + "<div class='data-table-container'><table class='belge-urun-tablo gecmis-standart-tablo'>"
-        + "<thead><tr><th style='width:4%;'>SR</th><th style='width:40%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:9%;'>TOPLAM</th><th style='width:7%;'>PRİM</th></tr></thead>"
+        + "<thead><tr><th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th></tr></thead>"
         + "<tbody>" + satirlarHtml + "</tbody></table></div>"
         + "<div class='belge-genel-toplam-serit'>"
         + (kaydinKuru ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmtG(kaydinKuru) + " Euro</span>" : "")
         + "<span class='belge-gt-etiket'>TOPLAM</span>"
-        + "<span class='belge-gt-deger'>" + fmtG(toplamEuro) + " €</span>"
+        + "<span class='belge-gt-deger'>" + fmtG(toplamEuro) + " €" + (kaydinKuru ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(toplamEuro*kaydinKuru).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"
         + "</div>"
         + "</div>"
         + "<div class='gecmis-grup-sil-arkaplan'>🗑 Sil</div>"

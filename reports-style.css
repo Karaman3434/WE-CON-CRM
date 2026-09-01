@@ -422,16 +422,20 @@
   background: #cfe2f3;
   color: #3569b8;
   border: 1px solid #3569b8;
-  padding: 7px 4px;
+  padding: 7px 2px;
   text-align: center;
-  font-size: 10px;
+  font-size: 9px;
 }
 .aylik-ozet-tablo td {
   border: 1px solid #3569b8;
-  padding: 6px 4px;
+  padding: 6px 2px;
   text-align: center;
   font-weight: 700;
   color: #1a1a1a;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .aylik-ozet-ay-hucre { font-weight: bold; color: #003a70; }
 .aylik-ozet-prim-hucre { font-weight: bold; color: #16a085; }
