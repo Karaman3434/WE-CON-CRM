@@ -322,6 +322,7 @@
   flex-wrap: wrap;
   gap: 6px;
 }
+.belge-buton-satir--grid { margin-bottom: 6px; }
 .belge-yazdir-buton {
   flex: 1 1 0;
   min-width: 80px;
@@ -335,8 +336,7 @@
   cursor: pointer;
 }
 .belge-sil-buton {
-  flex: 1 1 0;
-  min-width: 80px;
+  width: 100%;
   background: #fdeaea;
   color: #c0392b;
   border: 1px solid #f0b8b3;
@@ -345,10 +345,10 @@
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
+  margin-bottom: 6px;
 }
 .belge-revize-buton {
-  flex: 1 1 0;
-  min-width: 80px;
+  width: 100%;
   background: #fff4e5;
   color: #b7601f;
   border: 1.5px solid #e0730f;
@@ -357,6 +357,7 @@
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
+  margin-bottom: 6px;
 }
 .belge-duzenle-buton {
   flex: 1 1 0;
@@ -364,6 +365,30 @@
   background: #eaf2fc;
   color: #003a70;
   border: 1.5px solid #3569b8;
+  border-radius: 10px;
+  padding: 12px 4px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.belge-tekrarla-buton {
+  flex: 1 1 0;
+  min-width: 80px;
+  background: #eafaf3;
+  color: #0e6b58;
+  border: 1.5px solid #16a085;
+  border-radius: 10px;
+  padding: 12px 4px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.belge-gonder-buton {
+  flex: 1 1 0;
+  min-width: 80px;
+  background: #003a70;
+  color: #ffffff;
+  border: none;
   border-radius: 10px;
   padding: 12px 4px;
   font-size: 12px;
@@ -416,5 +441,5 @@
 .belge-gecmis-kart-alt { font-size: 11px; font-weight: 700; opacity: .8; margin-top: 2px; }
 
 @media print {
-  .app-header, .app-nav, .belge-buton-satir, .belge-yazdir-buton, .belge-duzenle-buton, .belge-revize-buton, .belge-sil-buton, .belge-gecmis-kutu { display: none !important; }
+  .app-header, .app-nav, .belge-buton-satir, .belge-yazdir-buton, .belge-duzenle-buton, .belge-tekrarla-buton, .belge-gonder-buton, .belge-revize-buton, .belge-sil-buton, .belge-gecmis-kutu { display: none !important; }
 }

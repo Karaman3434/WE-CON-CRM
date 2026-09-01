@@ -118,7 +118,16 @@
 .islemler-alt-buton-satir {
   display: flex;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
+}
+.islemler-sil-uyari-notu {
+  font-size: 11px;
+  color: #a32d2d;
+  background: #fdeceb;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 0 0 18px;
+  line-height: 1.4;
 }
 .islemler-sil-btn {
   flex: 1;

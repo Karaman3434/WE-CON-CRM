@@ -443,7 +443,7 @@ document.addEventListener("DOMContentLoaded", function(){
   ustBilgiyiCiz(secili);
 
   document.getElementById("btnMusteriSil").onclick = function(){
-    if(!confirm(seciliMusteriAdi + " müşterisini kalıcı olarak silmek istediğinize emin misiniz? Bu geri alınamaz.")) return;
+    if(!confirm("⚠️ DİKKAT: Bu, \"" + seciliMusteriAdi + "\" müşterisinin TÜMÜNÜ (cari bilgileri, tüm sipariş/teklif geçmişi, notlar dahil) kalıcı olarak siler.\n\nSadece tek bir işlemi silmek istiyorsan buraya değil, İşlem Geçmişi listesindeki ilgili kayda dokun.\n\nYine de müşterinin TAMAMINI silmek istiyor musun?")) return;
     if(!confirm("Bu işlem geri alınamaz. Onaylıyor musunuz?")) return;
     CustomerData.musteriSil(seciliMusteriAdi, function(basarili, err){
       if(basarili){

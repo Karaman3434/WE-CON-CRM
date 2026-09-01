@@ -415,6 +415,33 @@ var ReportsData = (function(){
     return true;
   }
 
+  // "Tekrarla" — revizeBaslat'tan FARKLI: aşamayı İLERLETMEZ, aynı türde
+  // (sipariş→sipariş) bağımsız YENİ bir kayıt açar. weiconv2_ilerlet_kaynak
+  // BİLEREK ayarlanmaz — bu yüzden Sepet'e kaydedince eski kayıt SİLİNMEZ,
+  // ikisi de arşivde ayrı ayrı durur. (Not: aynı gün + aynı müşteri + birebir
+  // aynı ürün seti ile tekrar kaydedilirse, SendData.kaydet'in kendi
+  // "aynı gün eşleşmesi revize eder" kuralı devreye girip yeni kayıt yerine
+  // mevcut kaydı günceller — bu, aynı kaydı yanlışlıkla çift kez kaydetmeyi
+  // önlemek için app genelinde zaten var olan bir kural.)
+  function tekrarBaslat(kayit){
+    var DIP_ORANI = 0.3635;
+    var sepet = (kayit.urunler||[]).map(function(u, i){
+      var dipEksikMi = !u.dipFiyat;
+      var dipFiyat = dipEksikMi ? Math.round((u.listeFiyat||0)*DIP_ORANI*100)/100 : u.dipFiyat;
+      return {
+        idx:i, ad: u.ad || "İsimsiz Ürün", berta: u.berta||"", abas: u.abas||"",
+        listeFiyat: u.listeFiyat||0, dipFiyat: dipFiyat, iskonto: u.iskonto||0, adet: u.adet||0,
+        hesaplandi: !dipEksikMi
+      };
+    });
+    localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));
+    localStorage.setItem("weicon_secili_musteri", JSON.stringify({ad:kayit.musteri, sehir:kayit.sehir||"", id:kayit.musteriId||null}));
+    localStorage.removeItem("weiconv2_ilerlet_kaynak");
+    localStorage.setItem("weiconv2_onceden_secilen_tip", kayit.tip);
+    window.location.href = "cart.html";
+    return true;
+  }
+
   return {
     baslat: baslat,
     arsivDegistiginde: arsivDegistiginde,
@@ -436,7 +463,8 @@ var ReportsData = (function(){
     musteriUrunGecmisi: musteriUrunGecmisi,
     kaydiGuncelle: kaydiGuncelle,
     SONRAKI_ASAMALAR: SONRAKI_ASAMALAR,
-    revizeBaslat: revizeBaslat
+    revizeBaslat: revizeBaslat,
+    tekrarBaslat: tekrarBaslat
   };
 
 })();

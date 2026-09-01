@@ -34,11 +34,38 @@
 <main class="sayfa">
   <div id="belgeIcerik"></div>
   <div class="belge-gecmis-kutu" id="belgeGecmisiKutu" hidden></div>
-  <div class="belge-buton-satir">
+  <div class="belge-buton-satir belge-buton-satir--grid">
     <button class="belge-yazdir-buton" id="btnYazdir">🖨 Yazdır</button>
     <button class="belge-duzenle-buton" id="btnBelgeDuzenle">✏️ Düzenle</button>
-    <button class="belge-revize-buton" id="btnRevizeEt" hidden>🔄 Revize Et</button>
-    <button class="belge-sil-buton" id="btnBelgeSil">🗑️ Sil</button>
+    <button class="belge-tekrarla-buton" id="btnTekrarla">🔁 Tekrarla</button>
+    <button class="belge-gonder-buton" id="btnBelgeGonder">📤 Gönder</button>
+  </div>
+  <button class="belge-revize-buton" id="btnRevizeEt" hidden>🔄 Revize Et</button>
+  <button class="belge-sil-buton" id="btnBelgeSil">🗑️ Kaydı Sil</button>
+
+  <!-- Gönderim öncesi tek seferlik ek not — cari karta kalıcı kaydedilmez -->
+  <div class="duzenle-overlay" id="gonderNotOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">Bu gönderim için not eklemek ister misin?</div>
+      <p class="ck-not-aciklama" style="margin:-6px 0 10px">Örn. müşterinin verdiği sipariş numarası. Bu not sadece bu gönderiye eklenir, cari kartta kalıcı saklanmaz.</p>
+      <textarea class="form-textarea" id="gonderNotMetni" rows="2" placeholder="Örn: PO-2026-4471"></textarea>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnGonderNotAtla">Atla, gönder</button>
+        <button class="duzenle-kaydet-btn" id="btnGonderNotEkle">Ekle ve gönder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tekrarla onayı -->
+  <div class="duzenle-overlay" id="tekrarlaOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik" id="tekrarlaBaslik">Aynı ürünlerle yeni bir kayıt oluşturulacak</div>
+      <p class="ck-not-aciklama" style="margin:-6px 0 10px">Bugünün tarihi ve yeni bir sipariş numarasıyla Sepet'e yüklenecek — orada ürünleri gözden geçirip istersen değiştirebilirsin, sonra Gönder'e geçersin. Mevcut kayıt olduğu gibi kalır.</p>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnTekrarlaVazgec">Vazgeç</button>
+        <button class="duzenle-kaydet-btn" id="btnTekrarlaOnayla">Sepete Yükle</button>
+      </div>
+    </div>
   </div>
 
   <div class="duzenle-overlay" id="duzenleOverlay" hidden>
@@ -56,11 +83,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.010926.1510.69"></script>
-<script src="customer-data.js?v=WG.010926.1510.69"></script>
-<script src="reports-data.js?v=WG.010926.1510.69"></script>
-<script src="reports-safety-fix.js?v=WG.010926.1510.69"></script>
-<script src="hata-log.js?v=WG.010926.1510.69"></script>
-<script src="belge-render.js?v=WG.010926.1510.69"></script>
+<script src="auth.js?v=WG.010926.1541.70"></script>
+<script src="customer-data.js?v=WG.010926.1541.70"></script>
+<script src="reports-data.js?v=WG.010926.1541.70"></script>
+<script src="reports-safety-fix.js?v=WG.010926.1541.70"></script>
+<script src="hata-log.js?v=WG.010926.1541.70"></script>
+<script src="belge-render.js?v=WG.010926.1541.70"></script>
 </body>
 </html>

@@ -392,6 +392,57 @@ document.addEventListener("DOMContentLoaded", function(){
     ReportsData.revizeBaslat(sonCizilenKayit);
   };
 
+  document.getElementById("btnTekrarla").onclick = function(){
+    if(!sonCizilenKayit) return;
+    var TIP_ETIKET_TEKRAR = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
+    document.getElementById("tekrarlaBaslik").textContent = "Aynı ürünlerle yeni bir " + (TIP_ETIKET_TEKRAR[sonCizilenKayit.tip]||"kayıt") + " oluşturulacak";
+    document.getElementById("tekrarlaOverlay").hidden = false;
+  };
+  document.getElementById("btnTekrarlaVazgec").onclick = function(){ document.getElementById("tekrarlaOverlay").hidden = true; };
+  document.getElementById("btnTekrarlaOnayla").onclick = function(){
+    if(!sonCizilenKayit) return;
+    document.getElementById("tekrarlaOverlay").hidden = true;
+    ReportsData.tekrarBaslat(sonCizilenKayit);
+  };
+
+  // ---- Gönder (geçmiş kayıttan) ----
+  // send.html sadece "weiconv2_son_kaydedilen_belge" okuyup gönderim
+  // panelini gösterir, YENİDEN KAYDETMEZ — bu yüzden burada Sepet/cart.html'e
+  // hiç uğramadan doğrudan send.html'e geçebiliyoruz; mevcut kayıt
+  // değişmeden, olduğu gibi kalır.
+  var gonderBeklemedekiKayit = null;
+  function gonderiBaslatVeYonlendir(ekNot){
+    var kayit = gonderBeklemedekiKayit;
+    if(!kayit) return;
+    var musteriGuncel = CustomerData.musteriBul(kayit.musteri) || {ad: kayit.musteri};
+    var musteriGonderimKopyasi = {};
+    for(var k in musteriGuncel){ if(musteriGuncel.hasOwnProperty(k)) musteriGonderimKopyasi[k] = musteriGuncel[k]; }
+    if(ekNot && ekNot.trim()){
+      var mevcutNot = (musteriGuncel.not||"").trim();
+      musteriGonderimKopyasi.not = mevcutNot ? (mevcutNot + "\n" + ekNot.trim()) : ekNot.trim();
+    }
+    localStorage.setItem("weiconv2_son_kaydedilen_belge", JSON.stringify({
+      musteri: musteriGonderimKopyasi, sepet: kayit.urunler||[], tip: kayit.tip,
+      kur: kayit.kur||0, kdv: kayit.kdv||0, kayit: kayit
+    }));
+    window.location.href = "send.html";
+  }
+  document.getElementById("btnBelgeGonder").onclick = function(){
+    if(!sonCizilenKayit) return;
+    gonderBeklemedekiKayit = sonCizilenKayit;
+    document.getElementById("gonderNotMetni").value = "";
+    document.getElementById("gonderNotOverlay").hidden = false;
+  };
+  document.getElementById("btnGonderNotAtla").onclick = function(){
+    document.getElementById("gonderNotOverlay").hidden = true;
+    gonderiBaslatVeYonlendir("");
+  };
+  document.getElementById("btnGonderNotEkle").onclick = function(){
+    var not = document.getElementById("gonderNotMetni").value;
+    document.getElementById("gonderNotOverlay").hidden = true;
+    gonderiBaslatVeYonlendir(not);
+  };
+
   ReportsData.arsivDegistiginde(denemeCiz);
   CustomerData.listeDegistiginde(denemeCiz);
   denemeCiz();

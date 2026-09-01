@@ -153,7 +153,7 @@ function fmtG2(n){
   return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
-function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
+function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, orijinalTarih){
   var basit = kanal === "whatsapp"; // WhatsApp'a giden görsel: Cari Bilgi yok, LİSTE/İSK/SIRA/PRİM yok
   var satirlarHtml = "";
   var netEuro = 0;
@@ -181,9 +181,18 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
     }
   });
 
-  var simdi = new Date();
-  var aylarKisa = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
-  var tarihStr = simdi.getDate() + " " + aylarKisa[simdi.getMonth()] + " " + simdi.getFullYear() + " " + ("0"+simdi.getHours()).slice(-2) + ":" + ("0"+simdi.getMinutes()).slice(-2);
+  // Yeni kaydedilen bir belge gönderiliyorsa "şu an" doğrudur (kayıt az
+  // önce oluşturuldu). Ama Geçmişten "Gönder" ile tekrar paylaşılıyorsa,
+  // orijinalTarih (kaydın kendi tarihi) gönderilir — görsel her seferinde
+  // "şu an" göstermez, kaydın GERÇEK tarih/saatini gösterir.
+  var tarihStr;
+  if(orijinalTarih){
+    tarihStr = orijinalTarih;
+  } else {
+    var simdi = new Date();
+    var aylarKisa = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+    tarihStr = simdi.getDate() + " " + aylarKisa[simdi.getMonth()] + " " + simdi.getFullYear() + " " + ("0"+simdi.getHours()).slice(-2) + ":" + ("0"+simdi.getMinutes()).slice(-2);
+  }
 
   var vade = musteri.vade || "";
   var faturaTuru = musteri.fatura || "";
@@ -193,7 +202,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal){
   var yetkililer = musteri.iletisimler || [];
   var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
-  var tabloBasligi = (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " · " + tarihStr;
+  var tabloBasligi = (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + (kod ? " · " + kod : "") + " · " + tarihStr;
 
   var cariBilgiHtml = basit ? "" :
     "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
@@ -227,7 +236,9 @@ function belgeGorseliniOlustur(kanal, callback){
     if(typeof html2canvas === "undefined"){ callback(null); return; }
     var g = gonderBaglam;
     var alan = document.getElementById("belgeGorselAlani");
-    alan.innerHTML = belgeGorselHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, (sonKaydedilenBelge&&sonKaydedilenBelge.kayit)?sonKaydedilenBelge.kayit.kod:"", kanal);
+    var kayitliKod = (sonKaydedilenBelge&&sonKaydedilenBelge.kayit) ? sonKaydedilenBelge.kayit.kod : "";
+    var kayitliTarih = (sonKaydedilenBelge&&sonKaydedilenBelge.kayit) ? sonKaydedilenBelge.kayit.tarih : "";
+    alan.innerHTML = belgeGorselHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, kayitliKod, kanal, kayitliTarih);
     setTimeout(function(){
       html2canvas(alan, {backgroundColor:"#ffffff", scale:1.4}).then(function(canvas){
         callback(canvas);
