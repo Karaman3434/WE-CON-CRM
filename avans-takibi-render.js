@@ -108,6 +108,25 @@ function avDonemSeciciDoldur(){
   sel.innerHTML = secenekler.map(function(s){
     return "<option value='" + s.ay + "-" + s.yil + "'" + (s.ay===avSeciliAy && s.yil===avSeciliYil ? " selected" : "") + ">" + AY_ADLARI_AV[s.ay] + " " + s.yil + "</option>";
   }).join("");
+
+  // Doğal başlangıç ayı (bugün için Ağustos) hâlâ kapalıysa, sessizce
+  // atlamak yerine NEDENİNİ göster — kafa karıştırmasın.
+  var uyari = document.getElementById("avBaslangicKapaliUyari");
+  var kapaliKayit = AvansKayitData.kapaliKaydiBul(baslangic.ay, baslangic.yil);
+  if(kapaliKayit){
+    uyari.style.display = "block";
+    uyari.innerHTML = "⚠️ " + AY_ADLARI_AV[baslangic.ay] + " " + baslangic.yil + " zaten kapatılmış (bu yüzden listede yok). Yeniden açmak için <a href='#' id='avBaslangicKapaliGit' style='color:#c0392b; text-decoration:underline; font-weight:900;'>aşağıdan Kayıt Geçmişi'nden sil</a>.";
+    var link = document.getElementById("avBaslangicKapaliGit");
+    if(link) link.onclick = function(ev){
+      ev.preventDefault();
+      document.getElementById("avGecmisAySecici").value = kapaliKayit.anahtar;
+      avGecmisDetayGoster(kapaliKayit.anahtar);
+      document.getElementById("avGecmisAySecici").scrollIntoView({behavior:"smooth", block:"center"});
+    };
+  } else {
+    uyari.style.display = "none";
+    uyari.innerHTML = "";
+  }
 }
 
 function avDonemeGec(ay, yil){
