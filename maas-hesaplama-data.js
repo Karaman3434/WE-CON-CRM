@@ -63,65 +63,55 @@ var MaasHesaplamaData = (function(){
   // itibaren her ayının brüt primi (Ödenebilir Komisyon'dan).
   // "Kalibrasyon": Ocak'tan itibaren tahmini toplamak yerine, gerçek
   // bordrodan alınan kümülatif matrahı doğrudan kullanmak için opsiyonel
-  // override. Verilirse, TOPLAM (sabit+prim) akışının "ÖNCE" (bu ay hariç,
-  // yılbaşından bir önceki aya kadarki) kümülatif matrahı olarak KULLANILIR
-  // — Ocak'tan itibaren tahmini toplama devre dışı kalır. "SADECE SABİT"
-  // taban çizgisi (netSabitMaas) hâlâ eski yöntemle hesaplanır (bu bir
-  // basitleştirme — kalibrasyon esas olarak TOPLAM/gerçek net rakamı
-  // doğrulamak için var).
+  // override — verilirse bu ayın "ÖNCE" (bir önceki ay sonuna kadarki)
+  // kümülatif matrahı olarak kullanılır.
+  //
+  // BÖLÜŞTÜRME SIRASI (gerçek bordro pusulasıyla karşılaştırıp doğrulandı):
+  // PRİM önce eklenir ve İSTİSNADAN HİÇ FAYDALANMAZ (kümülatif matrahın en
+  // üstüne oturur, o ayın en yüksek dilimini alır); SABİT MAAŞ en son eklenir
+  // ve asgari ücret istisnasını (hem gelir hem damga vergisinde) O alır. Bu
+  // sıralama ters çevrilirse (sabit önce/prim sonra) toplam rakam aynı çıkar
+  // ama Net Maaş/Net Prim ayrımı gerçek bordrodan sapar.
   function ayHesapla(ayNo, brutSabitAylik, brutPrimDizisi, kumulatifMatrahOnceOverride){
     brutSabitAylik = parseFloat(brutSabitAylik) || 0;
     brutPrimDizisi = brutPrimDizisi || {};
 
-    // --- Kümülatif toplamlar: bu ay dahil (Şimdi) ve bir önceki ay sonuna
-    //     kadar (Önce) — ikisinin vergi farkı = bu ayın marjinal vergisi.
-    var kumBrutToplamSimdi = 0, kumBrutToplamOnce = 0;
-    var kumBrutSadeceSabitSimdi = 0, kumBrutSadeceSabitOnce = 0;
-    for(var a=1; a<=ayNo; a++){
-      var prim = parseFloat(brutPrimDizisi[a]) || 0;
-      kumBrutToplamSimdi += brutSabitAylik + prim;
-      kumBrutSadeceSabitSimdi += brutSabitAylik;
-      if(a < ayNo){
-        kumBrutToplamOnce += brutSabitAylik + prim;
-        kumBrutSadeceSabitOnce += brutSabitAylik;
-      }
-    }
-
-    function marjinalGelirVergisi(kumSimdi, kumOnce){
-      var vSimdi = kademeliVergi(sgkIssizlikSonrasi(kumSimdi));
-      var vOnce = kademeliVergi(sgkIssizlikSonrasi(kumOnce));
-      var istisnasiz = Math.max(0, vSimdi - vOnce);
-      var istisna = Math.min(AU_GELIR_VERGISI_ISTISNASI, istisnasiz);
-      return Math.max(0, istisnasiz - istisna);
+    // --- "ÖNCE" (bu ay hariç, yılbaşından bir önceki aya kadarki) kümülatif
+    //     BRÜT toplamı — sadece override yokken tahmini yöntem için gerekir.
+    var kumBrutToplamOnce = 0;
+    for(var a=1; a<ayNo; a++){
+      kumBrutToplamOnce += brutSabitAylik + (parseFloat(brutPrimDizisi[a]) || 0);
     }
 
     var buAyPrim = parseFloat(brutPrimDizisi[ayNo]) || 0;
     var buAyBrutToplam = brutSabitAylik + buAyPrim;
 
-    // ---- TOPLAM akış (sabit + prim birlikte, gerçek bordro mantığı) ----
-    // "ÖNCE" (bu ay hariç) kümülatif matrah: kalibrasyon varsa ondan, yoksa
-    // Ocak'tan tahmini toplamdan. "ŞİMDİ" (bu ay dahil) HER ZAMAN "önce" +
-    // bu ayın kendi katkısı olarak kurulur — override sadece "önce"ye değil
-    // "şimdi"ye de tutarlı şekilde yansısın diye.
-    var kumMatrahOnceToplam = kumulatifMatrahOnceOverride!=null ? kumulatifMatrahOnceOverride : sgkIssizlikSonrasi(kumBrutToplamOnce);
-    var kumMatrahSimdiToplam = kumMatrahOnceToplam + sgkIssizlikSonrasi(buAyBrutToplam);
-    var vSimdiToplam = kademeliVergi(kumMatrahSimdiToplam);
-    var vOnceToplam = kademeliVergi(kumMatrahOnceToplam);
-    var gvToplamIstisnasiz = Math.max(0, vSimdiToplam - vOnceToplam);
-    var gvToplamIstisna = Math.min(AU_GELIR_VERGISI_ISTISNASI, gvToplamIstisnasiz);
-    var gvToplam = Math.max(0, gvToplamIstisnasiz - gvToplamIstisna);
-    var dvToplamIstisnasiz = buAyBrutToplam * DAMGA_ORANI;
-    var dvToplam = Math.max(0, dvToplamIstisnasiz - AU_DAMGA_VERGISI_ISTISNASI);
-    var netToplam = buAyBrutToplam - (buAyBrutToplam*SGK_ORANI) - (buAyBrutToplam*ISSIZLIK_ORANI) - gvToplam - dvToplam;
+    // "ÖNCE" kümülatif MATRAH (SGK/işsizlik sonrası): kalibrasyon varsa
+    // ondan, yoksa Ocak'tan tahmini toplamdan.
+    var kumMatrahOnce = kumulatifMatrahOnceOverride!=null ? kumulatifMatrahOnceOverride : sgkIssizlikSonrasi(kumBrutToplamOnce);
+    // Ara nokta: PRİM eklendikten, SABİT MAAŞ henüz eklenmeden önceki matrah.
+    var kumMatrahPrimSonrasi = kumMatrahOnce + sgkIssizlikSonrasi(buAyPrim);
+    // "ŞİMDİ": SABİT MAAŞ de eklenince ulaşılan bu ayın toplam kümülatif matrahı.
+    var kumMatrahSimdi = kumMatrahPrimSonrasi + sgkIssizlikSonrasi(brutSabitAylik);
 
-    // ---- SADECE SABİT akış (prim hiç olmasaydı ne olurdu — taban çizgisi) ----
-    var gvSabit = marjinalGelirVergisi(kumBrutSadeceSabitSimdi, kumBrutSadeceSabitOnce);
+    var vOnce = kademeliVergi(kumMatrahOnce);
+    var vPrimSonrasi = kademeliVergi(kumMatrahPrimSonrasi);
+    var vSimdi = kademeliVergi(kumMatrahSimdi);
+
+    // ---- PRİM'in gelir vergisi — İSTİSNASIZ (marjinal, en üst dilim) ----
+    var gvPrim = Math.max(0, vPrimSonrasi - vOnce);
+    var dvPrim = buAyPrim * DAMGA_ORANI;
+    var netPrim = buAyPrim - (buAyPrim*SGK_ORANI) - (buAyPrim*ISSIZLIK_ORANI) - gvPrim - dvPrim;
+
+    // ---- SABİT MAAŞ'ın gelir vergisi — asgari ücret istisnası BURADA ----
+    var gvSabitIstisnasiz = Math.max(0, vSimdi - vPrimSonrasi);
+    var gvSabitIstisna = Math.min(AU_GELIR_VERGISI_ISTISNASI, gvSabitIstisnasiz);
+    var gvSabit = Math.max(0, gvSabitIstisnasiz - gvSabitIstisna);
     var dvSabitIstisnasiz = brutSabitAylik * DAMGA_ORANI;
     var dvSabit = Math.max(0, dvSabitIstisnasiz - AU_DAMGA_VERGISI_ISTISNASI);
     var netSabitMaas = brutSabitAylik - (brutSabitAylik*SGK_ORANI) - (brutSabitAylik*ISSIZLIK_ORANI) - gvSabit - dvSabit;
 
-    // Prim'in marjinal katkısı: toplam net - sadece-sabit net.
-    var netPrim = netToplam - netSabitMaas;
+    var netToplam = netSabitMaas + netPrim;
 
     return {
       brutSabitAylik: brutSabitAylik,
@@ -133,7 +123,7 @@ var MaasHesaplamaData = (function(){
       // Bu ay dahil, SGK/işsizlik SONRASI kümülatif vergi matrahı — bir
       // sonraki ayın kalibrasyon referansı olarak kullanılır (bkz.
       // maas-hesaplama-render.js: kapatınca kalibrasyon otomatik ilerler).
-      kumulatifMatrahSimdi: kumMatrahSimdiToplam
+      kumulatifMatrahSimdi: kumMatrahSimdi
     };
   }
 

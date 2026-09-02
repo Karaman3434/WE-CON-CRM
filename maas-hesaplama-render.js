@@ -44,6 +44,11 @@ function mhMatrahOnceOverride(acikAy, acikYil){
   return null;
 }
 
+function fmtOran_MH(brut, net){
+  if(!brut) return "";
+  var oran = (brut-net)/brut*100;
+  return " (%" + oran.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " kesinti)";
+}
 function tarihiGuncelle_MH(){
   try{
     var el = document.getElementById("gunTarihi");
@@ -158,8 +163,8 @@ function mhHesaplaVeCiz(){
 
   var hesabaYatacak = sonuc.netToplam - av.toplamKesinti;
 
-  document.getElementById("mhKartNetMaas").textContent = fmtTL_MH(sonuc.netSabitMaas);
-  document.getElementById("mhKartNetPrim").textContent = fmtTL_MH(sonuc.netPrim);
+  document.getElementById("mhKartNetMaas").textContent = fmtTL_MH(sonuc.netSabitMaas) + fmtOran_MH(sonuc.brutSabitAylik, sonuc.netSabitMaas);
+  document.getElementById("mhKartNetPrim").textContent = fmtTL_MH(sonuc.netPrim) + fmtOran_MH(sonuc.brutPrim, sonuc.netPrim);
   document.getElementById("mhKartHesabaYatacak").textContent = fmtTL_MH(hesabaYatacak);
 
   mhGuncelHesap = {
@@ -179,8 +184,8 @@ function mhGecmisiCiz(){
       + "<span class='mh-gecmis-tutar'>" + fmtTL_MH(k.hesabaYatacak) + "</span>"
       + "</div>"
       + "<div class='mh-gecmis-detay' hidden>"
-      + "<div class='mh-sonuc-satir'><span>Net Maaş</span><b>" + fmtTL_MH(k.netSabitMaas) + "</b></div>"
-      + "<div class='mh-sonuc-satir'><span>Net Prim (Brüt: " + fmtTL_MH(k.brutPrim) + ")</span><b>" + fmtTL_MH(k.netPrim) + "</b></div>"
+      + "<div class='mh-sonuc-satir'><span>Net Maaş (Brüt: " + fmtTL_MH(k.brutSabitAylik) + ")</span><b>" + fmtTL_MH(k.netSabitMaas) + fmtOran_MH(k.brutSabitAylik, k.netSabitMaas) + "</b></div>"
+      + "<div class='mh-sonuc-satir'><span>Net Prim (Brüt: " + fmtTL_MH(k.brutPrim) + ")</span><b>" + fmtTL_MH(k.netPrim) + fmtOran_MH(k.brutPrim, k.netPrim) + "</b></div>"
       + "<div class='mh-sonuc-satir'><span>Toplam Kesinti</span><b>" + fmtTL_MH(k.toplamKesinti) + "</b></div>"
       + "<div class='mh-sonuc-satir mh-sonuc-satir--toplam'><span>Hesaba Yatan</span><b>" + fmtTL_MH(k.hesabaYatacak) + "</b></div>"
       + "<button type='button' class='mh-gecmis-sil-btn' data-anahtar='" + k.anahtar + "'>🗑 Bu Kaydı Sil</button>"
