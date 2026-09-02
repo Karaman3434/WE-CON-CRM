@@ -266,6 +266,41 @@
   padding: 6px 8px;
   font-size: 13px;
 }
+.duzenle-menu-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.duzenle-menu-secenek {
+  width: 100%;
+  text-align: left;
+  background: #f4f6f9;
+  border: 1px solid #e2e6ec;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a2a3a;
+  cursor: pointer;
+}
+.duzenle-menu-not {
+  font-size: 10px;
+  color: #8a8f98;
+  margin: 0 0 4px;
+}
+.yetkili-sec-satir {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f6f9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.yetkili-sec-satir input { width: 16px; height: 16px; }
 .duzenle-buton-satir {
   display: grid;
   grid-template-columns: 1fr 1fr;

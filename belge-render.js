@@ -96,7 +96,10 @@ function belgeyiCiz(kayit, musteri){
     var kargo = (musteri && musteri.kargo) || "";
     var faturaAdr = kayit.faturaAdresi ? (kayit.faturaAdresi.adres || "") : "";
     var teslimatAdr = kayit.teslimatAdresi ? (kayit.teslimatAdresi.adres || "") : "";
-    var yetkililer = (musteri && musteri.iletisimler) || [];
+    var tumYetkililer = (musteri && musteri.iletisimler) || [];
+    var yetkililer = kayit.gorunecekYetkililer
+      ? tumYetkililer.filter(function(k){ return kayit.gorunecekYetkililer.indexOf(k.isim) !== -1; })
+      : tumYetkililer;
     var sehir = (musteri && musteri.sehir) || "";
     var yetkiliBilgiHtml = yetkililer.map(function(k){ return yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
@@ -333,13 +336,14 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnYazdir").onclick = function(){ window.print(); };
   document.getElementById("btnBelgeSil").onclick = function(){
     if(!ref) return;
-    if(!confirm("Bu kayıt tamamen silinsin mi? Bu geri alınamaz.")) return;
+    var belgeAdi = (sonCizilenKayit ? ((TIP_ETIKET_BELGE[sonCizilenKayit.tip]||"belge") + (sonCizilenKayit.kod ? " · " + sonCizilenKayit.kod : "")) : "bu belge");
+    if(!confirm("Sadece bu belge silinecek:\n\n" + belgeAdi + "\n\nMüşteri kartına, adreslere veya yetkili bilgilerine dokunulmayacak — sadece bu tek kayıt kalıcı olarak silinecek. Bu geri alınamaz.")) return;
     var btn = document.getElementById("btnBelgeSil");
     btn.disabled = true;
     btn.textContent = "Siliniyor...";
     ReportsData.kaydiSil(ref.tip, ref.ts, function(basarili, err){
       if(basarili){
-        alert("✓ Kayıt silindi.");
+        alert("✓ Sadece bu belge silindi. Müşteri kartı ve diğer bilgiler etkilenmedi.");
         window.location.href = "reports.html";
       } else {
         btn.disabled = false;
@@ -357,6 +361,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   var sonCizilenKayit = null;
+  var sonCizilenMusteri = null;
 
   function denemeCiz(){
     var liste = ReportsData.sonIslemler();
@@ -364,6 +369,7 @@ document.addEventListener("DOMContentLoaded", function(){
     if(!kayit) return false;
     sonCizilenKayit = kayit;
     var musteri = CustomerData.musteriBul(kayit.musteri);
+    sonCizilenMusteri = musteri;
     belgeyiCiz(kayit, musteri);
     belgeGecmisiniCiz(kayit);
 
@@ -374,10 +380,100 @@ document.addEventListener("DOMContentLoaded", function(){
 
   document.getElementById("btnBelgeDuzenle").onclick = function(){
     if(!sonCizilenKayit) return;
+    document.getElementById("duzenleMenuOverlay").hidden = false;
+  };
+  document.getElementById("btnDuzenleMenuKapat").onclick = function(){ document.getElementById("duzenleMenuOverlay").hidden = true; };
+  document.getElementById("btnMenuUrunler").onclick = function(){
+    document.getElementById("duzenleMenuOverlay").hidden = true;
     duzenlemeAc(sonCizilenKayit);
   };
   document.getElementById("btnDuzenleVazgec").onclick = function(){ document.getElementById("duzenleOverlay").hidden = true; duzenlenenKayit = null; };
   document.getElementById("btnDuzenleKaydet").onclick = duzenlemeKaydet;
+
+  // ---- Yetkili Kişi seçimi (bu belgede kim görünsün) ----
+  document.getElementById("btnMenuYetkili").onclick = function(){
+    document.getElementById("duzenleMenuOverlay").hidden = true;
+    var liste = document.getElementById("yetkiliSecListesi");
+    var yetkililer = (sonCizilenMusteri && sonCizilenMusteri.iletisimler) || [];
+    var seciliIsimler = sonCizilenKayit.gorunecekYetkililer || null; // null = hepsi
+    if(!yetkililer.length){
+      liste.innerHTML = "<p class='bos-mesaj'>Bu müşteride kayıtlı yetkili yok. Önce Cari Kart'tan ekleyebilirsin.</p>";
+    } else {
+      liste.innerHTML = yetkililer.map(function(k, i){
+        var isaretli = !seciliIsimler || seciliIsimler.indexOf(k.isim) !== -1;
+        return "<label class='yetkili-sec-satir'><input type='checkbox' data-isim='" + (k.isim||"").replace(/'/g,"&#39;") + "'" + (isaretli?" checked":"") + "> " + (k.isim||"(isimsiz)") + (k.gorev?" — "+k.gorev:"") + "</label>";
+      }).join("");
+    }
+    document.getElementById("yetkiliSecOverlay").hidden = false;
+  };
+  document.getElementById("btnYetkiliSecVazgec").onclick = function(){ document.getElementById("yetkiliSecOverlay").hidden = true; };
+  document.getElementById("btnYetkiliSecKaydet").onclick = function(){
+    if(!sonCizilenKayit) return;
+    var kutular = document.querySelectorAll("#yetkiliSecListesi input[type=checkbox]");
+    var toplam = kutular.length;
+    var secililer = [];
+    kutular.forEach(function(k){ if(k.checked) secililer.push(k.getAttribute("data-isim")); });
+    // Hepsi işaretliyse (ya da hiç yetkili yoksa) null kaydet — "hepsini göster" varsayılanına dön.
+    var kaydedilecek = (secililer.length === toplam) ? null : secililer;
+    var btn = document.getElementById("btnYetkiliSecKaydet");
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    ReportsData.kaydiAlanGuncelle(sonCizilenKayit.tip, sonCizilenKayit.ts, {gorunecekYetkililer: kaydedilecek}, function(basarili, err){
+      btn.disabled = false; btn.textContent = "Kaydet";
+      if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message)); return; }
+      document.getElementById("yetkiliSecOverlay").hidden = true;
+    });
+  };
+
+  // ---- Fatura / Teslimat Adresi düzenleme ----
+  var duzenlenenAdresTuru = null; // "faturaAdresi" | "teslimatAdresi"
+  function adresDuzenleAc(tur, baslik){
+    duzenlenenAdresTuru = tur;
+    document.getElementById("adresDuzenleBaslik").textContent = baslik;
+    document.getElementById("adresDuzenleMetni").value = (sonCizilenKayit[tur] && sonCizilenKayit[tur].adres) || "";
+    document.getElementById("adresDuzenleOverlay").hidden = false;
+  }
+  document.getElementById("btnMenuFaturaAdres").onclick = function(){
+    document.getElementById("duzenleMenuOverlay").hidden = true;
+    adresDuzenleAc("faturaAdresi", "Fatura Adresini Düzenle");
+  };
+  document.getElementById("btnMenuTeslimatAdres").onclick = function(){
+    document.getElementById("duzenleMenuOverlay").hidden = true;
+    adresDuzenleAc("teslimatAdresi", "Teslimat Adresini Düzenle");
+  };
+  document.getElementById("btnAdresDuzenleVazgec").onclick = function(){ document.getElementById("adresDuzenleOverlay").hidden = true; duzenlenenAdresTuru = null; };
+  document.getElementById("btnAdresDuzenleKaydet").onclick = function(){
+    if(!sonCizilenKayit || !duzenlenenAdresTuru) return;
+    var metin = document.getElementById("adresDuzenleMetni").value.trim();
+    var btn = document.getElementById("btnAdresDuzenleKaydet");
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    var alanlar = {};
+    alanlar[duzenlenenAdresTuru] = metin ? {etiket: (duzenlenenAdresTuru==="faturaAdresi"?"Fatura Adresi":"Teslimat Adresi"), adres: metin} : null;
+    ReportsData.kaydiAlanGuncelle(sonCizilenKayit.tip, sonCizilenKayit.ts, alanlar, function(basarili, err){
+      btn.disabled = false; btn.textContent = "Kaydet";
+      if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message)); return; }
+      document.getElementById("adresDuzenleOverlay").hidden = true;
+      duzenlenenAdresTuru = null;
+    });
+  };
+
+  // ---- Belgeye özel not ----
+  document.getElementById("btnMenuNot").onclick = function(){
+    document.getElementById("duzenleMenuOverlay").hidden = true;
+    document.getElementById("notDuzenleMetni").value = sonCizilenKayit.not || "";
+    document.getElementById("notDuzenleOverlay").hidden = false;
+  };
+  document.getElementById("btnNotDuzenleVazgec").onclick = function(){ document.getElementById("notDuzenleOverlay").hidden = true; };
+  document.getElementById("btnNotDuzenleKaydet").onclick = function(){
+    if(!sonCizilenKayit) return;
+    var metin = document.getElementById("notDuzenleMetni").value.trim();
+    var btn = document.getElementById("btnNotDuzenleKaydet");
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    ReportsData.kaydiAlanGuncelle(sonCizilenKayit.tip, sonCizilenKayit.ts, {not: metin || null}, function(basarili, err){
+      btn.disabled = false; btn.textContent = "Kaydet";
+      if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message)); return; }
+      document.getElementById("notDuzenleOverlay").hidden = true;
+    });
+  };
 
   document.getElementById("btnRevizeEt").onclick = function(){
     if(!sonCizilenKayit) return;
@@ -417,6 +513,13 @@ document.addEventListener("DOMContentLoaded", function(){
     var musteriGuncel = CustomerData.musteriBul(kayit.musteri) || {ad: kayit.musteri};
     var musteriGonderimKopyasi = {};
     for(var k in musteriGuncel){ if(musteriGuncel.hasOwnProperty(k)) musteriGonderimKopyasi[k] = musteriGuncel[k]; }
+    // Bu belgede sadece belirli yetkili(ler) seçilmişse (bkz. Düzenle →
+    // Yetkili Kişi), gönderilen belgede SADECE onlar görünür.
+    if(kayit.gorunecekYetkililer && musteriGonderimKopyasi.iletisimler){
+      musteriGonderimKopyasi.iletisimler = musteriGonderimKopyasi.iletisimler.filter(function(kisi){
+        return kayit.gorunecekYetkililer.indexOf(kisi.isim) !== -1;
+      });
+    }
     if(ekNot && ekNot.trim()){
       var mevcutNot = (musteriGuncel.not||"").trim();
       musteriGonderimKopyasi.not = mevcutNot ? (mevcutNot + "\n" + ekNot.trim()) : ekNot.trim();

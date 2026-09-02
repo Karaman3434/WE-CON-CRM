@@ -48,6 +48,62 @@
     <button class="belge-sil-buton" id="btnBelgeSil">🗑️ Kaydı Sil</button>
   </div>
 
+  <!-- Düzenle menüsü — neyi düzenlemek istediğini sorar -->
+  <div class="duzenle-overlay" id="duzenleMenuOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">Bu belgede neyi düzeltmek istiyorsun?</div>
+      <div class="duzenle-menu-liste">
+        <button type="button" class="duzenle-menu-secenek" id="btnMenuUrunler">📦 Ürünler / Adet / Fiyat</button>
+        <button type="button" class="duzenle-menu-secenek" id="btnMenuYetkili">👤 Yetkili Kişi (kime gönderilecek)</button>
+        <button type="button" class="duzenle-menu-secenek" id="btnMenuFaturaAdres">🧾 Fatura Adresi</button>
+        <button type="button" class="duzenle-menu-secenek" id="btnMenuTeslimatAdres">🚚 Teslimat Adresi</button>
+        <button type="button" class="duzenle-menu-secenek" id="btnMenuNot">📝 Not Ekle</button>
+      </div>
+      <p class="duzenle-menu-not">Hangisine dokunursan sadece o değişir — belge silinmez, yeniden oluşturmana gerek kalmaz.</p>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnDuzenleMenuKapat">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yetkili Kişi seçimi — bu belgede kimin görüneceği -->
+  <div class="duzenle-overlay" id="yetkiliSecOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">Bu belgede hangi yetkili(ler) görünsün?</div>
+      <div id="yetkiliSecListesi"></div>
+      <p class="ck-not-aciklama" style="margin:8px 0 0">Hiçbirini işaretlemezsen, müşterideki tüm yetkililer gösterilir (varsayılan).</p>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnYetkiliSecVazgec">Vazgeç</button>
+        <button class="duzenle-kaydet-btn" id="btnYetkiliSecKaydet">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fatura / Teslimat Adresi düzenleme — tek overlay, ikisi için de kullanılır -->
+  <div class="duzenle-overlay" id="adresDuzenleOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik" id="adresDuzenleBaslik">Adresi Düzenle</div>
+      <textarea class="form-textarea" id="adresDuzenleMetni" rows="3" placeholder="Adresi yaz..."></textarea>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnAdresDuzenleVazgec">Vazgeç</button>
+        <button class="duzenle-kaydet-btn" id="btnAdresDuzenleKaydet">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Belgeye özel not -->
+  <div class="duzenle-overlay" id="notDuzenleOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">Bu Belgeye Not Ekle</div>
+      <p class="ck-not-aciklama" style="margin:-6px 0 10px">Sadece bu belgeye özel — cari karttaki kalıcı nota eklenmez.</p>
+      <textarea class="form-textarea" id="notDuzenleMetni" rows="3" placeholder="Not yaz..."></textarea>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnNotDuzenleVazgec">Vazgeç</button>
+        <button class="duzenle-kaydet-btn" id="btnNotDuzenleKaydet">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Gönderim öncesi tek seferlik ek not — cari karta kalıcı kaydedilmez -->
   <div class="duzenle-overlay" id="gonderNotOverlay" hidden>
     <div class="duzenle-kutu">
@@ -88,12 +144,12 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.020926.1338.87"></script>
-<script src="ust-sabit-olcum.js?v=WG.020926.1338.87"></script>
-<script src="customer-data.js?v=WG.020926.1338.87"></script>
-<script src="reports-data.js?v=WG.020926.1338.87"></script>
-<script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
-<script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="belge-render.js?v=WG.020926.1338.87"></script>
+<script src="auth.js?v=WG.020926.1523.89"></script>
+<script src="ust-sabit-olcum.js?v=WG.020926.1523.89"></script>
+<script src="customer-data.js?v=WG.020926.1523.89"></script>
+<script src="reports-data.js?v=WG.020926.1523.89"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
+<script src="hata-log.js?v=WG.020926.1523.89"></script>
+<script src="belge-render.js?v=WG.020926.1523.89"></script>
 </body>
 </html>

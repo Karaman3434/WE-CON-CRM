@@ -100,7 +100,8 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
   var teslimatAdr = seciliAdresler.teslimatAdresi ? (seciliAdresler.teslimatAdresi.adres||"") : "";
   var yetkililer = musteri.iletisimler || [];
   var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
-  var t = CartData.genelToplam(kur, kdv);
+  var tToplamEuro = 0;
+  (sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, kur, kdv); if(h && h.toplamEuro!=null) tToplamEuro += h.toplamEuro; });
 
   var html = "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
     + "<div class='belge-musteri-govde'>"
@@ -116,8 +117,8 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
     urunler: sepet,
     hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
     zeminSinifi: "hareket-satir--yesil",
-    genelToplam: t.toplamEuro,
-    kur: kur
+    genelToplam: tToplamEuro,
+    primGizli: true
   });
   return html;
 }
@@ -295,13 +296,15 @@ function mailOnizlemeAc(){
     document.getElementById("mailOnizlemeKonu").value = konu;
     document.getElementById("mailOnizlemeAlici").value = document.getElementById("gonderEposta").value.trim();
     document.getElementById("mailOnizlemeMetin").textContent = document.getElementById("gonderMetin").value;
+    var mailToplamEuro = 0;
+    (g.sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, g.kur, g.kdv); if(h && h.toplamEuro!=null) mailToplamEuro += h.toplamEuro; });
     document.getElementById("mailOnizlemeTablo").innerHTML = HareketTablo.grupHtml({
       etiket: (TIP_ETIKET_ROZET[g.tip]||""),
       urunler: g.sepet,
       hesapla: function(u){ return CartData.hesapla(u, g.kur, g.kdv); },
       zeminSinifi: "hareket-satir--yesil",
-      genelToplam: CartData.genelToplam(g.kur, g.kdv).toplamEuro,
-      kur: g.kur
+      genelToplam: mailToplamEuro,
+      primGizli: true
     });
     document.getElementById("mailOnizlemeOverlay").hidden = false;
   }catch(e){ hataGoster("Mail önizleme açılamadı: " + e.message); }
@@ -312,14 +315,16 @@ function whatsappOnizlemeAc(){
     var g = gonderBaglam;
     document.getElementById("whatsappOnizlemeAlici").value = document.getElementById("gonderTelefon").value.trim() || "(telefon girilmemiş)";
     document.getElementById("whatsappOnizlemeMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, "whatsapp");
+    var waToplamEuro = 0;
+    (g.sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, g.kur, g.kdv); if(h && h.toplamEuro!=null) waToplamEuro += h.toplamEuro; });
     document.getElementById("whatsappOnizlemeTablo").innerHTML = HareketTablo.grupHtml({
       etiket: (TIP_ETIKET_ROZET[g.tip]||""),
       urunler: g.sepet,
       hesapla: function(u){ return CartData.hesapla(u, g.kur, g.kdv); },
       zeminSinifi: "hareket-satir--yesil",
-      genelToplam: CartData.genelToplam(g.kur, g.kdv).toplamEuro,
-      kur: g.kur,
-      kanal: "whatsapp"
+      genelToplam: waToplamEuro,
+      kanal: "whatsapp",
+      primGizli: true
     });
     document.getElementById("whatsappOnizlemeOverlay").hidden = false;
   }catch(e){ hataGoster("WhatsApp önizleme açılamadı: " + e.message); }

@@ -373,6 +373,25 @@ var ReportsData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  // Ürün dışında, bu KAYDA özel herhangi bir alanı (fatura/teslimat adresi,
+  // görünecek yetkili, dahili not, vb.) günceller — "Düzenle" menüsündeki
+  // ürün-dışı seçenekler bunu kullanır. alanlar = {alanAdi: yeniDeger, ...}.
+  function kaydiAlanGuncelle(tip, ts, alanlar, geriBildir){
+    try{
+      var db = firebase.database();
+      db.ref("arsiv/" + tip).once("value").then(function(snap){
+        var mevcut = snap.val();
+        var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
+        var idx = liste.findIndex(function(k){ return k.ts === ts; });
+        if(idx === -1){ throw new Error("Kayıt bulunamadı"); }
+        for(var alan in alanlar){
+          if(alanlar.hasOwnProperty(alan)) liste[idx][alan] = alanlar[alan];
+        }
+        return db.ref("arsiv/" + tip).set(liste);
+      }).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   // Revize/İlerletme mekanizması: Numune → Proforma veya Teklif;
   // Teklif → Proforma veya Sipariş; Proforma → sadece Sipariş (tek seçenek,
   // soru sorulmadan otomatik ilerler). Sipariş'ten sonrası yok (nihai aşama).
@@ -462,6 +481,7 @@ var ReportsData = (function(){
     kayitlariBirlestir: kayitlariBirlestir,
     musteriUrunGecmisi: musteriUrunGecmisi,
     kaydiGuncelle: kaydiGuncelle,
+    kaydiAlanGuncelle: kaydiAlanGuncelle,
     SONRAKI_ASAMALAR: SONRAKI_ASAMALAR,
     revizeBaslat: revizeBaslat,
     tekrarBaslat: tekrarBaslat

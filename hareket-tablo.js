@@ -22,7 +22,7 @@ var HareketTablo = (function(){
   // zeminSinifi: "hareket-satir--sari" | "hareket-satir--yesil" | ""
   // basit: true ise WhatsApp'a özel sade satır (SIRA/ÜRÜN/ADET/NET/TOPLAM) üretir —
   // müşteriye internal bilgi olan LİSTE/İSK/PRİM sütunları hiç gönderilmez.
-  function satirlarHtml(urunler, hesapla, zeminSinifi, basit){
+  function satirlarHtml(urunler, hesapla, zeminSinifi, basit, primGizli){
     return (urunler||[]).map(function(u, i){
       var h = hesapla(u);
       var toplamVarMi = h && h.toplamEuro != null;
@@ -47,25 +47,32 @@ var HareketTablo = (function(){
         + "<td>" + (u.iskonto!=null ? "<span class='rozet-isk'>%"+u.iskonto+"</span>" : "-") + "</td>"
         + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+fmt(h.iskontoluFiyat)+" €</span>" : "-") + "</td>"
         + "<td class='belge-td-toplam'>" + (toplamVarMi ? fmt(h.toplamEuro)+" €" : "-") + "</td>"
-        + "<td class='belge-td-prim'>" + primHucre + "</td>"
+        + (primGizli ? "" : "<td class='belge-td-prim'>" + primHucre + "</td>")
         + "</tr>";
     }).join("");
   }
 
   // Tek bir grup (örn. sadece HESAPLANDI) için etiket + tablo + (istenirse) genel toplam.
   // opts.kanal === "whatsapp" ise sade tablo (SIRA/ÜRÜN BİLGİSİ/ADET/NET/TOPLAM) üretir.
+  // opts.primGizli === true ise PRİM sütunu HİÇ gösterilmez — bu, mail/WhatsApp
+  // ÖNİZLEMESİ için ZORUNLU: Müdür Primi kesinlikle müşteriye/karşı tarafa
+  // gidecek görsele/önizlemeye karışmaz, sadece Abdullah'ın kendi ekranlarında
+  // (Sepet, İşlem Geçmişi) görünür.
   function grupHtml(opts){
     var basit = opts.kanal === "whatsapp";
+    var primGizli = !!opts.primGizli;
     var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#8a6d1a" : "#0e6b34";
     var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#fff9e6" : "#eafaf0";
     var etiketRozetHtml = opts.etiketRozet ? "<span class='hareket-grup-etiket-rozet'>" + opts.etiketRozet + "</span>" : "";
     var html = "<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>";
     var basHucreler = basit
       ? "<th style='width:52%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:18%;'>NET</th><th style='width:18%;'>TOPLAM</th>"
-      : "<th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th>";
+      : (primGizli
+          ? "<th style='width:4%;'>SR</th><th style='width:37%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>ADET</th><th style='width:13%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:14%;'>TOPLAM</th>"
+          : "<th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th>");
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"
-      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit) + "</tbody></table></div>";
+      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli) + "</tbody></table></div>";
     if(opts.genelToplam != null){
       html += "<div class='belge-genel-toplam-serit'>"
         + (opts.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(opts.kur) + " Euro</span>" : "")
