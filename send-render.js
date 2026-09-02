@@ -247,6 +247,34 @@ function belgeGorseliniOlustur(kanal, callback){
   }catch(e){ callback(null); }
 }
 
+// "Tabloyu Resim Olarak Kopyala" — devam eden bir mail/WhatsApp sohbetine
+// yapıştırılabilsin diye görseli doğrudan SİSTEM PANOSUNA kopyalar (yeni bir
+// paylaşım/gönderim açmaz, sadece kopyalar).
+function tabloyuPanoyaKopyala(kanal, btnEl){
+  var eskiMetin = btnEl.textContent;
+  btnEl.textContent = "⏳ Hazırlanıyor...";
+  btnEl.disabled = true;
+  function eskiHaleDon(){ btnEl.textContent = eskiMetin; btnEl.disabled = false; }
+  belgeGorseliniOlustur(kanal, function(canvas){
+    if(!canvas){ eskiHaleDon(); alert("Görsel oluşturulamadı."); return; }
+    if(!navigator.clipboard || typeof window.ClipboardItem === "undefined"){
+      eskiHaleDon();
+      alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor. Bunun yerine aşağıdaki Gönder butonuyla paylaşabilirsin.");
+      return;
+    }
+    canvas.toBlob(function(blob){
+      if(!blob){ eskiHaleDon(); alert("Görsel oluşturulamadı."); return; }
+      navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(function(){
+        btnEl.textContent = "✓ Kopyalandı! Mail/Sohbete yapıştırabilirsin";
+        setTimeout(eskiHaleDon, 2200);
+      }).catch(function(err){
+        eskiHaleDon();
+        alert("Kopyalanamadı: " + (err && err.message ? err.message : "izin verilmedi"));
+      });
+    }, "image/png");
+  });
+}
+
 function mailOnizlemeAc(){
   try{
     var g = gonderBaglam;
@@ -362,6 +390,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnWhatsapp").onclick = function(){ whatsappOnizlemeAc(); };
   document.getElementById("btnEposta").onclick = function(){ mailOnizlemeAc(); };
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
+  document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
     document.getElementById("mailOnizlemeOverlay").hidden = true;
@@ -371,6 +400,7 @@ document.addEventListener("DOMContentLoaded", function(){
     if(ev.target === this) this.hidden = true;
   });
   document.getElementById("whatsappOnizlemeVazgecBtn").onclick = function(){ document.getElementById("whatsappOnizlemeOverlay").hidden = true; };
+  document.getElementById("whatsappTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("whatsapp", this); };
   document.getElementById("whatsappOnizlemeGonderBtn").onclick = function(){
     document.getElementById("gonderMetin").value = document.getElementById("whatsappOnizlemeMetin").value;
     document.getElementById("whatsappOnizlemeOverlay").hidden = true;

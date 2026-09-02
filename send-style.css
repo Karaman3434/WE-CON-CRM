@@ -302,3 +302,21 @@
 }
 .btn-kaydet { background: #16a085; color: #fff; }
 .btn-vazgec { background: #f1f3f5; color: #44494f; }
+
+.tablo-kopyala-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: #eaf2fc;
+  color: #003a70;
+  border: 1.5px solid #3569b8;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.tablo-kopyala-not {
+  font-size: 10px;
+  color: #8a8f98;
+  margin-top: 4px;
+}
