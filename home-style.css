@@ -47,6 +47,18 @@ body {
   z-index: 1000;
   background: #ffffff;
 }
+/* Rota etiketi — hangi sayfada olduğunu gösteren küçük, tek satırlık iz.
+   Tüm sayfalarda aynı yerde (sabit şeridin hemen altında), aynı küçük
+   boyutta — büyük başlık şeritlerinin (örn. eski "⚡ İŞLEMLER") yerini alır. */
+.rota-etiketi {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7684;
+  padding: 7px 14px;
+  background: #f4f6f9;
+  border-bottom: 1px solid #e8ecf1;
+}
+.rota-etiketi b { color: #003a70; font-weight: 900; }
 .app-header .logo {
   background: #3569b8;
   color: #ffffff;
