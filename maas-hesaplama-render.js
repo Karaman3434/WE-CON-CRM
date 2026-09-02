@@ -1,5 +1,5 @@
 /*
-  maas-hesaplama-render.js
+  maas-hesaplama-render.js — VERSİYON: WG.020926.2330.95
   ==========================
   Açık dönemi (MaasKayitData.acikDonem) gösterir, Brüt Prim'i Ödenebilir
   Komisyon'un güncel toplamı ile referans nokta arasındaki farktan otomatik
@@ -48,6 +48,13 @@ function fmtOran_MH(brut, net){
   if(!brut) return "";
   var oran = (brut-net)/brut*100;
   return " (%" + oran.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " kesinti)";
+}
+// Kesinti yüzdesini TEK BAŞINA (parantezsiz) döndürür — brüt/net kartlarındaki
+// ayrı "kesinti oranı" satırı için.
+function fmtOranSadece_MH(brut, net){
+  if(!brut) return "%0,00 kesinti";
+  var oran = (brut-net)/brut*100;
+  return "%" + oran.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " kesinti";
 }
 function tarihiGuncelle_MH(){
   try{
@@ -163,8 +170,11 @@ function mhHesaplaVeCiz(){
 
   var hesabaYatacak = sonuc.netToplam - av.toplamKesinti;
 
-  document.getElementById("mhKartNetMaas").textContent = fmtTL_MH(sonuc.netSabitMaas) + fmtOran_MH(sonuc.brutSabitAylik, sonuc.netSabitMaas);
-  document.getElementById("mhKartNetPrim").textContent = fmtTL_MH(sonuc.netPrim) + fmtOran_MH(sonuc.brutPrim, sonuc.netPrim);
+  document.getElementById("mhMaasKesintiOran").textContent = fmtOranSadece_MH(sonuc.brutSabitAylik, sonuc.netSabitMaas);
+  document.getElementById("mhKartNetMaas").textContent = fmtTL_MH(sonuc.netSabitMaas);
+  document.getElementById("mhPrimKesintiOran").textContent = fmtOranSadece_MH(sonuc.brutPrim, sonuc.netPrim);
+  document.getElementById("mhKartNetPrim").textContent = fmtTL_MH(sonuc.netPrim);
+  document.getElementById("mhKartNetToplam").textContent = fmtTL_MH(sonuc.netToplam);
   document.getElementById("mhKartHesabaYatacak").textContent = fmtTL_MH(hesabaYatacak);
 
   mhGuncelHesap = {

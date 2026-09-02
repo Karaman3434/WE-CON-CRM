@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.020926.1927.93 — maas-hesaplama.html
+  WEICON ASİST V2 — VERSİYON: WG.020926.2330.95 — maas-hesaplama.html
   =====================================================================
   MAAŞ + PRİM HESAPLAMA v3 — açık dönem otomatik ilerler (hiç kayıt yokken
   BİR ÖNCEKİ ay açık sayılır, çünkü bir ay ancak bittikten sonra kapatılır).
@@ -17,7 +17,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css">
 <link rel="stylesheet" href="odenebilir-komisyon-style.css">
-<link rel="stylesheet" href="maas-hesaplama-style.css">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.020926.2330.95">
 </head>
 <body>
 
@@ -44,27 +44,46 @@
 
   <div class="mh-donem-serit" id="mhDonemSerit">Açık Dönem: —</div>
 
-  <div class="mh-ust-bilgi-kutu">
+  <!-- BRÜT MAAŞ — altında kesinti % ve net maaş -->
+  <div class="mh-tutar-kart">
     <div class="mh-ust-bilgi-satir">
       <span class="mh-etiket" style="margin-top:0;">BRÜT SABİT MAAŞ</span>
       <button type="button" id="btnBrutSabitGuncelle" class="mh-guncelle-btn">✏️ Güncelle</button>
     </div>
-    <div class="mh-ust-bilgi-deger" id="mhBrutSabitDeger">0,00 TL</div>
+    <div class="mh-tutar-kart-deger" id="mhBrutSabitDeger">0,00 TL</div>
     <div class="mh-ust-bilgi-not">2026 için sabit — değiştiğinde Güncelle'ye bas.</div>
+    <div class="mh-tutar-kart-alt">
+      <span class="mh-kesinti-oran" id="mhMaasKesintiOran">%0,00 kesinti</span>
+      <span class="mh-net-deger">Net Maaş: <b id="mhKartNetMaas">0,00 TL</b></span>
+    </div>
+  </div>
 
-    <div class="mh-ust-bilgi-ayrac"></div>
-
+  <!-- BRÜT PRİM — altında kesinti % ve net prim -->
+  <div class="mh-tutar-kart">
     <span class="mh-etiket" style="margin-top:0;">BRÜT PRİM (otomatik)</span>
-    <div class="mh-ust-bilgi-deger mh-ust-bilgi-deger--vurgu" id="mhPrimDeger">0,00 TL</div>
+    <div class="mh-tutar-kart-deger mh-tutar-kart-deger--vurgu" id="mhPrimDeger">0,00 TL</div>
     <div class="mh-ust-bilgi-not" id="mhPrimKaynak">—</div>
+    <div class="mh-tutar-kart-alt">
+      <span class="mh-kesinti-oran" id="mhPrimKesintiOran">%0,00 kesinti</span>
+      <span class="mh-net-deger">Net Prim: <b id="mhKartNetPrim">0,00 TL</b></span>
+    </div>
+  </div>
 
-    <div class="mh-ust-bilgi-ayrac"></div>
-
+  <div class="mh-ust-bilgi-kutu">
     <div class="mh-ust-bilgi-satir">
       <span class="mh-etiket" style="margin-top:0;">VERGİ MATRAHI KALİBRASYONU</span>
       <button type="button" id="btnMatrahKalibreEt" class="mh-guncelle-btn">🎯 Kalibre Et</button>
     </div>
     <div class="mh-ust-bilgi-not" id="mhMatrahDurum">—</div>
+  </div>
+
+  <!-- MAAŞ KARTI başlığı + NET MAAŞ + NET PRİM toplamı, yeşil vurgulu tek kutu -->
+  <div class="mh-kart-baslik">
+    <span>💳 MAAŞ KARTI — <span id="mhKartBaslikAy">—</span></span>
+  </div>
+  <div class="mh-toplam-kutu">
+    <div class="mh-toplam-etiket">NET MAAŞ + NET PRİM</div>
+    <div class="mh-toplam-deger" id="mhKartNetToplam">0,00 TL</div>
   </div>
 
   <section class="ok-kutu">
@@ -78,23 +97,10 @@
     <a href="avans-takibi.html" class="mh-avans-git-btn">🧾 Avans Takibi'ni Aç</a>
   </section>
 
-  <!-- MAAŞ KARTI — Cari Bilgi kartına benzer, göze çarpan tasarım -->
-  <div class="mh-kart-baslik">
-    <span>💳 MAAŞ KARTI — <span id="mhKartBaslikAy">—</span></span>
-  </div>
-  <div class="mh-kart-govde">
-    <div class="mh-kart-satir">
-      <span>NET MAAŞ</span>
-      <b id="mhKartNetMaas">0,00 TL</b>
-    </div>
-    <div class="mh-kart-satir">
-      <span>NET PRİM</span>
-      <b id="mhKartNetPrim">0,00 TL</b>
-    </div>
-    <div class="mh-kart-yatacak-kutu">
-      <div class="mh-kart-yatacak-etiket">HESABA YATACAK MAAŞ</div>
-      <div class="mh-kart-yatacak-deger" id="mhKartHesabaYatacak">0,00 TL</div>
-    </div>
+  <!-- HESABA YATACAK — avans düşülmüş net toplam, ayrı vurgulu kutu -->
+  <div class="mh-yatacak-kutu-standalone">
+    <div class="mh-kart-yatacak-etiket">HESABA YATACAK MAAŞ</div>
+    <div class="mh-kart-yatacak-deger" id="mhKartHesabaYatacak">0,00 TL</div>
   </div>
 
   <button type="button" id="btnAyiKayitEt" class="mh-kayit-et-btn">✓ Kapat ve Kayıt Et</button>
@@ -119,6 +125,6 @@
 <script src="avans-kayit-data.js?v=WG.020926.1927.93"></script>
 <script src="maas-kayit-data.js?v=WG.020926.1927.93"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
-<script src="maas-hesaplama-render.js?v=WG.020926.1927.93"></script>
+<script src="maas-hesaplama-render.js?v=WG.020926.2330.95"></script>
 </body>
 </html>
