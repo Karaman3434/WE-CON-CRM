@@ -31,6 +31,7 @@
 </head>
 <body>
 
+<div class="app-ust-sabit">
 <header class="app-header">
   <div class="logo">WEICON</div>
   <div class="tarih" id="gunTarihi"></div>
@@ -41,6 +42,7 @@
   <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
+</div>
 
 <div class="cari-baslik-serit">
   <a class="cari-geri-ok" id="cariGeriOk" href="customer-detail.html">‹</a>
@@ -94,9 +96,10 @@
     <div class="ck-kart-liste" id="notListesi"></div>
   </section>
 
-  <a class="cari-kapat-buton" id="cariKapatBtn" href="customer-detail.html">Kapat</a>
-
-  <button class="cari-yenibilgi-buton-icerde" id="btnBilgiYonetAc">✏️ Bilgiyi Düzenle</button>
+  <div class="ck-alt-buton-satir">
+    <a class="cari-kapat-buton" id="cariKapatBtn" href="customer-detail.html">Kapat</a>
+    <button class="cari-yenibilgi-buton-icerde" id="btnBilgiYonetAc">✏️ Bilgiyi Düzenle</button>
+  </div>
 
   <!-- Sadece Müşteri Kartı'nda "İşlem Yap" ile buraya gelindiyse görünür -->
   <button class="cari-islemedevam-buton" id="btnIslemeDevam" hidden>▶️ İşleme Devam Et</button>
@@ -169,11 +172,12 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.010926.2127.79"></script>
-<script src="customer-data.js?v=WG.010926.2127.79"></script>
-<script src="reports-data.js?v=WG.010926.2127.79"></script>
-<script src="reports-safety-fix.js?v=WG.010926.2127.79"></script>
-<script src="hata-log.js?v=WG.010926.2127.79"></script>
-<script src="cari-kart-render.js?v=WG.010926.2127.79"></script>
+<script src="auth.js?v=WG.020926.1318.86"></script>
+<script src="ust-sabit-olcum.js?v=WG.020926.1318.86"></script>
+<script src="customer-data.js?v=WG.020926.1318.86"></script>
+<script src="reports-data.js?v=WG.020926.1318.86"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1318.86"></script>
+<script src="hata-log.js?v=WG.020926.1318.86"></script>
+<script src="cari-kart-render.js?v=WG.020926.1318.86"></script>
 </body>
 </html>

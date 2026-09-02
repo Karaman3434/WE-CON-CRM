@@ -1,6 +1,11 @@
 .sayfa { padding: 8px 14px 24px; }
 .sayfa-baslik { font-size: 18px; font-weight: 900; color: #003a70; margin-bottom: 16px; }
 
+.veri-buton-satir {
+  display: flex;
+  gap: 8px;
+}
+.veri-buton-satir .veri-buton { width: auto; flex: 1; }
 .veri-buton {
   width: 100%;
   border: none;

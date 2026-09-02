@@ -10,6 +10,7 @@
 </head>
 <body>
 
+<div class="app-ust-sabit">
 <header class="app-header">
   <div class="logo">WEICON</div>
   <div class="tarih" id="gunTarihi"></div>
@@ -20,12 +21,15 @@
   <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
+</div>
 
 <main class="sayfa">
   <div class="sayfa-baslik">📁 Veri Yönetimi</div>
 
-  <button class="veri-buton veri-buton--yesil" id="btnYedekle">💾 Tüm Veriyi Yedekle (İndir)</button>
-  <button class="veri-buton veri-buton--gri" id="btnJsonYukle">📄 JSON Yükle / Güncelle</button>
+  <div class="veri-buton-satir">
+    <button class="veri-buton veri-buton--yesil" id="btnYedekle">💾 Tüm Veriyi Yedekle (İndir)</button>
+    <button class="veri-buton veri-buton--gri" id="btnJsonYukle">📄 JSON Yükle / Güncelle</button>
+  </div>
   <input type="file" id="jsonFileInput" accept="application/json" hidden>
 
   <p class="veri-uyari">⚠️ JSON yükleme, mevcut müşteri ve işlem verilerinin üzerine yazar. Emin değilsen önce yedek al.</p>
@@ -34,9 +38,10 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.010926.2127.79"></script>
-<script src="ayarlar-sync.js?v=WG.010926.2127.79"></script>
-<script src="hata-log.js?v=WG.010926.2127.79"></script>
-<script src="veri-render.js?v=WG.010926.2127.79"></script>
+<script src="auth.js?v=WG.020926.1318.86"></script>
+<script src="ust-sabit-olcum.js?v=WG.020926.1318.86"></script>
+<script src="ayarlar-sync.js?v=WG.020926.1318.86"></script>
+<script src="hata-log.js?v=WG.020926.1318.86"></script>
+<script src="veri-render.js?v=WG.020926.1318.86"></script>
 </body>
 </html>

@@ -163,11 +163,11 @@
 
 .detay-bilgi-overlay {
   position: fixed;
-  top: 92px; left: 0; right: 0; bottom: 0;
+  top: var(--ust-sabit-yukseklik, 100px); left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.5);
   display: flex;
   align-items: flex-start;
-  z-index: 9999;
+  z-index: 900;
 }
 .detay-bilgi-overlay[hidden] { display: none; }
 .detay-bilgi-form {
@@ -183,11 +183,16 @@
   margin-bottom: 12px;
 }
 
+.ck-alt-buton-satir {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
 .cari-kapat-buton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  flex: 1;
   background: #fdeaea;
   color: #c0392b;
   border: none;
@@ -199,7 +204,7 @@
   margin-top: 8px;
 }
 .cari-yenibilgi-buton-icerde {
-  width: 100%;
+  flex: 2;
   background: #e0730f;
   color: #fff;
   border: none;
@@ -208,7 +213,7 @@
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 0;
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .cari-islemedevam-buton {
@@ -291,20 +296,24 @@
 .yb-buton--sil { background: #fdeaea; color: #c0392b; border: 1px solid #f0b8b3; }
 .yb-buton--duzenle { background: #eaf2fc; color: #003a70; border: 1px solid #3569b8; }
 
-/* overlay / bottom sheet */
+/* overlay / popup — artık ALTTAN değil, sabit üst şeridin (logo+nav) HEMEN
+   ALTINDAN, kenardan kenara (tam genişlik) açılır. Bu, programın TÜM
+   popup'ları için ortak standarttır (bkz. ust-sabit-olcum.js). */
 .overlay {
-  position: fixed; inset: 0;
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
   background: rgba(10,20,35,0.5);
-  display: flex; align-items: flex-end; justify-content: center;
-  z-index: 999;
+  display: flex; align-items: flex-start; justify-content: center;
+  z-index: 900;
 }
 .overlay[hidden] { display: none; }
 .sheet {
   background: #fff;
-  width: 100%; max-width: 480px;
-  border-radius: 16px 16px 0 0;
+  width: 100%; max-width: none;
+  border-radius: 0;
   padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
-  max-height: 82vh;
+  max-height: 100%;
   overflow-y: auto;
 }
 .sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 4px; }

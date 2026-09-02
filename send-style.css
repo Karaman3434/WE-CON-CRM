@@ -256,20 +256,23 @@
   cursor: pointer;
 }
 
-/* ---------- Mail Önizleme overlay ---------- */
+/* ---------- Mail Önizleme overlay — sabit üst şeridin hemen altından,
+   kenardan kenara (bkz. genel .overlay standardı) ---------- */
 .overlay {
-  position: fixed; inset: 0;
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
   background: rgba(10,20,35,0.5);
-  display: flex; align-items: flex-end; justify-content: center;
-  z-index: 999;
+  display: flex; align-items: flex-start; justify-content: center;
+  z-index: 900;
 }
 .overlay[hidden] { display: none; }
 .sheet {
   background: #fff;
-  width: 100%; max-width: 480px;
-  border-radius: 16px 16px 0 0;
+  width: 100%; max-width: none;
+  border-radius: 0;
   padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
-  max-height: 88vh;
+  max-height: 100%;
   overflow-y: auto;
 }
 .sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 4px; }

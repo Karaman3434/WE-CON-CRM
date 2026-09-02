@@ -326,6 +326,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-bottom: 6px;
 }
 .belge-buton-satir--grid { margin-bottom: 6px; }
 .belge-yazdir-buton {
@@ -341,7 +342,7 @@
   cursor: pointer;
 }
 .belge-sil-buton {
-  width: 100%;
+  flex: 1;
   background: #fdeaea;
   color: #c0392b;
   border: 1px solid #f0b8b3;
@@ -350,10 +351,9 @@
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
-  margin-bottom: 6px;
 }
 .belge-revize-buton {
-  width: 100%;
+  flex: 1;
   background: #fff4e5;
   color: #b7601f;
   border: 1.5px solid #e0730f;
@@ -362,7 +362,6 @@
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
-  margin-bottom: 6px;
 }
 .belge-duzenle-buton {
   flex: 1 1 0;

@@ -196,20 +196,21 @@
 
 .ziy-hatirlatma-overlay {
   position: fixed;
-  inset: 0;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.55);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  z-index: 9999;
-  padding: 20px;
+  z-index: 900;
+  padding: 0;
 }
 .ziy-hatirlatma-overlay[hidden] { display: none; }
 .ziy-hatirlatma-kutu {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 0;
   padding: 18px;
-  max-width: 340px;
+  max-width: none;
   width: 100%;
 }
 .ziy-hatirlatma-baslik {
