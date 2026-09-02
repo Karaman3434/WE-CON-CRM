@@ -92,7 +92,7 @@ function mesajMetniOlustur(musteri, sepet, tip, kanal){
   return metin;
 }
 
-function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
+function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var vade = musteri.vade || "";
   var faturaTuru = musteri.fatura || "";
   var kargo = musteri.kargo || "";
@@ -103,7 +103,7 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
   var tToplamEuro = 0;
   (sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, kur, kdv); if(h && h.toplamEuro!=null) tToplamEuro += h.toplamEuro; });
 
-  var html = "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
+  var html = "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
     + "<div class='belge-musteri-govde'>"
     + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
     + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
@@ -118,6 +118,7 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv){
     hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
     zeminSinifi: "hareket-satir--yesil",
     genelToplam: tToplamEuro,
+    kanal: kanal,
     primGizli: true
   });
   return html;
@@ -296,16 +297,7 @@ function mailOnizlemeAc(){
     document.getElementById("mailOnizlemeKonu").value = konu;
     document.getElementById("mailOnizlemeAlici").value = document.getElementById("gonderEposta").value.trim();
     document.getElementById("mailOnizlemeMetin").textContent = document.getElementById("gonderMetin").value;
-    var mailToplamEuro = 0;
-    (g.sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, g.kur, g.kdv); if(h && h.toplamEuro!=null) mailToplamEuro += h.toplamEuro; });
-    document.getElementById("mailOnizlemeTablo").innerHTML = HareketTablo.grupHtml({
-      etiket: (TIP_ETIKET_ROZET[g.tip]||""),
-      urunler: g.sepet,
-      hesapla: function(u){ return CartData.hesapla(u, g.kur, g.kdv); },
-      zeminSinifi: "hareket-satir--yesil",
-      genelToplam: mailToplamEuro,
-      primGizli: true
-    });
+    document.getElementById("mailOnizlemeTablo").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, null);
     document.getElementById("mailOnizlemeOverlay").hidden = false;
   }catch(e){ hataGoster("Mail önizleme açılamadı: " + e.message); }
 }
@@ -315,17 +307,7 @@ function whatsappOnizlemeAc(){
     var g = gonderBaglam;
     document.getElementById("whatsappOnizlemeAlici").value = document.getElementById("gonderTelefon").value.trim() || "(telefon girilmemiş)";
     document.getElementById("whatsappOnizlemeMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, "whatsapp");
-    var waToplamEuro = 0;
-    (g.sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, g.kur, g.kdv); if(h && h.toplamEuro!=null) waToplamEuro += h.toplamEuro; });
-    document.getElementById("whatsappOnizlemeTablo").innerHTML = HareketTablo.grupHtml({
-      etiket: (TIP_ETIKET_ROZET[g.tip]||""),
-      urunler: g.sepet,
-      hesapla: function(u){ return CartData.hesapla(u, g.kur, g.kdv); },
-      zeminSinifi: "hareket-satir--yesil",
-      genelToplam: waToplamEuro,
-      kanal: "whatsapp",
-      primGizli: true
-    });
+    document.getElementById("whatsappOnizlemeTablo").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, "whatsapp");
     document.getElementById("whatsappOnizlemeOverlay").hidden = false;
   }catch(e){ hataGoster("WhatsApp önizleme açılamadı: " + e.message); }
 }
