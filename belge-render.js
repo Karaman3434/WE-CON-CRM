@@ -114,9 +114,12 @@ function belgeyiCiz(kayit, musteri){
 
     var belgeBaslikMetni = (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + (kayit.kod ? " · " + kayit.kod : "") + " · " + htmlEsc(kayit.tarih) + (kayit.revizeZamani ? " · 🔄 REVİZE" : "");
 
-    var html = "<div class='belge-kutu" + (sorunluMu?" belge-kutu--sorunlu":"") + "'>"
+    var html = "<div class='belge-kart" + (sorunluMu?" belge-kutu--sorunlu":"") + "'>"
       + durumRozetHtml
       + musteriBlokHtml
+      + "</div>"
+      + "<div class='belge-kart-ayrac'></div>"
+      + "<div class='belge-kart'>"
       + "<div class='belge-belge-baslik-serit'>" + htmlEsc(belgeBaslikMetni) + "</div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr><th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th></tr></thead>"

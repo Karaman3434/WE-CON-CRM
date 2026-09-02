@@ -103,14 +103,14 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var tToplamEuro = 0;
   (sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, kur, kdv); if(h && h.toplamEuro!=null) tToplamEuro += h.toplamEuro; });
 
-  var html = "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
+  var html = "<div class='belge-kart'><div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
     + "<div class='belge-musteri-govde'>"
     + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
     + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
     + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
     + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
     + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
-    + "</div>";
+    + "</div></div><div class='belge-kart-ayrac'></div><div class='belge-kart'>";
 
   html += HareketTablo.grupHtml({
     etiket: (TIP_ETIKET_ROZET[tip]||""),
@@ -121,6 +121,7 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
     kanal: kanal,
     primGizli: true
   });
+  html += "</div>";
   return html;
 }
 
@@ -230,10 +231,13 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
     + "</div>";
 
-  return "<div class='belge-kutu' style='margin:0;'>"
+  return "<div class='belge-kart' style='margin:0;'>"
     + cariBilgiHtml
+    + "</div>"
+    + "<div class='belge-kart-ayrac'></div>"
+    + "<div class='belge-kart' style='margin:0;'>"
     + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"
-    + "<div class='data-table-container'><table class='belge-urun-tablo'>"
+    + "<div class='data-table-container'><table class='belge-urun-tablo belge-urun-tablo--giden'>"
     + "<thead><tr>" + (basit
         ? "<th style='width:48%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>ADET</th><th style='width:19%;'>NET</th><th style='width:19%;'>TOPLAM</th>"
         : "<th style='width:4%;'>SR</th><th style='width:36%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>ADET</th><th style='width:13%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:14%;'>NET</th><th style='width:14%;'>TOPLAM</th>") + "</tr></thead>"
