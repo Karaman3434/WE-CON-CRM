@@ -256,7 +256,13 @@ var CustomerData = (function(){
         kargo: (bilgi.kargo||"").trim(),
         ziyaretGecmisi: [],
         iletisimler: [],
-        faturaAdresleri: [],
+        // Kural: ekstra/ayrı bir fatura adresi girilmediği sürece, müşteri
+        // eklenirken girilen İLK adres (Açık Adres) otomatik olarak Fatura
+        // Adresi sayılır — "Fatura Adresi: Girilmemiş" görünüp de aslında
+        // bir adres girilmiş olması durumunu önler.
+        faturaAdresleri: (bilgi.acikAdres && bilgi.acikAdres.trim())
+          ? [{etiket:"Fatura Adresi", adres: bilgi.acikAdres.trim()}]
+          : [],
         teslimatAdresleri: (bilgi.teslimatAdresi && bilgi.teslimatAdresi.trim())
           ? [{etiket:"Teslimat Adresi", adres: bilgi.teslimatAdresi.trim()}]
           : []

@@ -41,7 +41,14 @@ var sonKaydedilenBelge = null;
 
 function adresleriBelirle(musteri){
   seciliAdresler = {};
-  if(musteri.faturaAdresleri && musteri.faturaAdresleri.length) seciliAdresler.faturaAdresi = musteri.faturaAdresleri[0];
+  if(musteri.faturaAdresleri && musteri.faturaAdresleri.length){
+    seciliAdresler.faturaAdresi = musteri.faturaAdresleri[0];
+  } else if(musteri.acikAdres && musteri.acikAdres.trim()){
+    // Geriye dönük kural: ayrı bir fatura adresi hiç girilmemişse, müşteri
+    // eklenirken girilen Açık Adres fatura adresi olarak kullanılır — eski
+    // müşteri kayıtları için de "Girilmemiş" görünmesin diye.
+    seciliAdresler.faturaAdresi = {etiket:"Fatura Adresi", adres: musteri.acikAdres.trim()};
+  }
   if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length) seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[0];
 }
 
@@ -154,7 +161,7 @@ function fmtG2(n){
 }
 
 function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, orijinalTarih){
-  var basit = kanal === "whatsapp"; // WhatsApp'a giden görsel: Cari Bilgi yok, LİSTE/İSK/SIRA/PRİM yok
+  var basit = kanal === "whatsapp"; // WhatsApp'a giden görsel: ürün tablosunda LİSTE/İSK/SIRA yok (Cari Bilgi her iki kanalda da TAM gösterilir)
   var satirlarHtml = "";
   var netEuro = 0;
   sepet.forEach(function(u, i){
@@ -202,10 +209,17 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
   var yetkililer = musteri.iletisimler || [];
   var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
-  var tabloBasligi = (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + (kod ? " · " + kod : "") + " · " + tarihStr;
+  // Giden görselde dahili belge kodu (F.TEK.../SİP...) GÖSTERİLMEZ — sadece
+  // belge türü + tarih. (Sistem içi görünümde — belge-onizleme.html — kod
+  // hâlâ gösterilir, o ayrı bir fonksiyon/dosyadır.)
+  var tabloBasligi = (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " · " + tarihStr;
 
-  var cariBilgiHtml = basit ? "" :
-    "<div class='belge-musteri-baslik'>CARİ BİLGİ</div>"
+  // Cari Bilgi bloğu — hem Mail hem WhatsApp'ta TAM olarak görünür (vade,
+  // fatura türü, kargo, adres, yetkili bilgisi). Ürün tablosunun sütun
+  // sayısı ("basit" modda LİSTE/İSK olmadan) ayrı bir tercih, bu bloğu
+  // etkilemez.
+  var cariBilgiHtml =
+    "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
     + "<div class='belge-musteri-govde'>"
     + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
     + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
@@ -215,17 +229,15 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     + "</div>";
 
   return "<div class='belge-kutu' style='margin:0;'>"
-    + "<div class='belge-ust-baslik belge-ust-baslik--logo-tek'><span class='belge-logo-mini'>WEICON</span></div>"
     + cariBilgiHtml
     + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo'>"
     + "<thead><tr>" + (basit
-        ? "<th style='width:52%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:18%;'>NET</th><th style='width:18%;'>TOPLAM</th>"
-        : "<th style='width:5%;'>SR</th><th style='width:43%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>ADET</th><th style='width:11%;'>LİSTE</th><th style='width:13%;'>İSK</th><th style='width:14%;'>NET</th><th style='width:7%;'>TOPLAM</th>") + "</tr></thead>"
+        ? "<th style='width:48%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>ADET</th><th style='width:19%;'>NET</th><th style='width:19%;'>TOPLAM</th>"
+        : "<th style='width:4%;'>SR</th><th style='width:36%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>ADET</th><th style='width:13%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:14%;'>NET</th><th style='width:14%;'>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
     + "<div class='belge-genel-toplam-serit'>"
-    + (kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmtG2(kur) + " Euro</span>" : "")
     + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
     + "<span class='belge-gt-deger'>" + fmtG2(netEuro) + " €</span></div>"
     + "</div>";
