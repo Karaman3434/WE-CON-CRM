@@ -29,8 +29,7 @@ var MaasHesaplamaData = (function(){
   var SGK_ORANI = 0.14;
   var ISSIZLIK_ORANI = 0.01;
   var DAMGA_ORANI = 0.00759;
-  var AU_GELIR_VERGISI_ISTISNASI = 5615.10; // aylık, sabit — Abdullah'ın 08/2026 bordro pusulasındaki gerçek "Asgari Ücret Gelir Vergisi" rakamı esas alındı (genel GİB kaynaklarındaki 4.211,33 TL değil — WEICON'un bordro sistemi bu rakamı kullanıyor).
-  var AU_DAMGA_VERGISI_ISTISNASI = 250.70;  // aylık, sabit (2026)
+  var ASGARI_UCRET_BRUT_2026 = 33030.00; // 2026 brüt asgari ücret
 
   // Ücretliler için 2026 kümülatif yıllık matrah dilimleri.
   var DILIMLER = [
@@ -54,6 +53,26 @@ var MaasHesaplamaData = (function(){
       altSinir = ustSinir;
     }
     return vergi;
+  }
+
+  // DİNAMİK asgari ücret istisnası: eskiden 5.615,10 TL SABİT kodluydu (sadece
+  // Ağustos 2026 için doğruydu). Artık, asgari ücretin KENDİ kümülatif matrahı
+  // da (Ocak'tan itibaren, ayNo'ya göre) TIPKI çalışanın kendi matrahı gibi
+  // yıl içinde dilim değiştirebiliyor — bu yüzden istisna, o AYA karşılık gelen
+  // asgari-ücret-kümülatif ARALIĞI üzerinden kademeli hesaplanır. Böylece
+  // Ocak-Haziran (%15 dilimi), Temmuz (dilim GEÇİŞ ayı, kademeli), Ağustos-
+  // Aralık (%20 dilimi) — hepsi otomatik, doğru ve hiç elle müdahale
+  // gerektirmeden hesaplanır; gelecek yıllarda asgari ücret değişse bile
+  // (ASGARI_UCRET_BRUT_2026 güncellenince) aynı mantık geçerli kalır.
+  function asgariUcretIstisnasiHesapla(ayNo){
+    var auAylikMatrah = ASGARI_UCRET_BRUT_2026 * (1 - SGK_ORANI - ISSIZLIK_ORANI);
+    var auKumOnce = (ayNo - 1) * auAylikMatrah;
+    var auKumSonra = ayNo * auAylikMatrah;
+    var gelirVergisiIstisnasi = Math.max(0, kademeliVergi(auKumSonra) - kademeliVergi(auKumOnce));
+    // Damga vergisi ORANLA (kademeli değil, sabit yüzde) hesaplandığı için
+    // istisnası da doğrudan asgari ücretin kendi damga vergisidir.
+    var damgaVergisiIstisnasi = ASGARI_UCRET_BRUT_2026 * DAMGA_ORANI;
+    return {gelir: gelirVergisiIstisnasi, damga: damgaVergisiIstisnasi};
   }
 
   function sgkIssizlikSonrasi(brut){
@@ -106,11 +125,14 @@ var MaasHesaplamaData = (function(){
     var netPrim = buAyPrim - (buAyPrim*SGK_ORANI) - (buAyPrim*ISSIZLIK_ORANI) - gvPrim - dvPrim;
 
     // ---- SABİT MAAŞ'ın gelir vergisi — asgari ücret istisnası BURADA ----
+    // İstisna artık DİNAMİK: bu ayın (ayNo) asgari ücret kümülatif dilimine
+    // göre otomatik hesaplanır (bkz. asgariUcretIstisnasiHesapla yukarıda).
+    var auIstisna = asgariUcretIstisnasiHesapla(ayNo);
     var gvSabitIstisnasiz = Math.max(0, vSimdi - vPrimSonrasi);
-    var gvSabitIstisna = Math.min(AU_GELIR_VERGISI_ISTISNASI, gvSabitIstisnasiz);
+    var gvSabitIstisna = Math.min(auIstisna.gelir, gvSabitIstisnasiz);
     var gvSabit = Math.max(0, gvSabitIstisnasiz - gvSabitIstisna);
     var dvSabitIstisnasiz = brutSabitAylik * DAMGA_ORANI;
-    var dvSabit = Math.max(0, dvSabitIstisnasiz - AU_DAMGA_VERGISI_ISTISNASI);
+    var dvSabit = Math.max(0, dvSabitIstisnasiz - auIstisna.damga);
     var netSabitMaas = brutSabitAylik - (brutSabitAylik*SGK_ORANI) - (brutSabitAylik*ISSIZLIK_ORANI) - gvSabit - dvSabit;
 
     var netToplam = netSabitMaas + netPrim;
@@ -132,8 +154,7 @@ var MaasHesaplamaData = (function(){
   return {
     ayHesapla: ayHesapla,
     kademeliVergi: kademeliVergi,
-    AU_GELIR_VERGISI_ISTISNASI: AU_GELIR_VERGISI_ISTISNASI,
-    AU_DAMGA_VERGISI_ISTISNASI: AU_DAMGA_VERGISI_ISTISNASI
+    asgariUcretIstisnasiHesapla: asgariUcretIstisnasiHesapla
   };
 
 })();
