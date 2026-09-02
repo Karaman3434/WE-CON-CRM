@@ -160,6 +160,17 @@ body {
 .banner-baslik { font-size: 16px; font-weight: 900; }
 .banner-alt { font-size: 13px; margin-top: 2px; opacity: .9; }
 
+.anasayfa-yatacak-kutu {
+  background: #003a70;
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+.anasayfa-yatacak-etiket { font-size: 11px; font-weight: 900; color: #a9c6e4; letter-spacing: 0.3px; }
+.anasayfa-yatacak-deger { font-size: 30px; font-weight: 900; color: #fff; margin-top: 4px; }
+
 /* ---------- İstatistik kartları ---------- */
 .kart-grid {
   display: grid;
