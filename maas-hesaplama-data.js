@@ -12,7 +12,9 @@
      1.500.000 / 5.300.000 TL sınırlarıyla %15 / %20 / %27 / %35 / %40.
    - 2026 brüt asgari ücret: 33.030 TL.
    - Asgari ücrete isabet eden GELİR VERGİSİ istisnası: aylık SABİT
-     4.211,33 TL (dilim ne olursa olsun, hesaplanan vergiyi aşamaz).
+     5.615,10 TL (dilim ne olursa olsun, hesaplanan vergiyi aşamaz —
+     Abdullah'ın gerçek bordro pusulasındaki rakam esas alındı, genel GİB
+     kaynaklarındaki 4.211,33 TL değil).
    - Asgari ücrete isabet eden DAMGA VERGİSİ istisnası: aylık SABİT 250,70 TL.
    - SGK işçi payı %14, İşsizlik işçi payı %1, Damga vergisi oranı %0,759.
 
