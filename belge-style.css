@@ -11,8 +11,9 @@
   border-radius: 10px;
   overflow: hidden;
   box-sizing: border-box;
+  margin-bottom: 14px;
 }
-.belge-kart-ayrac { height: 14px; }
+.belge-kart-ayrac { height: 0; }
 
 /* Eski isim — geri uyumluluk için .belge-kart ile aynı görünüyor. */
 .belge-kutu {
@@ -71,9 +72,10 @@
   padding: 10px 16px;
   font-size: 11px;
   font-weight: 700;
-  color: #8a96a3;
+  color: #2563a8;
   letter-spacing: .5px;
-  border-bottom: 1px solid #f0f2f5;
+  background: #f4f8fc;
+  border-bottom: 1px solid #e2ecf6;
 }
 .belge-musteri-baslik--logolu .belge-logo-mini {
   background: #f4f6f9;
@@ -148,7 +150,7 @@
 .belge-yetkili-detay { color: #556170; font-size: 11px; }
 
 .belge-belge-baslik-serit {
-  background: #fafbfc;
+  background: #f4faf6;
   color: #1a2a3a;
   padding: 10px 16px;
   font-size: 12px;
@@ -157,7 +159,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid #e2f0e6;
 }
 
 
@@ -165,13 +167,13 @@
 .belge-urun-tablo { width: 100%; border-collapse: collapse; font-size: 11.5px; table-layout: auto; }
 .belge-urun-tablo th {
   background: #fafbfc;
-  color: #8a96a3;
+  color: #556170;
   border: none;
   border-bottom: 1px solid #f0f2f5;
   padding: 8px 6px;
   text-align: center;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 800;
   white-space: nowrap;
 }
 .belge-urun-tablo td {
