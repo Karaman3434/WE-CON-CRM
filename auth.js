@@ -61,43 +61,10 @@
     }catch(e){ geriBildir(false); }
   }
 
-  // ---- ERİŞİM KODU (bağlantı sonu ?k=XXX) ----
-  // Abdullah, Menü > Cihazlarım > Erişim Kodu'ndan istediği an yeni bir kod
-  // belirleyebilir (SADECE Samsung S22'den). Kod belirlenmişse, bir tarayıcı
-  // ancak DOĞRU koddaki bir bağlantıyla EN AZ BİR KEZ açılmışsa erişebilir —
-  // bu kanıt localStorage'a yazılır, sonraki normal iç-uygulama gezinmelerinde
-  // (linkte ?k= olmasa da) tekrar istenmez. Kod değişince eski kanıt geçersiz
-  // kalır ve o tarayıcı yeni linkle tekrar açılana kadar erişemez.
-  // Firebase okuma başarısız olursa (çevrimdışı, kural izin vermiyor vb.)
-  // erişimi ENGELLEMEYİZ — bu bir "fail-open" güvenlik katmanıdır, tek
-  // koruma katmanı DEĞİLDİR (PIN + cihaz engelleme ile birlikte çalışır).
-  function erisimKoduGecerliMi(){
-    return new Promise(function(resolve){
-      try{
-        firebase.database().ref("erisimKodu/kod").once("value").then(function(snap){
-          var mevcutKod = snap.val();
-          if(!mevcutKod){ resolve(true); return; }
-          mevcutKod = String(mevcutKod);
-          var urlKod = new URLSearchParams(window.location.search).get("k");
-          if(urlKod && urlKod === mevcutKod){
-            try{ localStorage.setItem("weicon_erisim_kodu_dogrulandi", mevcutKod); }catch(e){}
-            try{ window.history.replaceState({}, "", window.location.pathname); }catch(e){}
-            resolve(true);
-            return;
-          }
-          var yerel = null;
-          try{ yerel = localStorage.getItem("weicon_erisim_kodu_dogrulandi"); }catch(e){}
-          resolve(yerel === mevcutKod);
-        }).catch(function(){ resolve(true); });
-      }catch(e){ resolve(true); }
-    });
-  }
-
   var yol = window.location.pathname;
   var buSayfaLogin = yol.indexOf("login.html") >= 0;
   var buSayfaPin = yol.indexOf("pin.html") >= 0;
   var buSayfaCihazEngelli = yol.indexOf("cihaz-engelli.html") >= 0;
-  var buSayfaErisimReddedildi = yol.indexOf("erisim-reddedildi.html") >= 0;
 
   function aktiviteZamaniniGuncelle(){
     try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
@@ -188,23 +155,7 @@
   }
 
   firebase.auth().onAuthStateChanged(function(user){
-    // ERİŞİM KODU KONTROLÜ HER ŞEYDEN ÖNCE — login.html DAHİL. Böylece
-    // yanlış/eski bir bağlantıyla gelen biri giriş formunu bile görmez.
-    if(buSayfaErisimReddedildi){
-      document.documentElement.style.visibility = "visible";
-      return;
-    }
-    erisimKoduGecerliMi().then(function(gecerli){
-      if(!gecerli){
-        if(user){
-          firebase.auth().signOut().then(function(){ window.location.href = "erisim-reddedildi.html"; });
-        } else {
-          window.location.href = "erisim-reddedildi.html";
-        }
-        return;
-      }
-      normalAkisiIsle(user);
-    });
+    normalAkisiIsle(user);
   });
 
 })();
