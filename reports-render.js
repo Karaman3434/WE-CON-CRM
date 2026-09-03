@@ -208,50 +208,23 @@ function islemleriCiz(){
       if(k.revizeZamani) durumEk += " — 🔄 REVİZE";
       return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
         + "<div class='islem-rozet-satir'>"
-        + "<span class='islem-kod-rozet' style='background:" + renk + ";'>" + kod + "</span>"
+        + "<span class='islem-kod-rozet islem-kod-rozet--buyuk' data-belge-i='" + i + "' style='background:" + renk + ";'>" + kod + "</span>"
         + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
         + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
         + "</div>"
-        + "<div class='islem-musteri-satir islem-musteri-tiklanabilir' data-belge-i='" + i + "'>"
+        + "<div class='islem-musteri-satir'>"
         + "<span class='islem-musteri-buyuk'>" + htmlEsc(k.musteri) + "</span>"
         + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
         + "</div>"
-        + (!kacanMi
-              ? "<div class='islem-aksiyon-satir'>"
-                + ((k.tip==="teklif"||k.tip==="proforma") ? "<button class='islem-kacan-btn' data-i='"+i+"'>❌ Kaçtı Olarak İşaretle</button>" : "")
-                + (ReportsData.SONRAKI_ASAMALAR[k.tip] ? "<button class='islem-ilerlet-btn' data-ilerlet-i='"+i+"'>▶️ " + (ReportsData.SONRAKI_ASAMALAR[k.tip].length>1 ? "İlerlet" : "İlerlet — " + TIP_ETIKET[ReportsData.SONRAKI_ASAMALAR[k.tip][0]]) + "</button>" : "")
-                + "</div>"
-              : ""
-           )
         + "</div>";
     }).join("");
 
-    kapsayici.querySelectorAll(".islem-belge-btn, .islem-musteri-tiklanabilir").forEach(function(btn){
+    kapsayici.querySelectorAll(".islem-kod-rozet").forEach(function(btn){
       btn.onclick = function(){
         var i = parseInt(this.getAttribute("data-belge-i"), 10);
         var k = liste[i];
         localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
         window.location.href = "belge-onizleme.html";
-      };
-    });
-
-    kapsayici.querySelectorAll(".islem-ilerlet-btn").forEach(function(btn){
-      btn.onclick = function(){
-        var i = parseInt(this.getAttribute("data-ilerlet-i"), 10);
-        ilerletTiklandi(liste[i]);
-      };
-    });
-
-    kapsayici.querySelectorAll(".islem-kacan-btn").forEach(function(btn){
-      btn.onclick = function(){
-        var i = parseInt(this.getAttribute("data-i"), 10);
-        var k = liste[i];
-        var sebep = prompt("Kaçırma sebebi (örn. Fiyat, Termin, Rakip):", "") || "";
-        var rakip = prompt("Rakip firma (opsiyonel):", "") || "";
-        ReportsData.kaydiKacanIsaretle(k.tip, k.ts, sebep, rakip, function(basarili, err){
-          if(basarili) alert("✓ İşaretlendi.");
-          else hataGoster("İşaretlenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-        });
       };
     });
   }catch(e){ hataGoster("İşlemler çizilemedi: " + e.message); }

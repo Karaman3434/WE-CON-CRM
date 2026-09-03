@@ -332,83 +332,73 @@
 .belge-prim-etiket { font-size: 13px; font-weight: 900; white-space: nowrap; }
 .belge-prim-deger { font-size: 15px; font-weight: 900; white-space: nowrap; }
 
-.belge-buton-satir {
+.belge-alt-buton-satir {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 6px;
 }
-.belge-buton-satir--grid { margin-bottom: 6px; }
-.belge-yazdir-buton {
-  flex: 1 1 0;
-  min-width: 80px;
-  background: #e0730f;
-  color: #ffffff;
+.belge-kapat-buton {
+  flex: 1;
+  background: #c0392b;
+  color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 12px 4px;
-  font-size: 12px;
+  padding: 13px 4px;
+  min-height: 44px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
 }
-.belge-sil-buton {
+.belge-islemler-buton {
   flex: 1;
-  background: #fdeaea;
-  color: #c0392b;
-  border: 1px solid #f0b8b3;
-  border-radius: 10px;
-  padding: 12px 4px;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-.belge-revize-buton {
-  flex: 1;
-  background: #fff4e5;
-  color: #b7601f;
-  border: 1.5px solid #e0730f;
-  border-radius: 10px;
-  padding: 12px 4px;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-.belge-duzenle-buton {
-  flex: 1 1 0;
-  min-width: 80px;
-  background: #eaf2fc;
-  color: #003a70;
-  border: 1.5px solid #3569b8;
-  border-radius: 10px;
-  padding: 12px 4px;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-.belge-tekrarla-buton {
-  flex: 1 1 0;
-  min-width: 80px;
-  background: #eafaf3;
-  color: #0e6b58;
-  border: 1.5px solid #16a085;
-  border-radius: 10px;
-  padding: 12px 4px;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-.belge-gonder-buton {
-  flex: 1 1 0;
-  min-width: 80px;
   background: #003a70;
-  color: #ffffff;
+  color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 12px 4px;
-  font-size: 12px;
+  padding: 13px 4px;
+  min-height: 44px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
 }
+
+/* İşlemler menüsü — sabit üst şeridin hemen altından, kenardan kenara
+   (bkz. genel .overlay standardı, cari-kart-style.css) */
+.overlay {
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(10,20,35,0.5);
+  display: flex; align-items: flex-start; justify-content: center;
+  z-index: 900;
+}
+.overlay[hidden] { display: none; }
+.sheet {
+  background: #fff;
+  width: 100%; max-width: none;
+  border-radius: 0;
+  padding: 16px;
+  max-height: 100%;
+  overflow-y: auto;
+}
+.sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 10px; }
+.sheet-secenek {
+  width: 100%; text-align: left;
+  background: #f8fafc;
+  border: 1px solid #e8ecf1;
+  border-radius: 10px;
+  padding: 13px 14px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #1a2a3a;
+  margin-bottom: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+}
+.sheet-secenek .ikon { font-size: 18px; }
+.sheet-secenek--sil { background: #fdeaea; border-color: #f0b8b3; color: #c0392b; }
+.sheet-secenek--vazgec { background: #c0392b; border: none; color: #fff; text-align: center; justify-content: center; margin-top: 6px; }
 
 /* Belge Geçmişi — dikey zaman çizgisi */
 .belge-gecmis-kutu {
@@ -455,5 +445,5 @@
 .belge-gecmis-kart-alt { font-size: 11px; font-weight: 700; opacity: .8; margin-top: 2px; }
 
 @media print {
-  .app-header, .app-nav, .belge-buton-satir, .belge-yazdir-buton, .belge-duzenle-buton, .belge-tekrarla-buton, .belge-gonder-buton, .belge-revize-buton, .belge-sil-buton, .belge-gecmis-kutu { display: none !important; }
+  .app-header, .app-nav, .belge-alt-buton-satir, .belge-kapat-buton, .belge-islemler-buton, .overlay, .belge-gecmis-kutu { display: none !important; }
 }

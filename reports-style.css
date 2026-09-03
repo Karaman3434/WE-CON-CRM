@@ -75,6 +75,12 @@
   flex-shrink: 0;
   white-space: nowrap;
 }
+.islem-kod-rozet--buyuk {
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
 .islem-tarih-buyuk {
   font-size: 13px;
   font-weight: 800;

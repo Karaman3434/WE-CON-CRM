@@ -336,12 +336,27 @@ document.addEventListener("DOMContentLoaded", function(){
   akilliGeriBagla("reports.html");
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-  document.getElementById("btnYazdir").onclick = function(){ window.print(); };
-  document.getElementById("btnBelgeSil").onclick = function(){
+
+  document.getElementById("btnBelgeKapat").onclick = function(){
+    if(window.history.length > 1) window.history.back();
+    else window.location.href = "reports.html";
+  };
+  document.getElementById("btnIslemlerAc").onclick = function(){ document.getElementById("islemlerOverlay").hidden = false; };
+  document.getElementById("msVazgec").onclick = function(){ document.getElementById("islemlerOverlay").hidden = true; };
+  document.getElementById("islemlerOverlay").addEventListener("click", function(ev){
+    if(ev.target === this) this.hidden = true;
+  });
+
+  document.getElementById("msYazdir").onclick = function(){
+    document.getElementById("islemlerOverlay").hidden = true;
+    window.print();
+  };
+  document.getElementById("msSil").onclick = function(){
+    document.getElementById("islemlerOverlay").hidden = true;
     if(!ref) return;
     var belgeAdi = (sonCizilenKayit ? ((TIP_ETIKET_BELGE[sonCizilenKayit.tip]||"belge") + (sonCizilenKayit.kod ? " · " + sonCizilenKayit.kod : "")) : "bu belge");
     if(!confirm("Sadece bu belge silinecek:\n\n" + belgeAdi + "\n\nMüşteri kartına, adreslere veya yetkili bilgilerine dokunulmayacak — sadece bu tek kayıt kalıcı olarak silinecek. Bu geri alınamaz.")) return;
-    var btn = document.getElementById("btnBelgeSil");
+    var btn = document.getElementById("msSil");
     btn.disabled = true;
     btn.textContent = "Siliniyor...";
     ReportsData.kaydiSil(ref.tip, ref.ts, function(basarili, err){
@@ -350,9 +365,19 @@ document.addEventListener("DOMContentLoaded", function(){
         window.location.href = "reports.html";
       } else {
         btn.disabled = false;
-        btn.textContent = "🗑️ Kaydı Sil";
+        btn.textContent = "🗑️ Kaydı sil";
         hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
       }
+    });
+  };
+  document.getElementById("msKacti").onclick = function(){
+    document.getElementById("islemlerOverlay").hidden = true;
+    if(!sonCizilenKayit) return;
+    var sebep = prompt("Kaçırma sebebi (örn. Fiyat, Termin, Rakip):", "") || "";
+    var rakip = prompt("Rakip firma (opsiyonel):", "") || "";
+    ReportsData.kaydiKacanIsaretle(sonCizilenKayit.tip, sonCizilenKayit.ts, sebep, rakip, function(basarili, err){
+      if(basarili){ alert("✓ İşaretlendi."); denemeCiz(); }
+      else hataGoster("İşaretlenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
     });
   };
 
@@ -376,13 +401,14 @@ document.addEventListener("DOMContentLoaded", function(){
     belgeyiCiz(kayit, musteri);
     belgeGecmisiniCiz(kayit);
 
-    var revizeBtn = document.getElementById("btnRevizeEt");
-    revizeBtn.hidden = !ReportsData.SONRAKI_ASAMALAR[kayit.tip];
+    document.getElementById("msIlerlet").hidden = !ReportsData.SONRAKI_ASAMALAR[kayit.tip];
+    document.getElementById("msKacti").hidden = !((kayit.tip==="teklif"||kayit.tip==="proforma") && kayit.durum !== "kacan");
     return true;
   }
 
-  document.getElementById("btnBelgeDuzenle").onclick = function(){
+  document.getElementById("msDuzenle").onclick = function(){
     if(!sonCizilenKayit) return;
+    document.getElementById("islemlerOverlay").hidden = true;
     document.getElementById("duzenleMenuOverlay").hidden = false;
   };
   document.getElementById("btnDuzenleMenuKapat").onclick = function(){ document.getElementById("duzenleMenuOverlay").hidden = true; };
@@ -478,7 +504,8 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   };
 
-  document.getElementById("btnRevizeEt").onclick = function(){
+  document.getElementById("msIlerlet").onclick = function(){
+    document.getElementById("islemlerOverlay").hidden = true;
     if(!sonCizilenKayit) return;
     var secenekler = ReportsData.SONRAKI_ASAMALAR[sonCizilenKayit.tip] || [];
     var TIP_ETIKET_KISA = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
@@ -491,7 +518,8 @@ document.addEventListener("DOMContentLoaded", function(){
     ReportsData.revizeBaslat(sonCizilenKayit);
   };
 
-  document.getElementById("btnTekrarla").onclick = function(){
+  document.getElementById("msTekrarla").onclick = function(){
+    document.getElementById("islemlerOverlay").hidden = true;
     if(!sonCizilenKayit) return;
     var TIP_ETIKET_TEKRAR = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
     document.getElementById("tekrarlaBaslik").textContent = "Aynı ürünlerle yeni bir " + (TIP_ETIKET_TEKRAR[sonCizilenKayit.tip]||"kayıt") + " oluşturulacak";
@@ -533,7 +561,8 @@ document.addEventListener("DOMContentLoaded", function(){
     }));
     window.location.href = "send.html";
   }
-  document.getElementById("btnBelgeGonder").onclick = function(){
+  document.getElementById("msGonder").onclick = function(){
+    document.getElementById("islemlerOverlay").hidden = true;
     if(!sonCizilenKayit) return;
     gonderBeklemedekiKayit = sonCizilenKayit;
     document.getElementById("gonderNotMetni").value = "";

@@ -15,8 +15,8 @@
 <title>WEICON ASİST — Belge Önizleme</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="belge-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="reports-style.css?v=WG.030926.1158.98">
+<link rel="stylesheet" href="belge-style.css?v=WG.030926.1245.100">
+<link rel="stylesheet" href="reports-style.css?v=WG.030926.1245.100">
 </head>
 <body>
 
@@ -37,15 +37,23 @@
 <main class="sayfa">
   <div id="belgeIcerik"></div>
   <div class="belge-gecmis-kutu" id="belgeGecmisiKutu" hidden></div>
-  <div class="belge-buton-satir belge-buton-satir--grid">
-    <button class="belge-yazdir-buton" id="btnYazdir">🖨 Yazdır</button>
-    <button class="belge-duzenle-buton" id="btnBelgeDuzenle">✏️ Düzenle</button>
-    <button class="belge-tekrarla-buton" id="btnTekrarla">🔁 Tekrarla</button>
-    <button class="belge-gonder-buton" id="btnBelgeGonder">📤 Gönder</button>
+  <div class="belge-alt-buton-satir">
+    <button class="belge-kapat-buton" id="btnBelgeKapat">✕ Kapat</button>
+    <button class="belge-islemler-buton" id="btnIslemlerAc">⋯ İşlemler</button>
   </div>
-  <div class="belge-buton-satir">
-    <button class="belge-revize-buton" id="btnRevizeEt" hidden>🔄 Revize Et</button>
-    <button class="belge-sil-buton" id="btnBelgeSil">🗑️ Kaydı Sil</button>
+
+  <div class="overlay" id="islemlerOverlay" hidden>
+    <div class="sheet">
+      <div class="sheet-baslik">İşlemler</div>
+      <button class="sheet-secenek" id="msIlerlet" hidden><span class="ikon">▶</span>İlerlet</button>
+      <button class="sheet-secenek sheet-secenek--sil" id="msKacti" hidden><span class="ikon">✕</span>Kaçtı olarak işaretle</button>
+      <button class="sheet-secenek" id="msYazdir"><span class="ikon">🖨</span>Yazdır</button>
+      <button class="sheet-secenek" id="msDuzenle"><span class="ikon">✏️</span>Düzenle</button>
+      <button class="sheet-secenek" id="msTekrarla"><span class="ikon">🔁</span>Tekrarla</button>
+      <button class="sheet-secenek" id="msGonder"><span class="ikon">📤</span>Gönder</button>
+      <button class="sheet-secenek sheet-secenek--sil" id="msSil"><span class="ikon">🗑️</span>Kaydı sil</button>
+      <button class="sheet-secenek sheet-secenek--vazgec" id="msVazgec">Kapat</button>
+    </div>
   </div>
 
   <!-- Düzenle menüsü — neyi düzenlemek istediğini sorar -->
@@ -150,6 +158,6 @@
 <script src="reports-data.js?v=WG.020926.1523.89"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
 <script src="hata-log.js?v=WG.020926.1523.89"></script>
-<script src="belge-render.js?v=WG.020926.1523.89"></script>
+<script src="belge-render.js?v=WG.030926.1245.100"></script>
 </body>
 </html>
