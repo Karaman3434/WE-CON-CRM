@@ -172,11 +172,12 @@
 
 .ziy-kaydet-btn {
   width: 100%;
-  background: #e0730f;
+  background: #16a085;
   color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 13px;
+  min-height: 44px;
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
@@ -184,11 +185,12 @@
 }
 .ziy-panel-kapat-btn {
   width: 100%;
-  background: #eef1f5;
-  color: #2d3540;
+  background: #c0392b;
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 11px;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -221,11 +223,12 @@
 }
 .ziy-hatirlatma-kapat-btn {
   width: 100%;
-  background: #e0730f;
+  background: #c0392b;
   color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 12px;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 900;
   cursor: pointer;

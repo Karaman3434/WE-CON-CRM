@@ -163,8 +163,8 @@
 }
 .sepet-tablo { width: 100%; border-collapse: collapse; }
 .sepet-tablo th {
-  background: #cfe2f3;
-  color: #3569b8;
+  background: #c3dcf4;
+  color: #0c447c;
   font-size: 11px;
   font-weight: 900;
   padding: 8px 4px;
@@ -305,11 +305,12 @@
 }
 .sepet-kaydet-btn {
   flex: 1;
-  background: #eef1f5;
-  color: #2d3540;
+  background: #16a085;
+  color: #fff;
   border: none;
   border-radius: 10px;
   padding: 15px;
+  min-height: 44px;
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
@@ -340,11 +341,12 @@
 
 .sepet-iptal-btn {
   width: 100%;
-  background: #fdeaea;
-  color: #c0392b;
-  border: 1.5px solid #f0b8b3;
+  background: #c0392b;
+  color: #fff;
+  border: none;
   border-radius: 10px;
   padding: 12px;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;

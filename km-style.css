@@ -209,8 +209,8 @@
   font-size: 10px;
 }
 .km-veri-tablo th {
-  background: #cfe2f3;
-  color: #3569b8;
+  background: #c3dcf4;
+  color: #0c447c;
   font-weight: 900;
   padding: 6px 3px;
   text-align: center;
@@ -344,11 +344,12 @@
 }
 .km-baslangic-kaydet-btn {
   width: 100%;
-  background: #e0730f;
+  background: #16a085;
   color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 13px;
+  min-height: 44px;
   font-size: 14px;
   font-weight: 900;
   text-transform: uppercase;

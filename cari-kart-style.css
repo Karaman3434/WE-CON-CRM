@@ -158,7 +158,7 @@
   cursor: pointer;
 }
 .ck-duzenle-btn { background: #eaf2fc; color: #003a70; border: 1px solid #3569b8; }
-.ck-kaydet-btn { background: #f0fdfa; color: #0e6b58; border: 1px solid #16a085; }
+.ck-kaydet-btn { background: #16a085; color: #fff; }
 .ck-sil-btn { background: #fdeaea; color: #c0392b; border: 1px solid #f0b8b3; }
 
 .detay-bilgi-overlay {
@@ -350,12 +350,12 @@
 
 .sheet-buton-satir { display: flex; gap: 8px; margin-top: 16px; }
 .btn-kaydet, .btn-vazgec {
-  flex: 1; border-radius: 8px; padding: 12px;
+  flex: 1; border-radius: 8px; padding: 12px; min-height: 44px;
   font-size: 13px; font-weight: 900; cursor: pointer; border: none;
 }
 .btn-kaydet { background: #16a085; color: #fff; }
 .btn-kaydet--tehlike { background: #c0392b; }
-.btn-vazgec { background: #f1f3f5; color: #44494f; }
+.btn-vazgec { background: #c0392b; color: #fff; }
 
 .picker-item {
   width: 100%; text-align: left;

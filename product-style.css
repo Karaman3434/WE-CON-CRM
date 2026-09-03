@@ -145,11 +145,12 @@ body {
 }
 .birlestir-vazgec-btn {
   flex: 1;
-  background: #eef1f5;
-  color: #2d3540;
+  background: #c0392b;
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 12px;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -326,8 +327,8 @@ body {
   border-collapse: collapse;
 }
 .data-table th {
-  background: #cfe2f3;
-  color: #3569b8;
+  background: #c3dcf4;
+  color: #0c447c;
   font-size: 13px;
   font-weight: 900;
   padding: 10px 6px;

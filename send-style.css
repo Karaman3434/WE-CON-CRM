@@ -300,11 +300,11 @@
 }
 .sheet-buton-satir { display: flex; gap: 8px; margin-top: 16px; }
 .btn-kaydet, .btn-vazgec {
-  flex: 1; border-radius: 8px; padding: 12px;
+  flex: 1; border-radius: 8px; padding: 12px; min-height: 44px;
   font-size: 13px; font-weight: 900; cursor: pointer; border: none;
 }
 .btn-kaydet { background: #16a085; color: #fff; }
-.btn-vazgec { background: #f1f3f5; color: #44494f; }
+.btn-vazgec { background: #c0392b; color: #fff; }
 
 .tablo-kopyala-btn {
   width: 100%;

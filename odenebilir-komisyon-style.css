@@ -77,7 +77,7 @@
 
 .ok-giris-tablo { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 12px; }
 .ok-giris-tablo th {
-  background: #cfe2f3;
+  background: #c3dcf4;
   color: #0c447c;
   padding: 6px 4px;
   font-size: 9px;
@@ -130,7 +130,7 @@
 
 .ok-fark-tablo { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 10px; }
 .ok-fark-tablo th {
-  background: #cfe2f3;
+  background: #c3dcf4;
   color: #0c447c;
   padding: 6px 4px;
   font-size: 9px;

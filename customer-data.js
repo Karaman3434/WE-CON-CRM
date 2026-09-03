@@ -63,6 +63,10 @@ var CustomerData = (function(){
     try{ localStorage.setItem(SECILI_MUSTERI_KEY, JSON.stringify(musteri)); }catch(e){}
   }
 
+  function secimiKaldir(){
+    try{ localStorage.removeItem(SECILI_MUSTERI_KEY); }catch(e){}
+  }
+
   function seciliyiOku(){
     try{
       var v = localStorage.getItem(SECILI_MUSTERI_KEY);
@@ -505,6 +509,7 @@ var CustomerData = (function(){
     listeDegistiginde: listeDegistiginde,
     ara: ara,
     sec: sec,
+    secimiKaldir: secimiKaldir,
     seciliyiOku: seciliyiOku,
     uzunluk: function(){ return liste.length; },
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,

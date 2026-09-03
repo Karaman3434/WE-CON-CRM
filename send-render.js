@@ -77,10 +77,10 @@ function mesajMetniOlustur(musteri, sepet, tip, kanal){
       if(tip === "numune") govde += tekUrunMu ? "Sizinle paylaştığım ürün ekte, NUMUNE olarak gönderilecektir.\n" : "Sizinle paylaştığım ürünler ekte, NUMUNE olarak gönderilecektir.\n";
       else govde += tekUrunMu ? "İstediğiniz ürün için ürün bilgi ve fiyatını ekte paylaştım.\n" : "İstediğiniz ürünler için ürün bilgi ve fiyatını ekte paylaştım.\n";
     } else {
-      if(tip === "siparis") govde += "Bilgilerini paylaştığım Firma için SİPARİŞİN\nişleme alınmasını rica ederim.\n";
-      else if(tip === "proforma") govde += "Bilgilerini paylaştığım Firma için PROFORMA FATURA göndermenizi rica ederim.\n";
-      else if(tip === "numune") govde += "Bilgilerini paylaştığım Firma için NUMUNE göndermenizi rica ederim.\n";
-      else govde += "Bilgilerini paylaştığım Firma için FİYAT TEKLİFİ göndermenizi rica ederim.\n";
+      if(tip === "siparis") govde += "Bilgilerini paylaştığım Firma için SİPARİŞİ\nişleme almanızı rica ederim.\n";
+      else if(tip === "proforma") govde += "Bilgilerini paylaştığım Firma için PROFORMAYI göndermenizi rica ederim.\n";
+      else if(tip === "numune") govde += "Bilgilerini paylaştığım Firma için NUMUNEYİ göndermenizi rica ederim.\n";
+      else govde += "Bilgilerini paylaştığım Firma için FİYAT TEKLİFİNİ göndermenizi rica ederim.\n";
       var TIP_ETIKET3 = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
       govde += TIP_ETIKET3[tip] + " bilgi formu ektedir. BİLGİNİZE.\n";
     }
@@ -318,6 +318,15 @@ function whatsappOnizlemeAc(){
 
 function gonderTiklandi(kanal, ozelKonu){
   try{
+    // Gönderim TETİKLENİR tetiklenmez kalıcı durumu temizle (sayfa açık
+    // kalıp diğer kanaldan da göndermeye devam edebilsin diye gonderBaglam
+    // hâlâ bellekte duruyor — ama localStorage'daki müşteri/sepet/tip artık
+    // "bitmiş" sayılır, sonraki işleme hiçbir şey sızmasın).
+    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+    try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
+
     var metin = document.getElementById("gonderMetin").value;
     var g = gonderBaglam;
     var TIP_ETIKET4 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};

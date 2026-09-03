@@ -88,11 +88,12 @@
 }
 .tip-secim-vazgec-btn {
   width: 100%;
-  background: #fff;
-  color: #2d3540;
-  border: 2px solid #cbd5e1;
+  background: #c0392b;
+  color: #fff;
+  border: none;
   border-radius: 8px;
   padding: 12px;
+  min-height: 44px;
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
@@ -163,11 +164,12 @@
 }
 .birlestir-vazgec-btn {
   width: 100%;
-  background: #eef1f5;
-  color: #2d3540;
+  background: #c0392b;
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 12px;
+  min-height: 44px;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -379,17 +381,18 @@
   width: 100%;
 }
 .duzenle-kapat-btn-kucuk {
-  background: #fdeaea;
-  color: #c0392b;
-  border: 2px solid #c0392b;
+  background: #c0392b;
+  color: #fff;
+  border: none;
   border-radius: 6px;
   padding: 8px;
+  min-height: 44px;
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
 .duzenle-kaydet-btn-kucuk {
-  background: #16a34a;
+  background: #16a085;
   color: #ffffff;
   border: none;
   border-radius: 6px;

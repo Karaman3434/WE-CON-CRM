@@ -31,10 +31,11 @@
   font-size: 22px; font-weight: 900; color: #003a70; padding: 0;
 }
 .hc-temizle-buton {
-  background: #fff1f0;
-  border: 2.5px solid #c0392b;
+  background: #c0392b;
+  border: none;
   border-radius: 12px;
-  color: #c0392b;
+  color: #fff;
+  min-height: 44px;
   font-weight: 900;
   font-size: 13px;
   cursor: pointer;
@@ -145,11 +146,11 @@
 }
 .hc-kapat-buton {
   flex: 1; display: flex; align-items: center; justify-content: center;
-  background: #fff1f0; color: #c0392b; border: 2.5px solid #c0392b;
-  padding: 12px; font-size: 13px; font-weight: 900; border-radius: 12px;
+  background: #c0392b; color: #fff; border: none;
+  padding: 12px; min-height: 44px; font-size: 13px; font-weight: 900; border-radius: 12px;
   text-decoration: none; cursor: pointer;
 }
 .hc-listeye-ekle-buton {
-  flex: 2; background: #f0f7ff; color: #003a70; border: 2.5px solid #3569b8;
-  padding: 12px; font-size: 14px; font-weight: 900; border-radius: 12px; cursor: pointer;
+  flex: 2; background: #003a70; color: #fff; border: none;
+  padding: 12px; min-height: 44px; font-size: 14px; font-weight: 900; border-radius: 12px; cursor: pointer;
 }

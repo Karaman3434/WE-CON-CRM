@@ -326,8 +326,15 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnSepetKaydet").onclick = function(){ kaydetTiklandi("kaydet"); };
   document.getElementById("btnSepetGonder").onclick = function(){ kaydetTiklandi("gonder"); };
   document.getElementById("btnSepetIptal").onclick = function(){
-    if(!confirm("Bu işlemi iptal edip sepetteki TÜM ürünleri kaldırmak istediğinden emin misin? Bu geri alınamaz.")) return;
+    if(!confirm("Bu işlemi iptal edip sepetteki TÜM ürünleri ve seçili müşteriyi kaldırmak istediğinden emin misin? Bu geri alınamaz.")) return;
     localStorage.setItem("weiconv2_sepet", "[]");
+    CustomerData.secimiKaldir();
+    try{
+      localStorage.removeItem("weiconv2_onceden_secilen_tip");
+      localStorage.removeItem("weiconv2_hesapla_duzenle_idx");
+      localStorage.removeItem("weiconv2_ilerlet_kaynak");
+      localStorage.removeItem("weiconv2_islem_yap_akisi");
+    }catch(e){}
     window.location.href = "home.html";
   };
 

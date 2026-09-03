@@ -140,22 +140,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fdeaea;
-  color: #c0392b;
-  border: 2px solid #c0392b;
+  background: #c0392b;
+  color: #fff;
+  border: none;
   border-radius: 8px;
   padding: 12px;
+  min-height: 44px;
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
   text-decoration: none;
 }
 .form-kaydet-btn {
-  background: #e0730f;
+  background: #16a085;
   color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 12px;
+  min-height: 44px;
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
