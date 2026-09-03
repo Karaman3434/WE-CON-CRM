@@ -1,12 +1,20 @@
 <!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.030926.1537.103 — kacan-satislar.html -->
+<!--
+  Kaçan (kaçtı olarak işaretlenmiş) kayıtların TAMAMI, ay sınırı olmadan.
+  Az sayıda olduğu için ayrı bir sayfada, istenince bakılan bir yerde
+  tutuluyor — Raporlar'daki büyük kutulardan ve satış tablolarından
+  bilerek çıkarıldı.
+-->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — Görevlerim</title>
+<title>WEICON ASİST — Kaçan Satışlar</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.030926.1158.98">
+<link rel="stylesheet" href="home-style.css?v=WG.030926.1537.103">
 <link rel="stylesheet" href="reports-style.css?v=WG.030926.1537.103">
+<link rel="stylesheet" href="satis-listesi-style.css">
 </head>
 <body>
 
@@ -22,35 +30,32 @@
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 </div>
-<div class="rota-etiketi">Raporlar › <b>Görevlerim</b></div>
+<div class="rota-etiketi">Raporlar › <b>Kaçan Satışlar</b></div>
 
 <main class="sayfa">
 
-  <div class="gorev-ekle-kutu">
-    <input type="text" id="gorevMusteri" placeholder="Müşteri / konu">
-    <input type="text" id="gorevAciklama" placeholder="Görev açıklaması">
-    <div class="gorev-tarih-satir">
-      <input type="date" id="gorevTarih">
-      <input type="time" id="gorevSaat">
-    </div>
-    <button class="gorev-ekle-buton" id="btnGorevEkle">+ Görev Ekle</button>
+  <div class="sl-ust-satir">
+    <div class="sl-baslik" style="color:#c0392b;margin-bottom:0;">❌ Kaçan Satışlar</div>
+    <button class="sl-siralama-btn" id="btnSiralama">Yeni → Eski ⇅</button>
   </div>
-  <div class="gorev-arama-kutusu">
-    <input type="text" id="gorevAra" placeholder="Görevlerde ara (müşteri/açıklama)..." autocomplete="off">
-  </div>
-  <div id="gorevListesiKapsayici"></div>
-  <p class="bos-mesaj" id="gorevBosMesaj" hidden>Henüz görev yok.</p>
+
+  <table class="sl-tablo sl-tablo--kacan">
+    <thead><tr><th style="width:10%;">#</th><th>Müşteri</th><th style="width:32%;">Tarih</th></tr></thead>
+    <tbody id="ksListe"></tbody>
+  </table>
+
+  <p class="bos-mesaj" id="ksBos" hidden>Hiç kaçan işaretli kayıt yok.</p>
 
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.030926.0753.97"></script>
+<script src="auth.js?v=WG.030926.1537.103"></script>
 <script src="ust-sabit-olcum.js?v=WG.020926.1338.87"></script>
 <script src="reports-data.js?v=WG.030926.1537.103"></script>
-<script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="gorevler-render.js?v=WG.020926.1338.87"></script>
+<script src="kacan-satislar-render.js"></script>
 </body>
 </html>

@@ -461,6 +461,38 @@ var ReportsData = (function(){
     return true;
   }
 
+  // "Bugünün Satışları" / "Bu Ayın Satışları" ekranları için — sadece
+  // SİPARİŞ (gerçekleşmiş satış) kayıtlarını, seçilen kapsama göre
+  // filtreleyip en yeniden en eskiye sıralar.
+  function satislarListele(kapsam){
+    var simdi = new Date();
+    var gunBasiTs = new Date(simdi.getFullYear(), simdi.getMonth(), simdi.getDate()).getTime();
+    var ayBasiTs = new Date(simdi.getFullYear(), simdi.getMonth(), 1).getTime();
+    var esikTs = kapsam === "bugun" ? gunBasiTs : ayBasiTs;
+    return tumSiparisler()
+      .filter(function(k){ return (k.ts||0) >= esikTs; })
+      .map(function(k){
+        var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+        return {tip:"siparis", ts:k.ts, kod:k.kod, musteri:k.musteri, sehir:k.sehir||"", toplam:toplam};
+      })
+      .sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+  }
+
+  // "Kaçan Satışlar" ekranı için — ay sınırı OLMADAN, tüm zamanlardaki
+  // kaçan-işaretli kayıtları en yeniden en eskiye sıralar.
+  function tumKacanlar(siralama){
+    var kacanlar = [];
+    ["siparis","teklif","proforma","numune"].forEach(function(tip){
+      (arsiv[tip]||[]).forEach(function(k){
+        if(k.durum !== "kacan") return;
+        var tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+        kacanlar.push({tip:tip, ts:k.ts, kod:k.kod, musteri:k.musteri, sehir:k.sehir||"", tarih:k.tarih, tutar:tutar});
+      });
+    });
+    kacanlar.sort(function(a,b){ return siralama==="eski" ? (a.ts||0)-(b.ts||0) : (b.ts||0)-(a.ts||0); });
+    return kacanlar;
+  }
+
   return {
     baslat: baslat,
     arsivDegistiginde: arsivDegistiginde,
@@ -477,6 +509,8 @@ var ReportsData = (function(){
     enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler,
     kaydiKacanIsaretle: kaydiKacanIsaretle,
     kacanOzetBuAy: kacanOzetBuAy,
+    satislarListele: satislarListele,
+    tumKacanlar: tumKacanlar,
     kaydiSil: kaydiSil,
     kayitlariBirlestir: kayitlariBirlestir,
     musteriUrunGecmisi: musteriUrunGecmisi,

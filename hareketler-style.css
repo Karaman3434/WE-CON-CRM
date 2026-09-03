@@ -47,3 +47,4 @@
 .hareketler-tile--avans .hareketler-tile-baslik { color: #8e44ad; }
 
 .hareketler-tile-satir + .hareketler-tile-satir { margin-top: 12px; }
+.hareketler-tile-satir--tek { grid-template-columns: 1fr; }

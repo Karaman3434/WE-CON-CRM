@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: V2-260826.0230 — bildirimler.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.030926.1537.103 — satis-listesi.html -->
 <!--
-  WEICON ASİST — BİLDİRİM LİSTESİ v1
-  ======================================
-  Eski uygulamanın bildirimListesiModal'ıyla BİREBİR aynı: ▶️ Açık Süreçler
-  (15+/30+/33+ gün eşiği, seviye renkli sol çizgi), 📆 Ziyaret Hatırlatmaları,
-  📌 Görevler. Ana Sayfa'daki bildirim banner'ından buraya gelinir.
+  Ana Sayfa'daki "Bugünün Satışları" ve "Bu Ay Satışım" kartlarının
+  ikisi de bu SAME sayfaya gelir — hangisine dokunulduğu ?kapsam=bugun
+  veya ?kapsam=ay ile belirlenir. Sadece SİPARİŞ (gerçekleşmiş satış)
+  kayıtlarını listeler.
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — Bildirimler</title>
+<title>WEICON ASİST — Satışlarım</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="bildirimler-style.css">
+<link rel="stylesheet" href="home-style.css?v=WG.030926.1537.103">
+<link rel="stylesheet" href="reports-style.css?v=WG.030926.1537.103">
+<link rel="stylesheet" href="satis-listesi-style.css">
 </head>
 <body>
 
@@ -30,22 +30,29 @@
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 </div>
-<div class="rota-etiketi"><b>Bildirimler</b></div>
+<div class="rota-etiketi">Ana Sayfa › <b id="rotaBaslik">Satışlarım</b></div>
 
 <main class="sayfa">
-  <div id="bildirimIcerik"></div>
-  <p class="bos-mesaj" id="bildirimBosMesaj" hidden>Takip gerektiren konu yok. 🎉</p>
+
+  <div class="sl-baslik" id="slBaslik">📅 Bugünün Satışları</div>
+
+  <table class="sl-tablo">
+    <thead><tr><th style="width:10%;">#</th><th>Müşteri</th><th style="width:28%;">Toplam</th></tr></thead>
+    <tbody id="slListe"></tbody>
+  </table>
+
+  <p class="bos-mesaj" id="slBos" hidden>Bu kapsamda satış kaydı yok.</p>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=WG.030926.0753.97"></script>
+<script src="auth.js?v=WG.030926.1537.103"></script>
 <script src="ust-sabit-olcum.js?v=WG.020926.1338.87"></script>
-<script src="customer-data.js?v=WG.030926.1158.98"></script>
 <script src="reports-data.js?v=WG.030926.1537.103"></script>
-<script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="bildirimler-render.js?v=WG.020926.1338.87"></script>
+<script src="satis-listesi-render.js"></script>
 </body>
 </html>

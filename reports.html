@@ -12,7 +12,7 @@
 <title>WEICON ASİST — İstatistikler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="reports-style.css?v=WG.030926.1247.101">
+<link rel="stylesheet" href="reports-style.css?v=WG.030926.1537.103">
 </head>
 <body>
 
@@ -71,21 +71,13 @@
     <button class="ay-detay-kapat-btn" id="btnAyDetayKapat">✕ Kapat</button>
   </section>
 
-  <div class="istatistik-bolum-baslik">❌ Kaçan Siparişler (Bu Ay)</div>
-  <div class="kacan-ozet-grid">
-    <div class="kacan-ozet-kart">
-      <div class="kacan-ozet-baslik">Kaçan İşlem</div>
-      <div class="kacan-ozet-deger" id="istKacanSayi">0</div>
-    </div>
-    <div class="kacan-ozet-kart">
-      <div class="kacan-ozet-baslik">Kaybedilen Tutar</div>
-      <div class="kacan-ozet-deger" id="istKacanTutar">0,00 EUR</div>
-    </div>
+  <div class="raporlar-kisayol-satiri">
+    <a class="raporlar-kisayol-btn" href="#sonIslemlerAnkraj">📋 Son İşlemler</a>
+    <a class="raporlar-kisayol-btn raporlar-kisayol-btn--kacan" href="kacan-satislar.html">❌ Kaçan İşlemler</a>
   </div>
-  <div id="istKacanListe"></div>
 
   <!-- SON İŞLEMLER — eski uygulamadaki gibi bu sayfanın alt bölümü -->
-  <div class="son-islemler-baslik">🕘 Son İşlemler</div>
+  <div class="son-islemler-baslik" id="sonIslemlerAnkraj">🕘 Son İşlemler</div>
 
   <div class="islem-filtre-satiri">
     <input type="text" id="islemAra" placeholder="Müşteri adıyla ara..." autocomplete="off">
@@ -111,9 +103,9 @@
 <script src="ust-sabit-olcum.js?v=WG.020926.1338.87"></script>
 <script src="ayarlar-sync.js?v=WG.020926.1338.87"></script>
 <script src="customer-data.js?v=WG.030926.1158.98"></script>
-<script src="reports-data.js?v=WG.030926.1332.102"></script>
+<script src="reports-data.js?v=WG.030926.1537.103"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="reports-render.js?v=WG.030926.1247.101"></script>
+<script src="reports-render.js?v=WG.030926.1537.103"></script>
 </body>
 </html>

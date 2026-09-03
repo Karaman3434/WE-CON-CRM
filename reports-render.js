@@ -144,18 +144,6 @@ function istatistikleriCiz(){
     document.getElementById("istAylikListe").querySelectorAll("tr").forEach(function(tr, i){
       tr.onclick = function(){ ayDetayiniAc(ozet.aylar[i]); };
     });
-
-    var kacanOzet = ReportsData.kacanOzetBuAy();
-    document.getElementById("istKacanSayi").textContent = kacanOzet.kacanlar.length;
-    document.getElementById("istKacanTutar").textContent = fmt(kacanOzet.toplamTutar) + " EUR";
-    document.getElementById("istKacanListe").innerHTML = kacanOzet.kacanlar.length === 0
-      ? "<p class='bos-mesaj'>Bu ay kaçan işaretli kayıt yok.</p>"
-      : kacanOzet.kacanlar.map(function(k){
-          return "<div class='kacan-satir'>"
-            + "<div class='kacan-satir-ust'><span>" + htmlEsc(k.kayit.musteri) + "</span><span>" + fmt(k.tutar) + " EUR</span></div>"
-            + "<div class='kacan-satir-alt'>" + (k.kayit.kacanRakip ? "Rakip: "+htmlEsc(k.kayit.kacanRakip)+" · " : "") + (k.kayit.kacanSebep||"Sebep belirtilmedi") + "</div>"
-            + "</div>";
-        }).join("");
   }catch(e){ hataGoster("İstatistikler çizilemedi: " + e.message); }
 }
 

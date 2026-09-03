@@ -75,6 +75,24 @@
   flex-shrink: 0;
   white-space: nowrap;
 }
+
+.raporlar-kisayol-satiri { display: flex; gap: 8px; margin: 14px 0; }
+.raporlar-kisayol-btn {
+  flex: 1;
+  text-align: center;
+  background: #eaf2fc;
+  color: #003a70;
+  border-radius: 10px;
+  padding: 12px 6px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.raporlar-kisayol-btn--kacan { background: #fdeceb; color: #c0392b; }
 .islem-kod-rozet--buyuk {
   font-size: 13px;
   padding: 8px 14px;
