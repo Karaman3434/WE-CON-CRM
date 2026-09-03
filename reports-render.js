@@ -195,19 +195,21 @@ function islemleriCiz(){
       if(kacanMi) durumEk = " — ❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"");
       if(k.revizeZamani) durumEk += " — 🔄 REVİZE";
       return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
-        + "<div class='islem-musteri-satir'>"
-        + "<span class='islem-musteri-buyuk'>" + htmlEsc(k.musteri) + "</span>"
+        + "<div class='islem-satir-2col'>"
+        + "<div class='islem-sol'>"
+        + "<button class='islem-musteri-link' data-belge-i='" + i + "'>" + htmlEsc(k.musteri) + "</button>"
         + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
+        + "</div>"
+        + "<div class='islem-sag'>"
+        + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
         + "<span class='islem-kod-rozet islem-kod-rozet--buyuk' data-belge-i='" + i + "' style='background:" + renk + ";'>" + kod + "</span>"
         + "</div>"
-        + "<div class='islem-rozet-satir'>"
-        + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
-        + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
         + "</div>"
+        + (durumEk ? "<div class='islem-durum-ek'>" + durumEk + "</div>" : "")
         + "</div>";
     }).join("");
 
-    kapsayici.querySelectorAll(".islem-kod-rozet").forEach(function(btn){
+    kapsayici.querySelectorAll(".islem-kod-rozet, .islem-musteri-link").forEach(function(btn){
       btn.onclick = function(){
         var i = parseInt(this.getAttribute("data-belge-i"), 10);
         var k = liste[i];

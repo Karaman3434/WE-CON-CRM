@@ -102,8 +102,9 @@
   border-bottom: 1px solid #e2ecf6;
 }
 .belge-musteri-baslik--logolu .belge-logo-mini {
-  background: #f4f6f9;
-  color: #556170;
+  background: #003a70;
+  color: #ffffff;
+  font-weight: 900;
   font-size: 9px;
   letter-spacing: 1px;
   padding: 3px 8px;

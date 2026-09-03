@@ -213,25 +213,27 @@ body {
   opacity: .8;
 }
 
-.kart--koyu-mavi { background: #fff; border-color: #dce8f7; }
-.kart--koyu-mavi .kart-baslik { color: #556170; }
-.kart--koyu-mavi .kart-deger { color: #003a70; }
-.kart--koyu-mavi .kart-etiket { color: #8b95a1; }
+.kart--koyu-mavi { background: #003a70; border-color: #003a70; }
+.kart--koyu-mavi .kart-baslik { color: #a9c6e4; }
+.kart--koyu-mavi .kart-deger { color: #fff; }
+.kart--koyu-mavi .kart-etiket { color: #a9c6e4; }
+.kart--koyu-mavi .kart-tl-alt { color: #a9c6e4; }
 
-.kart--koyu-yesil { background: #fff; border-color: #d6ecdf; }
-.kart--koyu-yesil .kart-baslik { color: #556170; }
-.kart--koyu-yesil .kart-deger { color: #16a085; }
-.kart--koyu-yesil .kart-etiket { color: #8b95a1; }
+.kart--koyu-yesil { background: #0e6b58; border-color: #0e6b58; }
+.kart--koyu-yesil .kart-baslik { color: #a8e6d4; }
+.kart--koyu-yesil .kart-deger { color: #fff; }
+.kart--koyu-yesil .kart-etiket { color: #a8e6d4; }
+.kart--koyu-yesil .kart-tl-alt { color: #a8e6d4; }
 
-.kart--acik-mavi { background: #fff; border-color: #dce8f7; }
-.kart--acik-mavi .kart-baslik { color: #556170; }
+.kart--acik-mavi { background: #eaf2fc; border-color: #dce8f7; }
+.kart--acik-mavi .kart-baslik { color: #3569b8; }
 .kart--acik-mavi .kart-deger { color: #003a70; }
-.kart--acik-mavi .kart-etiket { color: #8b95a1; }
+.kart--acik-mavi .kart-etiket { color: #3569b8; }
 
-.kart--acik-yesil { background: #fff; border-color: #d6ecdf; }
-.kart--acik-yesil .kart-baslik { color: #556170; }
-.kart--acik-yesil .kart-deger { color: #16a085; }
-.kart--acik-yesil .kart-etiket { color: #8b95a1; }
+.kart--acik-yesil { background: #e9f7ee; border-color: #d6ecdf; }
+.kart--acik-yesil .kart-baslik { color: #16a085; }
+.kart--acik-yesil .kart-deger { color: #0e6b58; }
+.kart--acik-yesil .kart-etiket { color: #16a085; }
 
 /* ---------- Ayraç ---------- */
 .ayrac {
@@ -281,8 +283,11 @@ body {
 .menu-kart--yesil { background: #e9f7ee; border-color: #1f9d55; }
 .menu-kart--yesil .menu-baslik { color: #16a34a; }
 
-.menu-kart--turuncu { background: #eaf2fc; border-color: #3569b8; }
-.menu-kart--turuncu .menu-baslik { color: #003a70; }
+.menu-kart--lacivert { background: #e6ecf3; border-color: #003a70; }
+.menu-kart--lacivert .menu-baslik { color: #003a70; }
+
+.menu-kart--gri { background: #f1f3f6; border-color: #8b95a1; }
+.menu-kart--gri .menu-baslik { color: #2d3540; }
 
 .menu-grid--tek { grid-template-columns: 1fr; }
 .menu-kart--genis { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; }
