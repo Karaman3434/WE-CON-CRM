@@ -472,7 +472,10 @@ var ReportsData = (function(){
     return tumSiparisler()
       .filter(function(k){ return (k.ts||0) >= esikTs; })
       .map(function(k){
-        var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+        var toplam = (k.urunler||[]).reduce(function(s,u){
+          var satirToplam = u.toplamEuro !== undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
+          return s + satirToplam;
+        }, 0);
         return {tip:"siparis", ts:k.ts, kod:k.kod, musteri:k.musteri, sehir:k.sehir||"", toplam:toplam};
       })
       .sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
@@ -485,7 +488,10 @@ var ReportsData = (function(){
     ["siparis","teklif","proforma","numune"].forEach(function(tip){
       (arsiv[tip]||[]).forEach(function(k){
         if(k.durum !== "kacan") return;
-        var tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+        var tutar = (k.urunler||[]).reduce(function(s,u){
+          var satirToplam = u.toplamEuro !== undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
+          return s + satirToplam;
+        }, 0);
         kacanlar.push({tip:tip, ts:k.ts, kod:k.kod, musteri:k.musteri, sehir:k.sehir||"", tarih:k.tarih, tutar:tutar});
       });
     });
