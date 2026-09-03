@@ -15,8 +15,11 @@
   cursor: pointer;
   border-radius: 10px;
   padding: 16px 14px;
+  min-height: 64px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: flex-start;
   gap: 4px;
   border: 1px solid transparent;
@@ -31,20 +34,24 @@
   letter-spacing: .3px;
 }
 
-.hareketler-tile--satis { background: #e9f7ee; border-color: #1f9d55; }
-.hareketler-tile--satis .hareketler-tile-baslik { color: #16a34a; }
+.hareketler-tile--satis,
+.hareketler-tile--musteriler,
+.hareketler-tile--komisyon,
+.hareketler-tile--maas,
+.hareketler-tile--avans {
+  background: #eaf2fc;
+  border-color: #3569b8;
+}
+.hareketler-tile--satis .hareketler-tile-baslik,
+.hareketler-tile--musteriler .hareketler-tile-baslik,
+.hareketler-tile--komisyon .hareketler-tile-baslik,
+.hareketler-tile--maas .hareketler-tile-baslik,
+.hareketler-tile--avans .hareketler-tile-baslik {
+  color: #003a70;
+}
 
-.hareketler-tile--musteriler { background: #eaf2fc; border-color: #3569b8; }
-.hareketler-tile--musteriler .hareketler-tile-baslik { color: #2563eb; }
-
-.hareketler-tile--komisyon { background: #f5eafc; border-color: #8e44ad; }
-.hareketler-tile--komisyon .hareketler-tile-baslik { color: #8e44ad; }
-
-.hareketler-tile--maas { background: #fff3e6; border-color: #b7601f; }
-.hareketler-tile--maas .hareketler-tile-baslik { color: #a8590c; }
-
-.hareketler-tile--avans { background: #f5eafc; border-color: #8e44ad; }
-.hareketler-tile--avans .hareketler-tile-baslik { color: #8e44ad; }
+.hareketler-tile--tehlike { background: #fdeceb; border-color: #c0392b; }
+.hareketler-tile--tehlike .hareketler-tile-baslik { color: #c0392b; }
 
 .hareketler-tile-satir + .hareketler-tile-satir { margin-top: 12px; }
 .hareketler-tile-satir--tek { grid-template-columns: 1fr; }

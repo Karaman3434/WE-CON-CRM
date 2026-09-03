@@ -185,6 +185,8 @@ body {
   border-radius: 10px;
   padding: 16px 12px;
   border: 1px solid transparent;
+  min-height: 88px;
+  box-sizing: border-box;
 }
 .kart-baslik {
   font-size: 12px;
@@ -211,25 +213,25 @@ body {
   opacity: .8;
 }
 
-.kart--koyu-mavi { background: #0e2038; }
-.kart--koyu-mavi .kart-baslik { color: #7fd6ff; }
-.kart--koyu-mavi .kart-deger { color: #00d9ff; }
-.kart--koyu-mavi .kart-etiket { color: #7fd6ff; }
+.kart--koyu-mavi { background: #fff; border-color: #dce8f7; }
+.kart--koyu-mavi .kart-baslik { color: #556170; }
+.kart--koyu-mavi .kart-deger { color: #003a70; }
+.kart--koyu-mavi .kart-etiket { color: #8b95a1; }
 
-.kart--koyu-yesil { background: #12291a; }
-.kart--koyu-yesil .kart-baslik { color: #a8ffb0; }
-.kart--koyu-yesil .kart-deger { color: #39ff14; }
-.kart--koyu-yesil .kart-etiket { color: #a8ffb0; }
+.kart--koyu-yesil { background: #fff; border-color: #d6ecdf; }
+.kart--koyu-yesil .kart-baslik { color: #556170; }
+.kart--koyu-yesil .kart-deger { color: #16a085; }
+.kart--koyu-yesil .kart-etiket { color: #8b95a1; }
 
-.kart--acik-mavi { background: #eaf2fc; border-color: #3569b8; }
-.kart--acik-mavi .kart-baslik { color: #2d3540; }
+.kart--acik-mavi { background: #fff; border-color: #dce8f7; }
+.kart--acik-mavi .kart-baslik { color: #556170; }
 .kart--acik-mavi .kart-deger { color: #003a70; }
-.kart--acik-mavi .kart-etiket { color: #3569b8; }
+.kart--acik-mavi .kart-etiket { color: #8b95a1; }
 
-.kart--acik-yesil { background: #e9f7ee; border-color: #1f9d55; }
-.kart--acik-yesil .kart-baslik { color: #2d3540; }
-.kart--acik-yesil .kart-deger { color: #0e6b34; }
-.kart--acik-yesil .kart-etiket { color: #1f9d55; }
+.kart--acik-yesil { background: #fff; border-color: #d6ecdf; }
+.kart--acik-yesil .kart-baslik { color: #556170; }
+.kart--acik-yesil .kart-deger { color: #16a085; }
+.kart--acik-yesil .kart-etiket { color: #8b95a1; }
 
 /* ---------- Ayraç ---------- */
 .ayrac {
@@ -248,10 +250,13 @@ body {
 .menu-kart {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: flex-start;
   gap: 4px;
   border-radius: 10px;
   padding: 16px 14px;
+  min-height: 64px;
+  box-sizing: border-box;
   border: 1px solid transparent;
   cursor: pointer;
   text-align: left;
@@ -276,8 +281,8 @@ body {
 .menu-kart--yesil { background: #e9f7ee; border-color: #1f9d55; }
 .menu-kart--yesil .menu-baslik { color: #16a34a; }
 
-.menu-kart--turuncu { background: #fff3e6; border-color: #b7601f; }
-.menu-kart--turuncu .menu-baslik { color: #a8590c; }
+.menu-kart--turuncu { background: #eaf2fc; border-color: #3569b8; }
+.menu-kart--turuncu .menu-baslik { color: #003a70; }
 
 .menu-grid--tek { grid-template-columns: 1fr; }
 .menu-kart--genis { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; }
