@@ -1,0 +1,89 @@
+/* cihazlar-style.css */
+
+.sayfa { padding: 8px 14px 24px; }
+
+.cz-bu-cihaz-kutu {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.cz-bu-cihaz-etiket { font-size: 11px; font-weight: 900; color: #556170; letter-spacing: .3px; }
+.cz-bu-cihaz-satir { display: flex; gap: 8px; margin-top: 8px; }
+.cz-bu-cihaz-satir input {
+  flex: 1;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  color: #111;
+}
+.cz-bu-cihaz-satir input:focus { outline: none; border-color: #003a70; }
+.cz-bu-cihaz-kaydet-btn {
+  background: #003a70;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cz-bu-cihaz-ok { font-size: 12px; color: #0e6b34; font-weight: 700; margin-top: 6px; }
+
+.cz-sadece-s22-kutu {
+  background: #fff7ec;
+  border: 1px solid #f2d9ad;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  color: #7a5310;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.cz-yonetim-baslik { font-size: 15px; font-weight: 900; color: #2d3540; margin: 18px 0 10px; }
+
+.cz-kart {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.cz-kart-ust { display: flex; justify-content: space-between; align-items: center; }
+.cz-kart-ad { font-size: 15px; font-weight: 800; color: #111; }
+.cz-kart-rozet { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 20px; }
+.cz-kart-rozet--bu { background: #e6eef7; color: #003a70; }
+.cz-kart-rozet--engelli { background: #fdeaea; color: #c0392b; }
+.cz-kart-son-gorulme { font-size: 12px; color: #8b95a1; margin-top: 4px; }
+.cz-kart-alt { margin-top: 10px; }
+
+.cz-engelle-btn, .cz-kaldir-btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cz-engelle-btn { background: #fdeaea; color: #c0392b; }
+.cz-kaldir-btn { background: #e6f6ec; color: #0e6b34; }
+.cz-korumali-not { font-size: 12px; color: #8b95a1; font-style: italic; }
+
+.bos-mesaj { text-align: center; color: #8b95a1; font-size: 13px; padding: 20px; }
+
+.cz-pin-kutu {
+  max-width: 400px;
+  margin: 24px auto;
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-radius: 14px;
+  padding: 32px 24px;
+  text-align: center;
+}
+.cz-pin-kutu h1 { font-size: 20px; font-weight: 900; color: #003a70; margin-bottom: 6px; }
+.cz-pin-kutu .giris-hata { color: #c0392b; font-size: 13px; font-weight: 700; margin-top: 12px; }

@@ -29,9 +29,42 @@
   var PIN_KILIT_ESIK_MS = 30*60*1000;   // 30 dakika hareketsizlik -> PIN ekranı
   var TAM_GIRIS_ESIK_MS = 3*60*60*1000; // 3 saat hareketsizlik -> tam e-posta/şifre girişi
 
+  // ---- CİHAZ ENGELLEME (bkz. cihaz-data.js / cihazlar.html) ----
+  // Bu bölüm KASITLI OLARAK cihaz-data.js'e bağımlı değil — auth.js zaten
+  // TÜM sayfalarda yükleniyor, 28 ayrı HTML dosyasına yeni bir <script>
+  // eklemek yerine gereken minimum mantık burada kendi başına duruyor.
+  function cihazIdOku(){
+    try{
+      var id = localStorage.getItem("weicon_cihaz_id");
+      if(!id){
+        id = "c" + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+        localStorage.setItem("weicon_cihaz_id", id);
+      }
+      return id;
+    }catch(e){ return "bilinmeyen"; }
+  }
+  function cihazKaydiGuncelle(){
+    try{
+      var veri = { sonGorulme: Date.now() };
+      var yerelAd = localStorage.getItem("weicon_cihaz_adi");
+      if(yerelAd) veri.ad = yerelAd;
+      firebase.database().ref("cihazlar/" + cihazIdOku()).update(veri).catch(function(){});
+    }catch(e){}
+  }
+  // Çevrimdışıyken veya okuma başarısız olduğunda erişimi ENGELLEME —
+  // sadece Firebase açıkça "engelli:true" derse kilitle.
+  function cihazEngelliMi(geriBildir){
+    try{
+      firebase.database().ref("cihazlar/" + cihazIdOku() + "/engelli").once("value")
+        .then(function(snap){ geriBildir(snap.val() === true); })
+        .catch(function(){ geriBildir(false); });
+    }catch(e){ geriBildir(false); }
+  }
+
   var yol = window.location.pathname;
   var buSayfaLogin = yol.indexOf("login.html") >= 0;
   var buSayfaPin = yol.indexOf("pin.html") >= 0;
+  var buSayfaCihazEngelli = yol.indexOf("cihaz-engelli.html") >= 0;
 
   function aktiviteZamaniniGuncelle(){
     try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
@@ -92,11 +125,28 @@
         window.location.href = "pin.html";
         return;
       }
+      if(!buSayfaCihazEngelli){
+        cihazEngelliMi(function(engelli){
+          if(engelli){
+            firebase.auth().signOut().then(function(){
+              window.location.href = "cihaz-engelli.html";
+            });
+            return;
+          }
+          document.documentElement.style.visibility = "visible";
+          if(!buSayfaPin) aktiviteZamaniniGuncelle();
+          cihazKaydiGuncelle();
+          window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
+        });
+        return;
+      }
       document.documentElement.style.visibility = "visible";
       if(!buSayfaPin) aktiviteZamaniniGuncelle();
       window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
     } else {
-      if(!buSayfaLogin){
+      if(buSayfaCihazEngelli){
+        document.documentElement.style.visibility = "visible";
+      } else if(!buSayfaLogin){
         window.location.href = "login.html";
       } else {
         document.documentElement.style.visibility = "visible";

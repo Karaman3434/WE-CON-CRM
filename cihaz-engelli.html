@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.030926.0020.96 — cihaz-engelli.html -->
+<!--
+  Bu sayfa, "Cihazlarım" ekranından engellenmiş bir cihaz için son duraktır.
+  auth.js, bu cihazın engelli olduğunu fark ettiğinde ÖNCE oturumu kapatır,
+  SONRA buraya yönlendirir — bu yüzden burada tekrar giriş formu YOK,
+  sadece bilgilendirme var.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Cihaz Engellendi</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="cihaz-engelli-style.css">
+</head>
+<body>
+
+<main class="engelli-kutu">
+  <div class="logo">WEICON</div>
+  <div class="engelli-ikon">🚫</div>
+  <h1>Bu Cihaz Engellendi</h1>
+  <p>Bu cihaz "Cihazlarım" ekranından engellendiği için oturum kapatıldı.</p>
+  <p>Cihazı tekrar kullanmak istersen, başka bir cihazdan Menü → Cihazlarım bölümüne girip engeli kaldırman gerekiyor.</p>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="auth.js?v=WG.030926.0020.96"></script>
+</body>
+</html>

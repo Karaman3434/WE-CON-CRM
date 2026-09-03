@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.030926.0020.96 — cihazlar.html -->
+<!--
+  CİHAZLARIM
+  ============
+  Herkes (her cihaz) kendi adını buradan verebilir ("Bu Cihaz" kartı).
+  Ama cihaz YÖNETİMİ (listele + engelle/engeli kaldır) SADECE cihaz adı
+  tam olarak "Samsung S22" olan cihazdan yapılabilir — ve o cihazda da
+  önce AYRI bir PIN (uygulama kilidinden farklı) istenir. Bkz. cihaz-data.js.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Cihazlarım</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css">
+<link rel="stylesheet" href="pin-style.css">
+<link rel="stylesheet" href="cihazlar-style.css">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="menu.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+<div class="rota-etiketi">Menü › <b>Cihazlarım</b></div>
+
+<main class="sayfa">
+
+  <div class="cz-bu-cihaz-kutu">
+    <span class="cz-bu-cihaz-etiket">📱 BU CİHAZ</span>
+    <div class="cz-bu-cihaz-satir">
+      <input type="text" id="czBuCihazAdi" placeholder="Örn. Samsung S22, iPhone 13, iPad 9">
+      <button class="cz-bu-cihaz-kaydet-btn" id="btnCzAdKaydet">Kaydet</button>
+    </div>
+    <div class="cz-bu-cihaz-ok" id="czAdKaydedildi" hidden>✓ Kaydedildi</div>
+  </div>
+
+  <!-- SADECE S22 DEĞİLSE -->
+  <div class="cz-sadece-s22-kutu" id="czSadeceS22Notu" hidden>
+    🔒 Cihaz yönetimi (listeleme / engelleme) sadece "Samsung S22" adlı ana cihazdan yapılabilir.
+  </div>
+
+  <!-- S22 İSE — ÖNCE AYRI PIN -->
+  <div id="czPinAlani" hidden>
+    <div class="cz-pin-kutu">
+      <h1 id="czPinBaslik">🔒 Cihaz Yönetim PIN'i</h1>
+      <p class="pin-bilgi" id="czPinBilgi" hidden></p>
+      <div class="pin-noktalar" id="czPinNoktalar">
+        <span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span>
+      </div>
+      <input type="tel" id="czPinGizliInput" class="pin-gizli-input" maxlength="4" inputmode="numeric" autocomplete="off">
+      <p class="giris-hata" id="czPinHata" hidden>PIN hatalı, tekrar deneyin.</p>
+      <div class="pin-tus-grid" id="czPinTusGrid"></div>
+    </div>
+  </div>
+
+  <!-- PIN DOĞRULANDIKTAN SONRA -->
+  <div id="czYonetimAlani" hidden>
+    <div class="cz-yonetim-baslik">Kayıtlı Cihazlar</div>
+    <div id="czListe"></div>
+    <p class="bos-mesaj" id="czBos" hidden>Henüz hiçbir cihaz kayıt olmadı.</p>
+  </div>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js?v=WG.030926.0020.96"></script>
+<script src="ust-sabit-olcum.js?v=WG.020926.1338.87"></script>
+<script src="pin-utils.js?v=WG.020926.1318.86"></script>
+<script src="cihaz-data.js?v=WG.030926.0020.96"></script>
+<script src="hata-log.js?v=WG.020926.1338.87"></script>
+<script src="cihazlar-render.js?v=WG.030926.0020.96"></script>
+</body>
+</html>
