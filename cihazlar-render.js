@@ -204,7 +204,12 @@ function yonetimAlaniniGoster(){
   document.getElementById("czPinAlani").hidden = true;
   document.getElementById("czYonetimAlani").hidden = false;
   CihazData.tumCihazlariDinle(listeyiCiz);
+  if(!yonetimAlaniHazirlandiMi){
+    yonetimAlaniHazirlandiMi = true;
+    czErisimKoduAlaniniHazirla();
+  }
 }
+var yonetimAlaniHazirlandiMi = false;
 
 function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -263,6 +268,53 @@ function listeyiCiz(liste){
       };
     });
   }catch(e){ hataGoster("Cihaz listesi çizilemedi: " + e.message); }
+}
+
+/* ---------- Erişim Kodu (bağlantı sonu ?k=XXX) ---------- */
+function czGuncelLinkOlustur(kod){
+  try{
+    var taban = window.location.origin + window.location.pathname.replace(/[^/]*$/, "");
+    return taban + "home.html?k=" + encodeURIComponent(kod);
+  }catch(e){ return ""; }
+}
+
+function czLinkKutusunuCiz(kod){
+  var kutu = document.getElementById("czGuncelLinkKutusu");
+  if(!kod){ kutu.innerHTML = ""; return; }
+  var link = czGuncelLinkOlustur(kod);
+  kutu.innerHTML = "<div class='cz-link-kutusu'>"
+    + "<div class='cz-link-metin'>" + htmlEsc(link) + "</div>"
+    + "<button class='cz-link-kopyala-btn' id='btnCzLinkKopyala'>📋 Bağlantıyı Kopyala</button>"
+    + "</div>";
+  document.getElementById("btnCzLinkKopyala").onclick = function(){
+    navigator.clipboard.writeText(link).then(function(){
+      this.textContent = "✓ Kopyalandı";
+      var btn = this;
+      setTimeout(function(){ btn.textContent = "📋 Bağlantıyı Kopyala"; }, 2000);
+    }.bind(this)).catch(function(){ hataGoster("Kopyalanamadı, elle seçip kopyala."); });
+  };
+}
+
+function czErisimKoduAlaniniHazirla(){
+  try{
+    firebase.database().ref("erisimKodu/kod").on("value", function(snap){
+      var kod = snap.val();
+      document.getElementById("czErisimKoduInput").value = kod || "";
+      czLinkKutusunuCiz(kod);
+    });
+  }catch(e){ hataGoster("Erişim kodu okunamadı: " + e.message); }
+
+  document.getElementById("btnCzKoduKaydet").onclick = function(){
+    var kod = document.getElementById("czErisimKoduInput").value.trim();
+    if(!kod) return;
+    if(!confirm("Erişim kodu \"" + kod + "\" olarak değiştirilsin mi? Güncel kodu daha önce kullanmamış hiçbir cihaz artık giriş yapamayacak.")) return;
+    firebase.database().ref("erisimKodu").set({kod: kod, zaman: Date.now()}).then(function(){
+      var ok = document.getElementById("czKoduKaydedildi");
+      ok.hidden = false;
+      setTimeout(function(){ ok.hidden = true; }, 2500);
+      try{ localStorage.setItem("weicon_erisim_kodu_dogrulandi", kod); }catch(e){} // bu cihaz (S22) yeni kodu otomatik bilir
+    }).catch(function(err){ hataGoster("Kod kaydedilemedi: " + err.message); });
+  };
 }
 
 document.addEventListener("DOMContentLoaded", function(){

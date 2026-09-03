@@ -74,6 +74,31 @@
 .cz-kaldir-btn { background: #e6f6ec; color: #0e6b34; }
 .cz-korumali-not { font-size: 12px; color: #8b95a1; font-style: italic; }
 
+.cz-link-kutusu {
+  margin-top: 12px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.cz-link-metin {
+  font-size: 12px;
+  color: #003a70;
+  word-break: break-all;
+  font-family: monospace;
+}
+.cz-link-kopyala-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: #003a70;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .bos-mesaj { text-align: center; color: #8b95a1; font-size: 13px; padding: 20px; }
 
 .cz-pin-kutu {
