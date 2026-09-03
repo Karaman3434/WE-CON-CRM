@@ -207,14 +207,14 @@ function islemleriCiz(){
       if(kacanMi) durumEk = " — ❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"");
       if(k.revizeZamani) durumEk += " — 🔄 REVİZE";
       return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
-        + "<div class='islem-rozet-satir'>"
-        + "<span class='islem-kod-rozet islem-kod-rozet--buyuk' data-belge-i='" + i + "' style='background:" + renk + ";'>" + kod + "</span>"
-        + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
-        + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
-        + "</div>"
         + "<div class='islem-musteri-satir'>"
         + "<span class='islem-musteri-buyuk'>" + htmlEsc(k.musteri) + "</span>"
         + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
+        + "<span class='islem-kod-rozet islem-kod-rozet--buyuk' data-belge-i='" + i + "' style='background:" + renk + ";'>" + kod + "</span>"
+        + "</div>"
+        + "<div class='islem-rozet-satir'>"
+        + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
+        + (durumEk ? "<span class='islem-durum-ek'>" + durumEk + "</span>" : "")
         + "</div>"
         + "</div>";
     }).join("");
