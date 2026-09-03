@@ -424,7 +424,7 @@ var ReportsData = (function(){
     });
     localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));
     localStorage.setItem("weicon_secili_musteri", JSON.stringify({ad:kayit.musteri, sehir:kayit.sehir||"", id:kayit.musteriId||null}));
-    localStorage.setItem("weiconv2_ilerlet_kaynak", JSON.stringify({tip:kayit.tip, ts:kayit.ts, kod:kayit.kod||null, sonrakiAsamaSecenekleri:secenekler}));
+    localStorage.setItem("weiconv2_ilerlet_kaynak", JSON.stringify({tip:kayit.tip, ts:kayit.ts, kod:kayit.kod||null, tarih:kayit.tarih||null, sonrakiAsamaSecenekleri:secenekler}));
     if(secenekler.length === 1){
       localStorage.setItem("weiconv2_onceden_secilen_tip", secenekler[0]);
     } else {

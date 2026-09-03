@@ -25,6 +25,37 @@ function fmt(n){
 }
 
 var TIP_ETIKET_BELGE = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
+var KOD_ONEK_BELGE = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
+var ONEK_RENK_BELGE = {
+  "SİP": {yazi:"#003a70", bg:"#eaf2fc"},
+  "F.TEK": {yazi:"#0e6b58", bg:"#eafaf3"},
+  "P.FAT": {yazi:"#5b3a86", bg:"#f1ecf9"},
+  "NUM": {yazi:"#b7601f", bg:"#fff4e5"}
+};
+function kodOnekiAyiklaBelge(kod){
+  if(!kod) return null;
+  var parcalar = kod.split(".");
+  if(parcalar.length < 3) return kod;
+  return parcalar.slice(0, parcalar.length-2).join(".");
+}
+function gecmisCipSatiriHtml(kayit){
+  if(!kayit.oncekiKod) return "";
+  var oncekiOnek = kodOnekiAyiklaBelge(kayit.oncekiKod) || "?";
+  var oncekiRenk = ONEK_RENK_BELGE[oncekiOnek] || {yazi:"#556170", bg:"#f1f3f6"};
+  var simdikiOnek = KOD_ONEK_BELGE[kayit.tip] || "?";
+  var simdikiRenk = ONEK_RENK_BELGE[simdikiOnek] || {yazi:"#003a70", bg:"#eaf2fc"};
+  return "<div class='belge-gecmis-cip-satir'>"
+    + "<button class='belge-gecmis-cip' id='btnGecmisCip' style='background:" + oncekiRenk.bg + ";'>"
+      + "<span class='belge-gecmis-cip-kod' style='color:" + oncekiRenk.yazi + ";'>" + htmlEsc(oncekiOnek) + "</span>"
+      + "<span class='belge-gecmis-cip-tarih'>" + htmlEsc(kayit.oncekiTarih || "") + "</span>"
+    + "</button>"
+    + "<span class='belge-gecmis-ok'>▶</span>"
+    + "<div class='belge-gecmis-cip belge-gecmis-cip--simdi' style='background:" + simdikiRenk.yazi + ";'>"
+      + "<span class='belge-gecmis-cip-kod' style='color:#fff;'>" + htmlEsc(simdikiOnek) + "</span>"
+      + "<span class='belge-gecmis-cip-tarih' style='color:#c9dcf0;'>şu an</span>"
+    + "</div>"
+    + "</div>";
+}
 var DURUM_ETIKET = {
   iptal: {ikon:"🚫", ad:"İPTAL EDİLDİ", renk:"#c0392b", bg:"#fdeceb"},
   iade: {ikon:"↩️", ad:"İADE EDİLDİ", renk:"#6a1b9a", bg:"#f3e5f5"},
@@ -114,7 +145,8 @@ function belgeyiCiz(kayit, musteri){
 
     var belgeBaslikMetni = (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + (kayit.kod ? " · " + kayit.kod : "") + " · " + htmlEsc(kayit.tarih) + (kayit.revizeZamani ? " · 🔄 REVİZE" : "");
 
-    var html = "<div class='belge-kart" + (sorunluMu?" belge-kutu--sorunlu":"") + "'>"
+    var html = gecmisCipSatiriHtml(kayit)
+      + "<div class='belge-kart" + (sorunluMu?" belge-kutu--sorunlu":"") + "'>"
       + durumRozetHtml
       + musteriBlokHtml
       + "</div>"
@@ -136,6 +168,13 @@ function belgeyiCiz(kayit, musteri){
       + "</div>";
 
     document.getElementById("belgeIcerik").innerHTML = html;
+    var gecmisCipBtn = document.getElementById("btnGecmisCip");
+    if(gecmisCipBtn){
+      gecmisCipBtn.onclick = function(){
+        var oncekiOnek = kodOnekiAyiklaBelge(kayit.oncekiKod) || "?";
+        alert("Bu belge önceden " + (oncekiOnek) + " · " + (kayit.oncekiKod) + " kodu ile, " + (kayit.oncekiTarih||"bilinmeyen bir tarihte") + " oluşturulmuştu. İlerletilince aynı iş takip numarası korunarak güncel türe dönüştürüldü.");
+      };
+    }
   }catch(e){ hataGoster("Belge çizilemedi: " + e.message); }
 }
 

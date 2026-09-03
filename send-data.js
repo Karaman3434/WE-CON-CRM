@@ -112,7 +112,7 @@ var SendData = (function(){
     return d1.getFullYear()===d2.getFullYear() && d1.getMonth()===d2.getMonth() && d1.getDate()===d2.getDate();
   }
 
-  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, devralinanKod, geriBildir){
+  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, devralinanKod, devralinanTarih, geriBildir){
     var cb = typeof geriBildir === "function" ? geriBildir : function(){};
     try{
       if(!musteri || !musteri.ad) throw new Error("Müşteri bilgisi eksik.");
@@ -193,6 +193,10 @@ var SendData = (function(){
               faturaAdresi: (adresler && adresler.faturaAdresi) || null,
               teslimatAdresi: (adresler && adresler.teslimatAdresi) || null
             };
+            if(devralinanKod){
+              kaydedilenKayit.oncekiKod = devralinanKod;
+              if(devralinanTarih) kaydedilenKayit.oncekiTarih = devralinanTarih;
+            }
             liste.unshift(kaydedilenKayit);
             otomatikRevizeMi = false;
           }

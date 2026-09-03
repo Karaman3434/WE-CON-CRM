@@ -282,7 +282,8 @@ function kaydetGercekIslem(niyet){
 
     var kaynak = ilerletKaynagiOku();
     var devralinanKod = (kaynak && kaynak.kod) ? kaynak.kod : null;
-    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, seciliAdresler, devralinanKod, function(basarili, sonuc, revizeMi){
+    var devralinanTarih = (kaynak && kaynak.tarih) ? kaynak.tarih : null;
+    SendData.kaydet(secilenTip, musteri, sepet, kur, kdv, seciliAdresler, devralinanKod, devralinanTarih, function(basarili, sonuc, revizeMi){
       if(basarili){
         if(kaynak){
           SendData.kaynakSil(kaynak.tip, kaynak.ts, function(){});

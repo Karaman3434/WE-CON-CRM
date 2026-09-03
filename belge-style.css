@@ -15,6 +15,30 @@
 }
 .belge-kart-ayrac { height: 0; }
 
+.belge-gecmis-cip-satir {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 0.5px solid #e2e6ec;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.belge-gecmis-cip {
+  border: none;
+  border-radius: 8px;
+  padding: 3px 8px;
+  text-align: center;
+  line-height: 1.25;
+  cursor: pointer;
+}
+.belge-gecmis-cip-kod { display: block; font-size: 10px; font-weight: 900; }
+.belge-gecmis-cip-tarih { display: block; font-size: 8px; color: #5a9c8a; }
+.belge-gecmis-cip--simdi { cursor: default; }
+.belge-gecmis-cip--simdi .belge-gecmis-cip-tarih { color: #c9dcf0; }
+.belge-gecmis-ok { font-size: 11px; color: #3569b8; }
+
 /* Eski isim — geri uyumluluk için .belge-kart ile aynı görünüyor. */
 .belge-kutu {
   background: #ffffff;
