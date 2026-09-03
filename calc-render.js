@@ -187,6 +187,16 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("seciliUrunKutu").hidden = true;
     seciliUrunBilgi = null;
     hesaplaVeGoster();
+    // "Temizle" artık sadece bu formu değil, TÜM işlemi sıfırlar — yarım
+    // kalan bir sepet/müşteri seçimi olsa bile hiçbir onay istemeden silinir.
+    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+    try{ if(typeof CustomerData !== "undefined") CustomerData.secimiKaldir(); }catch(e){}
+    try{
+      localStorage.removeItem("weiconv2_onceden_secilen_tip");
+      localStorage.removeItem("weiconv2_hesapla_duzenle_idx");
+      localStorage.removeItem("weiconv2_ilerlet_kaynak");
+      localStorage.removeItem("weiconv2_islem_yap_akisi");
+    }catch(e){}
   };
   ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet","kurInput"].forEach(function(id){
     document.getElementById(id).addEventListener("input", function(){
@@ -195,6 +205,16 @@ document.addEventListener("DOMContentLoaded", function(){
       hesaplaVeGoster();
     });
   });
+  document.getElementById("btnHesapKapat").onclick = function(ev){
+    var sepetDolu = false;
+    try{ sepetDolu = (JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0); }catch(e){}
+    if(!sepetDolu) return; // sepette gerçek bir şey yoksa direkt git, sormaya gerek yok
+    ev.preventDefault();
+    if(!confirm("Sepetteki ürünler ve seçili müşteri de silinecek. Devam edilsin mi?")) return;
+    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+    try{ if(typeof CustomerData !== "undefined") CustomerData.secimiKaldir(); }catch(e){}
+    window.location.href = "home.html";
+  };
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   ProductData.katalogDegistiginde(function(){});
   hesaplaVeGoster();
