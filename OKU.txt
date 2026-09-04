@@ -1,15 +1,11 @@
-WE-CON-CRM — Hızlı Hesapla: kutu içi yan yana düzen
-Sürüm: WG.040926.1655.117
-
-NOT: user_time_v0 zaman aracı bu turda da yanıt vermedi, saat (16:55) tahmini.
-Sıra numarası (117) önceki teslimattan (116) doğru devam ediyor.
+WE-CON-CRM — Fatura Toplam etiketi iki satıra indi (kutu büyümesin diye)
+Sürüm: WG.040926.1714.118
 
 DEĞİŞEN DOSYALAR (5)
-1) calc.html — Müdür Primi artık Toplam(EUR)/Fatura Toplam kutularının
-   hemen altında, tek satır
-2) calc-style.css — tüm gri kutularda etiket solda/sayı sağda (yan yana),
-   kutu boyu ve etiket boyu aynı kaldı, sayı 17px→26px (%50 büyüdü),
-   İsk(%) kutusunun zemini biraz daha koyu yeşil oldu
+1) calc.html — "Fatura Toplam (KDV Dahil)" etiketi artık "Fatura Toplam"
+   / "(KDV Dahil)" olarak iki satıra bölündü, böylece kutu genişlemiyor
+   ve aynı satırdaki Toplam (EUR) kutusunu da büyütmüyor
+2) calc-style.css — etiket satır yüksekliği sıkılaştırıldı (line-height:1.3)
 3) ayarlar-render.js, 4) ayarlar.html, 5) home.html — sürüm senkronu
 
 DAĞITIM
