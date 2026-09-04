@@ -1,28 +1,21 @@
-WE-CON-CRM — İşlem Geçmişi ayrı sayfa + renkli tablo güncellemesi
-Sürüm: WG.040926.1436.113
+WE-CON-CRM — Hotfix: İşlem Geçmişi sayfası beyaz ekran veriyordu
+Sürüm: WG.040926.1448.114
 
-YENİ DOSYALAR (3)
-1) gecmis.html — müşteriye özel İşlem Geçmişi sayfası
-2) gecmis-render.js — sayfanın mantığı (filtre, sıralama, renkli kartlar)
-3) gecmis-style.css — filtre çipi ve kart alt satırı stilleri
+SORUN
+gecmis.html Firebase SDK script'lerini (firebase-app/database/auth-compat)
+yüklemiyordu. auth.js açılışta firebase.initializeApp() çağırdığı için
+"firebase is not defined" hatası fırlatıyordu, bu da sayfayı gösteren
+visibility='visible' satırının hiç çalışmamasına sebep oluyordu.
+Sonuç: bembeyaz, tıklanamaz sayfa.
 
-DEĞİŞEN DOSYALAR (7)
-4) customer-detail.html — "İşlem Geçmişi" kutucuğu artık gecmis.html'e yönlendiriyor,
-   eski açılır panel kaldırıldı, silme uyarı notu güncellendi
-5) detail-render.js — eski inline panel render kodu ve isim-eşitleme fonksiyonu
-   kaldırıldı (gecmis-render.js'e taşındı), kutucuktaki sayaç korundu
-6) kacan-satislar.html — tabloya "Tür" sütunu eklendi
-7) kacan-satislar-render.js — her satır kendi işlem türünün renkli rozetiyle gösteriliyor
-8) ayarlar-render.js — APP_VERSION senkronu
-9) ayarlar.html — ayarlar-render.js cache-bust damgası
-10) home.html — görünür sürüm etiketi senkronu
+DEĞİŞEN DOSYALAR (4)
+1) gecmis.html — 3 Firebase script'i + reports-safety-fix.js eklendi,
+   artık customer-detail.html ile birebir aynı script sırası
+2) ayarlar-render.js — APP_VERSION senkronu
+3) ayarlar.html — cache-bust damgası
+4) home.html — görünür sürüm etiketi senkronu
 
 DAĞITIM
-Bu 10 dosyayı mevcut kök dizindeki aynı isimli dosyalarla değiştir. Başka hiçbir
-dosyaya dokunulmadı (satis-listesi.html kasıtlı olarak değiştirilmedi — o liste
-zaten tek tip (Sipariş) gösteriyor, renklendirme orada bir şey katmıyor).
-
-TEST NOTU
-Bir müşteri kartından "🕐 İşlem Geçmişi"ne dokun → yeni sayfa açılmalı, üstte
-rota ve müşteri adı, filtre çipleri ve renkli kartlar görünmeli. Kartlardan
-birine dokununca aynı belge önizleme ekranına gitmeli (silme oradan yapılabiliyor).
+Bu 4 dosyayı kök dizindeki aynı isimli dosyalarla değiştir. Diğer 7 dosya
+(bir önceki teslimattaki gecmis-render.js, gecmis-style.css, detail-render.js,
+customer-detail.html, kacan-satislar.html, kacan-satislar-render.js) değişmedi.
