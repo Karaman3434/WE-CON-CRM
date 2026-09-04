@@ -1,37 +1,16 @@
-WE-CON-CRM — Hızlı Hesapla yeni sıralama + müşterisiz hızlı gönder
-Sürüm: WG.040926.1640.116
+WE-CON-CRM — Hızlı Hesapla: kutu içi yan yana düzen
+Sürüm: WG.040926.1655.117
 
-DEĞİŞEN DOSYALAR (7)
+NOT: user_time_v0 zaman aracı bu turda da yanıt vermedi, saat (16:55) tahmini.
+Sıra numarası (117) önceki teslimattan (116) doğru devam ediyor.
 
-Hızlı Hesapla:
-1) calc.html — yeni sıra: Döviz Kuru (tek satır, üstte) → Ürün Arama →
-   Hesaplanacak Ürün → Liste/Dip yan yana → Adet/İsk% yan yana →
-   Müdür Primi → turuncu kutular → Toplam kutuları
-2) calc-style.css — İsk(%) kutusu yeşil, turuncu kutular AYNI boyda
-   kaldı (padding değişmedi), sadece sayı 17px→26px büyüdü
-
-Sepet — müşterisiz hızlı gönder (yeni):
-3) cart.html — müşteri seçili değilken Gönder'e basılırsa çıkan sheet
-   eklendi (WhatsApp / Mail / Kapat)
-4) cart-render.js — Gönder tıklanınca müşteri yoksa bu sheet açılıyor;
-   WhatsApp/Mail seçilirse ürün listesi + toplamı içeren sade bir metin
-   paylaşılıyor. Hiçbir Firebase kaydı oluşmuyor, İşlem Geçmişi'ne düşmüyor.
-
-Sürüm senkronu:
-5) ayarlar-render.js, 6) ayarlar.html, 7) home.html
+DEĞİŞEN DOSYALAR (5)
+1) calc.html — Müdür Primi artık Toplam(EUR)/Fatura Toplam kutularının
+   hemen altında, tek satır
+2) calc-style.css — tüm gri kutularda etiket solda/sayı sağda (yan yana),
+   kutu boyu ve etiket boyu aynı kaldı, sayı 17px→26px (%50 büyüdü),
+   İsk(%) kutusunun zemini biraz daha koyu yeşil oldu
+3) ayarlar-render.js, 4) ayarlar.html, 5) home.html — sürüm senkronu
 
 DAĞITIM
-Bu 7 dosyayı kök dizindeki aynı isimli dosyalarla değiştir.
-
-BİLİNÇLİ SADELEŞTİRME
-Konuştuğumuz "Müşteri seç ve gönder" seçeneğini bu sheet'e eklemedim —
-sepet ekranında zaten bir müşteri seçme arayüzü yok (müşteri normalde
-İşlem Yap akışının başında seçiliyor). O yüzden sheet'te sadece "Kapat"
-var; müşteriye kaydetmek istersen Geri'ye basıp normal akıştan müşteri
-seçmen gerekiyor. İstersen sepet ekranına doğrudan bir "Müşteri Seç"
-kısayolu da ekleyebilirim — ayrı bir istek olarak söyle yeter.
-
-TEST NOTU
-Müşteri seçmeden birkaç ürünü Hesapla'dan Listeye Ekle, Sepet'e git,
-Gönder'e bas — WhatsApp/Mail seçim ekranı çıkmalı, seçince cihazın
-kendi paylaşım/mail uygulaması açılmalı.
+Bu 5 dosyayı kök dizindeki aynı isimli dosyalarla değiştir.

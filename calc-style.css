@@ -36,24 +36,28 @@
   margin-bottom: 10px;
 }
 
-/* Tek tip kutu — Döviz Kuru, Liste Fiyatı, Dip, İsk%, Adet, Müdür Primi,
-   Toplam (EUR), Fatura Toplam hepsi bunu kullanır; hepsi aynı boy/font. */
+/* Tek tip kutu — etiket solda, sayı sağda (yan yana), kutu boyu sabit,
+   etiket boyu sabit, sayı %50 büyüdü (17px→26px). */
 .hc-kutu {
   background: #f7f9fb;
   border-radius: 10px;
   padding: 12px;
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 .hc-kutu-etiket {
   font-size: 11px; font-weight: 700; letter-spacing: .2px;
-  color: #667085; margin-bottom: 4px;
+  color: #667085; flex-shrink: 0;
 }
 .hc-kutu input {
-  width: 100%; border: none; background: transparent;
-  font-size: 17px; font-weight: 800; color: #0f4fc0; padding: 0;
-  outline: none;
+  border: none; background: transparent;
+  font-size: 26px; font-weight: 800; color: #0f4fc0; padding: 0;
+  outline: none; text-align: right; width: 100%; min-width: 0;
 }
-.hc-kutu-deger { font-size: 17px; font-weight: 800; color: #101828; }
+.hc-kutu-deger { font-size: 26px; font-weight: 800; color: #101828; text-align: right; }
 
 /* Toplam (EUR) / Fatura Toplam — aynı kutu boyutu, sadece farklı ton
    (açık mavi-gri, koyu değil) ve etiket rengi. */
@@ -61,10 +65,10 @@
 .hc-kutu--toplam .hc-kutu-etiket { color: #3d5a80; }
 .hc-kutu--toplam .hc-kutu-deger { color: #1a2a3a; }
 
-/* İsk (%) kutusu — yeşil zemin, uygulamadaki "net" rengiyle aynı ton. */
-.hc-kutu--isk { background: #eafaf3; }
+/* İsk (%) kutusu — yeşil zemin, biraz daha koyu ton. */
+.hc-kutu--isk { background: #bdeeda; }
 .hc-kutu--isk .hc-kutu-etiket { color: #0e6b58; }
-.hc-kutu--isk input { color: #0e6b58; font-weight: 900; }
+.hc-kutu--isk input { color: #0e6b58; font-weight: 800; }
 
 /* Turuncu iskonto kutuları — boy diğer kutularla AYNI (padding 12px,
    hc-kutu ile birebir), sadece içindeki sayı belirgin büyük (26px). */
