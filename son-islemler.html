@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — SON İŞLEMLER (ayrı sayfa)
+  ===========================================================
+  Eskiden reports.html'in alt bölümüydü (kaydırınca sayfanın altına
+  düşüyordu). Artık "Kaçan İşlemler" ile aynı mantıkta ayrı bir sayfa.
+  Liste tasarımı: ikon-avatar (Design B) — solda türü gösteren renkli
+  harf rozeti, ortada müşteri+şehir+tarih tek satırda, sağda sadece
+  REVİZE/KAÇTI varsa küçük etiket.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Son İşlemler</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.040926.1052.110">
+<link rel="stylesheet" href="reports-style.css?v=WG.030926.1938.109">
+<link rel="stylesheet" href="son-islemler-style.css?v=WG.040926.2312.121">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="reports.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+<div class="rota-etiketi">Raporlar › <b>Son İşlemler</b></div>
+
+<main class="sayfa">
+
+  <div class="islem-filtre-satiri">
+    <input type="text" id="islemAra" placeholder="Müşteri adıyla ara..." autocomplete="off">
+    <select id="islemTipFiltre">
+      <option value="">Tüm Türler</option>
+      <option value="numune">Numune</option>
+      <option value="teklif">Teklif</option>
+      <option value="proforma">Proforma</option>
+      <option value="siparis">Sipariş</option>
+    </select>
+  </div>
+  <button class="excel-buton islem-excel-buton" id="btnIslemlerExcel">📊 Listeyi Excel'e Aktar</button>
+
+  <div class="si-liste-kutu">
+    <div id="islemlerListesi"></div>
+    <p class="bos-mesaj" id="islemlerBosMesaj" hidden>Henüz kayıt yok.</p>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="auth.js?v=WG.030926.1547.104"></script>
+<script src="ust-sabit-olcum.js?v=WG.020926.1523.89"></script>
+<script src="customer-data.js?v=WG.030926.1158.98"></script>
+<script src="reports-data.js?v=WG.030926.1559.105"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
+<script src="hata-log.js?v=WG.020926.1523.89"></script>
+<script src="son-islemler-render.js?v=WG.040926.2312.121"></script>
+</body>
+</html>

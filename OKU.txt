@@ -1,15 +1,26 @@
-WE-CON-CRM — Turuncu kutular: etiket üstte ortalı, sayı 32px, birim harf boyunda
-Sürüm: WG.040926.1800.120
+WE-CON-CRM — Son İşlemler ayrı sayfa + ikon-avatar tasarım
+Sürüm: WG.040926.2312.121
 
-DEĞİŞEN DOSYALAR (6)
-1) calc.html — turuncu kutu etiketleri tek satıra döndü ("İSK EURO
-   BİRİM FİYAT" / "İSK TL BİRİM FİYAT"), sayının üstünde
-2) calc-style.css — etiket ve sayı ortalı (dikey), kutu boyu sabit,
-   iki kutu aynı satırda olduğu için otomatik eşit yükseklikte kalıyor;
-   sayı 32px, sonundaki €/TL artık harf boyunda (16px, .hc-turuncu-birim)
-3) calc-render.js — € ve TL artık ayrı bir <span> içinde yazılıyor ki
-   küçük harf boyunda gösterilebilsin
-4) ayarlar-render.js, 5) ayarlar.html, 6) home.html — sürüm senkronu
+YENİ DOSYALAR (3)
+1) son-islemler.html — "Kaçan İşlemler" ile aynı mantıkta ayrı sayfa
+2) son-islemler-render.js — arama/filtre/Excel + ikon-avatar liste
+3) son-islemler-style.css — onaylanan "B" tasarımı: solda türe göre
+   renkli harf rozeti (SP/FT/PF/NM), ortada müşteri+şehir+tarih tek
+   satırda, sağda sadece REVİZE/KAÇTI varsa küçük etiket
+
+DEĞİŞEN DOSYALAR (5)
+4) reports.html — "📋 Son İşlemler" artık son-islemler.html'e gidiyor,
+   eski açılır/kayan alt bölüm (arama, filtre, Excel, liste) kaldırıldı
+5) reports-render.js — taşınan islemleriCiz/islemlerExcelAktar ve
+   ilgili wiring kaldırıldı; Ay Detayı ve istatistikler etkilenmedi
+6) ayarlar-render.js, 7) ayarlar.html, 8) home.html — sürüm senkronu
 
 DAĞITIM
-Bu 6 dosyayı kök dizindeki aynı isimli dosyalarla değiştir.
+Bu 8 dosyayı kök dizindeki aynı isimli dosyalarla değiştir (5 tanesi
+zaten var olan dosyaların üzerine yazılacak, 3 tanesi yeni eklenecek).
+
+TEST NOTU
+Raporlar › İstatistikler ekranında "📋 Son İşlemler"e dokun — artık
+ayrı bir sayfa açılmalı, kaydırınca sayfanın altına düşmemeli. Liste
+satırına dokununca aynı belge önizlemesine gitmeli, arama/filtre/Excel
+export eskisi gibi çalışmalı.

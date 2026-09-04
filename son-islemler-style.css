@@ -1,0 +1,34 @@
+.si-liste-kutu {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e4e8ee;
+  padding: 6px 10px;
+  margin-top: 10px;
+}
+.si-satir {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 4px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f2f5;
+}
+.si-satir:last-child { border-bottom: none; }
+.si-avatar {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; flex-shrink: 0;
+}
+.si-orta { flex: 1; min-width: 0; }
+.si-musteri {
+  font-size: 13.5px; font-weight: 800; color: #101828;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.si-alt { font-size: 11px; color: #98a2b3; margin-top: 1px; }
+.si-etiketler { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+.si-pill {
+  font-size: 9px; font-weight: 800; padding: 3px 6px; border-radius: 5px;
+  white-space: nowrap; text-align: center;
+}
+.si-pill--kacan { background: #fdeceb; color: #a32d2d; }
+.si-pill--revize { background: #fdf3e3; color: #854f0b; }

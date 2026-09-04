@@ -1,7 +1,8 @@
 /*
   reports-render.js
   =================
-  Sekme geçişini, Son İşlemler listesini ve Görevler listesini/formunu yönetir.
+  İstatistik kartlarını, aylık özet tablosunu ve Ay Detayı panelini yönetir.
+  Son İşlemler listesi artık ayrı bir sayfada (son-islemler-render.js).
 */
 
 function hataGoster(mesaj){
@@ -167,95 +168,6 @@ function kodRozetVeRenkGetir(k){
   return {kod: kod, renk: renk};
 }
 
-function islemleriCiz(){
-  try{
-    var q = (document.getElementById("islemAra").value||"").trim().toLocaleLowerCase("tr-TR");
-    var tipFiltre = document.getElementById("islemTipFiltre").value;
-
-    var liste = ReportsData.sonIslemler();
-    if(tipFiltre) liste = liste.filter(function(k){ return k.tip === tipFiltre; });
-    if(q) liste = liste.filter(function(k){ return (k.musteri||"").toLocaleLowerCase("tr-TR").indexOf(q) >= 0; });
-    liste = liste.slice(0, 100);
-
-    var kapsayici = document.getElementById("islemlerListesi");
-    var bos = document.getElementById("islemlerBosMesaj");
-
-    if(liste.length === 0){
-      kapsayici.innerHTML = "";
-      bos.hidden = false;
-      return;
-    }
-    bos.hidden = true;
-
-    kapsayici.innerHTML = liste.map(function(k, i){
-      var kacanMi = k.durum === "kacan";
-      var kodBilgi = kodRozetVeRenkGetir(k);
-      var kod = kodBilgi.kod, renk = kodBilgi.renk;
-      var durumEk = "";
-      if(kacanMi) durumEk = " — ❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"");
-      if(k.revizeZamani) durumEk += " — 🔄 REVİZE";
-      return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "'>"
-        + "<div class='islem-satir-2col'>"
-        + "<div class='islem-sol'>"
-        + "<button class='islem-musteri-link' data-belge-i='" + i + "'>" + htmlEsc(k.musteri) + "</button>"
-        + "<span class='islem-sehir-buyuk'>" + htmlEsc(k.sehir||"-") + "</span>"
-        + "</div>"
-        + "<div class='islem-sag'>"
-        + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
-        + "<span class='islem-kod-rozet islem-kod-rozet--buyuk' data-belge-i='" + i + "' style='background:" + renk + ";'>" + kod + "</span>"
-        + "</div>"
-        + "</div>"
-        + (durumEk ? "<div class='islem-durum-ek'>" + durumEk + "</div>" : "")
-        + "</div>";
-    }).join("");
-
-    kapsayici.querySelectorAll(".islem-kod-rozet, .islem-musteri-link").forEach(function(btn){
-      btn.onclick = function(){
-        var i = parseInt(this.getAttribute("data-belge-i"), 10);
-        var k = liste[i];
-        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
-        window.location.href = "belge-onizleme.html";
-      };
-    });
-  }catch(e){ hataGoster("İşlemler çizilemedi: " + e.message); }
-}
-
-function islemlerExcelAktar(){
-  try{
-    if(typeof XLSX === "undefined"){
-      hataGoster("Excel kütüphanesi yüklenemedi, internet bağlantınızı kontrol edin.");
-      return;
-    }
-    var q = (document.getElementById("islemAra").value||"").trim().toLocaleLowerCase("tr-TR");
-    var tipFiltre = document.getElementById("islemTipFiltre").value;
-    var liste = ReportsData.sonIslemler();
-    if(tipFiltre) liste = liste.filter(function(k){ return k.tip === tipFiltre; });
-    if(q) liste = liste.filter(function(k){ return (k.musteri||"").toLocaleLowerCase("tr-TR").indexOf(q) >= 0; });
-
-    if(liste.length === 0){
-      alert("Aktarılacak kayıt bulunamadı.");
-      return;
-    }
-
-    var basliklar = ["Tarih","Müşteri","Şehir","Tür","Ürün Sayısı","Toplam (EUR)","Durum"];
-    var veriSatirlari = liste.map(function(k){
-      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
-      var durum = k.durum === "kacan" ? "Kaçtı" : "";
-      return [k.tarih||"", k.musteri||"", k.sehir||"", TIP_ETIKET[k.tip]||k.tip, (k.urunler||[]).length, toplam, durum];
-    });
-
-    var aoa = [basliklar].concat(veriSatirlari);
-    var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = [{wch:18},{wch:22},{wch:16},{wch:10},{wch:10},{wch:12},{wch:10}];
-
-    var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Son İşlemler");
-    var now = new Date();
-    var dosyaAdi = "Son_Islemler_" + now.getFullYear() + String(now.getMonth()+1).padStart(2,"0") + String(now.getDate()).padStart(2,"0") + ".xlsx";
-    XLSX.writeFile(wb, dosyaAdi);
-  }catch(e){ hataGoster("Excel oluşturulamadı: " + e.message); }
-}
-
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -274,13 +186,9 @@ document.addEventListener("DOMContentLoaded", function(){
     };
   })();
 
-  document.getElementById("islemAra").addEventListener("input", islemleriCiz);
-  document.getElementById("islemTipFiltre").addEventListener("change", islemleriCiz);
-  document.getElementById("btnIslemlerExcel").onclick = islemlerExcelAktar;
   document.getElementById("btnAyDetayKapat").onclick = function(){ document.getElementById("ayDetayBolumu").hidden = true; };
-  ReportsData.arsivDegistiginde(function(){ islemleriCiz(); istatistikleriCiz(); });
+  ReportsData.arsivDegistiginde(function(){ istatistikleriCiz(); });
   // Firebase verisi sayfa tam yüklenmeden önce gelmiş olabilir (dinleyici
   // kaçırmış olabilir) — bu yüzden ilk anda da bir kez elle çiziyoruz.
-  islemleriCiz();
   istatistikleriCiz();
 });

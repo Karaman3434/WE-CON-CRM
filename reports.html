@@ -2,8 +2,9 @@
 <!--
   WEICON ASİST — İSTATİSTİKLER v3
   ===================================
-  Eski uygulamayla AYNI sıra: istatistik kartları → kaçan özet → 
-  "🕘 Son İşlemler" (AYRI bir sayfa DEĞİL, bu sayfanın alt bölümü).
+  Eski uygulamayla AYNI sıra: istatistik kartları → kaçan özet →
+  kısayollar. "🕘 Son İşlemler" artık AYRI bir sayfa (son-islemler.html),
+  "❌ Kaçan İşlemler" ile aynı mantıkta.
 -->
 <html lang="tr">
 <head>
@@ -72,26 +73,9 @@
   </section>
 
   <div class="raporlar-kisayol-satiri">
-    <a class="raporlar-kisayol-btn" href="#sonIslemlerAnkraj">📋 Son İşlemler</a>
+    <a class="raporlar-kisayol-btn" href="son-islemler.html">📋 Son İşlemler</a>
     <a class="raporlar-kisayol-btn raporlar-kisayol-btn--kacan" href="kacan-satislar.html">❌ Kaçan İşlemler</a>
   </div>
-
-  <!-- SON İŞLEMLER — eski uygulamadaki gibi bu sayfanın alt bölümü -->
-  <div class="son-islemler-baslik" id="sonIslemlerAnkraj">🕘 Son İşlemler</div>
-
-  <div class="islem-filtre-satiri">
-    <input type="text" id="islemAra" placeholder="Müşteri adıyla ara..." autocomplete="off">
-    <select id="islemTipFiltre">
-      <option value="">Tüm Türler</option>
-      <option value="numune">Numune</option>
-      <option value="teklif">Teklif</option>
-      <option value="proforma">Proforma</option>
-      <option value="siparis">Sipariş</option>
-    </select>
-  </div>
-  <button class="excel-buton islem-excel-buton" id="btnIslemlerExcel">📊 Listeyi Excel'e Aktar</button>
-  <div id="islemlerListesi"></div>
-  <p class="bos-mesaj" id="islemlerBosMesaj" hidden>Henüz kayıt yok.</p>
 
 </main>
 
@@ -106,6 +90,6 @@
 <script src="reports-data.js?v=WG.030926.1559.105"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="reports-render.js?v=WG.030926.1938.109"></script>
+<script src="reports-render.js?v=WG.040926.2312.121"></script>
 </body>
 </html>
