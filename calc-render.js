@@ -116,8 +116,8 @@ function hesaplaVeGoster(){
     var kdv = CartData.kdvOku();
     var h = CartData.hesapla(urun, kur, kdv);
 
-    document.getElementById("rIskontoluFiyat").textContent = CartData.fmt(h.iskontoluFiyat) + " €";
-    document.getElementById("rTlBirimFiyat").textContent = CartData.fmt(h.tlBirimFiyat) + " TL";
+    document.getElementById("rIskontoluFiyat").innerHTML = CartData.fmt(h.iskontoluFiyat) + "<span class='hc-turuncu-birim'>€</span>";
+    document.getElementById("rTlBirimFiyat").innerHTML = CartData.fmt(h.tlBirimFiyat) + "<span class='hc-turuncu-birim'> TL</span>";
     document.getElementById("rToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " €";
     document.getElementById("rFaturaToplam").textContent = CartData.fmt(h.faturaToplam) + " TL";
     var kur2 = kur||0;
