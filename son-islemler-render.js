@@ -29,17 +29,33 @@ function tarihiGuncelle(){
 function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
+function fmt(n){
+  return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 
 var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
-// Avatar harfi + renk — reports-render.js'deki KOD_RENK ile aynı paletten
-// (bkz. belge-render.js TIP_RENK_BELGE), sadece burada ikon-avatar için
-// bg/harf çifti olarak tutuluyor.
-var AVATAR_BILGI = {
-  siparis:  {harf:"SP", bg:"#e6f1fb", renk:"#0c447c"},
-  teklif:   {harf:"FT", bg:"#e1f5ee", renk:"#0e6b58"},
-  proforma: {harf:"PF", bg:"#f3e8fb", renk:"#6a1b9a"},
-  numune:   {harf:"NM", bg:"#faeeda", renk:"#854f0b"}
-};
+// reports-render.js'deki KOD_RENK ile birebir aynı — iki dosyada da aynı
+// tutulmalı. KOD_RENK_METIN, beyaz zeminde düz yazı olarak okunabilirlik
+// için KOD_RENK'ten daha koyu tonlar kullanır.
+var TIP_KOD_YEDEK = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
+var KOD_RENK_METIN = {"SİP":"#003a70", "F.TEK":"#1a7431", "P.FAT":"#5c1680", "NUM":"#7a4008"};
+var KANAL_HARF = {mail:"M", whatsapp:"W"};
+var KANAL_RENK = {mail:"#185fa5", whatsapp:"#128C7E"};
+function kodOnekiAyikla(kod){
+  if(!kod) return null;
+  var parcalar = kod.split(".");
+  if(parcalar.length < 3) return kod;
+  return parcalar.slice(0, parcalar.length-2).join(".");
+}
+function kodMetinRengiGetir(k){
+  if(k.durum === "kacan") return "#c0392b";
+  var onek = kodOnekiAyikla(k.kod) || TIP_KOD_YEDEK[k.tip] || "?";
+  return KOD_RENK_METIN[onek] || "#1c2530";
+}
+function kanalHarfHTML(kanal){
+  if(!kanal || !KANAL_HARF[kanal]) return "";
+  return "<span class='ik2-kanal-harf' style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
+}
 
 function islemleriCiz(){
   try{
@@ -63,23 +79,27 @@ function islemleriCiz(){
 
     kapsayici.innerHTML = liste.map(function(k, i){
       var kacanMi = k.durum === "kacan";
-      var av = AVATAR_BILGI[k.tip] || AVATAR_BILGI.siparis;
-      var avBg = kacanMi ? "#fdeceb" : av.bg;
-      var avRenk = kacanMi ? "#a32d2d" : av.renk;
-      var etiketler = "";
-      if(kacanMi) etiketler += "<span class='si-pill si-pill--kacan'>KAÇTI</span>";
-      if(k.revizeZamani) etiketler += "<span class='si-pill si-pill--revize'>REVİZE</span>";
-      return "<div class='si-satir' data-i='" + i + "'>"
-        + "<div class='si-avatar' style='background:" + avBg + ";color:" + avRenk + ";'>" + av.harf + "</div>"
-        + "<div class='si-orta'>"
-        + "<div class='si-musteri'>" + htmlEsc(k.musteri) + "</div>"
-        + "<div class='si-alt'>" + htmlEsc(k.sehir||"-") + " · " + htmlEsc(k.tarih) + "</div>"
+      var kod = k.kod || TIP_KOD_YEDEK[k.tip] || "?";
+      var renkMetin = kodMetinRengiGetir(k);
+      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+      var durumEk = kacanMi ? "❌ KAÇTI" : "";
+      return "<div class='ik2-kart' data-i='" + i + "'>"
+        + "<div class='ik2-ust'>"
+        + "<span class='ik2-ust-sol'><span class='ik2-isim'>" + htmlEsc(k.musteri) + "</span>"
+        + (k.sehir ? " <span class='ik2-sehir'>- " + htmlEsc(k.sehir) + "</span>" : "")
+        + "</span>"
+        + (k.revizeZamani ? "<span class='ik2-rvz'>RVZ</span>" : "")
         + "</div>"
-        + (etiketler ? "<div class='si-etiketler'>" + etiketler + "</div>" : "")
+        + "<div class='ik2-alt'>"
+        + "<span class='ik2-tarih'>" + htmlEsc(k.tarih) + "</span>"
+        + "<span class='ik2-kod' style='color:" + renkMetin + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
+        + "<span class='ik2-tutar'>" + fmt(toplam) + " €</span>"
+        + "</div>"
+        + (durumEk ? "<div class='ik2-durum-ek'>" + durumEk + "</div>" : "")
         + "</div>";
     }).join("");
 
-    kapsayici.querySelectorAll(".si-satir").forEach(function(el){
+    kapsayici.querySelectorAll(".ik2-kart").forEach(function(el){
       el.onclick = function(){
         var i = parseInt(this.getAttribute("data-i"), 10);
         var k = liste[i];

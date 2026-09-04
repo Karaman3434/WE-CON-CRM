@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.030926.1537.103 — satis-listesi.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.050926.0152.125 — satis-listesi.html -->
 <!--
   Ana Sayfa'daki "Bugünün Satışları" ve "Bu Ay Satışım" kartlarının
   ikisi de bu SAME sayfaya gelir — hangisine dokunulduğu ?kapsam=bugun
@@ -13,8 +13,8 @@
 <title>WEICON ASİST — Satışlarım</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.040926.1052.110">
-<link rel="stylesheet" href="reports-style.css?v=WG.030926.1938.109">
-<link rel="stylesheet" href="satis-listesi-style.css">
+<link rel="stylesheet" href="reports-style.css?v=WG.050926.0152.125">
+<link rel="stylesheet" href="satis-listesi-style.css?v=WG.050926.0141.123">
 </head>
 <body>
 
@@ -36,10 +36,7 @@
 
   <div class="sl-baslik" id="slBaslik">📅 Bugünün Satışları</div>
 
-  <table class="sl-tablo">
-    <thead><tr><th style="width:10%;">#</th><th>Müşteri</th><th style="width:28%;">Toplam</th></tr></thead>
-    <tbody id="slListe"></tbody>
-  </table>
+  <div id="slListe"></div>
 
   <p class="bos-mesaj" id="slBos" hidden>Bu kapsamda satış kaydı yok.</p>
 
@@ -50,9 +47,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="auth.js?v=WG.030926.1547.104"></script>
 <script src="ust-sabit-olcum.js?v=WG.020926.1338.87"></script>
-<script src="reports-data.js?v=WG.030926.1559.105"></script>
+<script src="reports-data.js?v=WG.050926.0141.123"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="satis-listesi-render.js"></script>
+<script src="satis-listesi-render.js?v=WG.050926.0152.125"></script>
 </body>
 </html>

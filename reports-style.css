@@ -666,3 +666,74 @@
   cursor: pointer;
   white-space: nowrap;
 }
+
+/* ===== v2 satır/kart tasarımı — Son İşlemler, Bugünün/Aylık Satışları,
+   Müşteri İşlem Geçmişi (05.09.2026) — üç sayfada da ORTAK, buradan
+   tek merkezden yönetilir. Sınıf öneki "ik2-" (islem-karti v2). ===== */
+.ik2-kart {
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  cursor: pointer;
+}
+.ik2-ust {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  background: #e6f1fb;
+  padding: 10px 14px;
+  border-bottom: 2px solid #b5d4f4;
+}
+.ik2-ust-sol { min-width: 0; }
+.ik2-isim { font-weight: 800; font-size: 15px; color: #042c53; }
+.ik2-sehir { font-weight: 500; font-size: 14px; color: #0c447c; }
+.ik2-alt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+.ik2-tarih {
+  font-size: 12px;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ik2-kod {
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ik2-kanal-harf { margin-right: 3px; }
+.ik2-tutar {
+  font-size: 16px;
+  font-weight: 900;
+  color: #111827;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.ik2-durum-ek {
+  font-size: 11px;
+  font-weight: 900;
+  color: #c0392b;
+  padding: 0 14px 10px;
+}
+.ik2-rvz {
+  font-size: 20px;
+  font-weight: 900;
+  color: #854f0b;
+  background: #fdf3e3;
+  padding: 2px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1.2;
+}

@@ -476,7 +476,7 @@ var ReportsData = (function(){
           var satirToplam = u.toplamEuro !== undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
           return s + satirToplam;
         }, 0);
-        return {tip:"siparis", ts:k.ts, kod:k.kod, musteri:k.musteri, sehir:k.sehir||"", toplam:toplam};
+        return {tip:"siparis", ts:k.ts, kod:k.kod, tarih:k.tarih||"", musteri:k.musteri, sehir:k.sehir||"", toplam:toplam, kanal:k.kanal||null, durum:k.durum, revizeZamani:k.revizeZamani};
       })
       .sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
   }

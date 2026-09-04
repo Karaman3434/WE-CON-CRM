@@ -337,8 +337,18 @@ function whatsappOnizlemeAc(){
   }catch(e){ hataGoster("WhatsApp önizleme açılamadı: " + e.message); }
 }
 
+function gonderimKanaliniKaydet(kanal){
+  try{
+    if(!sonKaydedilenBelge || !sonKaydedilenBelge.kayit || !gonderBaglam) return;
+    ReportsData.kaydiAlanGuncelle(gonderBaglam.tip, sonKaydedilenBelge.kayit.ts, {kanal: kanal}, function(basarili, err){
+      if(!basarili) console.error("Gönderim kanalı kaydedilemedi:", err);
+    });
+  }catch(e){ console.error("Gönderim kanalı kaydedilemedi:", e); }
+}
+
 function gonderTiklandi(kanal, ozelKonu){
   try{
+    gonderimKanaliniKaydet(kanal);
     // Gönderim tetiklenince artık HİÇBİR ŞEY silinmiyor — mail/WhatsApp
     // uygulaması açılırken veya sonrasında kullanıcı geri gelip
     // düzeltme yapmak isteyebilir. Sepet/müşteri sadece "✓ Gönderimi

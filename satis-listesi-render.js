@@ -27,6 +27,15 @@ function fmt(n){
   return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
+// Bu liste sadece SİPARİŞ gösterir (bkz. ReportsData.satislarListele) — kod
+// öneki her zaman "SİP", bu yüzden renk sabit navy.
+var KANAL_HARF = {mail:"M", whatsapp:"W"};
+var KANAL_RENK = {mail:"#185fa5", whatsapp:"#128C7E"};
+function kanalHarfHTML(kanal){
+  if(!kanal || !KANAL_HARF[kanal]) return "";
+  return "<span class='ik2-kanal-harf' style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
+}
+
 function listeyiCiz(kapsam){
   try{
     var liste = ReportsData.satislarListele(kapsam);
@@ -36,15 +45,26 @@ function listeyiCiz(kapsam){
     bos.hidden = true;
 
     kapsayici.innerHTML = liste.map(function(k, i){
-      return "<tr>"
-        + "<td>" + (i+1) + "</td>"
-        + "<td><button class='sl-musteri-btn' data-i='" + i + "'>" + htmlEsc(k.musteri) + "</button><span class='sl-sehir'>" + htmlEsc(k.sehir||"-") + "</span></td>"
-        + "<td class='sl-toplam'>" + fmt(k.toplam) + " €</td>"
-        + "</tr>";
+      var renkMetin = k.durum === "kacan" ? "#c0392b" : "#003a70";
+      var durumEk = k.durum === "kacan" ? "❌ KAÇTI" : "";
+      return "<div class='ik2-kart' data-i='" + i + "'>"
+        + "<div class='ik2-ust'>"
+        + "<span class='ik2-ust-sol'><span class='ik2-isim'>" + htmlEsc(k.musteri) + "</span>"
+        + (k.sehir ? " <span class='ik2-sehir'>- " + htmlEsc(k.sehir) + "</span>" : "")
+        + "</span>"
+        + (k.revizeZamani ? "<span class='ik2-rvz'>RVZ</span>" : "")
+        + "</div>"
+        + "<div class='ik2-alt'>"
+        + "<span class='ik2-tarih'>" + htmlEsc(k.tarih||"") + "</span>"
+        + "<span class='ik2-kod' style='color:" + renkMetin + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(k.kod||"SİP") + "</span>"
+        + "<span class='ik2-tutar'>" + fmt(k.toplam) + " €</span>"
+        + "</div>"
+        + (durumEk ? "<div class='ik2-durum-ek'>" + durumEk + "</div>" : "")
+        + "</div>";
     }).join("");
 
-    kapsayici.querySelectorAll(".sl-musteri-btn").forEach(function(btn){
-      btn.onclick = function(){
+    kapsayici.querySelectorAll(".ik2-kart").forEach(function(el){
+      el.onclick = function(){
         var k = liste[parseInt(this.getAttribute("data-i"), 10)];
         localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
         window.location.href = "belge-onizleme.html";

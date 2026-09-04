@@ -52,6 +52,13 @@ function ayniMusteriKaydiMi(kayitMusteriAdi, kayitMusteriId, seciliAd, seciliId)
 // aynı tutulmalı (bkz. belge-render.js TIP_RENK_BELGE de aynı paletten).
 var TIP_KOD_YEDEK = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
 var KOD_RENK = {"SİP":"#003a70", "F.TEK":"#28a745", "P.FAT":"#8e44ad", "NUM":"#b7601f"};
+// Metin (rozet değil, düz yazı) olarak kod üzerinde kullanılacak koyu tonlar —
+// beyaz zeminde okunabilirlik için KOD_RENK'ten daha koyu.
+var KOD_RENK_METIN = {"SİP":"#003a70", "F.TEK":"#1a7431", "P.FAT":"#5c1680", "NUM":"#7a4008"};
+// Gönderim kanalı harfi + rengi — kod ile birlikte gösterilir (belge hangi
+// yolla gönderildiyse: Mail veya WhatsApp).
+var KANAL_HARF = {mail:"M", whatsapp:"W"};
+var KANAL_RENK = {mail:"#185fa5", whatsapp:"#128C7E"};
 function kodOnekiAyikla(kod){
   if(!kod) return null;
   var parcalar = kod.split(".");
@@ -62,7 +69,12 @@ function kodRozetVeRenkGetir(k){
   var kod = k.kod || TIP_KOD_YEDEK[k.tip] || "?";
   var onek = kodOnekiAyikla(k.kod) || TIP_KOD_YEDEK[k.tip] || "?";
   var renk = (k.durum === "kacan") ? "#c0392b" : (KOD_RENK[onek] || "#3569b8");
-  return {kod: kod, renk: renk};
+  var renkMetin = (k.durum === "kacan") ? "#c0392b" : (KOD_RENK_METIN[onek] || "#1c2530");
+  return {kod: kod, renk: renk, renkMetin: renkMetin};
+}
+function kanalHarfHTML(kanal){
+  if(!kanal || !KANAL_HARF[kanal]) return "";
+  return "<span class='ik2-kanal-harf' style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
 }
 
 function listeyiCiz(){
@@ -102,27 +114,22 @@ function listeyiCiz(){
     kapsayici.innerHTML = filtreli.map(function(k, i){
       var kacanMi = k.durum === "kacan";
       var kodBilgi = kodRozetVeRenkGetir(k);
-      var kod = kodBilgi.kod, renk = kodBilgi.renk;
+      var kod = kodBilgi.kod, renkMetin = kodBilgi.renkMetin;
       var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
-      var urunSayisi = (k.urunler||[]).length;
-      var durumEk = "";
-      if(kacanMi) durumEk = "❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"");
-      if(k.revizeZamani) durumEk += (durumEk?" — ":"") + "🔄 REVİZE";
+      var durumEk = kacanMi ? ("❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"")) : "";
 
-      return "<div class='islem-karti" + (kacanMi?" islem-karti--kacan":"") + "' data-i='" + i + "'>"
-        + "<div class='islem-satir-2col'>"
-        + "<span class='islem-kod-rozet islem-kod-rozet--buyuk' style='background:" + renk + ";'>" + htmlEsc(kod) + "</span>"
-        + "<span class='islem-tarih-buyuk'>" + htmlEsc(k.tarih) + "</span>"
+      return "<div class='ik2-kart" + (kacanMi?" islem-karti--kacan":"") + "' data-i='" + i + "'>"
+        + "<div class='ik2-alt'>"
+        + "<span class='ik2-tarih'>" + htmlEsc(k.tarih) + "</span>"
+        + "<span class='ik2-kod' style='color:" + renkMetin + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
+        + "<span class='ik2-tutar'>" + fmt(toplam) + " €</span>"
+        + (k.revizeZamani ? "<span class='ik2-rvz'>RVZ</span>" : "")
         + "</div>"
-        + "<div class='gecmis-satir-alt'>"
-        + "<span class='gecmis-urun-sayisi'>" + urunSayisi + " ürün</span>"
-        + "<span class='gecmis-toplam' style='color:" + renk + ";'>" + fmt(toplam) + " €</span>"
-        + "</div>"
-        + (durumEk ? "<div class='islem-durum-ek'>" + durumEk + "</div>" : "")
+        + (durumEk ? "<div class='ik2-durum-ek'>" + durumEk + "</div>" : "")
         + "</div>";
     }).join("");
 
-    kapsayici.querySelectorAll(".islem-karti").forEach(function(el){
+    kapsayici.querySelectorAll(".ik2-kart").forEach(function(el){
       el.onclick = function(){
         var k = filtreli[parseInt(this.getAttribute("data-i"), 10)];
         localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
