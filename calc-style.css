@@ -1,45 +1,8 @@
-/* calc-style.css — eski "hesaplaPopupModal" renkleri/düzeniyle BİREBİR aynı. */
+/* calc-style.css — tek tip kutu sistemi: tüm alanlar aynı boy/font
+   (turuncu iskonto kutuları hariç — onlar kasıtlı olarak biraz daha
+   büyük, sayı boyu %20 daha büyük). */
 
 .sayfa { padding: 8px 14px 24px; background: #f4f6f9; }
-
-.hc-ust-satir {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.hc-kur-kutu {
-  background: #f0f7ff;
-  border: 2.5px solid #3569b8;
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.hc-kur-ikon {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  background: rgba(53,105,184,.12);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; color: #003a70; flex-shrink: 0;
-}
-.hc-kur-metin { flex: 1; min-width: 0; }
-.hc-kur-baslik { font-size: 10px; font-weight: 800; letter-spacing: .4px; color: #2d3540; }
-.hc-kur-kutu input {
-  width: 100%; border: none; background: transparent;
-  font-size: 22px; font-weight: 900; color: #003a70; padding: 0;
-}
-.hc-temizle-buton {
-  background: #c0392b;
-  border: none;
-  border-radius: 12px;
-  color: #fff;
-  min-height: 44px;
-  font-weight: 900;
-  font-size: 13px;
-  cursor: pointer;
-}
 
 .arama-kutusu { position: relative; margin-bottom: 8px; }
 .arama-kutusu input { width: 100%; border: 2px solid #3569b8; border-radius: 999px; padding: 12px 40px 12px 16px; font-size: 14px; background: #fff; }
@@ -73,73 +36,44 @@
   margin-bottom: 10px;
 }
 
-.hc-beyaz-kart {
-  background: #ffffff;
-  border: 1px solid #eeeeee;
-  border-radius: 12px;
+/* Tek tip kutu — Döviz Kuru, Liste Fiyatı, Dip, İsk%, Adet, Müdür Primi,
+   Toplam (EUR), Fatura Toplam hepsi bunu kullanır; hepsi aynı boy/font. */
+.hc-kutu {
+  background: #f7f9fb;
+  border-radius: 10px;
   padding: 12px;
+  box-sizing: border-box;
 }
-.hc-beyaz-etiket {
-  font-size: 10px; font-weight: 800; letter-spacing: .3px;
-  color: #44494f; text-transform: uppercase; margin-bottom: 4px;
+.hc-kutu-etiket {
+  font-size: 11px; font-weight: 700; letter-spacing: .2px;
+  color: #667085; margin-bottom: 4px;
 }
-.hc-beyaz-kart input {
+.hc-kutu input {
   width: 100%; border: none; background: transparent;
-  font-size: 22px; font-weight: 900; color: #0f4fc0; padding: 0;
+  font-size: 17px; font-weight: 800; color: #0f4fc0; padding: 0;
   outline: none;
 }
-.hc-beyaz-kart input:focus {
-  outline: none;
-  box-shadow: none;
-}
-.hc-beyaz-kart:focus-within {
-  border-color: #3569b8;
-}
+.hc-kutu-deger { font-size: 17px; font-weight: 800; color: #101828; }
 
+/* Toplam (EUR) / Fatura Toplam — aynı kutu boyutu, sadece farklı ton
+   (açık mavi-gri, koyu değil) ve etiket rengi. */
+.hc-kutu--toplam { background: #e7edf5; }
+.hc-kutu--toplam .hc-kutu-etiket { color: #3d5a80; }
+.hc-kutu--toplam .hc-kutu-deger { color: #1a2a3a; }
+
+/* Turuncu iskonto kutuları — kasıtlı olarak diğerlerinden biraz daha
+   büyük (padding), sayı %20 daha büyük (17px → 20px), zemin dolu
+   turuncu, yazı beyaza yakın açık ton. */
 .hc-turuncu-kart {
-  background: #fff9f2;
-  border: 1px solid #f5cb9a;
-  border-radius: 12px;
-  padding: 12px;
+  background: #e8730f;
+  border-radius: 10px;
+  padding: 14px 12px;
+  box-sizing: border-box;
 }
-.hc-turuncu-baslik-satir {
-  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
-  font-size: 12px; font-weight: 800; color: #c07a1e;
+.hc-turuncu-etiket {
+  font-size: 11px; font-weight: 700; color: #fde3cb; margin-bottom: 4px;
 }
-.hc-turuncu-rozet {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: #f59e0b; color: #fff; font-size: 9px; font-weight: 900;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.hc-turuncu-deger { font-size: 20px; font-weight: 900; color: #e0812a; }
-
-.hc-gri-kart {
-  background: #eef0f3; border-radius: 12px; padding: 12px;
-  display: flex; align-items: center; gap: 8px;
-}
-.hc-gri-ikon {
-  width: 26px; height: 26px; border-radius: 50%; background: #dfe3e9;
-  display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;
-}
-.hc-gri-baslik { font-size: 11px; color: #5a6472; font-weight: 700; }
-.hc-gri-deger { font-size: 17px; font-weight: 900; color: #0f4fc0; }
-
-.hc-navy-kart {
-  background: #0d1b3a; border-radius: 12px; padding: 12px; color: #fff;
-  display: flex; align-items: center; gap: 8px;
-}
-.hc-navy-ikon {
-  width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.15);
-  display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;
-}
-.hc-navy-baslik { font-size: 10px; opacity: .8; font-weight: 700; }
-.hc-navy-deger { font-size: 17px; font-weight: 900; }
-
-.hc-prim-kutu {
-  display: flex; align-items: center; justify-content: space-between;
-  background: #eef0f3; border-radius: 10px; padding: 10px 12px;
-  font-weight: 800; color: #0f4fc0; font-size: 13px;
-}
+.hc-turuncu-deger { font-size: 20px; font-weight: 900; color: #ffffff; }
 
 .hc-alt-buton-satir {
   display: flex; gap: 8px; margin-top: 4px;

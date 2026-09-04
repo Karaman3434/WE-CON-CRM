@@ -175,18 +175,18 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
       satirlarHtml += "<tr>"
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
-        + "<td><span class='rozet-net'>" + fmtG2(h.iskontoluFiyat) + " €</span></td>"
-        + "<td class='belge-td-toplam'>" + fmtG2(h.toplamEuro) + " €</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--net'><div class='belge-td-sayi'>" + fmtG2(h.iskontoluFiyat) + "</div><div class='belge-td-birim'>EURO</div></td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'><div class='belge-td-sayi'>" + fmtG2(h.toplamEuro) + "</div><div class='belge-td-birim'>EURO</div></td>"
         + "</tr>";
     } else {
       satirlarHtml += "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
-        + "<td>" + fmtG2(u.listeFiyat||0) + " €</td>"
+        + "<td class='belge-td-fiyat'><div class='belge-td-sayi'>" + fmtG2(u.listeFiyat||0) + "</div><div class='belge-td-birim'>EURO</div></td>"
         + "<td><span class='rozet-isk'>%" + (u.iskonto||0) + "</span></td>"
-        + "<td><span class='rozet-net'>" + fmtG2(h.iskontoluFiyat) + " €</span></td>"
-        + "<td class='belge-td-toplam'>" + fmtG2(h.toplamEuro) + " €</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--net'><div class='belge-td-sayi'>" + fmtG2(h.iskontoluFiyat) + "</div><div class='belge-td-birim'>EURO</div></td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'><div class='belge-td-sayi'>" + fmtG2(h.toplamEuro) + "</div><div class='belge-td-birim'>EURO</div></td>"
         + "</tr>";
     }
   });
@@ -239,8 +239,8 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo belge-urun-tablo--giden'>"
     + "<thead><tr>" + (basit
-        ? "<th style='width:48%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>ADET</th><th style='width:19%;'>NET</th><th style='width:19%;'>TOPLAM</th>"
-        : "<th style='width:4%;'>SR</th><th style='width:36%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>ADET</th><th style='width:13%;'>LİSTE</th><th style='width:12%;'>İSK</th><th style='width:14%;'>NET</th><th style='width:14%;'>TOPLAM</th>") + "</tr></thead>"
+        ? "<th style='width:48%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>AD</th><th style='width:19%;'>NET</th><th style='width:19%;'>TOPLAM</th>"
+        : "<th style='width:4%;'>#</th><th style='width:36%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>AD</th><th style='width:13%;'>LİST</th><th style='width:12%;'>İSK</th><th style='width:14%;'>NET</th><th style='width:14%;'>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
     + "<div class='belge-genel-toplam-serit'>"
@@ -318,15 +318,11 @@ function whatsappOnizlemeAc(){
 
 function gonderTiklandi(kanal, ozelKonu){
   try{
-    // Gönderim TETİKLENİR tetiklenmez kalıcı durumu temizle (sayfa açık
-    // kalıp diğer kanaldan da göndermeye devam edebilsin diye gonderBaglam
-    // hâlâ bellekte duruyor — ama localStorage'daki müşteri/sepet/tip artık
-    // "bitmiş" sayılır, sonraki işleme hiçbir şey sızmasın).
-    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
-    try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
-    try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
-    try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
-
+    // Gönderim tetiklenince artık HİÇBİR ŞEY silinmiyor — mail/WhatsApp
+    // uygulaması açılırken veya sonrasında kullanıcı geri gelip
+    // düzeltme yapmak isteyebilir. Sepet/müşteri sadece "✓ Gönderimi
+    // Bitir"e basılınca veya Ana Sayfa/Menü'ye gidilince temizlenir
+    // (bkz. btnGonderBitir ve yarim-kalan-uyari.js).
     var metin = document.getElementById("gonderMetin").value;
     var g = gonderBaglam;
     var TIP_ETIKET4 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
@@ -382,7 +378,8 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  // Menü butonu artık yarim-kalan-uyari.js tarafından yönetiliyor (sepette
+  // ürün + seçili müşteri varsa uyarıp sonra temizleyip gidiyor).
 
   // cart.html'in az önce yazdığı kayıt bağlamını oku — yoksa (örn. sayfaya
   // doğrudan URL ile girildiyse) Sepet'e geri gönder.

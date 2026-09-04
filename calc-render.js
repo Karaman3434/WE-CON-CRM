@@ -119,10 +119,7 @@ function hesaplaVeGoster(){
     document.getElementById("rIskontoluFiyat").textContent = CartData.fmt(h.iskontoluFiyat) + " €";
     document.getElementById("rTlBirimFiyat").textContent = CartData.fmt(h.tlBirimFiyat) + " TL";
     document.getElementById("rToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " €";
-    document.getElementById("rGenelToplamDeger").textContent = CartData.fmt(h.toplamEuro) + " €";
-    document.getElementById("rGenelToplamKur").innerHTML = kur ? ("Hesaplanan Kur<br>" + CartData.fmt(kur) + " Euro") : "";
     document.getElementById("rFaturaToplam").textContent = CartData.fmt(h.faturaToplam) + " TL";
-    document.getElementById("rPrimEuro").textContent = (h.mudurPrim===0 && urun.iskonto>60) ? "ÖZEL FİYAT" : (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim)+" €");
     var kur2 = kur||0;
     document.getElementById("rPrimTL").textContent = (h.mudurPrim===0 && urun.iskonto>60) ? "ÖZEL FİYAT" : (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim*kur2)+" TL");
   }catch(e){ hataGoster("Hesaplama yapılamadı: " + e.message); }
@@ -179,25 +176,6 @@ document.addEventListener("DOMContentLoaded", function(){
     seciliUrunBilgi = null;
   };
   document.getElementById("btnHesapSepeteEkle").onclick = sepeteEkleTiklandi;
-  document.getElementById("btnTemizle").onclick = function(){
-    document.getElementById("hesListeFiyat").value = 0;
-    document.getElementById("hesDipFiyat").value = 0;
-    document.getElementById("hesIskonto").value = 0;
-    document.getElementById("hesAdet").value = 1;
-    document.getElementById("seciliUrunKutu").hidden = true;
-    seciliUrunBilgi = null;
-    hesaplaVeGoster();
-    // "Temizle" artık sadece bu formu değil, TÜM işlemi sıfırlar — yarım
-    // kalan bir sepet/müşteri seçimi olsa bile hiçbir onay istemeden silinir.
-    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
-    try{ if(typeof CustomerData !== "undefined") CustomerData.secimiKaldir(); }catch(e){}
-    try{
-      localStorage.removeItem("weiconv2_onceden_secilen_tip");
-      localStorage.removeItem("weiconv2_hesapla_duzenle_idx");
-      localStorage.removeItem("weiconv2_ilerlet_kaynak");
-      localStorage.removeItem("weiconv2_islem_yap_akisi");
-    }catch(e){}
-  };
   ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet","kurInput"].forEach(function(id){
     document.getElementById(id).addEventListener("input", function(){
       if(id==="kurInput") CartData.kurKaydet(parseFloat(this.value)||0);
@@ -215,7 +193,8 @@ document.addEventListener("DOMContentLoaded", function(){
     try{ if(typeof CustomerData !== "undefined") CustomerData.secimiKaldir(); }catch(e){}
     window.location.href = "home.html";
   };
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  // Menü butonu artık yarim-kalan-uyari.js tarafından yönetiliyor (sepette
+  // ürün + seçili müşteri varsa uyarıp sonra temizleyip gidiyor).
   ProductData.katalogDegistiginde(function(){});
   hesaplaVeGoster();
   duzenlemeModunuKontrolEt();

@@ -15,8 +15,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.040926.1052.110">
 <link rel="stylesheet" href="product-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="calc-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="belge-style.css?v=WG.030926.1938.109">
+<link rel="stylesheet" href="calc-style.css?v=WG.040926.1500.115">
 </head>
 <body>
 
@@ -36,22 +35,22 @@
 
 <main class="sayfa">
 
-  <div class="hc-ust-satir">
-    <div class="hc-kur-kutu">
-      <div class="hc-kur-ikon">€</div>
-      <div class="hc-kur-metin">
-        <div class="hc-kur-baslik">DÖVİZ KURU</div>
-        <input type="number" id="kurInput" step="0.0001">
-      </div>
-    </div>
-    <button class="hc-listeye-ekle-buton" id="btnHesapSepeteEkle">➕ LİSTEYE EKLE</button>
-  </div>
-
   <div class="arama-kutusu">
     <input type="text" id="searchInput" placeholder="Ürün Bul — katalogda ara..." autocomplete="off">
     <span class="arama-ikon">🔍</span>
   </div>
   <div class="sonuc-listesi" id="sonucListesi"></div>
+
+  <div class="hc-grid-2">
+    <div class="hc-kutu">
+      <div class="hc-kutu-etiket">Döviz Kuru</div>
+      <input type="number" id="kurInput" step="0.0001">
+    </div>
+    <div class="hc-kutu">
+      <div class="hc-kutu-etiket">Liste Fiyatı (EUR)</div>
+      <input type="number" step="0.01" id="hesListeFiyat" value="0">
+    </div>
+  </div>
 
   <div class="hc-secili-urun-kutu" id="seciliUrunKutu" hidden>
     <div class="hc-secili-urun-baslik">Hesaplanacak Ürün</div>
@@ -62,68 +61,52 @@
   </div>
 
   <div class="hc-grid-2">
-    <div class="hc-beyaz-kart">
-      <div class="hc-beyaz-etiket">Liste Fiyatı (EUR)</div>
-      <input type="number" step="0.01" id="hesListeFiyat" value="0">
-    </div>
-    <div class="hc-beyaz-kart">
-      <div class="hc-beyaz-etiket">Dip (Maliyet) (EUR)</div>
+    <div class="hc-kutu">
+      <div class="hc-kutu-etiket">Dip (Maliyet) (EUR)</div>
       <input type="number" step="0.01" id="hesDipFiyat" value="0">
     </div>
-  </div>
-  <div class="hc-grid-2">
-    <div class="hc-beyaz-kart">
-      <div class="hc-beyaz-etiket">İsk (%)</div>
+    <div class="hc-kutu">
+      <div class="hc-kutu-etiket">İsk (%)</div>
       <input type="number" step="0.1" id="hesIskonto" value="0">
     </div>
-    <div class="hc-beyaz-kart">
-      <div class="hc-beyaz-etiket">Adet</div>
+  </div>
+
+  <div class="hc-grid-2">
+    <div class="hc-kutu">
+      <div class="hc-kutu-etiket">Adet</div>
       <input type="number" step="1" min="1" id="hesAdet" value="1">
+    </div>
+    <div class="hc-kutu">
+      <div class="hc-kutu-etiket">Müdür Primi (TL)</div>
+      <div class="hc-kutu-deger" id="rPrimTL">-</div>
     </div>
   </div>
 
   <div class="hc-grid-2">
     <div class="hc-turuncu-kart">
-      <div class="hc-turuncu-baslik-satir"><span class="hc-turuncu-rozet">€</span><span>İsk. Birim Fiyat (EUR)</span></div>
+      <div class="hc-turuncu-etiket">İsk. Birim Fiyat (EUR)</div>
       <div class="hc-turuncu-deger" id="rIskontoluFiyat">-</div>
     </div>
     <div class="hc-turuncu-kart">
-      <div class="hc-turuncu-baslik-satir"><span class="hc-turuncu-rozet">TL</span><span>TL Birim Fiyat</span></div>
+      <div class="hc-turuncu-etiket">TL Birim Fiyat</div>
       <div class="hc-turuncu-deger" id="rTlBirimFiyat">-</div>
     </div>
   </div>
 
   <div class="hc-grid-2">
-    <div class="hc-gri-kart">
-      <span class="hc-gri-ikon">🏷</span>
-      <div>
-        <div class="hc-gri-baslik">Toplam Euro</div>
-        <div class="hc-gri-deger" id="rToplamEuro">-</div>
-      </div>
+    <div class="hc-kutu hc-kutu--toplam">
+      <div class="hc-kutu-etiket">Toplam (EUR)</div>
+      <div class="hc-kutu-deger" id="rToplamEuro">-</div>
     </div>
-    <div class="hc-navy-kart">
-      <span class="hc-navy-ikon">📄</span>
-      <div>
-        <div class="hc-navy-baslik">Fatura Toplam (KDV Dahil)</div>
-        <div class="hc-navy-deger" id="rFaturaToplam">-</div>
-      </div>
+    <div class="hc-kutu hc-kutu--toplam">
+      <div class="hc-kutu-etiket">Fatura Toplam (KDV Dahil)</div>
+      <div class="hc-kutu-deger" id="rFaturaToplam">-</div>
     </div>
-  </div>
-
-  <div class="belge-genel-toplam-serit" style="border-radius:10px; margin:10px 0;">
-    <span class="belge-gt-kur" id="rGenelToplamKur"></span>
-    <span class="belge-gt-etiket">GENEL TOPLAM</span>
-    <span class="belge-gt-deger" id="rGenelToplamDeger">-</span>
-  </div>
-
-  <div class="hc-grid-2">
-    <div class="hc-prim-kutu"><span>Prim EUR</span><b id="rPrimEuro">-</b></div>
-    <div class="hc-prim-kutu"><span>Prim TL</span><b id="rPrimTL">-</b></div>
   </div>
 
   <div class="hc-alt-buton-satir">
     <a class="hc-kapat-buton" id="btnHesapKapat" href="home.html">✕ Kapat</a>
-    <button class="hc-temizle-buton" id="btnTemizle">🧹 Temizle</button>
+    <button class="hc-listeye-ekle-buton" id="btnHesapSepeteEkle">➕ LİSTEYE EKLE</button>
   </div>
 
 </main>
@@ -138,7 +121,7 @@
 <script src="cart-data.js?v=WG.020926.1338.87"></script>
 <script src="customer-data.js?v=WG.030926.1158.98"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="calc-render.js?v=WG.030926.1214.99"></script>
-<script src="yarim-kalan-uyari.js?v=WG.020926.1338.87"></script>
+<script src="calc-render.js?v=WG.040926.1500.115"></script>
+<script src="yarim-kalan-uyari.js?v=WG.040926.1500.115"></script>
 </body>
 </html>
