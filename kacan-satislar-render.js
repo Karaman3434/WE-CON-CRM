@@ -25,6 +25,11 @@ function htmlEsc(s){
 
 var siralamaYonu = "yeni"; // yeni | eski
 
+// Tür rengi — Son İşlemler / belge kartı ile aynı palet (bkz.
+// reports-render.js KOD_RENK, belge-render.js TIP_RENK_BELGE).
+var TIP_ETIKET_KS = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
+var TIP_RENK_KS = {siparis:"#003a70", teklif:"#28a745", proforma:"#8e44ad", numune:"#b7601f"};
+
 function listeyiCiz(){
   try{
     var liste = ReportsData.tumKacanlar(siralamaYonu);
@@ -34,9 +39,11 @@ function listeyiCiz(){
     bos.hidden = true;
 
     kapsayici.innerHTML = liste.map(function(k, i){
+      var renk = TIP_RENK_KS[k.tip] || "#3569b8";
       return "<tr>"
         + "<td>" + (i+1) + "</td>"
         + "<td><button class='sl-musteri-btn' data-i='" + i + "'>" + htmlEsc(k.musteri) + "</button><span class='sl-sehir'>" + htmlEsc(k.sehir||"-") + "</span></td>"
+        + "<td><span class='islem-kod-rozet' style='background:" + renk + ";'>" + htmlEsc(TIP_ETIKET_KS[k.tip]||k.tip) + "</span></td>"
         + "<td class='sl-tarih-hucre'>" + htmlEsc(k.tarih||"-") + "</td>"
         + "</tr>";
     }).join("");

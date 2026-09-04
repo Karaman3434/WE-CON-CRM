@@ -66,134 +66,19 @@ function ayniMusteriKaydiMi(kayitMusteriAdi, kayitMusteriId, seciliAd, seciliId)
   return a.indexOf(b) === 0 || b.indexOf(a) === 0;
 }
 
+// Tam liste artık ayrı bir sayfada (bkz. gecmis.html / gecmis-render.js —
+// rota, filtre çipleri, en yeniden en eskiye sıralı renkli kartlar).
+// Burada sadece "İşlem Geçmişi" kutucuğundaki sayaç/alt metin güncellenir.
 function siparisGecmisiniCiz(){
   try{
     var seciliMusteri = CustomerData.musteriBul(seciliMusteriAdi);
     var seciliId = seciliMusteri ? seciliMusteri.id : null;
     var tumu = ReportsData.sonIslemler();
     var bunaAit = tumu.filter(function(k){ return ayniMusteriKaydiMi(k.musteri, k.musteriId, seciliMusteriAdi, seciliId); });
-    var kapsayici = document.getElementById("detaySiparisListesi");
-    var bos = document.getElementById("detaySiparisBos");
 
     document.getElementById("badgeGecmis").textContent = bunaAit.length;
     document.getElementById("gecmisAlt").textContent = bunaAit.length>0 ? (bunaAit.length + " kayıtlı işlem") : "Henüz kayıt yok";
-
-    var farkliIsimliKayit = bunaAit.find(function(k){
-      return (k.musteri||"").trim() !== (seciliMusteriAdi||"").trim();
-    });
-    var uyusmazlikKutu = document.getElementById("isimUyusmazlikKutu");
-    if(farkliIsimliKayit){
-      uyusmazlikKutu.hidden = false;
-      document.getElementById("isimUyusmazlikMetin").textContent =
-        "⚠️ Bazı eski kayıtlarda farklı bir isim var: \"" + farkliIsimliKayit.musteri + "\". "
-        + "Bu kayıtlar gösteriliyor ama isimleri güncel Cari Bilgi (\"" + seciliMusteriAdi + "\") ile eşleşmiyor.";
-      document.getElementById("btnIsimUyusmazlikDuzelt").onclick = isimleriEsitleTiklandi;
-    } else {
-      uyusmazlikKutu.hidden = true;
-    }
-
-    if(bunaAit.length === 0){
-      kapsayici.innerHTML = "";
-      bos.hidden = false;
-      return;
-    }
-    bos.hidden = true;
-
-    var TIP_ETIKET_G = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
-    var TIP_IKON_G = {numune:"🧪", teklif:"📝", proforma:"📋", siparis:"📦"};
-    var TIP_RENK_G = {siparis:"#003a70", teklif:"#0e6b34", proforma:"#6a1b9a", numune:"#a8590c"};
-
-    // Her işlem (sipariş/teklif/vb.) kendi grubu: üstte tür+tarih+kod
-    // başlığı (kod artık her satırda değil, TEK SEFER burada), altında
-    // programın standart belge tablosu (Sepet/Belge Önizleme ile birebir
-    // aynı stil), en altta kur+toplam şeridi. Herhangi bir satırı sağa/
-    // sola kaydırınca o İŞLEMİN TAMAMI için silme onayı çıkar.
-    kapsayici.innerHTML = bunaAit.map(function(k){
-      var kacanMi = k.durum === "kacan";
-      var renk = TIP_RENK_G[k.tip]||"#003a70";
-      var toplamEuro = 0, toplamTl = 0;
-      var kaydinKuru = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
-
-      var satirlarHtml = (k.urunler||[]).map(function(u, i){
-        toplamEuro += u.toplamEuro||0;
-        toplamTl += (u.toplamEuro||0) * kaydinKuru;
-        var mk = (u.iskBirim||0)-(u.dipFiyat||0);
-        var ozelFiyatMi = (u.iskonto||0) > 60;
-        var prim = ozelFiyatMi ? 0 : mk*(u.adet||0)*0.22;
-        if(prim<0) prim = 0;
-        var primTl = Math.round(prim * kaydinKuru);
-        return "<tr>"
-          + "<td class='belge-td-sira'>" + (i+1) + "</td>"
-          + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>"
-          + "<td>" + (u.adet||0) + "</td>"
-          + "<td>" + fmtG(u.listeFiyat||0) + "€</td>"
-          + "<td><span class='rozet-isk'>%" + (u.iskonto||0) + "</span></td>"
-          + "<td><span class='rozet-net'>" + fmtG(u.iskBirim!==undefined?u.iskBirim:0) + "€</span></td>"
-          + "<td class='belge-td-toplam'>" + fmtG(u.toplamEuro||0) + "€</td>"
-          + "<td class='belge-td-prim'>" + (ozelFiyatMi ? "Ö.F" : ("<span class='belge-td-prim-tek'>"+primTl.toLocaleString("tr-TR")+" TL</span>")) + "</td>"
-          + "</tr>";
-      }).join("");
-
-      return "<div class='gecmis-grup' data-tip='" + k.tip + "' data-ts='" + k.ts + "'>"
-        + "<div class='gecmis-grup-govde'>"
-        + "<div class='gecmis-grup-baslik' style='background:" + renk + ";'>"
-        + "<span>" + TIP_IKON_G[k.tip] + " " + TIP_ETIKET_G[k.tip] + " · " + htmlEsc(k.tarih.split(" ").slice(0,2).join(" ")) + " · " + htmlEsc(k.kod||"") + "</span>"
-        + (kacanMi ? "<span class='gecmis-kacan-rozet'>❌ KAÇTI</span>" : "")
-        + (k.revizeZamani ? "<span class='gecmis-revize-rozet'>🔄 REVİZE</span>" : "")
-        + "</div>"
-        + "<div class='data-table-container'><table class='belge-urun-tablo gecmis-standart-tablo'>"
-        + "<thead><tr><th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th></tr></thead>"
-        + "<tbody>" + satirlarHtml + "</tbody></table></div>"
-        + "<div class='belge-genel-toplam-serit'>"
-        + (kaydinKuru ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmtG(kaydinKuru) + " Euro</span>" : "")
-        + "<span class='belge-gt-etiket'>TOPLAM</span>"
-        + "<span class='belge-gt-deger'>" + fmtG(toplamEuro) + " €" + (kaydinKuru ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(toplamEuro*kaydinKuru).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"
-        + "</div>"
-        + "</div>"
-        + "<div class='gecmis-grup-sil-arkaplan'>🗑 Sil</div>"
-        + "</div>";
-    }).join("");
-
-    // Tıklama = belgeyi görüntüle (kaydırma DEĞİLSE)
-    kapsayici.querySelectorAll(".gecmis-grup-govde").forEach(function(govde){
-      var grup = govde.closest(".gecmis-grup");
-      var basladiX = null, kaydiriliyorMu = false;
-      govde.addEventListener("pointerdown", function(e){ basladiX = e.clientX; kaydiriliyorMu = false; });
-      govde.addEventListener("pointermove", function(e){
-        if(basladiX===null) return;
-        var fark = e.clientX - basladiX;
-        if(Math.abs(fark) > 8) kaydiriliyorMu = true;
-        if(Math.abs(fark) > 6){
-          govde.style.transform = "translateX(" + Math.max(-90, Math.min(90, fark)) + "px)";
-        }
-      });
-      function birak(e){
-        if(basladiX===null) return;
-        var fark = (e.clientX||basladiX) - basladiX;
-        basladiX = null;
-        govde.style.transition = "transform .2s";
-        govde.style.transform = "translateX(0)";
-        setTimeout(function(){ govde.style.transition = ""; }, 200);
-        if(Math.abs(fark) > 60){
-          silOnayiSor(grup.getAttribute("data-tip"), parseFloat(grup.getAttribute("data-ts")));
-          return;
-        }
-        if(!kaydiriliyorMu){
-          localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:grup.getAttribute("data-tip"), ts:parseFloat(grup.getAttribute("data-ts"))}));
-          window.location.href = "belge-onizleme.html";
-        }
-      }
-      govde.addEventListener("pointerup", birak);
-      govde.addEventListener("pointercancel", function(){ basladiX = null; govde.style.transform = "translateX(0)"; });
-    });
-  }catch(e){ hataGoster("Sipariş geçmişi çizilemedi: " + e.message); }
-}
-
-function silOnayiSor(tip, ts){
-  if(!confirm("Bu işlem tamamen silinsin mi? Bu geri alınamaz.")) return;
-  ReportsData.kaydiSil(tip, ts, function(basarili, err){
-    if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-  });
+  }catch(e){ hataGoster("Sipariş geçmişi sayacı güncellenemedi: " + e.message); }
 }
 
 function ziyaretGecmisiniCiz(musteri){
@@ -226,9 +111,7 @@ function tilelariBagla(){
     if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
   };
   document.getElementById("tileGecmis").onclick = function(){
-    var bolum = document.getElementById("bolumGecmis");
-    bolum.hidden = !bolum.hidden;
-    if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
+    window.location.href = "gecmis.html";
   };
   document.getElementById("tileGorevler").onclick = function(){
     var bolum = document.getElementById("bolumGorevler");
@@ -300,43 +183,6 @@ function urunGecmisiniAc(){
     }
     document.getElementById("urunGecmisiOverlay").hidden = false;
   }catch(e){ hataGoster("Ürün geçmişi açılamadı: " + e.message); }
-}
-
-function isimleriEsitleTiklandi(){
-  try{
-    var seciliMusteri = CustomerData.musteriBul(seciliMusteriAdi);
-    var seciliId = seciliMusteri ? seciliMusteri.id : null;
-    var tumu = ReportsData.sonIslemler();
-    var bunaAit = tumu.filter(function(k){ return ayniMusteriKaydiMi(k.musteri, k.musteriId, seciliMusteriAdi, seciliId); });
-    var farkliIsimler = [];
-    bunaAit.forEach(function(k){
-      var isim = (k.musteri||"").trim();
-      if(isim && isim !== (seciliMusteriAdi||"").trim() && farkliIsimler.indexOf(isim)===-1) farkliIsimler.push(isim);
-    });
-    if(farkliIsimler.length === 0) return;
-
-    if(!confirm("Şu eski isim varyant(lar)ı bulundu:\n\n" + farkliIsimler.join("\n") + "\n\nBunlara ait TÜM kayıtlar (sipariş/teklif/görev), güncel isim \"" + seciliMusteriAdi + "\" ile eşitlenecek. Devam edilsin mi?")) return;
-
-    var btn = document.getElementById("btnIsimUyusmazlikDuzelt");
-    btn.disabled = true; btn.textContent = "Eşitleniyor...";
-
-    var sirayla = function(i){
-      if(i >= farkliIsimler.length){
-        btn.disabled = false; btn.textContent = "✓ İsimleri Eşitle";
-        siparisGecmisiniCiz();
-        return;
-      }
-      ReportsData.kayitlariBirlestir(farkliIsimler[i], null, seciliMusteriAdi, seciliId, function(basarili, err){
-        if(!basarili){
-          btn.disabled = false; btn.textContent = "✓ İsimleri Eşitle";
-          hataGoster("Eşitlenemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-          return;
-        }
-        sirayla(i+1);
-      });
-    };
-    sirayla(0);
-  }catch(e){ hataGoster("İsimler eşitlenemedi: " + e.message); }
 }
 
 function musteriGorevleriniCiz(){

@@ -1,22 +1,28 @@
-WE-CON-CRM — Sürüm senkron düzeltmesi
-Sürüm: WG.040926.1355.112
+WE-CON-CRM — İşlem Geçmişi ayrı sayfa + renkli tablo güncellemesi
+Sürüm: WG.040926.1436.113
 
-DEĞİŞEN DOSYALAR (3)
-1) ayarlar-render.js — APP_VERSION artık WG.040926.1355.112 (eskiden WG.260901.1313.68 idi, home.html'deki ile uyuşmuyordu)
-2) ayarlar.html — ayarlar-render.js'in ?v= cache-bust damgası güncellendi
-3) home.html — alt bilgideki görünür sürüm etiketi WG.040926.1355.112 olarak güncellendi
+YENİ DOSYALAR (3)
+1) gecmis.html — müşteriye özel İşlem Geçmişi sayfası
+2) gecmis-render.js — sayfanın mantığı (filtre, sıralama, renkli kartlar)
+3) gecmis-style.css — filtre çipi ve kart alt satırı stilleri
 
-Bu üç dosyayı mevcut kök dizindeki aynı isimli dosyalarla değiştir.
+DEĞİŞEN DOSYALAR (7)
+4) customer-detail.html — "İşlem Geçmişi" kutucuğu artık gecmis.html'e yönlendiriyor,
+   eski açılır panel kaldırıldı, silme uyarı notu güncellendi
+5) detail-render.js — eski inline panel render kodu ve isim-eşitleme fonksiyonu
+   kaldırıldı (gecmis-render.js'e taşındı), kutucuktaki sayaç korundu
+6) kacan-satislar.html — tabloya "Tür" sütunu eklendi
+7) kacan-satislar-render.js — her satır kendi işlem türünün renkli rozetiyle gösteriliyor
+8) ayarlar-render.js — APP_VERSION senkronu
+9) ayarlar.html — ayarlar-render.js cache-bust damgası
+10) home.html — görünür sürüm etiketi senkronu
 
-AYRICA SENDEKİ YEREL KLASÖRDEN SİLİNMESİ GEREKENLER (bu pakette yok, çünkü zaten silindi)
-- ui-render-fix.js — kullanılmıyor, README'ye göre zaten kaldırılmıştı ama pakette tekrar vardı
-- weicon-v2-anasayfa.zip — unutulmuş eski kaynak arşivi
-- _backups/ klasörü — unutulmuş yedek klasörü
+DAĞITIM
+Bu 10 dosyayı mevcut kök dizindeki aynı isimli dosyalarla değiştir. Başka hiçbir
+dosyaya dokunulmadı (satis-listesi.html kasıtlı olarak değiştirilmedi — o liste
+zaten tek tip (Sipariş) gösteriyor, renklendirme orada bir şey katmıyor).
 
-Bu üçünü kendi WE-CON-CRM klasöründen elle silmen yeterli, hiçbir sayfa onları yüklemiyor.
-
-NOT
-- Diğer tüm dosyaların ayrı ayrı ?v= cache-bust damgaları (WG.020926... / WG.030926...) kasıtlı olarak
-  dokunulmadı — bunlar tek tek dosya değiştikçe güncellenen normal cache-bust damgaları, hepsinin aynı
-  olması gerekmiyor. Asıl sorun sadece home.html'deki görünür sürüm ile ayarlar ekranındaki sürümün
-  birbirini tutmamasıydı, o düzeltildi.
+TEST NOTU
+Bir müşteri kartından "🕐 İşlem Geçmişi"ne dokun → yeni sayfa açılmalı, üstte
+rota ve müşteri adı, filtre çipleri ve renkli kartlar görünmeli. Kartlardan
+birine dokununca aynı belge önizleme ekranına gitmeli (silme oradan yapılabiliyor).

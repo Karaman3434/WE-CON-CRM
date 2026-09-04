@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="customer-style.css?v=WG.030926.1158.98">
 <link rel="stylesheet" href="detail-style.css?v=WG.030926.1158.98">
 <link rel="stylesheet" href="send-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="belge-style.css?v=WG.030926.1938.109">
+<link rel="stylesheet" href="belge-style.css?v=WG.040926.1348.111">
 </head>
 <body>
 
@@ -106,7 +106,7 @@
     <button class="islemler-sil-btn" id="btnMusteriSil">🗑 Müşteriyi Sil</button>
     <a class="islemler-kapat-btn" href="customer.html">Kapat</a>
   </div>
-  <p class="islemler-sil-uyari-notu">⚠️ Bu buton müşterinin tamamını (tüm kayıtlarıyla) siler. Tek bir işlemi silmek için aşağıda "🕐 İşlem Geçmişi"ni aç ve ilgili kayda dokun.</p>
+  <p class="islemler-sil-uyari-notu">⚠️ Bu buton müşterinin tamamını (tüm kayıtlarıyla) siler. Tek bir işlemi silmek için "🕐 İşlem Geçmişi"ne gir, ilgili kayda dokun ve oradan sil.</p>
 
   <!-- ÜRÜN GEÇMİŞİ — önce ürün listesi, bir ürüne dokununca o ürünün
        tarih tarih liste fiyatı/iskonto/net fiyat tablosu. -->
@@ -162,17 +162,6 @@
     <p class="bos-mesaj" id="detayZiyaretBos" hidden>Temas kaydı yok.</p>
   </section>
 
-  <!-- İŞLEM GEÇMİŞİ — açılır bölüm, gerçek tablo -->
-  <section class="acilir-bolum" id="bolumGecmis" hidden>
-    <div class="acilir-baslik">🕘 İşlem Geçmişi</div>
-    <div class="isim-uyusmazlik-kutu" id="isimUyusmazlikKutu" hidden>
-      <p id="isimUyusmazlikMetin"></p>
-      <button class="isim-uyusmazlik-duzelt-btn" id="btnIsimUyusmazlikDuzelt">✓ İsimleri Eşitle</button>
-    </div>
-    <div id="detaySiparisListesi"></div>
-    <p class="bos-mesaj" id="detaySiparisBos" hidden>Bu müşteriye ait kayıt yok.</p>
-  </section>
-
   <!-- GÖREVLERİM (bu müşteriyle ilgili) — açılır bölüm -->
   <section class="acilir-bolum" id="bolumGorevler" hidden>
     <div class="acilir-baslik">📋 Bu Müşteriyle İlgili Görevler</div>
@@ -191,6 +180,6 @@
 <script src="reports-data.js?v=WG.030926.1559.105"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="detail-render.js?v=WG.020926.1338.87"></script>
+<script src="detail-render.js?v=WG.040926.1436.113"></script>
 </body>
 </html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — İŞLEM GEÇMİŞİ (müşteriye özel, ayrı sayfa)
+  ===========================================================
+  customer-detail.html içindeki eski açılır-kapanır "İşlem Geçmişi"
+  panelinin yerine geçer. Rota: Satış › Müşteriler › İşlem Geçmişi.
+  Üstte navy şeritte müşteri adı (rotada tekrar etmiyor). Tip filtre
+  çipleri (Tümü/Sipariş/Teklif/Numune/Proforma), kartlar en yeniden en
+  eskiye sıralı, her kart kendi işlem türünün rengiyle (reports-style.css
+  .islem-kod-rozet sistemiyle birebir aynı renkler).
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — İşlem Geçmişi</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.040926.1052.110">
+<link rel="stylesheet" href="detail-style.css?v=WG.030926.1158.98">
+<link rel="stylesheet" href="reports-style.css?v=WG.030926.1938.109">
+<link rel="stylesheet" href="gecmis-style.css?v=WG.040926.1436.113">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="customer-detail.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+
+<div class="rota-etiketi">Satış › Müşteriler › <b>İşlem Geçmişi</b></div>
+
+<div class="islemler-musteri-serit">
+  <div class="islemler-musteri-ad" id="gecmisMusteriAd">—</div>
+  <div class="gecmis-musteri-sayac" id="gecmisMusteriSayac"></div>
+</div>
+
+<main class="sayfa">
+
+  <div class="isim-uyusmazlik-kutu" id="isimUyusmazlikKutu" hidden>
+    <p id="isimUyusmazlikMetin"></p>
+    <button class="isim-uyusmazlik-duzelt-btn" id="btnIsimUyusmazlikDuzelt">✓ İsimleri Eşitle</button>
+  </div>
+
+  <div class="gecmis-filtre-satiri" id="gecmisFiltreSatiri">
+    <button class="gecmis-filtre-cip gecmis-filtre-cip--aktif" data-tip="">Tümü</button>
+    <button class="gecmis-filtre-cip" data-tip="siparis" style="--cip-renk:#003a70;">Sipariş</button>
+    <button class="gecmis-filtre-cip" data-tip="teklif" style="--cip-renk:#28a745;">Teklif</button>
+    <button class="gecmis-filtre-cip" data-tip="numune" style="--cip-renk:#b7601f;">Numune</button>
+    <button class="gecmis-filtre-cip" data-tip="proforma" style="--cip-renk:#8e44ad;">Proforma</button>
+  </div>
+
+  <div id="gecmisListesi"></div>
+  <p class="bos-mesaj" id="gecmisBos" hidden>Bu müşteriye ait kayıt yok.</p>
+
+</main>
+
+<script src="auth.js?v=WG.030926.1547.104"></script>
+<script src="ust-sabit-olcum.js?v=WG.020926.1523.89"></script>
+<script src="customer-data.js?v=WG.030926.1158.98"></script>
+<script src="reports-data.js?v=WG.030926.1559.105"></script>
+<script src="hata-log.js?v=WG.020926.1523.89"></script>
+<script src="gecmis-render.js?v=WG.040926.1436.113"></script>
+</body>
+</html>
