@@ -70,18 +70,24 @@
 .hc-kutu--isk .hc-kutu-etiket { color: #0e6b58; }
 .hc-kutu--isk input { color: #0e6b58; font-weight: 800; }
 
-/* Turuncu iskonto kutuları — boy diğer kutularla AYNI (padding 12px,
-   hc-kutu ile birebir), sadece içindeki sayı belirgin büyük (26px). */
+/* Turuncu iskonto kutuları — diğer kutularla AYNI yan yana tasarım
+   (etiket sol, sayı sağ), boy sabit. Etiket iki satır, küçük. Sayı
+   sayfadaki diğer kutulardan (26px) daha büyük (28px). */
 .hc-turuncu-kart {
   background: #e8730f;
   border-radius: 10px;
   padding: 12px;
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
 }
 .hc-turuncu-etiket {
-  font-size: 11px; font-weight: 700; color: #fde3cb; margin-bottom: 4px;
+  font-size: 10px; font-weight: 700; color: #fde3cb;
+  line-height: 1.25; flex-shrink: 0;
 }
-.hc-turuncu-deger { font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.15; }
+.hc-turuncu-deger { font-size: 28px; font-weight: 800; color: #ffffff; line-height: 1; text-align: right; }
 
 .hc-alt-buton-satir {
   display: flex; gap: 8px; margin-top: 4px;
