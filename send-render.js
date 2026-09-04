@@ -75,7 +75,7 @@ function mesajMetniOlustur(musteri, sepet, tip, kanal){
     var govde = "Merhaba,\n";
     if(kanal === "whatsapp"){
       if(tip === "numune") govde += tekUrunMu ? "Sizinle paylaştığım ürün ekte, NUMUNE olarak gönderilecektir.\n" : "Sizinle paylaştığım ürünler ekte, NUMUNE olarak gönderilecektir.\n";
-      else govde += tekUrunMu ? "İstediğiniz ürün için ürün bilgi ve fiyatını ekte paylaştım.\n" : "İstediğiniz ürünler için ürün bilgi ve fiyatını ekte paylaştım.\n";
+      else govde += tekUrunMu ? "İstediğiniz ürün için fiyat bilgisi ektedir.\n" : "İstediğiniz ürünler için fiyat bilgileri ektedir.\n";
     } else {
       if(tip === "siparis") govde += "Bilgilerini paylaştığım Firma için SİPARİŞİ\nişleme almanızı rica ederim.\n";
       else if(tip === "proforma") govde += "Bilgilerini paylaştığım Firma için PROFORMAYI göndermenizi rica ederim.\n";
@@ -93,6 +93,7 @@ function mesajMetniOlustur(musteri, sepet, tip, kanal){
 }
 
 function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
+  var basit = kanal === "whatsapp";
   var vade = musteri.vade || "";
   var faturaTuru = musteri.fatura || "";
   var kargo = musteri.kargo || "";
@@ -103,13 +104,23 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var tToplamEuro = 0;
   (sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, kur, kdv); if(h && h.toplamEuro!=null) tToplamEuro += h.toplamEuro; });
 
+  var musteriBlokHtml;
+  if(basit){
+    musteriBlokHtml =
+      "<div class='belge-musteri-ad belge-musteri-ad--sade'>" + htmlEsc(musteri.ad) + "</div>"
+      + (musteri.sehir ? "<div class='belge-musteri-sehir'>" + htmlEsc(musteri.sehir) + "</div>" : "");
+  } else {
+    musteriBlokHtml =
+      "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
+      + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
+      + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
+      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
+      + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "");
+  }
+
   var html = "<div class='belge-kart'><div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
     + "<div class='belge-musteri-govde'>"
-    + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-    + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
-    + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
-    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
-    + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
+    + musteriBlokHtml
     + "</div></div><div class='belge-kart-ayrac'></div><div class='belge-kart'>";
 
   html += HareketTablo.grupHtml({
@@ -217,19 +228,29 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
   // hâlâ gösterilir, o ayrı bir fonksiyon/dosyadır.)
   var tabloBasligi = (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " · " + tarihStr;
 
-  // Cari Bilgi bloğu — hem Mail hem WhatsApp'ta TAM olarak görünür (vade,
-  // fatura türü, kargo, adres, yetkili bilgisi). Ürün tablosunun sütun
-  // sayısı ("basit" modda LİSTE/İSK olmadan) ayrı bir tercih, bu bloğu
-  // etkilemez.
-  var cariBilgiHtml =
-    "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
-    + "<div class='belge-musteri-govde'>"
-    + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-    + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
-    + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
-    + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
-    + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
-    + "</div>";
+  // Cari Bilgi bloğu — WhatsApp'ta SADECE müşteri adı ve şehir gösterilir
+  // (vade, fatura, kargo, adresler, yetkili bilgisi YOK). Mail'de hâlâ TAM
+  // gösterilir. Ürün tablosunun sütun sayısı ("basit" modda LİSTE/İSK
+  // olmadan) ayrı bir tercih, aynı "basit" bayrağını paylaşıyor.
+  var cariBilgiHtml;
+  if(basit){
+    cariBilgiHtml =
+      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
+      + "<div class='belge-musteri-govde'>"
+      + "<div class='belge-musteri-ad belge-musteri-ad--sade'>" + htmlEsc(musteri.ad) + "</div>"
+      + (musteri.sehir ? "<div class='belge-musteri-sehir'>" + htmlEsc(musteri.sehir) + "</div>" : "")
+      + "</div>";
+  } else {
+    cariBilgiHtml =
+      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
+      + "<div class='belge-musteri-govde'>"
+      + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
+      + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
+      + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
+      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
+      + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
+      + "</div>";
+  }
 
   return "<div class='belge-kart' style='margin:0;'>"
     + cariBilgiHtml

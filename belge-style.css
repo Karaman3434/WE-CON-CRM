@@ -113,66 +113,71 @@
 }
 .belge-musteri-govde { padding: 14px 16px; }
 .belge-musteri-ad { font-size: 17px; font-weight: 700; color: #1a2a3a; margin-bottom: 10px; }
+.belge-musteri-ad--sade { margin-bottom: 2px; }
+.belge-musteri-sehir { font-size: 12px; color: #8a96a3; margin-bottom: 4px; }
 .belge-adres-blok {
-  font-size: 12px;
-  color: #1a2a3a;
+  font-size: 14px;
+  color: #344054;
   font-weight: 500;
-  line-height: 1.4;
-  padding-top: 10px;
+  line-height: 1.5;
+  padding-top: 12px;
   padding-bottom: 4px;
   border-top: 1px solid #f0f2f5;
 }
-.belge-adres-etiket-fatura { color: #8a96a3; font-size: 10px; display: block; margin-bottom: 3px; font-weight: 700; letter-spacing: .3px; }
+.belge-adres-etiket-fatura { color: #0e5ba0; font-size: 11px; display: block; margin-bottom: 5px; font-weight: 700; letter-spacing: .4px; }
 .belge-adres-bos { color: #a8b0ba; font-style: italic; font-weight: 500; }
-.belge-adres-etiket-teslimat { color: #8a96a3; font-size: 10px; display: block; margin-bottom: 3px; font-weight: 700; letter-spacing: .3px; }
+.belge-adres-etiket-teslimat { color: #0e5ba0; font-size: 11px; display: block; margin-bottom: 5px; font-weight: 700; letter-spacing: .4px; }
 .belge-adres-blok-teslimat {
-  font-size: 12px;
-  color: #1a2a3a;
+  font-size: 14px;
+  color: #344054;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.5;
   margin-top: 4px;
-  padding-top: 10px;
+  padding-top: 12px;
   border-top: 1px solid #f0f2f5;
 }
-.belge-adres-etiket-yetkili { color: #8a96a3; font-size: 10px; display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3px; }
+.belge-adres-etiket-yetkili { color: #0e5ba0; font-size: 11px; display: block; margin-bottom: 5px; font-weight: 700; letter-spacing: .4px; }
 .belge-yetkili-blok {
-  font-size: 12px;
-  color: #1a2a3a;
+  font-size: 14px;
+  color: #344054;
   font-weight: 500;
   margin-top: 4px;
-  padding-top: 10px;
+  padding-top: 12px;
   border-top: 1px solid #f0f2f5;
 }
 
 .belge-kosul-grid {
   display: flex;
-  gap: 16px;
-  padding-top: 2px;
-  padding-bottom: 10px;
+  gap: 8px;
+  padding-bottom: 14px;
   margin-bottom: 4px;
-  border-bottom: 1px solid #f0f2f5;
 }
-.belge-kosul-alan { display: flex; align-items: center; gap: 5px; min-width: 0; }
-.belge-kosul-ikon {
-  flex-shrink: 0;
-  font-size: 12px;
+.belge-kosul-alan {
+  flex: 1;
+  min-width: 0;
+  background: #f7f9fb;
+  border-radius: 10px;
+  padding: 8px 6px;
+  text-align: center;
 }
-.belge-kosul-etiket { font-size: 10px; font-weight: 500; color: #8a96a3; }
+.belge-kosul-ikon { display: none; }
+.belge-kosul-etiket { display: block; font-size: 11px; font-weight: 600; color: #667085; margin-bottom: 3px; }
 .belge-kosul-deger {
-  font-size: 11px;
-  font-weight: 600;
-  color: #1a2a3a;
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #101828;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .belge-yetkili-satir {
-  font-size: 12px;
+  font-size: 14px;
   color: #1a2a3a;
   line-height: 1.5;
 }
-.belge-yetkili-detay { color: #556170; font-size: 11px; }
+.belge-yetkili-detay { color: #667085; font-size: 12px; }
 
 .belge-belge-baslik-serit {
   background: #f4faf6;
@@ -189,15 +194,15 @@
 
 
 .data-table-container { overflow-x: auto; width: 100%; }
-.belge-urun-tablo { width: 100%; border-collapse: collapse; font-size: 11.5px; table-layout: auto; }
+.belge-urun-tablo { width: 100%; border-collapse: collapse; font-size: 11.5px; table-layout: fixed; }
 .belge-urun-tablo th {
   background: #c3dcf4;
   color: #0c447c;
   border: none;
   border-bottom: 1px solid #f0f2f5;
-  padding: 8px 6px;
+  padding: 7px 3px;
   text-align: center;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -216,14 +221,14 @@
 .belge-td-urun { text-align: left; white-space: normal; }
 
 /* Geriye dönük isim — artık base ile aynı, ekstra bir şey yapmıyor. */
-.belge-urun-tablo--giden { table-layout: auto; }
-.belge-td-urun-kod { font-size: 8.5px; color: #8a96a3; line-height: 1.3; white-space: nowrap; overflow: hidden; font-weight: 600; }
-/* B (Berta) / A (Abas) kod harfleri */
-.kod-harf { font-weight: 800; font-size: 1.2em; padding: 0 1px; }
-.kod-harf--b { color: #c0392b; }
-.kod-harf--a { color: #003a70; }
-.belge-td-urun-ad { font-weight: 600; color: #1a2a3a; margin-top: 2px; font-size: 12px; line-height: 1.25; }
-.belge-td-toplam { color: #1a2a3a; font-weight: 700; }
+.belge-urun-tablo--giden { table-layout: fixed; }
+.belge-td-urun-kod { font-size: 9.5px; color: #1a2a3a; line-height: 1.3; white-space: nowrap; overflow: hidden; font-weight: 800; }
+/* B (Berta) / A (Abas) kod harfleri — koyu ve kalın */
+.kod-harf { font-weight: 900; font-size: 1.15em; padding: 0 1px; }
+.kod-harf--b { color: #8e1b12; }
+.kod-harf--a { color: #062f52; }
+.belge-td-urun-ad { font-weight: 700; color: #101828; margin-top: 2px; font-size: 12px; line-height: 1.25; }
+.belge-td-toplam { color: #101828; font-weight: 700; }
 .belge-td-prim { font-size: 10px; font-weight: 600; }
 .belge-td-prim-tek {
   white-space: nowrap;
@@ -233,11 +238,11 @@
 .rozet-isk {
   display: inline-block;
   background: #fdeceb;
-  color: #c0392b;
-  font-weight: 700;
-  padding: 2px 6px;
+  color: #a32d2d;
+  font-weight: 800;
+  padding: 2px 5px;
   border-radius: 5px;
-  font-size: 10px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .rozet-net {
@@ -250,6 +255,15 @@
   font-size: 10px;
   white-space: nowrap;
 }
+/* Sayı üstte, para birimi altında ikinci satırda (LİSTE / NET / TOPLAM / PRİM) */
+.belge-td-fiyat { line-height: 1.25; }
+.belge-td-sayi { font-size: 12px; font-weight: 700; color: #101828; }
+.belge-td-birim { font-size: 8.5px; font-weight: 700; color: #98a2b3; letter-spacing: .2px; }
+.belge-td-fiyat--net .belge-td-sayi { color: #0e6b58; }
+.belge-td-fiyat--net .belge-td-birim { color: #5a9c8a; }
+.belge-td-fiyat--toplam .belge-td-sayi { font-size: 13px; font-weight: 800; }
+.belge-td-prim .belge-td-sayi { font-size: 10.5px; font-weight: 700; color: #344054; }
+.belge-td-prim .belge-td-birim { font-size: 8px; }
 
 .hareket-grup-etiket {
   font-size: 11px;

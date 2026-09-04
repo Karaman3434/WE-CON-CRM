@@ -1,26 +1,27 @@
-WE-CON-CRM — Son İşlemler ayrı sayfa + ikon-avatar tasarım
-Sürüm: WG.040926.2312.121
+WE-CON-CRM — WhatsApp'ta sade Cari Bilgi (sadece ad + şehir)
+Sürüm: WG.050926.0023.122
 
-YENİ DOSYALAR (3)
-1) son-islemler.html — "Kaçan İşlemler" ile aynı mantıkta ayrı sayfa
-2) son-islemler-render.js — arama/filtre/Excel + ikon-avatar liste
-3) son-islemler-style.css — onaylanan "B" tasarımı: solda türe göre
-   renkli harf rozeti (SP/FT/PF/NM), ortada müşteri+şehir+tarih tek
-   satırda, sağda sadece REVİZE/KAÇTI varsa küçük etiket
+DEĞİŞEN DOSYALAR (8)
+1) send-render.js —
+   - belgeGorselHtmlOlustur: WhatsApp'a giden gerçek görselde artık
+     Cari Bilgi bloğu sadece müşteri adı + şehir (vade/fatura/kargo,
+     adresler, yetkili bilgisi YOK). Mail'de hâlâ TAM.
+   - tamOnizlemeHtmlOlustur: WhatsApp ÖNİZLEMESİ de aynı sade hale
+     getirildi ki gönderdiğin şeyle önizleme birebir eşleşsin
+   - mesajMetniOlustur: WhatsApp varsayılan metni "İstediğiniz ürün
+     için fiyat bilgisi ektedir." / çoğulda "...ürünler için fiyat
+     bilgileri ektedir." olarak güncellendi (tekil/çoğulu sistem
+     otomatik seçiyor)
+2) belge-style.css — sade Cari Bilgi için küçük şehir satırı stili eklendi
 
-DEĞİŞEN DOSYALAR (5)
-4) reports.html — "📋 Son İşlemler" artık son-islemler.html'e gidiyor,
-   eski açılır/kayan alt bölüm (arama, filtre, Excel, liste) kaldırıldı
-5) reports-render.js — taşınan islemleriCiz/islemlerExcelAktar ve
-   ilgili wiring kaldırıldı; Ay Detayı ve istatistikler etkilenmedi
-6) ayarlar-render.js, 7) ayarlar.html, 8) home.html — sürüm senkronu
+DAĞITIM ÖNCESİ BUNLARIN CACHE-BUST DAMGASI GÜNCELLENDİ (içerik aynı)
+3) belge-onizleme.html, 4) cart.html, 5) customer-detail.html, 6) send.html
+   (belge-style.css'in yeni sürümünü çeksinler diye)
+
+SÜRÜM SENKRONU
+7) ayarlar-render.js, 8) ayarlar.html + home.html
 
 DAĞITIM
-Bu 8 dosyayı kök dizindeki aynı isimli dosyalarla değiştir (5 tanesi
-zaten var olan dosyaların üzerine yazılacak, 3 tanesi yeni eklenecek).
-
-TEST NOTU
-Raporlar › İstatistikler ekranında "📋 Son İşlemler"e dokun — artık
-ayrı bir sayfa açılmalı, kaydırınca sayfanın altına düşmemeli. Liste
-satırına dokununca aynı belge önizlemesine gitmeli, arama/filtre/Excel
-export eskisi gibi çalışmalı.
+Bu 8 dosyayı kök dizindeki aynı isimli dosyalarla değiştir. Mail
+paylaşımına DOKUNULMADI — hâlâ tam Cari Bilgi (vade/fatura/kargo,
+adresler, yetkili) gösteriyor.
