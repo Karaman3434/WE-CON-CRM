@@ -309,9 +309,37 @@ function kaydetGercekIslem(niyet){
 
 function kaydetTiklandi(niyet){
   if(!CartData.tamamHesaplandiMi()) return;
+  if(niyet === "gonder" && !CustomerData.seciliyiOku()){
+    document.getElementById("musterisizGonderOverlay").hidden = false;
+    return;
+  }
   var devam = function(){ kurTazeligeGetir(function(){ kaydetGercekIslem(niyet); }); };
   if(revizeSecimBekleniyor){ asamaSecimPopupunuAc(devam); return; }
   devam();
+}
+
+// ---- Müşterisiz hızlı gönder — kayıt oluşturmadan sadece paylaşım ----
+function musterisizOzetMetniOlustur(){
+  var sepet = CartData.liste();
+  var kur = CartData.kurOku();
+  var satirlar = sepet.map(function(u, i){
+    var toplam = u.toplamEuro!==undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
+    return (i+1) + ". " + u.ad + " — " + (u.adet||0) + " adet x " + CartData.fmt(u.iskBirim||0) + " € = " + CartData.fmt(toplam) + " €";
+  });
+  var genelToplam = sepet.reduce(function(s,u){ return s + (u.toplamEuro!==undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0))); }, 0);
+  var metin = "WEICON Fiyat Bilgisi\n\n" + satirlar.join("\n") + "\n\nToplam: " + CartData.fmt(genelToplam) + " €";
+  if(kur) metin += " (≈ " + Math.round(genelToplam*kur).toLocaleString("tr-TR") + " TL)";
+  return metin;
+}
+function musterisizWhatsappGonder(){
+  document.getElementById("musterisizGonderOverlay").hidden = true;
+  window.open("https://wa.me/?text=" + encodeURIComponent(musterisizOzetMetniOlustur()), "_blank");
+}
+function musterisizMailGonder(){
+  document.getElementById("musterisizGonderOverlay").hidden = true;
+  var konu = encodeURIComponent("WEICON Fiyat Bilgisi");
+  var govde = encodeURIComponent(musterisizOzetMetniOlustur());
+  window.location.href = "mailto:?subject=" + konu + "&body=" + govde;
 }
 
 window.addEventListener("error", function(ev){
@@ -326,6 +354,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
   document.getElementById("btnSepetKaydet").onclick = function(){ kaydetTiklandi("kaydet"); };
   document.getElementById("btnSepetGonder").onclick = function(){ kaydetTiklandi("gonder"); };
+  document.getElementById("btnMusterisizWhatsapp").onclick = musterisizWhatsappGonder;
+  document.getElementById("btnMusterisizMail").onclick = musterisizMailGonder;
+  document.getElementById("btnMusterisizVazgec").onclick = function(){ document.getElementById("musterisizGonderOverlay").hidden = true; };
   document.getElementById("btnSepetIptal").onclick = function(){
     if(!confirm("Bu işlemi iptal edip sepetteki TÜM ürünleri ve seçili müşteriyi kaldırmak istediğinden emin misin? Bu geri alınamaz.")) return;
     localStorage.setItem("weiconv2_sepet", "[]");

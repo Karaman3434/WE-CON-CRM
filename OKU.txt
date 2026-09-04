@@ -1,42 +1,37 @@
-WE-CON-CRM — Hızlı Hesapla tasarım yenileme + Gönder sonrası veri kaybı düzeltmesi
-Sürüm: WG.040926.1500.115
+WE-CON-CRM — Hızlı Hesapla yeni sıralama + müşterisiz hızlı gönder
+Sürüm: WG.040926.1640.116
 
-NOT: user_time_v0 zaman aracı bu oturumda birkaç kez yanıt vermedi; sürüm
-damgasındaki saat (15:00) tahmini/yaklaşık, dakika hassasiyeti garanti değil.
-Sıra numarası (115) önceki teslimatlardan (114) doğru şekilde devam ediyor.
+DEĞİŞEN DOSYALAR (7)
 
-DEĞİŞEN DOSYALAR (10)
+Hızlı Hesapla:
+1) calc.html — yeni sıra: Döviz Kuru (tek satır, üstte) → Ürün Arama →
+   Hesaplanacak Ürün → Liste/Dip yan yana → Adet/İsk% yan yana →
+   Müdür Primi → turuncu kutular → Toplam kutuları
+2) calc-style.css — İsk(%) kutusu yeşil, turuncu kutular AYNI boyda
+   kaldı (padding değişmedi), sadece sayı 17px→26px büyüdü
 
-Hızlı Hesapla yeniden tasarımı:
-1) calc.html — Ürün Arama/Döviz Kuru/Liste Fiyatı üste alındı, tüm kutular
-   tek tip (.hc-kutu) oldu, Adet+Müdür Primi(TL) aynı satıra alındı,
-   tekrarlayan GENEL TOPLAM şeridi ve Prim EUR kutusu kaldırıldı,
-   Temizle butonu kaldırıldı
-2) calc-render.js — kaldırılan alanlara ait kod temizlendi
-3) calc-style.css — tek tip kutu sistemi; turuncu iskonto kutuları
-   kasıtlı biraz daha büyük, içindeki sayı %20 daha büyük (17px→20px),
-   Toplam(EUR)/Fatura Toplam aynı açık mavi-gri tonda (koyu değil)
-
-Gönder sonrası veri kaybı düzeltmesi (kritik):
-4) send-render.js — "Gönder"e basar basmaz sepet/müşteri silinme davranışı
-   kaldırıldı; artık sadece "✓ Gönderimi Bitir"e basınca temizleniyor.
-   Bu sayede mail/WhatsApp'tan geri dönüp düzeltme yapmak mümkün.
-5) send.html — yarim-kalan-uyari.js eklendi (eskiden yoktu)
-6) yarim-kalan-uyari.js — artık Ana Sayfa'nın yanı sıra Menü butonunu da
-   kapsıyor: sepette ürün + seçili müşteri varsa uyarıp öyle temizliyor
-7) cart.html, product.html — yarim-kalan-uyari.js cache-bust damgası
-   güncellendi (dosya içeriği değişti)
+Sepet — müşterisiz hızlı gönder (yeni):
+3) cart.html — müşteri seçili değilken Gönder'e basılırsa çıkan sheet
+   eklendi (WhatsApp / Mail / Kapat)
+4) cart-render.js — Gönder tıklanınca müşteri yoksa bu sheet açılıyor;
+   WhatsApp/Mail seçilirse ürün listesi + toplamı içeren sade bir metin
+   paylaşılıyor. Hiçbir Firebase kaydı oluşmuyor, İşlem Geçmişi'ne düşmüyor.
 
 Sürüm senkronu:
-8) ayarlar-render.js, 9) ayarlar.html, 10) home.html
+5) ayarlar-render.js, 6) ayarlar.html, 7) home.html
 
 DAĞITIM
-Bu 10 dosyayı kök dizindeki aynı isimli dosyalarla değiştir.
+Bu 7 dosyayı kök dizindeki aynı isimli dosyalarla değiştir.
+
+BİLİNÇLİ SADELEŞTİRME
+Konuştuğumuz "Müşteri seç ve gönder" seçeneğini bu sheet'e eklemedim —
+sepet ekranında zaten bir müşteri seçme arayüzü yok (müşteri normalde
+İşlem Yap akışının başında seçiliyor). O yüzden sheet'te sadece "Kapat"
+var; müşteriye kaydetmek istersen Geri'ye basıp normal akıştan müşteri
+seçmen gerekiyor. İstersen sepet ekranına doğrudan bir "Müşteri Seç"
+kısayolu da ekleyebilirim — ayrı bir istek olarak söyle yeter.
 
 TEST NOTU
-- Hızlı Hesapla: kutuların artık tek boy olduğunu, turuncu kutuların biraz
-  daha büyük ve sayılarının belirgin şekilde büyük olduğunu kontrol et.
-- Gönder akışı: bir sipariş hazırlayıp Gönder'e bas, mail uygulaması
-  açıldıktan sonra geri dön — sepetin hâlâ dolu olduğunu görmelisin.
-  Sonra "✓ Gönderimi Bitir"e basınca temizlenmeli.
-- Sepette ürün varken Ana Sayfa veya Menü'ye basınca uyarı çıkmalı.
+Müşteri seçmeden birkaç ürünü Hesapla'dan Listeye Ekle, Sepet'e git,
+Gönder'e bas — WhatsApp/Mail seçim ekranı çıkmalı, seçince cihazın
+kendi paylaşım/mail uygulaması açılmalı.

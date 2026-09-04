@@ -15,7 +15,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.040926.1052.110">
 <link rel="stylesheet" href="product-style.css?v=WG.030926.1158.98">
-<link rel="stylesheet" href="calc-style.css?v=WG.040926.1500.115">
+<link rel="stylesheet" href="calc-style.css?v=WG.040926.1640.116">
 </head>
 <body>
 
@@ -35,22 +35,16 @@
 
 <main class="sayfa">
 
+  <div class="hc-kutu" style="margin-bottom:10px;">
+    <div class="hc-kutu-etiket">Döviz Kuru</div>
+    <input type="number" id="kurInput" step="0.0001">
+  </div>
+
   <div class="arama-kutusu">
     <input type="text" id="searchInput" placeholder="Ürün Bul — katalogda ara..." autocomplete="off">
     <span class="arama-ikon">🔍</span>
   </div>
   <div class="sonuc-listesi" id="sonucListesi"></div>
-
-  <div class="hc-grid-2">
-    <div class="hc-kutu">
-      <div class="hc-kutu-etiket">Döviz Kuru</div>
-      <input type="number" id="kurInput" step="0.0001">
-    </div>
-    <div class="hc-kutu">
-      <div class="hc-kutu-etiket">Liste Fiyatı (EUR)</div>
-      <input type="number" step="0.01" id="hesListeFiyat" value="0">
-    </div>
-  </div>
 
   <div class="hc-secili-urun-kutu" id="seciliUrunKutu" hidden>
     <div class="hc-secili-urun-baslik">Hesaplanacak Ürün</div>
@@ -62,12 +56,12 @@
 
   <div class="hc-grid-2">
     <div class="hc-kutu">
-      <div class="hc-kutu-etiket">Dip (Maliyet) (EUR)</div>
-      <input type="number" step="0.01" id="hesDipFiyat" value="0">
+      <div class="hc-kutu-etiket">Liste Fiyatı (EUR)</div>
+      <input type="number" step="0.01" id="hesListeFiyat" value="0">
     </div>
     <div class="hc-kutu">
-      <div class="hc-kutu-etiket">İsk (%)</div>
-      <input type="number" step="0.1" id="hesIskonto" value="0">
+      <div class="hc-kutu-etiket">Dip (Maliyet) (EUR)</div>
+      <input type="number" step="0.01" id="hesDipFiyat" value="0">
     </div>
   </div>
 
@@ -76,10 +70,15 @@
       <div class="hc-kutu-etiket">Adet</div>
       <input type="number" step="1" min="1" id="hesAdet" value="1">
     </div>
-    <div class="hc-kutu">
-      <div class="hc-kutu-etiket">Müdür Primi (TL)</div>
-      <div class="hc-kutu-deger" id="rPrimTL">-</div>
+    <div class="hc-kutu hc-kutu--isk">
+      <div class="hc-kutu-etiket">İsk (%)</div>
+      <input type="number" step="0.1" id="hesIskonto" value="0">
     </div>
+  </div>
+
+  <div class="hc-kutu" style="margin-bottom:10px;">
+    <div class="hc-kutu-etiket">Müdür Primi (TL)</div>
+    <div class="hc-kutu-deger" id="rPrimTL">-</div>
   </div>
 
   <div class="hc-grid-2">
@@ -98,6 +97,7 @@
       <div class="hc-kutu-etiket">Toplam (EUR)</div>
       <div class="hc-kutu-deger" id="rToplamEuro">-</div>
     </div>
+
     <div class="hc-kutu hc-kutu--toplam">
       <div class="hc-kutu-etiket">Fatura Toplam (KDV Dahil)</div>
       <div class="hc-kutu-deger" id="rFaturaToplam">-</div>

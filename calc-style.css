@@ -61,19 +61,23 @@
 .hc-kutu--toplam .hc-kutu-etiket { color: #3d5a80; }
 .hc-kutu--toplam .hc-kutu-deger { color: #1a2a3a; }
 
-/* Turuncu iskonto kutuları — kasıtlı olarak diğerlerinden biraz daha
-   büyük (padding), sayı %20 daha büyük (17px → 20px), zemin dolu
-   turuncu, yazı beyaza yakın açık ton. */
+/* İsk (%) kutusu — yeşil zemin, uygulamadaki "net" rengiyle aynı ton. */
+.hc-kutu--isk { background: #eafaf3; }
+.hc-kutu--isk .hc-kutu-etiket { color: #0e6b58; }
+.hc-kutu--isk input { color: #0e6b58; font-weight: 900; }
+
+/* Turuncu iskonto kutuları — boy diğer kutularla AYNI (padding 12px,
+   hc-kutu ile birebir), sadece içindeki sayı belirgin büyük (26px). */
 .hc-turuncu-kart {
   background: #e8730f;
   border-radius: 10px;
-  padding: 14px 12px;
+  padding: 12px;
   box-sizing: border-box;
 }
 .hc-turuncu-etiket {
   font-size: 11px; font-weight: 700; color: #fde3cb; margin-bottom: 4px;
 }
-.hc-turuncu-deger { font-size: 20px; font-weight: 900; color: #ffffff; }
+.hc-turuncu-deger { font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.15; }
 
 .hc-alt-buton-satir {
   display: flex; gap: 8px; margin-top: 4px;

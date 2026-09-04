@@ -63,6 +63,17 @@
       <button class="tip-secim-vazgec-btn" id="btnAsamaSecimVazgec">Kapat</button>
     </div>
   </div>
+  <!-- Müşteri seçilmeden Gönder'e basılırsa: hızlı, kayıtsız paylaşım
+       seçeneği. CRM'e hiçbir şey yazılmaz, İşlem Geçmişi'ne düşmez. -->
+  <div class="tip-secim-overlay" id="musterisizGonderOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="sheet-baslik">Müşteri seçilmedi</div>
+      <p class="sheet-alt">Sepetteki ürünleri, kayıt oluşturmadan sadece WhatsApp veya mail ile paylaşabilirsin. Bir müşteriye kaydetmek istersen önce Geri dönüp müşteri seç.</p>
+      <button class="sheet-secenek" id="btnMusterisizWhatsapp"><span class="ikon">💬</span>WhatsApp ile Gönder</button>
+      <button class="sheet-secenek" id="btnMusterisizMail"><span class="ikon">✉️</span>Mail ile Gönder</button>
+      <button class="sheet-secenek sheet-secenek--vazgec" id="btnMusterisizVazgec">Kapat</button>
+    </div>
+  </div>
 
 </main>
 
@@ -77,7 +88,7 @@
 <script src="customer-data.js?v=WG.030926.1158.98"></script>
 <script src="send-data.js?v=WG.030926.1332.102"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="cart-render.js?v=WG.030926.1332.102"></script>
+<script src="cart-render.js?v=WG.040926.1640.116"></script>
 <script src="yarim-kalan-uyari.js?v=WG.040926.1500.115"></script>
 </body>
 </html>
