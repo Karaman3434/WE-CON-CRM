@@ -1,0 +1,22 @@
+WE-CON-CRM — Sürüm senkron düzeltmesi
+Sürüm: WG.040926.1355.112
+
+DEĞİŞEN DOSYALAR (3)
+1) ayarlar-render.js — APP_VERSION artık WG.040926.1355.112 (eskiden WG.260901.1313.68 idi, home.html'deki ile uyuşmuyordu)
+2) ayarlar.html — ayarlar-render.js'in ?v= cache-bust damgası güncellendi
+3) home.html — alt bilgideki görünür sürüm etiketi WG.040926.1355.112 olarak güncellendi
+
+Bu üç dosyayı mevcut kök dizindeki aynı isimli dosyalarla değiştir.
+
+AYRICA SENDEKİ YEREL KLASÖRDEN SİLİNMESİ GEREKENLER (bu pakette yok, çünkü zaten silindi)
+- ui-render-fix.js — kullanılmıyor, README'ye göre zaten kaldırılmıştı ama pakette tekrar vardı
+- weicon-v2-anasayfa.zip — unutulmuş eski kaynak arşivi
+- _backups/ klasörü — unutulmuş yedek klasörü
+
+Bu üçünü kendi WE-CON-CRM klasöründen elle silmen yeterli, hiçbir sayfa onları yüklemiyor.
+
+NOT
+- Diğer tüm dosyaların ayrı ayrı ?v= cache-bust damgaları (WG.020926... / WG.030926...) kasıtlı olarak
+  dokunulmadı — bunlar tek tek dosya değiştikçe güncellenen normal cache-bust damgaları, hepsinin aynı
+  olması gerekmiyor. Asıl sorun sadece home.html'deki görünür sürüm ile ayarlar ekranındaki sürümün
+  birbirini tutmamasıydı, o düzeltildi.

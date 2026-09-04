@@ -1,6 +1,6 @@
-// Tek merkezi sürüm bilgisi — ui-render-fix.js içindeki yorum satırıyla
-// senkron tutulmalıdır. Format: W(YYMMDD).(HHMM).(sıra no)
-var APP_VERSION = "WG.260901.1313.68";
+// Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
+// senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
+var APP_VERSION = "WG.040926.1355.112";
 
 function hataGoster(mesaj){
   console.error(mesaj);
