@@ -41,14 +41,31 @@ body {
 .header-sol-grup { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .header-kur-blok {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
   padding-left: 12px;
   border-left: 1px solid #e2e6ec;
 }
+.header-kur-deger-grup { display: flex; flex-direction: column; align-items: flex-end; }
 .header-kur-etiket { font-size: 10px; font-weight: 700; color: #6b7684; }
 .header-kur-deger { font-size: 17px; font-weight: 900; color: #003a70; line-height: 1.2; }
+.header-kur-yenile-btn {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: #fdf0dc;
+  border: 1px solid #f2d9ad;
+  color: #b06a10;
+  border-radius: 8px;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.header-kur-yenile-btn:disabled { opacity: .7; }
 /* Başlık + nav (Geri/Ana Sayfa/Menü) artık TEK bir sabit (sticky) blok —
    sayfa ne kadar aşağı kaydırılırsa kaydırılsın hep görünür kalır. Popup'lar
    da bu bloğun altına, ona göre konumlanır (bkz. genel .overlay kuralı). */
@@ -77,10 +94,14 @@ body {
   background: #3569b8;
   color: #ffffff;
   font-weight: 900;
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 2px;
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 13px 16px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 44px;
 }
 .app-header .tarih {
   font-size: 14px;

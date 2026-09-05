@@ -47,7 +47,28 @@
       solGrup.appendChild(tarih);
       var kurBlok = document.createElement("div");
       kurBlok.className = "header-kur-blok";
-      kurBlok.innerHTML = "<span class='header-kur-etiket'>Döviz Kuru</span><span class='header-kur-deger' id='headerKurDeger'>-</span>";
+      kurBlok.innerHTML = "<span class='header-kur-deger-grup'><span class='header-kur-etiket'>Döviz Kuru</span><span class='header-kur-deger' id='headerKurDeger'>-</span></span>";
+      // Elle yenileme butonu — sadece AyarlarSync bu sayfada yüklüyse
+      // eklenir (Ayarlar'daki "Şimdi Dene" ile birebir aynı işlevi çağırır).
+      if(typeof AyarlarSync !== "undefined"){
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "header-kur-yenile-btn";
+        btn.id = "headerKurYenileBtn";
+        btn.setAttribute("aria-label", "Döviz kurunu yenile");
+        btn.textContent = "🔄";
+        btn.onclick = function(){
+          btn.disabled = true;
+          btn.textContent = "⏳";
+          AyarlarSync.otomatikKurGetir(true, function(basarili){
+            headerKuruGuncelle();
+            btn.disabled = false;
+            btn.textContent = basarili ? "✓" : "✕";
+            setTimeout(function(){ btn.textContent = "🔄"; }, 1500);
+          });
+        };
+        kurBlok.appendChild(btn);
+      }
       header.appendChild(kurBlok);
       headerKuruGuncelle();
     }catch(e){}
