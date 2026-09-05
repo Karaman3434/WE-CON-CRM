@@ -105,7 +105,7 @@ function listeyiCiz(){
         + "<span class='musteri-sehir'>" + htmlEsc(m.sehir||"-") + "</span>"
         + "</div>"
         + "</div>"
-        + "<div class='musteri-ok-alan'><svg width='18' height='28' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></div>"
+        + "<div class='musteri-ok-alan'><svg width='8' height='12' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></div>"
         + "</div>"
         + "</div>";
     }).join("") + "</div>";

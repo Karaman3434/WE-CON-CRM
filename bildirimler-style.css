@@ -67,8 +67,8 @@
 .ziyaret-hatirlat-gun { font-size: 12px; font-weight: 800; color: #a34a1e; white-space: nowrap; }
 .ziyaret-hatirlat-sag { display: flex; align-items: center; gap: 6px; }
 .ziyaret-hatirlat-ok {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
