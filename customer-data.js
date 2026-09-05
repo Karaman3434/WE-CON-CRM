@@ -146,7 +146,7 @@ var CustomerData = (function(){
       var gecmis = m.ziyaretGecmisi || [];
       var enSonTs = gecmis.length ? Math.max.apply(null, gecmis.map(function(z){ return z.ts||0; })) : null;
       var gun = enSonTs ? gunFarkiHesapla(enSonTs) : null;
-      sonuc.push({musteri:m.ad, sehir:m.sehir||"", gun:gun, hicZiyaretYok: gecmis.length===0});
+      sonuc.push({musteri:m.ad, musteriId:m.id||null, sehir:m.sehir||"", gun:gun, hicZiyaretYok: gecmis.length===0});
     });
     sonuc.sort(function(a,b){
       if(a.hicZiyaretYok !== b.hicZiyaretYok) return a.hicZiyaretYok ? -1 : 1;
@@ -178,7 +178,7 @@ var CustomerData = (function(){
     liste.forEach(function(m){
       (m.ziyaretGecmisi||[]).forEach(function(z, i){
         sonuc.push({
-          musteri: m.ad, sehir: m.sehir||"", ts: z.ts, not: z.not||"",
+          musteri: m.ad, musteriId: m.id||null, sehir: m.sehir||"", ts: z.ts, not: z.not||"",
           tur: z.tur||"ziyaret", hatirlatmaTarihi: z.hatirlatmaTarihi||null, kayitIndex: i
         });
       });

@@ -339,3 +339,12 @@ body {
   font-weight: 700;
   color: #2563eb;
 }
+
+/* ---------- Cari satırı — KESİN KURAL (05.09.2026): müşteri ismi
+   göründüğü HER yerde (mail/WhatsApp mesaj içerikleri hariç) önce kodu,
+   sonra ismi, hemen ardından da şehri aynı satırda taşır. Tek kaynak: bu
+   4 sınıf, tüm listelerde birebir aynı boy/font/renk için kullanılır. */
+.cari-kod { font-weight: 900; color: #185fa5; }
+.cari-ayrac { color: #5f6b7a; }
+.cari-isim { font-weight: 800; color: #111827; }
+.cari-sehir { color: #5f6b7a; font-size: 13px; }

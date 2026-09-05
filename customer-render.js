@@ -33,6 +33,12 @@ function tarihiGuncelle(){
 function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
+function cariSatirHTML(kod, isim, sehir){
+  return "<span class='cari-kod'>" + htmlEsc(kod||"—") + "</span>"
+    + "<span class='cari-ayrac'> - </span>"
+    + "<span class='cari-isim'>" + htmlEsc(isim||"") + "</span>"
+    + (sehir ? "<span class='cari-ayrac'> - </span><span class='cari-sehir'>" + htmlEsc(sehir) + "</span>" : "");
+}
 
 var tumMusterilerModuAktif = false;
 
@@ -99,11 +105,7 @@ function listeyiCiz(){
       return "<div class='musteri-karti " + zebraSinif + "' data-i='" + i + "'>"
         + "<div class='musteri-karti-satir'>"
         + "<div class='musteri-icerik'>"
-        + "<div class='musteri-ust-satir'><span class='musteri-ad'>" + htmlEsc(m.ad) + "</span>" + ziyaretRozetHtml + "</div>"
-        + "<div class='musteri-alt-satir'>"
-        + "<span class='musteri-kod'>" + (m.id ? "🏷 " + htmlEsc(m.id) : "") + "</span>"
-        + "<span class='musteri-sehir'>" + htmlEsc(m.sehir||"-") + "</span>"
-        + "</div>"
+        + "<div class='musteri-ust-satir'><span>" + cariSatirHTML(m.id, m.ad, m.sehir) + "</span>" + ziyaretRozetHtml + "</div>"
         + "</div>"
         + "<div class='musteri-ok-alan'><svg width='8' height='12' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></div>"
         + "</div>"

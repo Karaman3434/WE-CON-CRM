@@ -33,6 +33,22 @@ function htmlEsc(s){
 var TIP_ETIKET_B = {teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA", numune:"NUMUNE"};
 var SEVIYE_ETIKET = {ilk:"⏳ 15+ gün", ikinci:"⚠️ 30+ gün", kritik:"🔴 33+ gün — İNCELE"};
 var SEVIYE_RENK = {ilk:"#f2994a", ikinci:"#e0524a", kritik:"#c0392b"};
+var TIP_KOD_RENK = {siparis:"#003a70", teklif:"#1a7431", proforma:"#5c1680", numune:"#7a4008"};
+var KANAL_HARF = {mail:"M", whatsapp:"W"};
+var KANAL_RENK = {mail:"#185fa5", whatsapp:"#128C7E"};
+function kanalHarfHTML(kanal){
+  if(!kanal || !KANAL_HARF[kanal]) return "";
+  return "<span style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
+}
+function fmt(n){
+  return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function cariSatirHTML(kod, isim, sehir){
+  return "<span class='cari-kod'>" + htmlEsc(kod||"—") + "</span>"
+    + "<span class='cari-ayrac'> - </span>"
+    + "<span class='cari-isim'>" + htmlEsc(isim||"") + "</span>"
+    + (sehir ? "<span class='cari-ayrac'> - </span><span class='cari-sehir'>" + htmlEsc(sehir) + "</span>" : "");
+}
 var TIP_ETIKET_B = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
 
 function ilerletTiklandi(b){
@@ -71,12 +87,15 @@ function bildirimleriCiz(){
     if(acikListe.length > 0){
       html += "<div class='bildirim-bolum-baslik'>▶️ Açık Süreçler</div>";
       acikListe.forEach(function(b){
+        var kodRenk = TIP_KOD_RENK[b.tip] || "#003a70";
         html += "<div class='acik-surec-karti' style='border-left:6px solid " + SEVIYE_RENK[b.seviye] + ";'>"
           + "<div class='acik-surec-ust'>"
-          + "<div class='acik-surec-musteri'>" + htmlEsc(b.musteri) + (b.sehir?" - "+htmlEsc(b.sehir):"") + "</div>"
+          + "<div class='acik-surec-musteri'>" + cariSatirHTML(b.musteriId, b.musteri, b.sehir) + "</div>"
           + "<div class='acik-surec-seviye' style='color:" + SEVIYE_RENK[b.seviye] + ";'>" + SEVIYE_ETIKET[b.seviye] + "</div>"
           + "</div>"
-          + "<div class='acik-surec-detay'>" + TIP_ETIKET_B[b.tip] + " · " + htmlEsc(b.tarih) + " · " + b.urunSayisi + " ürün · <b>" + b.gun + " gün önce</b></div>"
+          + "<div class='acik-surec-detay'>"
+          + "<span style='font-weight:800;color:" + kodRenk + ";'>" + kanalHarfHTML(b.kanal) + htmlEsc(b.kod||TIP_ETIKET_B[b.tip]) + "</span>"
+          + " · " + b.urunSayisi + " ürün · <b>" + fmt(b.tutar) + " €</b> · <b>" + b.gun + " gün önce</b></div>"
           + "<div class='acik-surec-buton-satir'>"
           + "<button class='acik-surec-ilerlet-btn' data-ilerlet='" + htmlEsc(JSON.stringify({tip:b.tip, ts:b.ts})) + "'>▶️ İlerlet</button>"
           + (b.seviye==="kritik" ? "<button class='acik-surec-sil-btn' data-sil-tip='" + b.tip + "' data-sil-ts='" + b.ts + "'>🗑 Sil</button>" : "")
@@ -89,9 +108,9 @@ function bildirimleriCiz(){
       html += "<div class='bildirim-bolum-baslik'>📆 Ziyaret Hatırlatmaları</div>";
       ziyaretListe.forEach(function(z){
         html += "<div class='ziyaret-hatirlat-karti' data-musteri='" + htmlEsc(z.musteri) + "'>"
-          + "<div class='ziyaret-hatirlat-musteri'>🏢 " + htmlEsc(z.musteri) + (z.sehir?" - "+htmlEsc(z.sehir):"") + "</div>"
+          + "<div class='ziyaret-hatirlat-musteri'>" + cariSatirHTML(z.musteriId, z.musteri, z.sehir) + "</div>"
           + "<div class='ziyaret-hatirlat-sag'><span class='ziyaret-hatirlat-gun'>" + z.gun + " gündür yok</span>"
-          + "<span class='ziyaret-hatirlat-ok'><svg width='16' height='24' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></span></div>"
+          + "<span class='ziyaret-hatirlat-ok'><svg width='8' height='12' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></span></div>"
           + "</div>";
       });
     }
@@ -99,8 +118,9 @@ function bildirimleriCiz(){
     if(gorevListe.length > 0){
       html += "<div class='bildirim-bolum-baslik'>📌 Görevler</div>";
       gorevListe.forEach(function(g){
+        var m = CustomerData.musteriBul(g.musteriAd);
         html += "<div class='gorev-bildirim-karti'>"
-          + "<div class='gorev-bildirim-musteri'>🏢 " + htmlEsc(g.musteriAd) + "</div>"
+          + "<div class='gorev-bildirim-musteri'>" + cariSatirHTML(m?m.id:null, g.musteriAd, m?m.sehir:"") + "</div>"
           + "<div class='gorev-bildirim-aciklama'>" + htmlEsc(g.aciklama) + "</div>"
           + "<div class='gorev-bildirim-buton-satir'>"
           + "<button class='gorev-tamamla-btn' data-gorev-id='" + htmlEsc(g.id) + "'>✓ Tamamlandı</button>"

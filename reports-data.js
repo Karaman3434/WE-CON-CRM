@@ -288,7 +288,8 @@ var ReportsData = (function(){
       var gun = Math.floor((bugun-(k.ts||0))/86400000);
       if(gun < 15) return;
       var seviye = gun>=33 ? "kritik" : (gun>=30 ? "ikinci" : "ilk");
-      sonuc.push({musteri:k.musteri, sehir:k.sehir||"", tip:k.tip, ts:k.ts, tarih:k.tarih, gun:gun, seviye:seviye, urunSayisi:(k.urunler||[]).length});
+      var tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+      sonuc.push({musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"", tip:k.tip, kod:k.kod, kanal:k.kanal||null, ts:k.ts, tarih:k.tarih, gun:gun, seviye:seviye, urunSayisi:(k.urunler||[]).length, tutar:tutar});
     });
     sonuc.sort(function(a,b){ return b.gun-a.gun; });
     return sonuc;
@@ -476,7 +477,7 @@ var ReportsData = (function(){
           var satirToplam = u.toplamEuro !== undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
           return s + satirToplam;
         }, 0);
-        return {tip:"siparis", ts:k.ts, kod:k.kod, tarih:k.tarih||"", musteri:k.musteri, sehir:k.sehir||"", toplam:toplam, kanal:k.kanal||null, durum:k.durum, revizeZamani:k.revizeZamani};
+        return {tip:"siparis", ts:k.ts, kod:k.kod, tarih:k.tarih||"", musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"", toplam:toplam, kanal:k.kanal||null, durum:k.durum, revizeZamani:k.revizeZamani};
       })
       .sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
   }
@@ -492,7 +493,7 @@ var ReportsData = (function(){
           var satirToplam = u.toplamEuro !== undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
           return s + satirToplam;
         }, 0);
-        kacanlar.push({tip:tip, ts:k.ts, kod:k.kod, musteri:k.musteri, sehir:k.sehir||"", tarih:k.tarih, tutar:tutar});
+        kacanlar.push({tip:tip, ts:k.ts, kod:k.kod, musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"", tarih:k.tarih, tutar:tutar});
       });
     });
     kacanlar.sort(function(a,b){ return siralama==="eski" ? (a.ts||0)-(b.ts||0) : (b.ts||0)-(a.ts||0); });

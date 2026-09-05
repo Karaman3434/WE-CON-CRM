@@ -31,6 +31,12 @@ function tarihiGuncelle(){
 function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
+function cariSatirHTML(kod, isim, sehir){
+  return "<span class='cari-kod'>" + htmlEsc(kod||"—") + "</span>"
+    + "<span class='cari-ayrac'> - </span>"
+    + "<span class='cari-isim'>" + htmlEsc(isim||"") + "</span>"
+    + (sehir ? "<span class='cari-ayrac'> - </span><span class='cari-sehir'>" + htmlEsc(sehir) + "</span>" : "");
+}
 
 function gunAnahtari(yil, ay, gun){
   return yil + "-" + String(ay+1).padStart(2,"0") + "-" + String(gun).padStart(2,"0");
@@ -110,7 +116,7 @@ function gunPaneliniAc(anahtar, tumKayitlar){
         var turEtiket = k.tur==="temas" ? "☎ Temas" : "📍 Ziyaret";
         var turRenk = k.tur==="temas" ? "#8e44ad" : "#0e6b34";
         return "<div class='ziy-kayit-karti'>"
-          + "<div class='ziy-kayit-musteri'>" + htmlEsc(k.musteri) + "</div>"
+          + "<div class='ziy-kayit-musteri'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
           + "<div class='ziy-kayit-tur' style='color:" + turRenk + "'>" + turEtiket + (k.not ? " — " + htmlEsc(k.not) : "") + "</div>"
           + "</div>";
       }).join("");
@@ -143,7 +149,7 @@ function firmaAramaCiz(){
   if(!q || q.trim().length===0){ kapsayici.innerHTML = ""; return; }
   var sonuclar = CustomerData.ara(q).slice(0, 8);
   kapsayici.innerHTML = sonuclar.map(function(m){
-    return "<div class='ziy-firma-satir' data-ad='" + htmlEsc(m.ad) + "' data-sehir='" + htmlEsc(m.sehir||"") + "'>" + htmlEsc(m.ad) + " <span class='ziy-firma-sehir'>" + htmlEsc(m.sehir||"") + "</span></div>";
+    return "<div class='ziy-firma-satir' data-ad='" + htmlEsc(m.ad) + "' data-sehir='" + htmlEsc(m.sehir||"") + "'>" + cariSatirHTML(m.id, m.ad, m.sehir) + "</div>";
   }).join("");
   kapsayici.querySelectorAll(".ziy-firma-satir").forEach(function(satir){
     satir.onclick = function(){

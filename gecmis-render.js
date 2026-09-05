@@ -63,7 +63,7 @@ var KANAL_HARF = {mail:"M", whatsapp:"W"};
 var KANAL_RENK = {mail:"#185fa5", whatsapp:"#128C7E"};
 var GUNLER_UZUN = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var AYLAR_UZUN = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-var OK_SVG = "<svg width='16' height='24' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+var OK_SVG = "<svg width='8' height='12' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg>";
 function kanalHarfHTML(kanal){
   if(!kanal || !KANAL_HARF[kanal]) return "";
   return "<span class='tl-kanal-harf' style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
@@ -76,6 +76,12 @@ function gunBasligi(ts){
   var d = new Date(ts);
   return d.getDate() + " " + AYLAR_UZUN[d.getMonth()] + " " + d.getFullYear() + " • " + GUNLER_UZUN[d.getDay()];
 }
+function cariSatirHTML(kod, isim, sehir){
+  return "<span class='cari-kod'>" + htmlEsc(kod||"—") + "</span>"
+    + "<span class='cari-ayrac'> - </span>"
+    + "<span class='cari-isim'>" + htmlEsc(isim||"") + "</span>"
+    + (sehir ? "<span class='cari-ayrac'> - </span><span class='cari-sehir'>" + htmlEsc(sehir) + "</span>" : "");
+}
 function tlKartHTML(k, gosterIsim){
   var kacanMi = k.durum === "kacan";
   var revizeMi = !!k.revizeZamani;
@@ -86,9 +92,8 @@ function tlKartHTML(k, gosterIsim){
   return "<div class='tl-kart' data-i='" + k._i + "'>"
     + "<div class='tl-serit' style='background:" + serit + ";'></div>"
     + "<div class='tl-govde'>"
-    + (gosterIsim ? "<div class='tl-ust'><span class='tl-isim'>" + htmlEsc(k.musteri) + "</span>" + (k.sehir?" <span class='tl-sehir'>- "+htmlEsc(k.sehir)+"</span>":"") + "</div>" : "")
+    + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
     + "<div class='tl-alt'>"
-    + "<span class='tl-rozet' style='background:" + rozetMeta.rozetBg + ";color:" + rozetMeta.rozetRenk + ";'>" + rozetMeta.rozet + "</span>"
     + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
     + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " €</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
     + "</div>"

@@ -29,6 +29,12 @@ function tarihiGuncelle(){
 function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
+function cariSatirHTML(kod, isim, sehir){
+  return "<span class='cari-kod'>" + htmlEsc(kod||"—") + "</span>"
+    + "<span class='cari-ayrac'> - </span>"
+    + "<span class='cari-isim'>" + htmlEsc(isim||"") + "</span>"
+    + (sehir ? "<span class='cari-ayrac'> - </span><span class='cari-sehir'>" + htmlEsc(sehir) + "</span>" : "");
+}
 
 function gorevleriCiz(){
   try{
@@ -51,10 +57,11 @@ function gorevleriCiz(){
     bos.hidden = true;
 
     kapsayici.innerHTML = liste.map(function(g){
+      var m = (typeof CustomerData !== "undefined") ? CustomerData.musteriBul(g.musteriAd) : null;
       return "<div class='gorev-karti" + (g.tamamlandi?" tamamlandi":"") + "'>"
         + "<input type='checkbox' class='gorev-checkbox' data-id='" + g.id + "' " + (g.tamamlandi?"checked":"") + ">"
         + "<div class='gorev-bilgi'>"
-        + "<div class='gorev-musteri'>" + htmlEsc(g.musteriAd) + "</div>"
+        + "<div class='gorev-musteri'>" + cariSatirHTML(m?m.id:null, g.musteriAd, m?m.sehir:"") + "</div>"
         + "<div class='gorev-aciklama'>" + htmlEsc(g.aciklama) + "</div>"
         + "<div class='gorev-zaman'>" + htmlEsc(g.tarih||"") + " " + htmlEsc(g.saat||"") + "</div>"
         + "</div>"
