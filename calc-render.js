@@ -112,7 +112,7 @@ function hesaplaVeGoster(){
       iskonto: parseFloat(document.getElementById("hesIskonto").value)||0,
       adet: parseFloat(document.getElementById("hesAdet").value)||1
     };
-    var kur = parseFloat(document.getElementById("kurInput").value)||0;
+    var kur = CartData.kurOku();
     var kdv = CartData.kdvOku();
     var h = CartData.hesapla(urun, kur, kdv);
 
@@ -169,16 +169,14 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("kurInput").value = CartData.kurOku() || "";
   document.getElementById("searchInput").addEventListener("input", aramaSonuclariniCiz);
   document.getElementById("btnUrunTemizle").onclick = function(){
     document.getElementById("seciliUrunKutu").hidden = true;
     seciliUrunBilgi = null;
   };
   document.getElementById("btnHesapSepeteEkle").onclick = sepeteEkleTiklandi;
-  ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet","kurInput"].forEach(function(id){
+  ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet"].forEach(function(id){
     document.getElementById(id).addEventListener("input", function(){
-      if(id==="kurInput") CartData.kurKaydet(parseFloat(this.value)||0);
       if(id==="hesListeFiyat") dipFiyatiOner();
       hesaplaVeGoster();
     });

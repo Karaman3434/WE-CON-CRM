@@ -34,10 +34,21 @@ body {
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 10px;
   padding: 16px 14px 8px;
 }
+.header-sol-grup { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.header-kur-blok {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  padding-left: 12px;
+  border-left: 1px solid #e2e6ec;
+}
+.header-kur-etiket { font-size: 10px; font-weight: 700; color: #6b7684; }
+.header-kur-deger { font-size: 17px; font-weight: 900; color: #003a70; line-height: 1.2; }
 /* Başlık + nav (Geri/Ana Sayfa/Menü) artık TEK bir sabit (sticky) blok —
    sayfa ne kadar aşağı kaydırılırsa kaydırılsın hep görünür kalır. Popup'lar
    da bu bloğun altına, ona göre konumlanır (bkz. genel .overlay kuralı). */

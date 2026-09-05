@@ -106,31 +106,8 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
-function kurSeridiniGuncelle(){
-  try{
-    var el = document.getElementById("anasayfaKurSerit");
-    if(!el) return;
-    var kur = parseFloat(localStorage.getItem("weicon_kur"));
-    document.getElementById("anasayfaKurDeger").textContent = isNaN(kur) ? "—" : WeiconData.fmt(kur) + " TL";
-
-    var zaman = parseFloat(localStorage.getItem("weicon_kur_zaman"));
-    var kaynak = localStorage.getItem("weicon_kur_kaynak");
-    var kaynakAdi = kaynak==="tcmb" ? "TCMB" : (kaynak==="yedek" ? "yedek kaynak" : (kaynak==="frankfurter" ? "Frankfurter" : ""));
-    var zamanEl = document.getElementById("anasayfaKurZaman");
-    var bayatMi = typeof AyarlarSync !== "undefined" && AyarlarSync.kurBayatMi();
-    if(isNaN(zaman) || zaman<=0){
-      zamanEl.textContent = "hiç güncellenmedi";
-    } else {
-      var farkDk = Math.round((Date.now() - zaman) / 60000);
-      var zamanMetni;
-      if(farkDk < 1) zamanMetni = "az önce";
-      else if(farkDk < 60) zamanMetni = farkDk + " dk önce";
-      else zamanMetni = Math.floor(farkDk/60) + " sa " + (farkDk%60) + " dk önce";
-      zamanEl.textContent = zamanMetni + (kaynakAdi ? " · " + kaynakAdi : "");
-    }
-    el.classList.toggle("anasayfa-kur-serit--bayat", !!bayatMi);
-  }catch(e){}
-}
+// Ana Sayfa'daki eski ayrı kur şeridi kaldırıldı — döviz kuru artık global
+// header'da gösteriliyor (bkz. ust-sabit-olcum.js: dovizKuruHeaderaEkle).
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
@@ -150,23 +127,7 @@ document.addEventListener("DOMContentLoaded", function(){
   try{ AvansKayitData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
   try{ MaasKayitData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
 
-  // Ana Sayfa'daki kur şeridi — sayfa her açıldığında güncel bilgiyi
-  // gösterir; "🔄" tuşuyla elle de tazelenebilir.
-  kurSeridiniGuncelle();
-  if(typeof AyarlarSync !== "undefined"){
-    AyarlarSync.degistiginde(kurSeridiniGuncelle);
-    setInterval(kurSeridiniGuncelle, 60000); // sayfa açık kalırsa "X dk önce" yazısını da tazele
-  }
-  document.getElementById("btnAnasayfaKurYenile").onclick = function(){
-    var btn = this;
-    btn.disabled = true;
-    btn.textContent = "⏳";
-    if(typeof AyarlarSync === "undefined"){ btn.disabled = false; btn.textContent = "🔄"; return; }
-    AyarlarSync.otomatikKurGetir(true, function(basarili){
-      kurSeridiniGuncelle();
-      btn.disabled = false;
-      btn.textContent = basarili ? "✓" : "✕";
-      setTimeout(function(){ btn.textContent = "🔄"; }, 1500);
-    });
-  };
+  // Döviz kuru artık global header'da gösteriliyor; Ana Sayfa'nın kendi
+  // ayrı kur şeridi ve yenile butonu kaldırıldı (Ayarlar'daki "Şimdi Dene"
+  // ile manuel tazeleme hâlâ mümkün).
 });
