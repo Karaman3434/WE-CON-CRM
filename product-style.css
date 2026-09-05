@@ -24,28 +24,9 @@ body {
   min-height: 100vh;
 }
 
-/* ---------- Başlık / Nav — home-style.css ile birebir aynı ---------- */
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 16px 14px 8px;
-}
-.app-header .logo {
-  background: #3569b8;
-  color: #ffffff;
-  font-weight: 900;
-  font-size: 20px;
-  letter-spacing: 3px;
-  padding: 8px 14px;
-  border-radius: 6px;
-}
-.app-header .tarih {
-  font-size: 18px;
-  font-weight: 700;
-  color: #003366;
-}
+/* Başlık / Nav artık sadece home-style.css'de tanımlı — burada AYRICA
+   tanımlamak (eski değerlerle) home-style.css'deki güncel header
+   tasarımının üzerine yazıp bozuyordu (05.09.2026 tespit edildi). */
 .app-nav {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
