@@ -312,10 +312,10 @@ function duzenlemeAc(k){
       + "<button class='duzenle-urun-sil-btn' data-urun-sil-i='" + i + "'>🗑️</button>"
       + "</div>"
       + "<div class='duzenle-alan-grid'>"
-      + "<input type='number' step='0.01' data-alan='listeFiyat' data-i='" + i + "' value='" + (u.listeFiyat||0) + "' placeholder='Liste Fiyat'>"
-      + "<input type='number' step='0.1' data-alan='iskonto' data-i='" + i + "' value='" + (u.iskonto||0) + "' placeholder='İskonto %'>"
-      + "<input type='number' step='1' data-alan='adet' data-i='" + i + "' value='" + (u.adet||1) + "' placeholder='Adet'>"
-      + "<input type='number' step='0.01' data-alan='dipFiyat' data-i='" + i + "' value='" + (u.dipFiyat||0) + "' placeholder='Dip Fiyat'>"
+      + "<div class='duzenle-alan'><label class='duzenle-etiket'>Liste Fiyat</label><input type='number' step='0.01' data-alan='listeFiyat' data-i='" + i + "' value='" + (u.listeFiyat||0) + "'></div>"
+      + "<div class='duzenle-alan'><label class='duzenle-etiket'>İskonto %</label><input type='number' step='0.1' data-alan='iskonto' data-i='" + i + "' value='" + (u.iskonto||0) + "'></div>"
+      + "<div class='duzenle-alan'><label class='duzenle-etiket'>Adet</label><input type='number' step='1' data-alan='adet' data-i='" + i + "' value='" + (u.adet||1) + "'></div>"
+      + "<div class='duzenle-alan'><label class='duzenle-etiket'>Dip Fiyat</label><input type='number' step='0.01' data-alan='dipFiyat' data-i='" + i + "' value='" + (u.dipFiyat||0) + "'></div>"
       + "</div>"
       + "</div>";
   }).join("");

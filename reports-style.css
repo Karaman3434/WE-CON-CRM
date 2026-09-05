@@ -299,7 +299,17 @@
 .duzenle-alan-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
+}
+.duzenle-alan {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.duzenle-etiket {
+  font-size: 11px;
+  font-weight: 800;
+  color: #5f6b7a;
 }
 .duzenle-alan-grid input {
   border: 2px solid #cbd5e1;
