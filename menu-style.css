@@ -12,6 +12,7 @@
 .menu-satir {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   text-align: left;
   background: #ffffff;
@@ -22,7 +23,10 @@
   font-weight: 800;
   cursor: pointer;
   text-decoration: none;
+  gap: 8px;
 }
+.menu-satir-etiket { flex: 1; min-width: 0; }
+.menu-satir-ok { display: flex; align-items: center; flex-shrink: 0; }
 .menu-satir:last-child { border-bottom: none; }
 
 .menu-satir--veri { color: #0e6b58; }
