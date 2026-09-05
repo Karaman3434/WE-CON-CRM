@@ -780,7 +780,7 @@
 .tl-ust { font-size: 14px; }
 .tl-isim { font-weight: 800; color: #111827; }
 .tl-sehir { color: #5f6b7a; font-weight: 500; }
-.tl-alt { margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.tl-alt { margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
 .tl-rozet { font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
 .tl-kod {
   font-size: 13px;
@@ -788,6 +788,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
 }
 .tl-kanal-harf { margin-right: 2px; }
 .tl-sag { display: flex; align-items: center; gap: 8px; padding: 0 4px 0 4px; flex-shrink: 0; margin-left: auto; }
