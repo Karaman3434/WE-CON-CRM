@@ -40,11 +40,16 @@
       var logo = header.querySelector(".logo");
       var tarih = header.querySelector(".tarih");
       if(!logo || !tarih) return;
-      var solGrup = document.createElement("div");
-      solGrup.className = "header-sol-grup";
-      header.insertBefore(solGrup, logo);
-      solGrup.appendChild(logo);
-      solGrup.appendChild(tarih);
+
+      // Sol kanat: tarih. Logo bu kanadın DIŞINA, iki kanadın arasına
+      // konur — böylece iki taraf da flex:1 olduğundan logo satırın tam
+      // ortasında sabit kalır (05.09.2026).
+      var solKanat = document.createElement("div");
+      solKanat.className = "header-tarih-kanat";
+      header.insertBefore(solKanat, tarih);
+      solKanat.appendChild(tarih);
+      header.appendChild(logo);
+
       var kurBlok = document.createElement("div");
       kurBlok.className = "header-kur-blok";
       kurBlok.innerHTML = "<span class='header-kur-deger-grup'><span class='header-kur-etiket'>Döviz Kuru</span><span class='header-kur-deger' id='headerKurDeger'>-</span></span>";
