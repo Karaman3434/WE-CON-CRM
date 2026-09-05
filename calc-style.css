@@ -69,6 +69,8 @@
 .hc-kutu--isk { background: #bdeeda; }
 .hc-kutu--isk .hc-kutu-etiket { color: #0e6b58; }
 .hc-kutu--isk input { color: #0e6b58; font-weight: 800; }
+#hesDipFiyat, #hesIskonto { text-align: left; }
+#hesDipFiyat + .hc-kutu-etiket, #hesIskonto + .hc-kutu-etiket { text-align: right; }
 
 /* Turuncu iskonto kutuları — etiket sayının üstünde, ikisi de ortalı.
    Kutu boyu sabit, iki kutu aynı satırda olduğu için otomatik eşit
