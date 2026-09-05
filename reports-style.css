@@ -792,10 +792,10 @@
 .tl-kanal-harf { margin-right: 2px; }
 .tl-sag { display: flex; align-items: center; gap: 8px; padding: 0 4px 0 4px; flex-shrink: 0; margin-left: auto; }
 .tl-tutar { font-size: 15px; font-weight: 800; color: #042c53; white-space: nowrap; }
-.tl-divider { width: 1px; height: 26px; background: #d8dee6; flex-shrink: 0; }
+.tl-divider { width: 1px; height: 18px; background: #d8dee6; flex-shrink: 0; }
 .tl-ok {
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
