@@ -90,7 +90,8 @@ function bildirimleriCiz(){
       ziyaretListe.forEach(function(z){
         html += "<div class='ziyaret-hatirlat-karti' data-musteri='" + htmlEsc(z.musteri) + "'>"
           + "<div class='ziyaret-hatirlat-musteri'>🏢 " + htmlEsc(z.musteri) + (z.sehir?" - "+htmlEsc(z.sehir):"") + "</div>"
-          + "<div class='ziyaret-hatirlat-gun'>" + z.gun + " gündür yok</div>"
+          + "<div class='ziyaret-hatirlat-sag'><span class='ziyaret-hatirlat-gun'>" + z.gun + " gündür yok</span>"
+          + "<span class='ziyaret-hatirlat-ok'><svg width='16' height='24' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></span></div>"
           + "</div>";
       });
     }

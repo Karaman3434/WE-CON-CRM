@@ -65,6 +65,15 @@
 }
 .ziyaret-hatirlat-musteri { font-size: 15px; font-weight: 900; color: #222222; }
 .ziyaret-hatirlat-gun { font-size: 12px; font-weight: 800; color: #a34a1e; white-space: nowrap; }
+.ziyaret-hatirlat-sag { display: flex; align-items: center; gap: 6px; }
+.ziyaret-hatirlat-ok {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 
 .gorev-bildirim-karti {
   background: #fdf1e8;

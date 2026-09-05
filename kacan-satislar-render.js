@@ -45,10 +45,11 @@ function listeyiCiz(){
         + "<td><button class='sl-musteri-btn' data-i='" + i + "'>" + htmlEsc(k.musteri) + "</button><span class='sl-sehir'>" + htmlEsc(k.sehir||"-") + "</span></td>"
         + "<td><span class='islem-kod-rozet' style='background:" + renk + ";'>" + htmlEsc(TIP_ETIKET_KS[k.tip]||k.tip) + "</span></td>"
         + "<td class='sl-tarih-hucre'>" + htmlEsc(k.tarih||"-") + "</td>"
+        + "<td><button class='sl-ok-btn' data-i='" + i + "' aria-label='Belgeyi aç'><svg width='16' height='24' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></button></td>"
         + "</tr>";
     }).join("");
 
-    kapsayici.querySelectorAll(".sl-musteri-btn").forEach(function(btn){
+    kapsayici.querySelectorAll(".sl-musteri-btn, .sl-ok-btn").forEach(function(btn){
       btn.onclick = function(){
         var k = liste[parseInt(this.getAttribute("data-i"), 10)];
         localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));

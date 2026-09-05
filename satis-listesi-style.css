@@ -29,6 +29,17 @@
 }
 .sl-sehir { display: block; font-size: 11px; color: #8b95a1; font-weight: 400; margin-top: 2px; }
 .sl-toplam { font-weight: 800; color: #111827; white-space: nowrap; }
+.sl-ok-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 
 .bos-mesaj { text-align: center; color: #8b95a1; font-size: 13px; padding: 30px 10px; }
 

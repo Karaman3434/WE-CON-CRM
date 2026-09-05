@@ -97,10 +97,15 @@ function listeyiCiz(){
         else ziyaretRozetHtml = "<span class='musteri-ziyaret-rozet musteri-ziyaret-rozet--iyi'>✓ " + gun + " gün önce</span>";
       }
       return "<div class='musteri-karti " + zebraSinif + "' data-i='" + i + "'>"
+        + "<div class='musteri-karti-satir'>"
+        + "<div class='musteri-icerik'>"
         + "<div class='musteri-ust-satir'><span class='musteri-ad'>" + htmlEsc(m.ad) + "</span>" + ziyaretRozetHtml + "</div>"
         + "<div class='musteri-alt-satir'>"
         + "<span class='musteri-kod'>" + (m.id ? "🏷 " + htmlEsc(m.id) : "") + "</span>"
         + "<span class='musteri-sehir'>" + htmlEsc(m.sehir||"-") + "</span>"
+        + "</div>"
+        + "</div>"
+        + "<div class='musteri-ok-alan'><svg width='18' height='28' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></div>"
         + "</div>"
         + "</div>";
     }).join("") + "</div>";
