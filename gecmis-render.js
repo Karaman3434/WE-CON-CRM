@@ -48,33 +48,71 @@ function ayniMusteriKaydiMi(kayitMusteriAdi, kayitMusteriId, seciliAd, seciliId)
   return a.indexOf(b) === 0 || b.indexOf(a) === 0;
 }
 
-// reports-render.js'deki KOD_RENK ile birebir aynı — iki dosyada da
-// aynı tutulmalı (bkz. belge-render.js TIP_RENK_BELGE de aynı paletten).
-var TIP_KOD_YEDEK = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
-var KOD_RENK = {"SİP":"#003a70", "F.TEK":"#28a745", "P.FAT":"#8e44ad", "NUM":"#b7601f"};
-// Metin (rozet değil, düz yazı) olarak kod üzerinde kullanılacak koyu tonlar —
-// beyaz zeminde okunabilirlik için KOD_RENK'ten daha koyu.
-var KOD_RENK_METIN = {"SİP":"#003a70", "F.TEK":"#1a7431", "P.FAT":"#5c1680", "NUM":"#7a4008"};
-// Gönderim kanalı harfi + rengi — kod ile birlikte gösterilir (belge hangi
-// yolla gönderildiyse: Mail veya WhatsApp).
+// v3 — tarih gruplu tasarım (05.09.2026). Bu sabitler reports-render.js,
+// son-islemler-render.js, satis-listesi-render.js ve
+// kacan-satislar-render.js'de birebir aynı tutulmalı.
+var TIP_META = {
+  siparis:  {rozet:"SİP",   rozetBg:"#e6f1fb", rozetRenk:"#0c447c", serit:"#185fa5", kodRenk:"#003a70"},
+  teklif:   {rozet:"F.TEK", rozetBg:"#e1f5ee", rozetRenk:"#0e6b58", serit:"#28a745", kodRenk:"#1a7431"},
+  proforma: {rozet:"P.FAT", rozetBg:"#f3e8fb", rozetRenk:"#6a1b9a", serit:"#8e44ad", kodRenk:"#5c1680"},
+  numune:   {rozet:"NUM",   rozetBg:"#faeeda", rozetRenk:"#854f0b", serit:"#b7601f", kodRenk:"#7a4008"}
+};
+var RVZ_META = {rozet:"RVZ", rozetBg:"#faeeda", rozetRenk:"#854f0b", serit:"#b7601f"};
+var KACAN_META = {rozet:"KAÇTI", rozetBg:"#fdecea", rozetRenk:"#a32d2d", serit:"#c0392b"};
 var KANAL_HARF = {mail:"M", whatsapp:"W"};
 var KANAL_RENK = {mail:"#185fa5", whatsapp:"#128C7E"};
-function kodOnekiAyikla(kod){
-  if(!kod) return null;
-  var parcalar = kod.split(".");
-  if(parcalar.length < 3) return kod;
-  return parcalar.slice(0, parcalar.length-2).join(".");
-}
-function kodRozetVeRenkGetir(k){
-  var kod = k.kod || TIP_KOD_YEDEK[k.tip] || "?";
-  var onek = kodOnekiAyikla(k.kod) || TIP_KOD_YEDEK[k.tip] || "?";
-  var renk = (k.durum === "kacan") ? "#c0392b" : (KOD_RENK[onek] || "#3569b8");
-  var renkMetin = (k.durum === "kacan") ? "#c0392b" : (KOD_RENK_METIN[onek] || "#1c2530");
-  return {kod: kod, renk: renk, renkMetin: renkMetin};
-}
+var GUNLER_UZUN = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+var AYLAR_UZUN = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+var OK_SVG = "<svg width='16' height='24' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg>";
 function kanalHarfHTML(kanal){
   if(!kanal || !KANAL_HARF[kanal]) return "";
-  return "<span class='ik2-kanal-harf' style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
+  return "<span class='tl-kanal-harf' style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
+}
+function gunAnahtari(ts){
+  var d = new Date(ts);
+  return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate();
+}
+function gunBasligi(ts){
+  var d = new Date(ts);
+  return d.getDate() + " " + AYLAR_UZUN[d.getMonth()] + " " + d.getFullYear() + " • " + GUNLER_UZUN[d.getDay()];
+}
+function tlKartHTML(k, gosterIsim){
+  var kacanMi = k.durum === "kacan";
+  var revizeMi = !!k.revizeZamani;
+  var meta = TIP_META[k.tip] || TIP_META.siparis;
+  var rozetMeta = kacanMi ? KACAN_META : (revizeMi ? RVZ_META : meta);
+  var serit = rozetMeta.serit;
+  var kod = k.kod || meta.rozet;
+  return "<div class='tl-kart' data-i='" + k._i + "'>"
+    + "<div class='tl-serit' style='background:" + serit + ";'></div>"
+    + "<div class='tl-govde'>"
+    + (gosterIsim ? "<div class='tl-ust'><span class='tl-isim'>" + htmlEsc(k.musteri) + "</span>" + (k.sehir?" <span class='tl-sehir'>- "+htmlEsc(k.sehir)+"</span>":"") + "</div>" : "")
+    + "<div class='tl-alt'>"
+    + "<span class='tl-rozet' style='background:" + rozetMeta.rozetBg + ";color:" + rozetMeta.rozetRenk + ";'>" + rozetMeta.rozet + "</span>"
+    + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
+    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " €</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
+    + "</div>"
+    + (kacanMi && k.kacanRakip ? "<div class='tl-durum-ek'>Rakip: " + htmlEsc(k.kacanRakip) + "</div>" : "")
+    + "</div>"
+    + "</div>";
+}
+function tlGrupla(liste){
+  var gruplar = [], harita = {};
+  liste.forEach(function(k, i){
+    k._i = i;
+    var anahtar = gunAnahtari(k.ts);
+    if(!harita[anahtar]){ harita[anahtar] = {ts:k.ts, kayitlar:[]}; gruplar.push(harita[anahtar]); }
+    harita[anahtar].kayitlar.push(k);
+  });
+  return gruplar;
+}
+function tlListeHTML(gruplar, gosterIsim){
+  return gruplar.map(function(g){
+    var toplamGun = g.kayitlar.reduce(function(s,k){ return s + k._tutar; }, 0);
+    var kartlar = g.kayitlar.map(function(k){ return tlKartHTML(k, gosterIsim); }).join("<div class='tl-arasi'></div>");
+    return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " €</span></div>"
+      + "<div class='tl-liste-kutu'>" + kartlar + "</div>";
+  }).join("");
 }
 
 function listeyiCiz(){
@@ -111,25 +149,13 @@ function listeyiCiz(){
     }
     bos.hidden = true;
 
-    kapsayici.innerHTML = filtreli.map(function(k, i){
-      var kacanMi = k.durum === "kacan";
-      var kodBilgi = kodRozetVeRenkGetir(k);
-      var kod = kodBilgi.kod, renkMetin = kodBilgi.renkMetin;
-      var toplam = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
-      var durumEk = kacanMi ? ("❌ KAÇTI" + (k.kacanRakip?" → "+htmlEsc(k.kacanRakip):"")) : "";
+    filtreli.forEach(function(k){
+      k._tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+    });
+    var gruplar = tlGrupla(filtreli);
+    kapsayici.innerHTML = tlListeHTML(gruplar, false);
 
-      return "<div class='ik2-kart" + (kacanMi?" islem-karti--kacan":"") + "' data-i='" + i + "'>"
-        + "<div class='ik2-alt'>"
-        + "<span class='ik2-tarih'>" + htmlEsc(k.tarih) + "</span>"
-        + "<span class='ik2-kod' style='color:" + renkMetin + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
-        + "<span class='ik2-tutar'>" + fmt(toplam) + " €</span>"
-        + (k.revizeZamani ? "<span class='ik2-rvz'>RVZ</span>" : "")
-        + "</div>"
-        + (durumEk ? "<div class='ik2-durum-ek'>" + durumEk + "</div>" : "")
-        + "</div>";
-    }).join("");
-
-    kapsayici.querySelectorAll(".ik2-kart").forEach(function(el){
+    kapsayici.querySelectorAll(".tl-kart").forEach(function(el){
       el.onclick = function(){
         var k = filtreli[parseInt(this.getAttribute("data-i"), 10)];
         localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));

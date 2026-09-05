@@ -737,3 +737,61 @@
   white-space: nowrap;
   line-height: 1.2;
 }
+
+/* ===== v3 — tarih gruplu işlem listesi (05.09.2026). Son İşlemler,
+   Bugünün/Aylık Satışları, Müşteri İşlem Geçmişi, Ay Detayı ve Kaçan
+   Satışlar'ın TAMAMI bu ortak sınıfları kullanır — tek merkezden
+   yönetilir. Sınıf öneki "tl-" (transaction list). ===== */
+.tl-grup-baslik {
+  background: #b5d4f4;
+  color: #042c53;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px 8px 0 0;
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 14px;
+}
+.tl-grup-baslik:first-child { margin-top: 0; }
+.tl-liste-kutu {
+  border: 1px solid #e2e6ec;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.tl-kart { display: flex; align-items: stretch; background: #ffffff; cursor: pointer; }
+.tl-serit { width: 4px; flex-shrink: 0; }
+.tl-govde { flex: 1; min-width: 0; padding: 10px 12px; }
+.tl-ust { font-size: 14px; }
+.tl-isim { font-weight: 800; color: #111827; }
+.tl-sehir { color: #5f6b7a; font-weight: 500; }
+.tl-alt { margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.tl-rozet { font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+.tl-kod {
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tl-kanal-harf { margin-right: 2px; }
+.tl-sag { display: flex; align-items: center; gap: 8px; padding: 0 4px 0 4px; flex-shrink: 0; margin-left: auto; }
+.tl-tutar { font-size: 15px; font-weight: 800; color: #042c53; white-space: nowrap; }
+.tl-divider { width: 1px; height: 26px; background: #d8dee6; flex-shrink: 0; }
+.tl-ok {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.tl-arasi { height: 2px; background: #eef1f5; margin-left: 4px; }
+.tl-durum-ek { font-size: 11px; font-weight: 800; color: #c0392b; padding: 0 12px 8px 12px; }
