@@ -35,8 +35,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 16px 14px 8px;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #003a70;
+  min-height: 48px;
 }
 .header-tarih-kanat { flex: 1; min-width: 0; display: flex; align-items: center; }
 .header-kur-blok {
@@ -45,29 +47,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  padding-left: 12px;
-  border-left: 1px solid #e2e6ec;
-}
-.header-kur-deger-grup { display: flex; flex-direction: column; align-items: flex-end; }
-.header-kur-etiket { font-size: 10px; font-weight: 700; color: #6b7684; }
-.header-kur-deger { font-size: 17px; font-weight: 900; color: #003a70; line-height: 1.2; }
-.header-kur-yenile-btn {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  background: #fdf0dc;
-  border: 1px solid #f2d9ad;
-  color: #b06a10;
-  border-radius: 8px;
-  font-size: 19px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 10px 4px;
+  margin: -10px -4px;
   cursor: pointer;
-  padding: 0;
 }
-.header-kur-yenile-btn:disabled { opacity: .7; }
+.header-kur-deger-grup { display: flex; align-items: center; gap: 6px; }
+.header-kur-deger { font-size: 16px; font-weight: 900; color: #ffffff; line-height: 1.2; }
+.header-kur-ikon { font-size: 20px; line-height: 1; }
+.header-kur-blok:disabled { opacity: .7; cursor: default; }
 /* Başlık + nav (Geri/Ana Sayfa/Menü) artık TEK bir sabit (sticky) blok —
    sayfa ne kadar aşağı kaydırılırsa kaydırılsın hep görünür kalır. Popup'lar
    da bu bloğun altına, ona göre konumlanır (bkz. genel .overlay kuralı). */
@@ -93,23 +83,24 @@ body {
 .rota-etiketi--acik { background: #fdf0dc; border-bottom-color: #f2d9ad; color: #7a5310; }
 .rota-etiketi--acik b { color: #b06a10; }
 .app-header .logo {
-  background: #3569b8;
+  background: none;
   color: #ffffff;
   font-weight: 900;
-  font-size: 16px;
-  letter-spacing: 2px;
-  padding: 13px 16px;
-  border-radius: 8px;
-  box-sizing: border-box;
+  font-size: 22px;
+  letter-spacing: 1px;
+  padding: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex: 1;
   flex-shrink: 0;
-  height: 44px;
+  height: 100%;
 }
 .app-header .tarih {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
-  color: #003366;
+  color: #cfe2f3;
+  flex: 1;
 }
 
 /* ---------- Navigasyon ---------- */
@@ -356,22 +347,19 @@ body {
   color: #2563eb;
 }
 
-/* ---------- Motivasyon/karşılama alanı (06.09.2026) ---------- */
+/* ---------- Motivasyon/karşılama alanı (06.09.2026) ----------
+   Sabit üst şeridin EN ÜSTÜNDE, kenardan kenara; altındaki lacivert
+   tarih/logo/kur şeridiyle tek bir görsel blok oluşturur. */
 .motivasyon-kutu {
-  background: linear-gradient(135deg, #eaf3fc, #ffffff);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 12px;
+  background: linear-gradient(135deg, #faeeda, #fac775);
+  padding: 12px 14px;
+  min-height: 60px;
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
 }
-.motivasyon-sol { min-width: 0; }
-.motivasyon-selam { font-size: 17px; font-weight: 800; color: #123b63; }
-.motivasyon-alt-metin { font-size: 12px; color: #5f6b7a; margin-top: 4px; line-height: 1.4; }
-.motivasyon-sag { text-align: right; flex-shrink: 0; max-width: 150px; }
-.motivasyon-soz { font-size: 12px; font-style: italic; color: #0f7a63; line-height: 1.4; }
-.motivasyon-etiket { font-size: 9px; font-weight: 800; color: #0f7a63; letter-spacing: 1px; margin-top: 4px; }
+.motivasyon-selam { font-size: 14px; font-weight: 700; color: #412402; }
+.motivasyon-soz { font-size: 12px; font-style: italic; color: #2c1902; line-height: 1.5; margin-top: 3px; }
 
 .hizli-islemler-baslik-satiri {
   display: flex;

@@ -50,29 +50,27 @@
       solKanat.appendChild(tarih);
       header.appendChild(logo);
 
-      var kurBlok = document.createElement("div");
+      // Değer ve yenileme ikonu artık TEK, geniş bir dokunma alanında —
+      // kur sayısına basmak da yenilemeyi tetikler, eski küçük ayrı
+      // buton kaldırıldı (06.09.2026).
+      var varAyarlarSync = typeof AyarlarSync !== "undefined";
+      var kurBlok = document.createElement(varAyarlarSync ? "button" : "div");
       kurBlok.className = "header-kur-blok";
-      kurBlok.innerHTML = "<span class='header-kur-deger-grup'><span class='header-kur-etiket'>Döviz Kuru</span><span class='header-kur-deger' id='headerKurDeger'>-</span></span>";
-      // Elle yenileme butonu — sadece AyarlarSync bu sayfada yüklüyse
-      // eklenir (Ayarlar'daki "Şimdi Dene" ile birebir aynı işlevi çağırır).
-      if(typeof AyarlarSync !== "undefined"){
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "header-kur-yenile-btn";
-        btn.id = "headerKurYenileBtn";
-        btn.setAttribute("aria-label", "Döviz kurunu yenile");
-        btn.textContent = "🔄";
-        btn.onclick = function(){
-          btn.disabled = true;
-          btn.textContent = "⏳";
+      kurBlok.id = "headerKurYenileBtn";
+      if(varAyarlarSync){ kurBlok.type = "button"; kurBlok.setAttribute("aria-label", "Döviz kurunu yenile"); }
+      kurBlok.innerHTML = "<span class='header-kur-deger-grup'><span class='header-kur-deger' id='headerKurDeger'>-</span><span class='header-kur-ikon' id='headerKurIkon'>" + (varAyarlarSync ? "🔄" : "") + "</span></span>";
+      if(varAyarlarSync){
+        kurBlok.onclick = function(){
+          var ikon = document.getElementById("headerKurIkon");
+          kurBlok.disabled = true;
+          if(ikon) ikon.textContent = "⏳";
           AyarlarSync.otomatikKurGetir(true, function(basarili){
             headerKuruGuncelle();
-            btn.disabled = false;
-            btn.textContent = basarili ? "✓" : "✕";
-            setTimeout(function(){ btn.textContent = "🔄"; }, 1500);
+            kurBlok.disabled = false;
+            if(ikon) ikon.textContent = basarili ? "✓" : "✕";
+            setTimeout(function(){ if(ikon) ikon.textContent = "🔄"; }, 1500);
           });
         };
-        kurBlok.appendChild(btn);
       }
       header.appendChild(kurBlok);
       headerKuruGuncelle();
