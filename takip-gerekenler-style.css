@@ -1,0 +1,60 @@
+.sayfa { padding: 8px 14px 24px; }
+.tg-aciklama { font-size: 12px; color: #556170; line-height: 1.5; margin-bottom: 12px; }
+
+.arama-kutusu { position: relative; margin-bottom: 8px; }
+.arama-kutusu input {
+  width: 100%;
+  border: 2px solid #3569b8;
+  border-radius: 999px;
+  padding: 14px 44px 14px 18px;
+  font-size: 16px;
+  outline: none;
+  color: #222;
+  box-sizing: border-box;
+}
+.arama-ikon {
+  position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%); font-size: 18px;
+}
+
+.tg-sirala-satiri { margin-bottom: 12px; }
+.tg-sirala-satiri select {
+  width: 100%;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #003a70;
+  box-sizing: border-box;
+}
+
+.tg-liste-kutu {
+  border: 1.5px solid #eef1f5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.tg-satir { border-bottom: 1px solid #eef1f5; padding: 12px 16px; cursor: pointer; }
+.tg-satir:last-child { border-bottom: none; }
+.tg-satir:nth-child(even) { background: #f7f9fc; }
+.tg-cari-metin {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tg-gun-etiket {
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a0793d;
+}
+
+.bos-mesaj {
+  text-align: center;
+  color: #44494f;
+  font-size: 14px;
+  padding: 30px 0;
+  font-style: italic;
+}

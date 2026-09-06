@@ -5,7 +5,7 @@
 .arama-kutusu { position: relative; margin-bottom: 12px; }
 
 .musteri-filtre-satiri { display: flex; gap: 8px; margin-bottom: 12px; }
-.musteri-filtre-satiri select {
+.musteri-filtre-satiri select, .musteri-filtre-satiri input {
   flex: 1;
   min-width: 0;
   border: 2px solid #cbd5e1;
@@ -14,6 +14,7 @@
   font-size: 13px;
   font-weight: 700;
   color: #003a70;
+  box-sizing: border-box;
 }
 .arama-kutusu input {
   width: 100%;
@@ -54,17 +55,23 @@
 }
 
 .musteri-ust-satir {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.musteri-cari-metin {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.musteri-aktivite-satiri { margin-top: 4px; }
-.musteri-aktivite {
-  font-size: 13px;
-  font-weight: 800;
+.musteri-gecikme-noktasi {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e0201f;
+  flex-shrink: 0;
 }
-.musteri-aktivite--gecikmis { color: #c0392b; }
-.musteri-aktivite--iyi { color: #2f7d3c; }
 
 .musteri-alt-satir {
   display: flex;
