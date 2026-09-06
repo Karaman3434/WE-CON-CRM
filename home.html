@@ -23,7 +23,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.060926.0230.145">
+<link rel="stylesheet" href="home-style.css?v=WG.060926.1214.150">
 </head>
 <body>
 
@@ -42,8 +42,19 @@
 
 <main class="sayfa" id="page8">
 
+  <div class="motivasyon-kutu">
+    <div class="motivasyon-sol">
+      <div class="motivasyon-selam" id="motivasyonSelam">Günaydın, Abdullah</div>
+      <div class="motivasyon-alt-metin">WEICON ASİST'e hoş geldiniz.</div>
+    </div>
+    <div class="motivasyon-sag">
+      <div class="motivasyon-soz" id="motivasyonSoz">"Küçük adımlar, büyük sonuçlar doğurur."</div>
+      <div class="motivasyon-etiket">DAİMA İLERİ</div>
+    </div>
+  </div>
+
   <div class="banner banner--kirmizi" id="bildirimBanner" hidden>
-    <div class="banner-baslik">Takip Gerekiyor</div>
+    <div class="banner-baslik">⏰ Takip Gerekiyor</div>
     <div class="banner-alt" id="bildirimBannerAlt"></div>
   </div>
 
@@ -85,34 +96,46 @@
 
   <hr class="ayrac">
 
+  <div class="hizli-islemler-baslik-satiri">
+    <span class="hizli-islemler-baslik">Hızlı İşlemler</span>
+    <a class="tum-islemler-link" href="menu.html">Tüm İşlemler ›</a>
+  </div>
+
   <section class="menu-grid">
     <button class="menu-kart menu-kart--mavi" id="btnUrunBul" onclick="window.location.href='product.html'">
+      <span class="menu-ikon">🔍</span>
       <span class="menu-baslik">Ürün Bul</span>
       <span class="menu-alt">KATALOG</span>
     </button>
     <button class="menu-kart menu-kart--yesil" id="btnHizliHesapla" onclick="window.location.href='calc.html'">
+      <span class="menu-ikon">🧮</span>
       <span class="menu-baslik">Hızlı Hesapla</span>
       <span class="menu-alt">FİYATLANDIR</span>
     </button>
     <button class="menu-kart menu-kart--lacivert" id="btnHareketler" onclick="window.location.href='customer.html'">
+      <span class="menu-ikon">👥</span>
       <span class="menu-baslik">Müşteri</span>
       <span class="menu-alt">ARA · BUL · EKLE</span>
     </button>
     <button class="menu-kart menu-kart--gri" id="btnRaporlar" onclick="window.location.href='raporlar.html'">
+      <span class="menu-ikon">📊</span>
       <span class="menu-baslik">Raporlar</span>
       <span class="menu-alt">İSTATİSTİK · GÖREV</span>
     </button>
-  </section>
-
-  <section class="menu-grid menu-grid--tek">
-    <button class="menu-kart menu-kart--mavi menu-kart--genis" id="btnAracKm" onclick="window.location.href='km.html'">
+    <button class="menu-kart menu-kart--mavi" id="btnAracKm" onclick="window.location.href='km.html'">
+      <span class="menu-ikon">🚗</span>
       <span class="menu-baslik">Araç KM</span>
       <span class="menu-alt" id="kmDurumAlt">TAKİP</span>
+    </button>
+    <button class="menu-kart menu-kart--gri" id="btnSonIslemler" onclick="window.location.href='son-islemler.html'">
+      <span class="menu-ikon">🕐</span>
+      <span class="menu-baslik">Son İşlemler</span>
+      <span class="menu-alt">LİSTELE</span>
     </button>
   </section>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">WEİCON ASİST WG.060926.1121.149</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.060926.1214.150 ***</span>
   </footer>
 
 </main>
@@ -126,11 +149,12 @@
 <script src="home-data.js?v=WG.020926.1927.93"></script>
 <script src="km-data.js?v=WG.020926.1927.93"></script>
 <script src="hata-log.js?v=WG.020926.1927.93"></script>
+<script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="odenebilir-komisyon-data.js?v=WG.020926.1927.93"></script>
 <script src="avans-kayit-data.js?v=WG.020926.1927.93"></script>
 <script src="maas-kayit-data.js?v=WG.020926.1927.93"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
 <script src="maas-ozet-veri.js?v=WG.030926.0020.96"></script>
-<script src="home-render.js?v=WG.050926.1418.135"></script>
+<script src="home-render.js?v=WG.060926.1214.150"></script>
 </body>
 </html>
