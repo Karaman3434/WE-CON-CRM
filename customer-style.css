@@ -78,6 +78,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.musteri-cari-metin .cari-kod,
+.musteri-cari-metin .cari-ayrac,
+.musteri-cari-metin .cari-isim,
+.musteri-cari-metin .cari-sehir {
+  font-size: 14px;
+}
 .musteri-gecikme-noktasi {
   width: 9px;
   height: 9px;
