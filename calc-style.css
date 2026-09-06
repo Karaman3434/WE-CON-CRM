@@ -5,7 +5,7 @@
 .sayfa { padding: 8px 14px 24px; background: #f4f6f9; }
 
 .arama-kutusu { position: relative; margin-bottom: 8px; }
-.arama-kutusu input { width: 100%; border: 2px solid #3569b8; border-radius: 999px; padding: 12px 40px 12px 16px; font-size: 14px; background: #fff; }
+.arama-kutusu input { width: 100%; border: 2px solid #1f9d55; border-radius: 999px; padding: 12px 40px 12px 16px; font-size: 14px; background: #fff; }
 .arama-ikon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; }
 .sonuc-listesi { max-height: 220px; overflow-y: auto; margin-bottom: 8px; }
 .hesapla-arama-karti {
@@ -102,6 +102,6 @@
   text-decoration: none; cursor: pointer;
 }
 .hc-listeye-ekle-buton {
-  flex: 2; background: #003a70; color: #fff; border: none;
+  flex: 2; background: #0e6b34; color: #fff; border: none;
   padding: 12px; min-height: 44px; font-size: 14px; font-weight: 900; border-radius: 12px; cursor: pointer;
 }

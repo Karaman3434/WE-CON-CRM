@@ -31,12 +31,12 @@
   padding: 10px;
   font-size: 16px;
   font-weight: 700;
-  color: #003a70;
+  color: #b7601f;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
 }
-.hesap-alan input:focus { outline: none; border-color: #003a70; }
+.hesap-alan input:focus { outline: none; border-color: #b7601f; }
 .hesap-alan--tek { margin-bottom: 10px; }
 .hesap-alan--tek input { width: 100%; }
 
@@ -50,7 +50,7 @@
   font-weight: 700;
   margin-bottom: 12px;
 }
-.km-dun-ozet strong { color: #003a70; }
+.km-dun-ozet strong { color: #b7601f; }
 
 .km-duzenle-buton {
   width: 100%;
@@ -80,16 +80,16 @@
   cursor: pointer;
 }
 .kategori-btn--secili {
-  border-color: #3569b8;
+  border-color: #ef9f27;
   background: #eaf2fc;
-  color: #003a70;
+  color: #b7601f;
 }
 
 .km-fark-kutu {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #003a70;
+  background: #b7601f;
   border-radius: 8px;
   padding: 12px 14px;
   color: #ffffff;
@@ -126,7 +126,7 @@
   padding: 9px 10px;
   font-size: 14px;
   font-weight: 700;
-  color: #003a70;
+  color: #b7601f;
 }
 
 .km-tablo-baslik-satir {
@@ -146,7 +146,7 @@
   padding: 9px 10px;
   font-size: 13px;
   font-weight: 800;
-  color: #003a70;
+  color: #b7601f;
   background: #fff;
   margin-bottom: 10px;
 }
@@ -162,8 +162,8 @@
 }
 .km-tablo-kaydet-buton {
   background: #eaf2fc;
-  color: #003a70;
-  border: 1px solid #3569b8;
+  color: #b7601f;
+  border: 1px solid #ef9f27;
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 12px;
@@ -180,8 +180,8 @@
 .km-tablo-goster-buton {
   width: 100%;
   background: #eaf2fc;
-  color: #003a70;
-  border: 2px solid #3569b8;
+  color: #b7601f;
+  border: 2px solid #ef9f27;
   border-radius: 8px;
   padding: 12px;
   font-size: 13px;
@@ -200,7 +200,7 @@
 .data-table-container {
   overflow-x: auto;
   width: 100%;
-  border: 1px solid #3569b8;
+  border: 1px solid #ef9f27;
   border-radius: 8px;
 }
 .km-veri-tablo {
@@ -214,7 +214,7 @@
   font-weight: 900;
   padding: 6px 3px;
   text-align: center;
-  border-bottom: 2px solid #3569b8;
+  border-bottom: 2px solid #ef9f27;
   white-space: nowrap;
 }
 .km-veri-tablo td {
@@ -231,7 +231,7 @@
   max-width: 70px;
 }
 .km-veri-tablo .km-td-ozel { color: #b7601f; font-weight: 800; }
-.km-veri-tablo .km-td-is { color: #003a70; font-weight: 800; }
+.km-veri-tablo .km-td-is { color: #b7601f; font-weight: 800; }
 
 .km-td-tarih {
   white-space: normal !important;
@@ -251,10 +251,10 @@
   align-items: center;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 2px solid #003a70;
+  border-top: 2px solid #b7601f;
   font-size: 14px;
   font-weight: 800;
-  color: #003a70;
+  color: #b7601f;
 }
 .km-ay-toplam--ozel {
   margin-top: 6px;
@@ -267,7 +267,7 @@
   cursor: text;
 }
 .km-veri-tablo td[contenteditable]:focus {
-  outline: 2px solid #3569b8;
+  outline: 2px solid #ef9f27;
   background: #eaf2fc;
 }
 .km-satir--bugun {
@@ -320,7 +320,7 @@
 .km-baslangic-baslik {
   font-size: 16px;
   font-weight: 900;
-  color: #003a70;
+  color: #b7601f;
   margin-bottom: 10px;
   text-align: center;
 }
@@ -333,7 +333,7 @@
 }
 .km-baslangic-kutu input {
   width: 100%;
-  border: 2px solid #3569b8;
+  border: 2px solid #ef9f27;
   border-radius: 8px;
   padding: 12px;
   font-size: 18px;

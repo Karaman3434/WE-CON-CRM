@@ -20,7 +20,7 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  background: #003a70;
+  background: #6a1b9a;
   color: #fff;
   border-radius: 8px;
   padding: 10px 14px;
@@ -31,7 +31,7 @@
 }
 .arama-kutusu input {
   width: 100%;
-  border: 2px solid #3569b8;
+  border: 2px solid #8e44ad;
   border-radius: 999px;
   padding: 14px 44px 14px 18px;
   font-size: 16px;

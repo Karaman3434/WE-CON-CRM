@@ -32,3 +32,8 @@
 }
 .si-pill--kacan { background: #fdeceb; color: #a32d2d; }
 .si-pill--revize { background: #fdf3e3; color: #854f0b; }
+
+/* Bu sayfaya özgü "Siyah" tema (Ana Sayfa'daki Son İşlemler kutucuğunun
+   rengiyle devam ediyor) — sadece #islemAra'yı hedefler, diğer tl- sayfalarını
+   (Satış Listesi, Kaçan Satışlar) etkilemez. */
+#islemAra { border-color: #444444 !important; }
