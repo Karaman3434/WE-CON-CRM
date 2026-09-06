@@ -23,7 +23,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.060926.2105.155">
+<link rel="stylesheet" href="home-style.css?v=WG.060926.2307.158">
 </head>
 <body>
 
@@ -62,29 +62,25 @@
 
   <section class="kart-grid">
     <div class="kart kart--koyu-mavi" onclick="window.location.href='satis-listesi.html?kapsam=ay'" style="cursor:pointer;">
-      <div class="kart-baslik">Bu Ay · Satışım</div>
-      <div class="kart-deger" id="anaSayfaSatisToplam">0,00</div>
-      <div class="kart-etiket" id="anaSayfaAyEtiketi">EUR</div>
+      <div class="kart-baslik" id="anaSayfaAyEtiketi">EYLÜL 2026 SATIŞ</div>
+      <div class="kart-deger" id="anaSayfaSatisToplam">0,00 €</div>
       <div class="kart-tl-alt" id="anaSayfaSatisToplamTl">≈ 0,00 TL</div>
     </div>
     <div class="kart kart--koyu-yesil">
-      <div class="kart-baslik">Bu Ay · Primim</div>
-      <div class="kart-deger" id="anaSayfaPrimToplam">0,00</div>
-      <div class="kart-etiket">TL · Sipariş</div>
+      <div class="kart-baslik" id="anaSayfaPrimEtiketi">EYLÜL 2026 PRİM</div>
+      <div class="kart-deger" id="anaSayfaPrimToplam">0,00 TL</div>
     </div>
   </section>
 
   <section class="kart-grid">
     <div class="kart kart--acik-mavi" onclick="window.location.href='satis-listesi.html?kapsam=bugun'" style="cursor:pointer;">
-      <div class="kart-baslik">Bugünün Satışları</div>
-      <div class="kart-deger" id="anaSayfaBugunSatis">0,00</div>
-      <div class="kart-etiket">EUR · bugün</div>
+      <div class="kart-baslik">BUGÜN SATIŞ</div>
+      <div class="kart-deger" id="anaSayfaBugunSatis">0,00 €</div>
       <div class="kart-tl-alt" id="anaSayfaBugunSatisTl">≈ 0,00 TL</div>
     </div>
     <div class="kart kart--acik-yesil">
-      <div class="kart-baslik">Bugünün Primi</div>
-      <div class="kart-deger" id="anaSayfaBugunPrim">0,00</div>
-      <div class="kart-etiket">TL · Sipariş</div>
+      <div class="kart-baslik">BUGÜN PRİM</div>
+      <div class="kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
     </div>
   </section>
 
@@ -97,33 +93,33 @@
 
   <section class="menu-grid">
     <button class="menu-kart menu-kart--mavi" id="btnUrunBul" onclick="window.location.href='product.html'">
-      <div class="menu-ikon-baslik-satiri"><span class="menu-ikon">🔍</span><span class="menu-baslik">Ürün Bul</span></div>
-      <span class="menu-alt">KATALOG</span>
+      <span class="menu-ikon">🔍</span>
+      <div class="menu-metin-blok"><span class="menu-baslik">Ürün Bul</span><span class="menu-alt">KATALOG</span></div>
     </button>
     <button class="menu-kart menu-kart--yesil" id="btnHizliHesapla" onclick="window.location.href='calc.html'">
-      <div class="menu-ikon-baslik-satiri"><span class="menu-ikon">🧮</span><span class="menu-baslik">Hızlı Hesapla</span></div>
-      <span class="menu-alt">FİYATLANDIR</span>
+      <span class="menu-ikon">🧮</span>
+      <div class="menu-metin-blok"><span class="menu-baslik">Hızlı Hesapla</span><span class="menu-alt">FİYATLANDIR</span></div>
     </button>
     <button class="menu-kart menu-kart--mor" id="btnHareketler" onclick="window.location.href='customer.html'">
-      <div class="menu-ikon-baslik-satiri"><span class="menu-ikon">👥</span><span class="menu-baslik">Müşteri</span></div>
-      <span class="menu-alt">ARA · BUL · EKLE</span>
+      <span class="menu-ikon">👥</span>
+      <div class="menu-metin-blok"><span class="menu-baslik">Müşteri</span><span class="menu-alt">ARA · BUL · EKLE</span></div>
     </button>
     <button class="menu-kart menu-kart--gri" id="btnRaporlar" onclick="window.location.href='raporlar.html'">
-      <div class="menu-ikon-baslik-satiri"><span class="menu-ikon">📊</span><span class="menu-baslik">Raporlar</span></div>
-      <span class="menu-alt">İSTATİSTİK · GÖREV</span>
+      <span class="menu-ikon">📊</span>
+      <div class="menu-metin-blok"><span class="menu-baslik">Raporlar</span><span class="menu-alt">İSTATİSTİK · GÖREV</span></div>
     </button>
     <button class="menu-kart menu-kart--turuncu" id="btnAracKm" onclick="window.location.href='km.html'">
-      <div class="menu-ikon-baslik-satiri"><span class="menu-ikon">🚗</span><span class="menu-baslik">Araç KM</span></div>
-      <span class="menu-alt" id="kmDurumAlt">TAKİP</span>
+      <span class="menu-ikon">🚗</span>
+      <div class="menu-metin-blok"><span class="menu-baslik">Araç KM</span><span class="menu-alt" id="kmDurumAlt">TAKİP</span></div>
     </button>
-    <button class="menu-kart menu-kart--siyah" id="btnSonIslemler" onclick="window.location.href='son-islemler.html'">
-      <div class="menu-ikon-baslik-satiri"><span class="menu-ikon">🕐</span><span class="menu-baslik">Son İşlemler</span></div>
-      <span class="menu-alt">LİSTELE</span>
+    <button class="menu-kart menu-kart--pembe" id="btnSonIslemler" onclick="window.location.href='son-islemler.html'">
+      <span class="menu-ikon">🕐</span>
+      <div class="menu-metin-blok"><span class="menu-baslik">Son İşlemler</span><span class="menu-alt">LİSTELE</span></div>
     </button>
   </section>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.060926.2105.157 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.060926.2307.160 ***</span>
   </footer>
 
 </main>
@@ -143,6 +139,6 @@
 <script src="maas-kayit-data.js?v=WG.020926.1927.93"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
 <script src="maas-ozet-veri.js?v=WG.030926.0020.96"></script>
-<script src="home-render.js?v=WG.060926.1214.150"></script>
+<script src="home-render.js?v=WG.060926.2307.159"></script>
 </body>
 </html>

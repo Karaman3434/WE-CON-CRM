@@ -34,14 +34,15 @@ function kartlariGuncelle(){
     var ay = WeiconData.buAyinVerisi();
     var bugun = WeiconData.bugununVerisi();
 
-    setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro));
+    setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro) + " €");
     setText("anaSayfaSatisToplamTl", "≈ " + WeiconData.fmt(ay.toplamEuroTl) + " TL");
-    setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim));
-    setText("anaSayfaAyEtiketi", "EUR · " + ay.ayAd + " " + ay.yil);
+    setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim) + " TL");
+    setText("anaSayfaAyEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " SATIŞ");
+    setText("anaSayfaPrimEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " PRİM");
 
-    setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro));
+    setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro) + " €");
     setText("anaSayfaBugunSatisTl", "≈ " + WeiconData.fmt(bugun.toplamEuroTl) + " TL");
-    setText("anaSayfaBugunPrim", WeiconData.fmt(bugun.toplamPrim));
+    setText("anaSayfaBugunPrim", WeiconData.fmt(bugun.toplamPrim) + " TL");
 
   }catch(e){ hataGoster("Kartlar güncellenemedi: " + e.message); }
 }

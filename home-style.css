@@ -213,22 +213,27 @@ body {
 }
 .kart {
   border-radius: 10px;
-  padding: 16px 12px;
+  padding: 16px 10px;
   border: 1px solid transparent;
   min-height: 88px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 .kart-baslik {
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .3px;
-  margin-bottom: 6px;
 }
 .kart-deger {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 900;
   line-height: 1.1;
+  margin-top: 6px;
 }
 .kart-etiket {
   font-size: 12px;
@@ -239,7 +244,7 @@ body {
 .kart-tl-alt {
   font-size: 12px;
   font-weight: 800;
-  margin-top: 2px;
+  margin-top: 4px;
   opacity: .8;
 }
 
@@ -281,24 +286,23 @@ body {
 }
 .menu-kart {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 3px;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   min-height: 48px;
   box-sizing: border-box;
   border: 1px solid transparent;
   cursor: pointer;
   text-align: left;
 }
-.menu-ikon-baslik-satiri {
+.menu-ikon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.menu-metin-blok {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  min-width: 0;
 }
-.menu-ikon { font-size: 16px; line-height: 1; flex-shrink: 0; }
 .menu-baslik {
   font-size: 15px;
   font-weight: 900;
@@ -308,6 +312,7 @@ body {
   font-weight: 800;
   color: #44494f;
   letter-spacing: .3px;
+  margin-top: 2px;
 }
 .menu-alt--basarili {
   color: #1f9d55;
@@ -331,8 +336,8 @@ body {
 .menu-kart--turuncu { background: #faeeda; border-color: #ef9f27; }
 .menu-kart--turuncu .menu-baslik { color: #b7601f; }
 
-.menu-kart--siyah { background: #e7e7e7; border-color: #444444; }
-.menu-kart--siyah .menu-baslik { color: #111827; }
+.menu-kart--pembe { background: #fbeaf0; border-color: #d4537e; }
+.menu-kart--pembe .menu-baslik { color: #993556; }
 
 .menu-grid--tek { grid-template-columns: 1fr; }
 .menu-kart--genis { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; }
