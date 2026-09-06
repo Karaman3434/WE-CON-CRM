@@ -196,6 +196,30 @@ var CustomerData = (function(){
   // Türkiye il plaka kodları — şehir adından 2 haneli kodu bulmak için.
   // Müşteri kodu formatı: M{ilKodu:2}{sıra:3} — örn. Ankara'da 1. müşteri
   // "M06001", Samsun'da 3. müşteri "M55003". Şehir tanınmazsa "M00xxx" kullanılır.
+  // ============================================================
+  // KALICI KURAL — DEĞİŞTİRİLEMEZ (05.09.2026, Abdullah'ın talimatı)
+  // ============================================================
+  // Müşteri kodu formatı İSTİSNASIZ şu şekilde üretilir ve hep böyle
+  // kalmalıdır — bu dosyayı başka bir oturumda/araçla güncelleyen biri
+  // dahi bu kuralı BOZMAMALIDIR:
+  //
+  //   M + <il plaka kodu, 2 hane> + <o ile özel sıra no, 4 hane>
+  //
+  // Örnek: Samsun'da (plaka 55) kayıtlı 84. müşteri  →  M550084
+  //
+  // - "M" her zaman büyük harf, aralarında BOŞLUK veya TİRE OLMAZ.
+  // - İl plaka kodu, müşterinin fatura adresindeki İL ile IL_KODLARI
+  //   tablosundan otomatik eşleştirilir (aşağıda, TC'nin resmi 81 il
+  //   plaka kodu listesi — 01 Adana'dan 81 Düzce'ye kadar tam liste).
+  //   Yeni il eklenmesi gerekmez, liste zaten tam; sadece yazım
+  //   varyasyonu (İstanbul/istanbul gibi) eklenebilir.
+  // - Sıra numarası HER İL KODU İÇİN AYRI ayrı 0001'den başlar, en
+  //   fazla 9999'a kadar gider (4 hane, başına sıfır eklenerek).
+  // - Bu kural yalnızca YENİ üretilen kodlar içindir. Sistemde bu
+  //   formata uymayan eski/elle girilmiş kodlar (örn. "M-0005") varsa,
+  //   bunlar OTOMATİK değiştirilmez — mevcut işlem geçmişiyle bağı
+  //   kopmasın diye bu tür bir toplu düzeltme kullanıcıya sorulmadan
+  //   ASLA yapılmaz.
   var IL_KODLARI = {
     "adana":"01","adıyaman":"02","afyonkarahisar":"03","afyon":"03","ağrı":"04","amasya":"05",
     "ankara":"06","antalya":"07","artvin":"08","aydın":"09","balıkesir":"10","bilecik":"11",
@@ -214,16 +238,52 @@ var CustomerData = (function(){
     "karabük":"78","kilis":"79","osmaniye":"80","düzce":"81"
   };
 
+  var IL_KODLARI_ANAHTARI = "weicon_il_kodlari";
+  function ilKodlariYukle(){
+    try{
+      var kayitli = JSON.parse(localStorage.getItem(IL_KODLARI_ANAHTARI));
+      if(kayitli && typeof kayitli === "object") return kayitli;
+    }catch(e){}
+    return Object.assign({}, IL_KODLARI); // ilk kullanım: varsayılan 81 il ile başlat
+  }
+  function ilKodlariKaydet(tablo){
+    localStorage.setItem(IL_KODLARI_ANAHTARI, JSON.stringify(tablo));
+  }
+  // Menü › Şehir Plaka Kodları ekranı için: alfabetik, görüntülenebilir liste.
+  function ilKodlariListele(){
+    var tablo = ilKodlariYukle();
+    var liste = Object.keys(tablo).map(function(anahtar){
+      return {anahtar: anahtar, ad: anahtar.charAt(0).toLocaleUpperCase("tr-TR") + anahtar.slice(1), kod: tablo[anahtar]};
+    });
+    liste.sort(function(a,b){ return a.ad.localeCompare(b.ad, "tr-TR"); });
+    return liste;
+  }
+  function ilKoduEkleGuncelle(ilAdi, kod){
+    var anahtar = (ilAdi||"").trim().toLocaleLowerCase("tr-TR");
+    if(!anahtar) return false;
+    var temizKod = String(kod||"").replace(/\D/g,"").padStart(2,"0").slice(-2);
+    var tablo = ilKodlariYukle();
+    tablo[anahtar] = temizKod;
+    ilKodlariKaydet(tablo);
+    return true;
+  }
+  function ilKoduSil(anahtar){
+    var tablo = ilKodlariYukle();
+    delete tablo[anahtar];
+    ilKodlariKaydet(tablo);
+  }
+
   function ilKoduBul(sehirMetni){
     if(!sehirMetni) return "00";
     var temiz = sehirMetni.trim().toLocaleLowerCase("tr-TR").split("-")[0].split("/")[0].trim();
-    return IL_KODLARI[temiz] || "00";
+    var tablo = ilKodlariYukle();
+    return tablo[temiz] || "00";
   }
 
   function musteriIdUret(tazeListe, sehir){
     var ilKodu = ilKoduBul(sehir);
     var maxNo = 0;
-    var yeniDesen = new RegExp("^M" + ilKodu + "(\\d{3})$");
+    var yeniDesen = new RegExp("^M" + ilKodu + "(\\d{4})$");
     tazeListe.forEach(function(m){
       var eslesme = m.id && m.id.match(yeniDesen);
       if(eslesme){
@@ -231,7 +291,7 @@ var CustomerData = (function(){
         if(no > maxNo) maxNo = no;
       }
     });
-    return "M" + ilKodu + String(maxNo+1).padStart(3, "0");
+    return "M" + ilKodu + String(maxNo+1).padStart(4, "0");
   }
 
   function benzerMusterileriBul(ad){
@@ -512,6 +572,9 @@ var CustomerData = (function(){
     secimiKaldir: secimiKaldir,
     seciliyiOku: seciliyiOku,
     uzunluk: function(){ return liste.length; },
+    ilKodlariListele: ilKodlariListele,
+    ilKoduEkleGuncelle: ilKoduEkleGuncelle,
+    ilKoduSil: ilKoduSil,
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,
     tumZiyaretTemaslar: tumZiyaretTemaslar,

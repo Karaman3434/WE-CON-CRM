@@ -1,0 +1,96 @@
+.sayfa { padding: 8px 14px 24px; }
+
+.arama-kutusu { position: relative; margin-bottom: 12px; }
+.arama-kutusu input {
+  width: 100%;
+  border: 2px solid #3569b8;
+  border-radius: 999px;
+  padding: 14px 44px 14px 18px;
+  font-size: 16px;
+  outline: none;
+  color: #222;
+  box-sizing: border-box;
+}
+.arama-ikon {
+  position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%); font-size: 18px;
+}
+.bos-mesaj {
+  text-align: center;
+  color: #44494f;
+  font-size: 14px;
+  padding: 30px 0;
+  font-style: italic;
+}
+.sayfa-baslik { font-size: 18px; font-weight: 900; color: #003a70; margin-bottom: 10px; }
+.spk-aciklama { font-size: 12px; color: #556170; line-height: 1.5; margin-bottom: 14px; }
+
+.spk-arama { margin-bottom: 14px; }
+
+.spk-ekle-kutu {
+  background: #eaf2fc;
+  border: 1.5px solid #3569b8;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+.spk-ekle-baslik { font-size: 13px; font-weight: 800; color: #003a70; margin-bottom: 8px; }
+.spk-ekle-satir { display: flex; gap: 6px; }
+.spk-ekle-satir input {
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #003a70;
+  box-sizing: border-box;
+}
+#spkYeniAd { flex: 1; min-width: 0; }
+#spkYeniKod { width: 56px; text-align: center; }
+.spk-ekle-satir button {
+  background: #003a70;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.spk-liste-kutu {
+  background: #ffffff;
+  border: 1px solid #eef1f5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.spk-satir {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef1f5;
+}
+.spk-satir:last-child { border-bottom: none; }
+.spk-il-adi { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; color: #111827; }
+.spk-kod-input {
+  width: 48px;
+  text-align: center;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 4px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #185fa5;
+}
+.spk-kod-input:focus { outline: none; border-color: #003a70; }
+.spk-sil-btn {
+  background: #fdeceb;
+  border: none;
+  color: #c0392b;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: pointer;
+}
