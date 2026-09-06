@@ -33,21 +33,10 @@ body {
   gap: 4px;
   padding: 0 12px 12px;
 }
-.nav-btn {
-  background: #eef2f8;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 4px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  color: #334155;
-  text-align: center;
-  text-decoration: none;
-  display: block;
-}
-.nav-btn--geri { color: #c0392b; }
-.nav-btn--ana { color: #003a70; }
+/* Nav butonları artık sadece home-style.css'de tanımlı — burada AYRICA
+   tanımlamak (display:block, dikey değil) home-style.css'deki doğru
+   dikey (ikon üstte/etiket altta) tasarımın üzerine yazıp bozuyordu
+   (06.09.2026 tespit edildi — header ile aynı hataydı). */
 
 /* ---------- Sayfa gövdesi ---------- */
 .sayfa {

@@ -136,6 +136,7 @@ body {
   text-decoration: none;
 }
 .nav-btn--geri { color: #c0392b; }
+.nav-btn--geri .nav-ikon { font-size: 38px; }
 .nav-btn--ana { color: #003a70; }
 .nav-ikon {
   font-size: 19px;
