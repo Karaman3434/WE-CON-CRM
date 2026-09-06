@@ -344,7 +344,16 @@ body {
    göründüğü HER yerde (mail/WhatsApp mesaj içerikleri hariç) önce kodu,
    sonra ismi, hemen ardından da şehri aynı satırda taşır. Tek kaynak: bu
    4 sınıf, tüm listelerde birebir aynı boy/font/renk için kullanılır. */
-.cari-kod { font-weight: 900; color: #185fa5; }
+/* ---------- Cari satırı yazı tipi — KESİN KURAL (06.09.2026) ----------
+   16px / kalın (700) / letter-spacing -0.4px. Bu satır asla ikinci
+   satıra kaymamalı; bu üç ayar (boy, kalınlık, sıkı harf aralığı)
+   birlikte bunu sağlamak için seçildi — değiştirilmemeli. */
+.cari-kod, .cari-ayrac, .cari-isim, .cari-sehir {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+.cari-kod { color: #1a56db; }
 .cari-ayrac { color: #5f6b7a; }
-.cari-isim { font-weight: 800; color: #111827; }
-.cari-sehir { color: #5f6b7a; font-size: 13px; }
+.cari-isim { color: #111827; }
+.cari-sehir { color: #5f6b7a; }

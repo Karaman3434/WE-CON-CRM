@@ -776,7 +776,7 @@
 }
 .tl-kart { display: flex; align-items: stretch; background: #ffffff; cursor: pointer; }
 .tl-serit { width: 4px; flex-shrink: 0; }
-.tl-govde { flex: 1; min-width: 0; padding: 10px 12px; }
+.tl-govde { flex: 1; min-width: 0; padding: 10px 8px; }
 .tl-ust { font-size: 14px; }
 .tl-isim { font-weight: 800; color: #111827; }
 .tl-sehir { color: #5f6b7a; font-weight: 500; }
