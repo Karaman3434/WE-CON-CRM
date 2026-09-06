@@ -13,7 +13,7 @@
 <title>WEICON ASİST — Müşteriler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.060926.0230.145">
-<link rel="stylesheet" href="customer-style.css?v=WG.060926.0907.147">
+<link rel="stylesheet" href="customer-style.css?v=WG.060926.1056.148">
 </head>
 <body>
 
@@ -24,12 +24,12 @@
 </header>
 
 <nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="hareketler.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--geri" href="home.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
   <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 </div>
-<div class="rota-etiketi">Satış › <b>Müşteriler</b></div>
+<div class="rota-etiketi">Ana Sayfa › <b>Müşteriler</b></div>
 
 <main class="sayfa">
 
@@ -40,10 +40,7 @@
 
   <div class="musteri-filtre-satiri">
     <input type="text" id="musteriSehirFiltre" placeholder="Şehir yazarak filtrele...">
-    <select id="musteriTarihSirala">
-      <option value="eskiden-yeniye">En eski işlem/ziyaret önce</option>
-      <option value="yeniden-eskiye">En yeni işlem/ziyaret önce</option>
-    </select>
+    <a class="musteri-yeni-ekle-btn" href="customer-add.html">➕ Yeni Müşteri Ekle</a>
   </div>
 
   <p class="liste-bilgi-notu" id="listeBilgiNotu" hidden></p>
@@ -63,6 +60,6 @@
 <script src="customer-data.js?v=WG.060926.0001.142"></script>
 <script src="reports-data.js?v=WG.050926.2215.141"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="customer-render.js?v=WG.060926.0907.147"></script>
+<script src="customer-render.js?v=WG.060926.1056.148"></script>
 </body>
 </html>

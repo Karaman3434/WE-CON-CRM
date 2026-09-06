@@ -82,7 +82,7 @@ function listeyiCiz(){
     var bilgiNotuEl = document.getElementById("listeBilgiNotu");
     var tumBtn = document.getElementById("btnTumMusteriler");
     var sehirFiltre = document.getElementById("musteriSehirFiltre").value;
-    var tarihSirala = document.getElementById("musteriTarihSirala").value;
+    var tarihSirala = "eskiden-yeniye";
 
     if(CustomerData.uzunluk() === 0){
       kapsayici.innerHTML = "";
@@ -167,7 +167,6 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("musteriAra").addEventListener("input", listeyiCiz);
   document.getElementById("musteriSehirFiltre").addEventListener("input", listeyiCiz);
-  document.getElementById("musteriTarihSirala").addEventListener("change", listeyiCiz);
   document.getElementById("btnTumMusteriler").onclick = function(){
     tumMusterilerModuAktif = true;
     listeyiCiz();
