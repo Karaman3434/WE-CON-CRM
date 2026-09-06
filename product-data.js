@@ -1,9 +1,12 @@
 /*
   product-data.js
   ===============
-  TEK görevi: ürün kataloğunu Firebase'den çekmek (eski uygulamayla AYNI yol
-  ve önbellek anahtarı: kök "/" yolu, "wemosa_v8_catalog" localStorage
-  anahtarı) ve sepet (basket) durumunu yönetmek. DOM'a dokunmaz.
+  TEK görevi: ürün kataloğunu Firebase'den çekmek ve sepet (basket)
+  durumunu yönetmek. DOM'a dokunmaz.
+
+  Ürünler "urunler/" yolunda tutulur (06.09.2026'dan itibaren — eskiden
+  kök "/" yolu kullanılıyordu, bkz. urunlerYoluHazirla() içindeki not).
+  Önbellek anahtarı: "wemosa_v8_catalog" (eski uygulamayla aynı, değişmedi).
 */
 
 var ProductData = (function(){
@@ -48,27 +51,88 @@ var ProductData = (function(){
         }
       }catch(e){}
 
-      db.ref("/").on("value", function(snap){
-        var tumData = snap.val();
-        var urunler = [];
-        if(Array.isArray(tumData)){
-          urunler = tumData.filter(function(x){ return x && x.urun; });
-        } else if(tumData && typeof tumData === "object"){
-          Object.keys(tumData).forEach(function(k){
-            if(!isNaN(parseInt(k)) && tumData[k] && tumData[k].urun){
-              urunler.push(tumData[k]);
-            }
-          });
-        }
-        katalog = urunler;
-        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(urunler)); }catch(e){}
-        katalogDinleyicileri.forEach(function(fn){ fn(); });
-      }, function(err){
-        console.error("Katalog okuma hatası:", err);
-      });
+      urunlerYoluHazirla(db);
     }catch(e){
       console.error("Firebase başlatma hatası:", e);
     }
+  }
+
+  // ============================================================
+  // GÜVENLİK/PERFORMANS DÜZELTMESİ (06.09.2026) — Son Sürüm İnceleme
+  // Raporu madde 2'ye karşılık: ürünler artık kökte ("/") değil, ayrı
+  // "urunler/" yolunda tutulur. Eskiden db.ref("/").on("value") sadece
+  // ürün aramak için TÜM veritabanını (müşteriler, arşiv, maaş kayıtları
+  // dahil) indiriyordu — Firebase kullanım grafiğindeki anormal yüksek
+  // indirme miktarının sebebi de buydu.
+  //
+  // Geçiş CANLI VERİYE DOKUNMADAN, otomatik ve tek seferlik yapılır:
+  // "urunler/" zaten doluysa doğrudan oradan okunur. Boşsa, kökteki
+  // eski ürün kayıtları (sayısal anahtarlı, "urun" alanı olan objeler)
+  // "urunler/" altına KOPYALANIR — kökteki eski kayıtlar GÜVENLİK İÇİN
+  // SİLİNMEZ (bir sorun çıkarsa geri dönülebilsin diye). Kopyalama bir
+  // kez yapıldıktan sonra tüm cihazlar artık sadece "urunler/"yi okur.
+  // ============================================================
+  function urunlerYoluHazirla(db){
+    db.ref("urunler").once("value").then(function(snap){
+      if(snap.exists() && snap.val()){
+        urunlerDinlemeyeBasla(db);
+        return;
+      }
+      // "urunler/" boş — kökteki eskileri bir kereye mahsus taşı.
+      db.ref("/").once("value").then(function(kokSnap){
+        var tumData = kokSnap.val();
+        var tasinacak = {};
+        if(tumData && typeof tumData === "object" && !Array.isArray(tumData)){
+          Object.keys(tumData).forEach(function(k){
+            if(!isNaN(parseInt(k,10)) && tumData[k] && typeof tumData[k]==="object" && tumData[k].urun){
+              tasinacak[k] = tumData[k];
+            }
+          });
+        }
+        if(Object.keys(tasinacak).length > 0){
+          db.ref("urunler").set(tasinacak).then(function(){
+            urunlerDinlemeyeBasla(db);
+          }).catch(function(err){
+            console.error("Ürünler urunler/ yoluna taşınamadı, geçici olarak kökten okunuyor:", err);
+            urunlerKoktenOku(db); // yedek yol — taşıma başarısız olursa eski yöntem
+          });
+        } else {
+          urunlerDinlemeyeBasla(db); // hiç ürün yok, boş urunler/ dinlenir
+        }
+      }).catch(function(err){ console.error("Kök okuma hatası:", err); });
+    }).catch(function(err){ console.error("urunler/ kontrol hatası:", err); });
+  }
+
+  function katalogGuncelle(tumData){
+    var urunler = [];
+    if(Array.isArray(tumData)){
+      urunler = tumData.filter(function(x){ return x && x.urun; });
+    } else if(tumData && typeof tumData === "object"){
+      Object.keys(tumData).forEach(function(k){
+        if(tumData[k] && tumData[k].urun) urunler.push(tumData[k]);
+      });
+    }
+    katalog = urunler;
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(urunler)); }catch(e){}
+    katalogDinleyicileri.forEach(function(fn){ fn(); });
+  }
+
+  function urunlerDinlemeyeBasla(db){
+    db.ref("urunler").on("value", function(snap){
+      katalogGuncelle(snap.val());
+    }, function(err){
+      console.error("Katalog okuma hatası:", err);
+    });
+  }
+
+  // Sadece taşıma işlemi başarısız olursa devreye giren, eski davranışı
+  // koruyan yedek yol (kalıcı çözüm değildir).
+  function urunlerKoktenOku(db){
+    db.ref("/").on("value", function(snap){
+      katalogGuncelle(snap.val());
+    }, function(err){
+      console.error("Katalog okuma hatası:", err);
+    });
   }
 
   function katalogDegistiginde(fn){
@@ -145,7 +209,7 @@ var ProductData = (function(){
       if(isNaN(fiyat) || fiyat<=0){ geriBildir(false, "Geçerli bir fiyat girin."); return; }
 
       var db = firebase.database();
-      db.ref("/").transaction(function(tumData){
+      db.ref("urunler").transaction(function(tumData){
         tumData = tumData || {};
         var veri = (typeof tumData === "object" && !Array.isArray(tumData)) ? tumData : {};
         var mukerrer = false;
