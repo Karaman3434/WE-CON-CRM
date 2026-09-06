@@ -72,9 +72,10 @@ var ReportsData = (function(){
   }
 
   function gorevEkle(musteriAd, aciklama, tarih, saat){
+    var eslesenMusteri = (typeof CustomerData !== "undefined") ? CustomerData.musteriBul(musteriAd) : null;
     var yeni = {
       id: "gorev_" + Date.now() + "_" + Math.floor(Math.random()*10000),
-      musteriAd: musteriAd, aciklama: aciklama,
+      musteriAd: musteriAd, musteriId: eslesenMusteri ? eslesenMusteri.id : null, aciklama: aciklama,
       tarih: tarih, saat: saat,
       tamamlandi: false, tamamlanmaZamani: null,
       olusturmaZamani: Date.now()

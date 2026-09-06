@@ -57,7 +57,11 @@ function gorevleriCiz(){
     bos.hidden = true;
 
     kapsayici.innerHTML = liste.map(function(g){
-      var m = (typeof CustomerData !== "undefined") ? CustomerData.musteriBul(g.musteriAd) : null;
+      var m = null;
+      if(typeof CustomerData !== "undefined"){
+        m = (g.musteriId && CustomerData.musteriIdIleBul) ? CustomerData.musteriIdIleBul(g.musteriId) : null;
+        if(!m) m = CustomerData.musteriBul(g.musteriAd);
+      }
       return "<div class='gorev-karti" + (g.tamamlandi?" tamamlandi":"") + "'>"
         + "<input type='checkbox' class='gorev-checkbox' data-id='" + g.id + "' " + (g.tamamlandi?"checked":"") + ">"
         + "<div class='gorev-bilgi'>"

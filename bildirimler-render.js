@@ -124,7 +124,7 @@ function bildirimleriCiz(){
           + "<div class='gorev-bildirim-aciklama'>" + htmlEsc(g.aciklama) + "</div>"
           + "<div class='gorev-bildirim-buton-satir'>"
           + "<button class='gorev-tamamla-btn' data-gorev-id='" + htmlEsc(g.id) + "'>✓ Tamamlandı</button>"
-          + "<button class='gorev-musteriye-git-btn' data-musteri='" + htmlEsc(g.musteriAd) + "'>🔍 Müşteriye Git</button>"
+          + "<button class='gorev-musteriye-git-btn' data-musteri='" + htmlEsc(g.musteriAd) + "' data-musteri-id='" + htmlEsc(g.musteriId||"") + "'>🔍 Müşteriye Git</button>"
           + "</div>"
           + "</div>";
       });
@@ -161,7 +161,9 @@ function bildirimleriCiz(){
     });
     icerik.querySelectorAll(".gorev-musteriye-git-btn").forEach(function(btn){
       btn.onclick = function(){
-        var musteri = CustomerData.musteriBul(this.getAttribute("data-musteri"));
+        var id = this.getAttribute("data-musteri-id");
+        var musteri = (id && CustomerData.musteriIdIleBul) ? CustomerData.musteriIdIleBul(id) : null;
+        if(!musteri) musteri = CustomerData.musteriBul(this.getAttribute("data-musteri"));
         if(musteri) CustomerData.sec(musteri);
         window.location.href = "customer-detail.html";
       };

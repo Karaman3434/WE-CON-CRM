@@ -77,6 +77,13 @@ var CustomerData = (function(){
   function musteriBul(ad){
     return liste.find(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(ad||"").toLocaleLowerCase("tr-TR"); }) || null;
   }
+  // Kalıcı ID ile arama — isim değişse/yazım farklı olsa bile doğru
+  // müşteriyi bulur. musteriId kayıtlı olan her yerde isim aramasından
+  // ÖNCELİKLİ kullanılmalı (06.09.2026, ID standardizasyonu).
+  function musteriIdIleBul(id){
+    if(!id) return null;
+    return liste.find(function(m){ return m.id === id; }) || null;
+  }
 
   // ---- GÜVENLİ YAZMA ÇEKİRDEĞİ (Firebase transaction) ----
   // Önceki "oku→yaz→doğrula" yöntemi, İKİ CİHAZ NEREDEYSE AYNI ANDA yazarsa
@@ -575,6 +582,7 @@ var CustomerData = (function(){
     ilKodlariListele: ilKodlariListele,
     ilKoduEkleGuncelle: ilKoduEkleGuncelle,
     ilKoduSil: ilKoduSil,
+    musteriIdIleBul: musteriIdIleBul,
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,
     tumZiyaretTemaslar: tumZiyaretTemaslar,
