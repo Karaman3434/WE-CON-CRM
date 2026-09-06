@@ -109,8 +109,25 @@ window.addEventListener("error", function(ev){
 // Ana Sayfa'daki eski ayrı kur şeridi kaldırıldı — döviz kuru artık global
 // header'da gösteriliyor (bkz. ust-sabit-olcum.js: dovizKuruHeaderaEkle).
 
+function motivasyonuGuncelle(){
+  try{
+    if(typeof MOTIVASYON_SOZLERI === "undefined") return;
+    var simdi = new Date();
+    var selamEl = document.getElementById("motivasyonSelam");
+    var sozEl = document.getElementById("motivasyonSoz");
+    if(selamEl) selamEl.textContent = motivasyonSelamlamaGetir(simdi.getHours()) + ", Abdullah";
+    if(sozEl) sozEl.textContent = "\u201c" + motivasyonSozunuGetir(simdi) + "\u201d";
+  }catch(e){}
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
+  motivasyonuGuncelle();
+  // Saat başı/2 saatte bir değişimi yakalamak için hafif bir dakika
+  // kontrolü yeterli — saniyede bir çalışan gereksiz bir zamanlayıcı
+  // kurulmuyor (60 sn'de bir küçük bir metin güncellemesi, performansa
+  // etkisi yok).
+  setInterval(motivasyonuGuncelle, 60000);
   butonlariBagla();
   WeiconData.veriDegistiginde(kartlariGuncelle);
   WeiconData.bildirimDegistiginde(bildirimBanneriGuncelle);
