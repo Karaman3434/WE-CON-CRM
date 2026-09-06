@@ -3,6 +3,18 @@
 .sayfa { padding: 8px 14px 24px; }
 
 .arama-kutusu { position: relative; margin-bottom: 12px; }
+
+.musteri-filtre-satiri { display: flex; gap: 8px; margin-bottom: 12px; }
+.musteri-filtre-satiri select {
+  flex: 1;
+  min-width: 0;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #003a70;
+}
 .arama-kutusu input {
   width: 100%;
   border: 2px solid #3569b8;
@@ -42,29 +54,17 @@
 }
 
 .musteri-ust-satir {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-.musteri-ad {
-  font-size: 16px;
-  font-weight: 900;
-  color: #111827;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.musteri-ziyaret-rozet {
-  font-size: 10px;
+.musteri-aktivite-satiri { margin-top: 4px; }
+.musteri-aktivite {
+  font-size: 13px;
   font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 8px;
-  flex-shrink: 0;
-  white-space: nowrap;
 }
-.musteri-ziyaret-rozet--uyari { background: #fff3cd; color: #856404; }
-.musteri-ziyaret-rozet--iyi { background: #d4edda; color: #155724; }
+.musteri-aktivite--gecikmis { color: #c0392b; }
+.musteri-aktivite--iyi { color: #2f7d3c; }
 
 .musteri-alt-satir {
   display: flex;

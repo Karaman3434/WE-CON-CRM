@@ -42,14 +42,60 @@ function cariSatirHTML(kod, isim, sehir){
 
 var tumMusterilerModuAktif = false;
 
+// Bir müşterinin "son aktivite" zamanı = en son ziyaret VEYA en son işlem
+// tarihinden hangisi daha yeniyse. 1 günden fazla geçmişse tarih kırmızı
+// ve kalın gösterilir; bu, yeni bir ziyaret/işlem girilene kadar böyle
+// kalır (KESİN KURAL, 06.09.2026).
+var musteriSonIslemHaritasi = null;
+function sonIslemHaritasiniHazirla(){
+  var harita = {};
+  try{
+    if(typeof ReportsData !== "undefined"){
+      ReportsData.sonIslemler().forEach(function(k){
+        if(!k.musteriId) return;
+        if(!harita[k.musteriId] || k.ts > harita[k.musteriId]) harita[k.musteriId] = k.ts;
+      });
+    }
+  }catch(e){}
+  musteriSonIslemHaritasi = harita;
+}
+function sonAktiviteZamani(m){
+  var sonIslem = (musteriSonIslemHaritasi && m.id) ? musteriSonIslemHaritasi[m.id] : null;
+  var aday = [m.sonZiyaret||0, sonIslem||0];
+  return Math.max.apply(null, aday);
+}
+function aktiviteSatiriHTML(m){
+  var zaman = sonAktiviteZamani(m);
+  if(!zaman) return "<div class='musteri-aktivite-satiri'><span class='musteri-aktivite musteri-aktivite--gecikmis'>🔴 Hiç ziyaret/işlem yok</span></div>";
+  var gun = Math.floor((Date.now()-zaman)/86400000);
+  if(gun <= 0) return "<div class='musteri-aktivite-satiri'><span class='musteri-aktivite musteri-aktivite--iyi'>🟢 Son işlem/ziyaret: bugün</span></div>";
+  return "<div class='musteri-aktivite-satiri'><span class='musteri-aktivite musteri-aktivite--gecikmis'>🔴 Son işlem/ziyaret: " + gun + " gün önce</span></div>";
+}
+function sehirSecenekleriniDoldur(tumListe){
+  try{
+    var secim = document.getElementById("musteriSehirFiltre");
+    var oncekiDeger = secim.value;
+    var sehirler = {};
+    tumListe.forEach(function(m){ if(m.sehir) sehirler[m.sehir.trim()] = true; });
+    var siraliSehirler = Object.keys(sehirler).sort(function(a,b){ return a.localeCompare(b, "tr-TR"); });
+    secim.innerHTML = "<option value=''>Tüm Şehirler</option>" + siraliSehirler.map(function(s){
+      return "<option value='" + htmlEsc(s) + "'>" + htmlEsc(s) + "</option>";
+    }).join("");
+    secim.value = oncekiDeger;
+  }catch(e){}
+}
+
 function listeyiCiz(){
   try{
+    sonIslemHaritasiniHazirla();
     var q = document.getElementById("musteriAra").value;
     var kapsayici = document.getElementById("musteriListesi");
     var bos = document.getElementById("musteriBosMesaj");
     var yukleniyor = document.getElementById("musteriYukleniyor");
     var bilgiNotuEl = document.getElementById("listeBilgiNotu");
     var tumBtn = document.getElementById("btnTumMusteriler");
+    var sehirFiltre = document.getElementById("musteriSehirFiltre").value;
+    var tarihSirala = document.getElementById("musteriTarihSirala").value;
 
     if(CustomerData.uzunluk() === 0){
       kapsayici.innerHTML = "";
@@ -60,21 +106,28 @@ function listeyiCiz(){
       return;
     }
     yukleniyor.hidden = true;
+    sehirSecenekleriniDoldur(CustomerData.ara(""));
 
     var sonuclar = CustomerData.ara(q);
     var aramaAktif = q.trim().length > 0;
     bilgiNotuEl.hidden = true;
     bilgiNotuEl.className = "liste-bilgi-notu";
 
-    if(aramaAktif){
-      sonuclar = sonuclar.slice().sort(function(a,b){ return (b.sonGoruntuleme||0)-(a.sonGoruntuleme||0); });
+    if(sehirFiltre) sonuclar = sonuclar.filter(function(m){ return (m.sehir||"").trim() === sehirFiltre; });
+
+    var siralamaModuAktif = aramaAktif || tumMusterilerModuAktif || !!sehirFiltre;
+
+    if(siralamaModuAktif){
+      sonuclar = sonuclar.slice().sort(function(a,b){
+        var fark = sonAktiviteZamani(a) - sonAktiviteZamani(b);
+        return tarihSirala === "yeniden-eskiye" ? -fark : fark;
+      });
       tumBtn.hidden = true;
-    } else if(tumMusterilerModuAktif){
-      sonuclar = sonuclar.slice().sort(function(a,b){ return (a.ad||"").localeCompare(b.ad||"", "tr-TR"); });
-      bilgiNotuEl.hidden = false;
-      bilgiNotuEl.className = "liste-bilgi-notu liste-bilgi-notu--yesil";
-      bilgiNotuEl.textContent = "👥 Tüm müşteriler (toplam " + sonuclar.length + ") — alfabetik sırayla.";
-      tumBtn.hidden = true;
+      if(tumMusterilerModuAktif && !aramaAktif && !sehirFiltre){
+        bilgiNotuEl.hidden = false;
+        bilgiNotuEl.className = "liste-bilgi-notu liste-bilgi-notu--yesil";
+        bilgiNotuEl.textContent = "👥 Tüm müşteriler (toplam " + sonuclar.length + ").";
+      }
     } else {
       var toplamSayi = sonuclar.length;
       sonuclar = sonuclar.slice(0, 12);
@@ -96,16 +149,11 @@ function listeyiCiz(){
 
     kapsayici.innerHTML = "<div class='musteri-liste-kutu'>" + sonuclar.map(function(m, i){
       var zebraSinif = (i%2===1) ? "musteri-karti--alt" : "musteri-karti--ust";
-      var ziyaretRozetHtml = "";
-      if(m.sonZiyaret){
-        var gun = Math.floor((Date.now()-m.sonZiyaret)/86400000);
-        if(gun > 30) ziyaretRozetHtml = "<span class='musteri-ziyaret-rozet musteri-ziyaret-rozet--uyari'>⚠️ " + gun + " gün ziyaret yok</span>";
-        else ziyaretRozetHtml = "<span class='musteri-ziyaret-rozet musteri-ziyaret-rozet--iyi'>✓ " + gun + " gün önce</span>";
-      }
       return "<div class='musteri-karti " + zebraSinif + "' data-i='" + i + "'>"
         + "<div class='musteri-karti-satir'>"
         + "<div class='musteri-icerik'>"
-        + "<div class='musteri-ust-satir'><span>" + cariSatirHTML(m.id, m.ad, m.sehir) + "</span>" + ziyaretRozetHtml + "</div>"
+        + "<div class='musteri-ust-satir'>" + cariSatirHTML(m.id, m.ad, m.sehir) + "</div>"
+        + aktiviteSatiriHTML(m)
         + "</div>"
         + "<div class='musteri-ok-alan'><svg width='8' height='12' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></div>"
         + "</div>"
@@ -133,6 +181,8 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("musteriAra").addEventListener("input", listeyiCiz);
+  document.getElementById("musteriSehirFiltre").addEventListener("change", listeyiCiz);
+  document.getElementById("musteriTarihSirala").addEventListener("change", listeyiCiz);
   document.getElementById("btnTumMusteriler").onclick = function(){
     tumMusterilerModuAktif = true;
     listeyiCiz();
