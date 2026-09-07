@@ -99,7 +99,9 @@ function tlGrupla(liste){
 }
 function tlListeHTML(gruplar, gosterIsim){
   return gruplar.map(function(g){
-    var toplamGun = g.kayitlar.reduce(function(s,k){ return s + k._tutar; }, 0);
+    // HATA DÜZELTME (WG.070926.2120.193): beklemede kayıtlar rozetle
+    // gösterilmeye devam eder ama gün toplamına dahil edilmez.
+    var toplamGun = g.kayitlar.reduce(function(s,k){ return s + (k.durum==="beklemede" ? 0 : k._tutar); }, 0);
     var kartlar = g.kayitlar.map(function(k){ return tlKartHTML(k, gosterIsim); }).join("<div class='tl-arasi'></div>");
     return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " €</span></div>"
       + "<div class='tl-liste-kutu'>" + kartlar + "</div>";

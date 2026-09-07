@@ -42,15 +42,35 @@ function ilerletTiklandi(k){
   }catch(e){ hataGoster("İlerletilemedi: " + e.message); }
 }
 
+var BEKLEMEDE_DAHIL_ANAHTAR = "weiconv2_beklemede_dahil_et";
+var sonAcilanAy = null;
+
 function ayDetayiniAc(ayVerisi){
   try{
     if(!ayVerisi) return;
+    sonAcilanAy = ayVerisi;
+    var toggle = document.getElementById("ayDetayBeklemedeToggle");
+    if(toggle) toggle.checked = localStorage.getItem(BEKLEMEDE_DAHIL_ANAHTAR) === "1";
+    ayDetayiniCiz();
+  }catch(e){ hataGoster("Ay detayı açılamadı: " + e.message); }
+}
+
+function ayDetayiniCiz(){
+  try{
+    var ayVerisi = sonAcilanAy;
+    if(!ayVerisi) return;
+    var beklemedeDahil = localStorage.getItem(BEKLEMEDE_DAHIL_ANAHTAR) === "1";
     // Sadece SİPARİŞ'ler sayılır ve listelenir — Numune/Fiyat Teklifi/
     // Proforma bu ekranda gösterilmez (hepsi zaten "Son İşlemler"de
     // ayrıca görünüyor). "AY TOPLAMI" gerçek satış hacmini yansıtsın diye.
+    // HATA DÜZELTME (WG.070926.2120.191): "beklemede" siparişler gerçek
+    // satış değildir, varsayılan olarak hiçbir toplama dahil edilmez
+    // (permanent kural). YENİ (WG.070926.194): "Beklemede dahil et"
+    // anahtarı açıksa, sadece bu ekranda geçici olarak gösterilir.
     var kayitlarBuAy = ReportsData.sonIslemler().filter(function(k){
       if(!k.tarih) return false;
       if(k.tip !== "siparis") return false;
+      if(k.durum === "beklemede" && !beklemedeDahil) return false;
       var parca = k.tarih.split(" ");
       return (parca[1]||"")===ayVerisi.ayAd && (parca[2]||"")===ayVerisi.yil;
     });
@@ -224,6 +244,10 @@ document.addEventListener("DOMContentLoaded", function(){
   })();
 
   document.getElementById("btnAyDetayKapat").onclick = function(){ document.getElementById("ayDetayBolumu").hidden = true; };
+  document.getElementById("ayDetayBeklemedeToggle").onchange = function(){
+    localStorage.setItem(BEKLEMEDE_DAHIL_ANAHTAR, this.checked ? "1" : "0");
+    ayDetayiniCiz();
+  };
   ReportsData.arsivDegistiginde(function(){ istatistikleriCiz(); });
   // Firebase verisi sayfa tam yüklenmeden önce gelmiş olabilir (dinleyici
   // kaçırmış olabilir) — bu yüzden ilk anda da bir kez elle çiziyoruz.

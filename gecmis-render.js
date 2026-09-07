@@ -112,9 +112,14 @@ function tlGrupla(liste){
   });
   return gruplar;
 }
+var BEKLEMEDE_DAHIL_ANAHTAR = "weiconv2_beklemede_dahil_et";
 function tlListeHTML(gruplar, gosterIsim){
+  var beklemedeDahil = localStorage.getItem(BEKLEMEDE_DAHIL_ANAHTAR) === "1";
   return gruplar.map(function(g){
-    var toplamGun = g.kayitlar.reduce(function(s,k){ return s + k._tutar; }, 0);
+    // HATA DÜZELTME (WG.070926.2120.192): beklemede kayıtlar rozetle
+    // gösterilmeye devam eder; "Beklemede dahil et" anahtarı kapalıysa
+    // (varsayılan) gün toplamına dahil edilmez.
+    var toplamGun = g.kayitlar.reduce(function(s,k){ return s + ((k.durum==="beklemede" && !beklemedeDahil) ? 0 : k._tutar); }, 0);
     var kartlar = g.kayitlar.map(function(k){ return tlKartHTML(k, gosterIsim); }).join("<div class='tl-arasi'></div>");
     return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " €</span></div>"
       + "<div class='tl-liste-kutu'>" + kartlar + "</div>";
@@ -216,6 +221,13 @@ document.addEventListener("DOMContentLoaded", function(){
       listeyiCiz();
     };
   });
+
+  var beklemedeToggle = document.getElementById("gecmisBeklemedeToggle");
+  beklemedeToggle.checked = localStorage.getItem(BEKLEMEDE_DAHIL_ANAHTAR) === "1";
+  beklemedeToggle.onchange = function(){
+    localStorage.setItem(BEKLEMEDE_DAHIL_ANAHTAR, this.checked ? "1" : "0");
+    listeyiCiz();
+  };
 
   listeyiCiz();
   ReportsData.arsivDegistiginde(listeyiCiz);

@@ -15,6 +15,21 @@
   padding: 12px 14px;
   margin-bottom: 10px;
 }
+.beklemede-hatirlat-karti {
+  background: #faeeda;
+  border: 1px solid #f0d9ad;
+  border-left: 6px solid #854f0b;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.beklemede-hatirlat-not {
+  font-size: 12px;
+  color: #633806;
+  margin-top: 6px;
+  font-style: italic;
+}
 .acik-surec-ust {
   display: flex;
   justify-content: space-between;

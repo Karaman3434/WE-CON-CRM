@@ -79,10 +79,27 @@ function acikSureciSil(tip, ts){
 function bildirimleriCiz(){
   try{
     var acikListe = ReportsData.acikSurecleriHesapla();
+    var beklemedeListe = ReportsData.beklemedeSiparisleriHesapla().filter(function(b){ return b.gun>=3; });
     var ziyaretListe = CustomerData.ziyaretHatirlatmalari().filter(function(z){ return !z.hicZiyaretYok && z.gun>=15; });
     var gorevListe = ReportsData.gorevleriGetir().filter(function(g){ return !g.tamamlandi; });
 
     var html = "";
+
+    if(beklemedeListe.length > 0){
+      html += "<div class='bildirim-bolum-baslik'>⏳ Beklemede Siparişler</div>";
+      beklemedeListe.forEach(function(b){
+        html += "<div class='beklemede-hatirlat-karti' data-ts='" + b.ts + "'>"
+          + "<div class='acik-surec-ust'>"
+          + "<div class='acik-surec-musteri'>" + cariSatirHTML(b.musteriId, b.musteri, b.sehir) + "</div>"
+          + "<div class='acik-surec-seviye' style='color:#854f0b;'>" + b.gun + " gündür</div>"
+          + "</div>"
+          + "<div class='acik-surec-detay'>"
+          + "<span style='font-weight:800;color:#003a70;'>" + kanalHarfHTML(b.kanal) + htmlEsc(b.kod||"Sipariş") + "</span>"
+          + " · <b>" + fmt(b.tutar) + " €</b> stok bekliyor</div>"
+          + (b.beklemedeNot ? "<div class='beklemede-hatirlat-not'>" + htmlEsc(b.beklemedeNot) + "</div>" : "")
+          + "</div>";
+      });
+    }
 
     if(acikListe.length > 0){
       html += "<div class='bildirim-bolum-baslik'>▶️ Açık Süreçler</div>";
@@ -140,6 +157,12 @@ function bildirimleriCiz(){
     bos.hidden = true;
     icerik.innerHTML = html;
 
+    icerik.querySelectorAll(".beklemede-hatirlat-karti").forEach(function(kart){
+      kart.onclick = function(){
+        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:"siparis", ts: parseFloat(this.getAttribute("data-ts"))}));
+        window.location.href = "belge-onizleme.html";
+      };
+    });
     icerik.querySelectorAll("[data-ilerlet]").forEach(function(btn){
       btn.onclick = function(){ ilerletTiklandi(JSON.parse(this.getAttribute("data-ilerlet"))); };
     });

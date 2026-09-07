@@ -266,6 +266,23 @@ var ReportsData = (function(){
     return sonuc;
   }
 
+  // YENİ ÖZELLİK (WG.070926.194): stokta olmadığı için "beklemede"
+  // işaretlenmiş siparişler — Bildirimler ekranında hatırlatma göstermek
+  // için kaç gündür beklediğini hesaplar. Sipariş oluşturulma tarihinden
+  // (k.ts) itibaren sayılır — beklemede işaretlenme anı ayrıca tutulmuyor.
+  function beklemedeSiparisleriHesapla(){
+    var bugun = Date.now();
+    return tumSiparisler().filter(function(k){ return k.durum === "beklemede"; }).map(function(k){
+      var tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+      return {
+        musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"",
+        kod:k.kod, kanal:k.kanal||null, ts:k.ts, tarih:k.tarih,
+        gun: Math.floor((bugun-(k.ts||0))/86400000),
+        tutar: tutar, beklemedeNot: k.beklemedeNot||""
+      };
+    }).sort(function(a,b){ return b.gun-a.gun; });
+  }
+
   function acikSurecleriHesapla(){
     var tumu = sonIslemler();
     var siparisler = tumu.filter(function(k){ return k.tip==="siparis"; });
@@ -518,6 +535,7 @@ var ReportsData = (function(){
     ayToplami: ayToplami,
     son6Ay: son6Ay,
     acikSurecleriHesapla: acikSurecleriHesapla,
+    beklemedeSiparisleriHesapla: beklemedeSiparisleriHesapla,
     yillikOzet: yillikOzet,
     aylikPrimOzeti12: aylikPrimOzeti12,
     enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler,
