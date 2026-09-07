@@ -90,6 +90,12 @@ function yetkiliSatiriHtml(isim, tel, eposta){
     + "</div>";
 }
 
+// Rakamın altına küçük birim satırı ekler (€ / TL) — sayı ile birim aynı
+// hücrede iki satıra ayrılır, sütun bu sayede daralabilir (07.09.2026).
+function paraHtml(sayiStr, birim){
+  return sayiStr + "<span class='belge-para-birim'>" + birim + "</span>";
+}
+
 function belgeyiCiz(kayit, musteri){
   try{
     var urunler = kayit.urunler || [];
@@ -103,15 +109,15 @@ function belgeyiCiz(kayit, musteri){
       var satirPrim = ozelFiyatMi ? 0 : mk*(item.adet||0)*0.22;
       var satirPrimTl = Math.round(satirPrim * kaydinKuru);
       if(satirPrim > 0){ toplamPrim += satirPrim; toplamPrimTl += satirPrimTl; }
-      var primHucre = ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<span class='belge-td-prim-tek'>"+satirPrimTl.toLocaleString("tr-TR")+" TL</span>"));
+      var primHucre = ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<span class='belge-td-prim-tek'>"+paraHtml(satirPrimTl.toLocaleString("tr-TR"),"TL")+"</span>"));
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
-        + "<td>" + fmt(item.listeFiyat||0) + " €</td>"
+        + "<td>" + paraHtml(fmt(item.listeFiyat||0),"€") + "</td>"
         + "<td><span class='rozet-isk'>%" + (item.iskonto||0) + "</span></td>"
-        + "<td><span class='rozet-net'>" + fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)) + " €</span></td>"
-        + "<td class='belge-td-toplam'>" + fmt(toplamEuro) + " €</td>"
+        + "<td><span class='rozet-net'>" + paraHtml(fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)),"€") + "</span></td>"
+        + "<td class='belge-td-toplam'>" + paraHtml(fmt(toplamEuro),"€") + "</td>"
         + "<td class='belge-td-prim'>" + primHucre + "</td>"
         + "</tr>";
     }).join("");
@@ -154,7 +160,7 @@ function belgeyiCiz(kayit, musteri){
       + "<div class='belge-kart'>"
       + "<div class='belge-belge-baslik-serit'>" + htmlEsc(belgeBaslikMetni) + "</div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:6%;'>ADET</th><th style='width:9%;'>LİSTE</th><th style='width:11%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:13%;'>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:6%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"
