@@ -809,3 +809,18 @@
 }
 .tl-arasi { height: 2px; background: #eef1f5; margin-left: 4px; }
 .tl-durum-ek { font-size: 11px; font-weight: 800; color: #c0392b; padding: 0 12px 8px 12px; }
+.tl-durum-ek--beklemede { color: #854f0b; }
+
+.bekleyen-blok { margin-bottom: 16px; }
+.bekleyen-baslik {
+  background: #faeeda;
+  color: #633806;
+  padding: 8px 12px;
+  border-radius: 8px 8px 0 0;
+  font-size: 12px;
+  font-weight: 800;
+}
+.bekleyen-blok .tl-liste-kutu { border-color: #f2d9ad; }
+.tl-kart--bekleyen .tl-serit { background: #ef9f27; }
+.bekleyen-not { font-size: 11px; font-weight: 700; color: #854f0b; padding: 0 8px 8px 8px; }
+.bekleyen-not--bos { color: #a08355; font-weight: 600; }

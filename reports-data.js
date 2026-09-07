@@ -196,6 +196,7 @@ var ReportsData = (function(){
     var toplam = 0, toplamTl = 0, prim = 0, primTl = 0, sayi = 0;
     tumSiparisler().forEach(function(k){
       if(!k.tarih) return;
+      if(k.durum === "beklemede") return; // Beklemede sipariş hiçbir toplama dahil edilmez
       var parca = k.tarih.split(" ");
       if((parca[1]||"")!==ayAd || (parca[2]||"")!==yil) return;
       sayi++;

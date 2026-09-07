@@ -74,6 +74,7 @@ var WeiconData = (function(){
     for(var i=0;i<siparisler.length;i++){
       var k = siparisler[i];
       if(!k.tarih) continue;
+      if(k.durum === "beklemede") continue; // Beklemede sipariş hiçbir toplama dahil edilmez
       var parca = k.tarih.split(" ");
       var ayAd = parca[1]||"", yil = parca[2]||"";
       if(ayAd!==buAyAd || yil!==buYil) continue;
@@ -104,6 +105,7 @@ var WeiconData = (function(){
     for(var i=0;i<siparisler.length;i++){
       var k = siparisler[i];
       if(!k.tarih) continue;
+      if(k.durum === "beklemede") continue; // Beklemede sipariş hiçbir toplama dahil edilmez
       var parca = k.tarih.split(" ");
       if((parca[0]||"")!==gunNo || (parca[1]||"")!==ayAd || (parca[2]||"")!==yil) continue;
       var kKuru0 = k.kur || guncelKurYedek();

@@ -97,21 +97,56 @@ function tlListeHTML(gruplar, gosterIsim){
   }).join("");
 }
 
+function bekleyenKartHTML(k){
+  var meta = TIP_META[k.tip] || TIP_META.siparis;
+  return "<div class='tl-kart tl-kart--bekleyen' data-bekleyen-i='" + k._bi + "'>"
+    + "<div class='tl-serit' style='background:#ef9f27;'></div>"
+    + "<div class='tl-govde'>"
+    + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
+    + "<div class='tl-alt'>"
+    + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(k.kod||meta.rozet) + "</span>"
+    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " €</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
+    + "</div>"
+    + (k.beklemedeNot ? "<div class='bekleyen-not'>⏳ " + htmlEsc(k.beklemedeNot) + "</div>" : "<div class='bekleyen-not bekleyen-not--bos'>⏳ Not eklenmemiş</div>")
+    + "</div>"
+    + "</div>";
+}
+function bekleyenListeHTML(bekleyenler){
+  if(!bekleyenler.length) return "";
+  return "<div class='bekleyen-blok'>"
+    + "<div class='bekleyen-baslik'>⏳ BEKLEYEN ÜRÜNLER — toplamlara dahil değil</div>"
+    + "<div class='tl-liste-kutu'>" + bekleyenler.map(bekleyenKartHTML).join("<div class='tl-arasi'></div>") + "</div>"
+    + "</div>";
+}
+
 function listeyiCiz(kapsam){
   try{
-    var liste = ReportsData.satislarListele(kapsam);
+    var tumListe = ReportsData.satislarListele(kapsam);
     var kapsayici = document.getElementById("slListe");
     var bos = document.getElementById("slBos");
-    if(!liste.length){ kapsayici.innerHTML = ""; bos.hidden = false; return; }
+    if(!tumListe.length){ kapsayici.innerHTML = ""; bos.hidden = false; return; }
     bos.hidden = true;
 
-    liste.forEach(function(k){ k._tutar = k.toplam || 0; if(!k.tip) k.tip = "siparis"; });
-    var gruplar = tlGrupla(liste);
-    kapsayici.innerHTML = tlListeHTML(gruplar, true);
+    tumListe.forEach(function(k){ k._tutar = k.toplam || 0; if(!k.tip) k.tip = "siparis"; });
+    // Beklemede (stokta yok/tedarik bekleniyor) siparişler AYRI bir bölümde
+    // gösterilir ve gün/ay toplamlarının HİÇBİRİNE dahil edilmez (07.09.2026).
+    var liste = tumListe.filter(function(k){ return k.durum !== "beklemede"; });
+    var bekleyenler = tumListe.filter(function(k){ return k.durum === "beklemede"; });
+    bekleyenler.forEach(function(k, i){ k._bi = i; });
 
-    kapsayici.querySelectorAll(".tl-kart").forEach(function(el){
+    var gruplar = tlGrupla(liste);
+    kapsayici.innerHTML = bekleyenListeHTML(bekleyenler) + (liste.length ? tlListeHTML(gruplar, true) : (bekleyenler.length ? "" : "<p class='bos-mesaj'>Bu kapsamda satış kaydı yok.</p>"));
+
+    kapsayici.querySelectorAll(".tl-kart[data-i]").forEach(function(el){
       el.onclick = function(){
         var k = liste[parseInt(this.getAttribute("data-i"), 10)];
+        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
+        window.location.href = "belge-onizleme.html";
+      };
+    });
+    kapsayici.querySelectorAll(".tl-kart[data-bekleyen-i]").forEach(function(el){
+      el.onclick = function(){
+        var k = bekleyenler[parseInt(this.getAttribute("data-bekleyen-i"), 10)];
         localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
         window.location.href = "belge-onizleme.html";
       };

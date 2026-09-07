@@ -15,8 +15,8 @@
 <title>WEICON ASİST — Belge Önizleme</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.070926.1229.161">
-<link rel="stylesheet" href="belge-style.css?v=WG.070926.1414.163">
-<link rel="stylesheet" href="reports-style.css?v=WG.060926.0230.145">
+<link rel="stylesheet" href="belge-style.css?v=WG.070926.1924.170">
+<link rel="stylesheet" href="reports-style.css?v=WG.070926.1924.172">
 </head>
 <body>
 
@@ -50,6 +50,7 @@
       <button class="sheet-secenek" id="msYazdir"><span class="ikon">🖨</span>Yazdır</button>
       <button class="sheet-secenek" id="msDuzenle"><span class="ikon">✏️</span>Düzenle</button>
       <button class="sheet-secenek" id="msTekrarla"><span class="ikon">🔁</span>Tekrarla</button>
+      <button class="sheet-secenek" id="msBeklemede"><span class="ikon">⏳</span>Beklemede olarak işaretle</button>
       <button class="sheet-secenek" id="msGonder"><span class="ikon">📤</span>Gönder</button>
       <button class="sheet-secenek sheet-secenek--sil" id="msSil"><span class="ikon">🗑️</span>Kaydı sil</button>
       <button class="sheet-secenek sheet-secenek--vazgec" id="msVazgec">Kapat</button>
@@ -137,6 +138,23 @@
     </div>
   </div>
 
+  <!-- Beklemede notu — sipariş stokta yok, tedarik/termin bekleniyor -->
+  <div class="duzenle-overlay" id="beklemedeNotOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">⏳ Beklemede notu</div>
+      <p class="ck-not-aciklama" style="margin:-6px 0 10px">Beklemedeyken bu kayıt hiçbir aylık/günlük satış veya prim toplamına dahil edilmez.</p>
+      <textarea class="form-textarea" id="beklemedeNotMetni" rows="3" placeholder="Örn: Ürün depoda yok, tedarikçiden 10 gün termin verildi"></textarea>
+      <div class="duzenle-buton-satir">
+        <button class="duzenle-kapat-btn" id="btnBeklemedeNotSil">Beklemeyi Kaldır</button>
+        <button class="duzenle-kaydet-btn" id="btnBeklemedeNotKaydet">Kaydet</button>
+      </div>
+      <div class="duzenle-buton-satir" style="margin-top:6px;">
+        <button class="duzenle-kapat-btn" id="btnBeklemedeNotVazgec">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+
   <div class="duzenle-overlay" id="duzenleOverlay" hidden>
     <div class="duzenle-kutu">
       <div class="duzenle-baslik">Kaydı Düzenle</div>
@@ -155,9 +173,9 @@
 <script src="auth.js?v=WG.030926.1547.104"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.060926.1913.153"></script>
-<script src="reports-data.js?v=WG.060926.1913.153"></script>
+<script src="reports-data.js?v=WG.070926.1924.167"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
 <script src="hata-log.js?v=WG.020926.1523.89"></script>
-<script src="belge-render.js?v=WG.070926.1414.165"></script>
+<script src="belge-render.js?v=WG.070926.1924.169"></script>
 </body>
 </html>

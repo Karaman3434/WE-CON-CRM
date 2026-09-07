@@ -59,7 +59,8 @@ function gecmisCipSatiriHtml(kayit){
 var DURUM_ETIKET = {
   iptal: {ikon:"🚫", ad:"İPTAL EDİLDİ", renk:"#c0392b", bg:"#fdeceb"},
   iade: {ikon:"↩️", ad:"İADE EDİLDİ", renk:"#6a1b9a", bg:"#f3e5f5"},
-  kacan: {ikon:"❌", ad:"KAÇAN SİPARİŞ", renk:"#c0392b", bg:"#fff4e5"}
+  kacan: {ikon:"❌", ad:"KAÇAN SİPARİŞ", renk:"#c0392b", bg:"#fff4e5"},
+  beklemede: {ikon:"⏳", ad:"BEKLEMEDE", renk:"#633806", bg:"#faeeda"}
 };
 
 function tarihiGuncelle(){
@@ -124,8 +125,11 @@ function belgeyiCiz(kayit, musteri){
 
     var durum = kayit.durum;
     var sorunluMu = durum==="iptal" || durum==="iade" || durum==="kacan";
+    var beklemedeMi = durum==="beklemede";
     var durumRozetHtml = (durum && DURUM_ETIKET[durum])
-      ? "<div class='belge-durum-rozet' style='background:" + DURUM_ETIKET[durum].bg + ";color:" + DURUM_ETIKET[durum].renk + ";'>" + DURUM_ETIKET[durum].ikon + " BU KAYIT " + DURUM_ETIKET[durum].ad + (durum==="kacan" && kayit.kacanRakip ? " — → "+htmlEsc(kayit.kacanRakip) : "") + "</div>"
+      ? (beklemedeMi
+          ? "<button type='button' id='beklemedeRozetBtn' class='belge-durum-rozet belge-durum-rozet--tiklanabilir' style='background:" + DURUM_ETIKET[durum].bg + ";color:" + DURUM_ETIKET[durum].renk + ";'>" + DURUM_ETIKET[durum].ikon + " BU KAYIT " + DURUM_ETIKET[durum].ad + "<div class='belge-durum-rozet-not'>" + (kayit.beklemedeNot ? htmlEsc(kayit.beklemedeNot) : "Not eklemek için dokun") + "</div></button>"
+          : "<div class='belge-durum-rozet' style='background:" + DURUM_ETIKET[durum].bg + ";color:" + DURUM_ETIKET[durum].renk + ";'>" + DURUM_ETIKET[durum].ikon + " BU KAYIT " + DURUM_ETIKET[durum].ad + (durum==="kacan" && kayit.kacanRakip ? " — → "+htmlEsc(kayit.kacanRakip) : "") + "</div>")
       : "";
 
     var vade = (musteri && musteri.vade) || "";
@@ -174,6 +178,10 @@ function belgeyiCiz(kayit, musteri){
       + "</div>";
 
     document.getElementById("belgeIcerik").innerHTML = html;
+    var beklemedeRozetBtn = document.getElementById("beklemedeRozetBtn");
+    if(beklemedeRozetBtn){
+      beklemedeRozetBtn.onclick = function(){ beklemedeNotAc(kayit); };
+    }
     var gecmisCipBtn = document.getElementById("btnGecmisCip");
     if(gecmisCipBtn){
       gecmisCipBtn.onclick = function(){
@@ -448,6 +456,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     document.getElementById("msIlerlet").hidden = !ReportsData.SONRAKI_ASAMALAR[kayit.tip];
     document.getElementById("msKacti").hidden = !((kayit.tip==="teklif"||kayit.tip==="proforma") && kayit.durum !== "kacan");
+    document.getElementById("msBeklemede").hidden = !!kayit.durum;
     return true;
   }
 
@@ -575,6 +584,50 @@ document.addEventListener("DOMContentLoaded", function(){
     if(!sonCizilenKayit) return;
     document.getElementById("tekrarlaOverlay").hidden = true;
     ReportsData.tekrarBaslat(sonCizilenKayit);
+  };
+
+  // ---- Beklemede (sipariş verildi ama stokta yok, tedarik/termin
+  // bekleniyor) — İşlemler menüsünden yeni işaretlenebilir, ya da
+  // kayıt üzerindeki BEKLEMEDE rozetine dokunarak notu düzenlenebilir/
+  // silinebilir. Beklemedeyken bu kayıt hiçbir aylık/günlük toplama
+  // (satış, prim) dahil edilmez — bkz. ReportsData.ayToplami,
+  // HomeData.buAyinVerisi/bugununVerisi (07.09.2026).
+  var beklemedeDuzenlenenKayit = null;
+  function beklemedeNotAc(kayit){
+    beklemedeDuzenlenenKayit = kayit;
+    document.getElementById("beklemedeNotMetni").value = kayit.beklemedeNot || "";
+    document.getElementById("beklemedeNotOverlay").hidden = false;
+  }
+  window.beklemedeNotAc = beklemedeNotAc;
+  document.getElementById("msBeklemede").onclick = function(){
+    document.getElementById("islemlerOverlay").hidden = true;
+    if(!sonCizilenKayit) return;
+    beklemedeNotAc(sonCizilenKayit);
+  };
+  document.getElementById("btnBeklemedeNotVazgec").onclick = function(){ document.getElementById("beklemedeNotOverlay").hidden = true; };
+  document.getElementById("btnBeklemedeNotKaydet").onclick = function(){
+    if(!beklemedeDuzenlenenKayit) return;
+    var metin = document.getElementById("beklemedeNotMetni").value.trim();
+    var btn = document.getElementById("btnBeklemedeNotKaydet");
+    btn.disabled = true; btn.textContent = "Kaydediliyor...";
+    ReportsData.kaydiAlanGuncelle(beklemedeDuzenlenenKayit.tip, beklemedeDuzenlenenKayit.ts, {durum:"beklemede", beklemedeNot: metin}, function(basarili, err){
+      btn.disabled = false; btn.textContent = "Kaydet";
+      if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message)); return; }
+      document.getElementById("beklemedeNotOverlay").hidden = true;
+      denemeCiz();
+    });
+  };
+  document.getElementById("btnBeklemedeNotSil").onclick = function(){
+    if(!beklemedeDuzenlenenKayit) return;
+    if(!confirm("Beklemede durumu kaldırılsın mı? Kayıt tekrar normal şekilde toplamlara dahil olacak.")) return;
+    var btn = document.getElementById("btnBeklemedeNotSil");
+    btn.disabled = true;
+    ReportsData.kaydiAlanGuncelle(beklemedeDuzenlenenKayit.tip, beklemedeDuzenlenenKayit.ts, {durum:null, beklemedeNot:null}, function(basarili, err){
+      btn.disabled = false;
+      if(!basarili){ hataGoster("Kaldırılamadı: " + (err && err.message)); return; }
+      document.getElementById("beklemedeNotOverlay").hidden = true;
+      denemeCiz();
+    });
   };
 
   // ---- Gönder (geçmiş kayıttan) ----
