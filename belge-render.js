@@ -565,31 +565,35 @@ document.addEventListener("DOMContentLoaded", function(){
   var ilerletSeciliTip = null;
   document.getElementById("msIlerlet").onclick = function(){
     document.getElementById("islemlerOverlay").hidden = true;
-    if(!sonCizilenKayit) return;
-    var secenekler = ReportsData.SONRAKI_ASAMALAR[sonCizilenKayit.tip] || [];
-    if(!secenekler.length) return;
-    ilerletSeciliTip = null;
-    document.getElementById("ilerletDevamSatiri").hidden = true;
-    var liste = document.getElementById("ilerletSecenekListesi");
-    liste.innerHTML = secenekler.map(function(tip){
-      return "<button type='button' class='duzenle-menu-secenek' data-tip='" + tip + "'>" + (TIP_ETIKET_ILERLET[tip]||tip) + "</button>";
-    }).join("");
-    liste.querySelectorAll("[data-tip]").forEach(function(btn){
-      btn.onclick = function(){
-        ilerletSeciliTip = this.getAttribute("data-tip");
-        liste.querySelectorAll("[data-tip]").forEach(function(b){ b.classList.remove("duzenle-menu-secenek--secili"); });
-        this.classList.add("duzenle-menu-secenek--secili");
-        document.getElementById("btnIlerletDevam").textContent = (TIP_ETIKET_ILERLET[ilerletSeciliTip]||ilerletSeciliTip) + " seçeneğine devam et";
-        document.getElementById("ilerletDevamSatiri").hidden = false;
-      };
-    });
-    document.getElementById("ilerletSecOverlay").hidden = false;
+    try{
+      if(!sonCizilenKayit) return;
+      var secenekler = ReportsData.SONRAKI_ASAMALAR[sonCizilenKayit.tip] || [];
+      if(!secenekler.length) return;
+      ilerletSeciliTip = null;
+      document.getElementById("ilerletDevamSatiri").hidden = true;
+      var liste = document.getElementById("ilerletSecenekListesi");
+      liste.innerHTML = secenekler.map(function(tip){
+        return "<button type='button' class='duzenle-menu-secenek' data-tip='" + tip + "'>" + (TIP_ETIKET_ILERLET[tip]||tip) + "</button>";
+      }).join("");
+      liste.querySelectorAll("[data-tip]").forEach(function(btn){
+        btn.onclick = function(){
+          ilerletSeciliTip = this.getAttribute("data-tip");
+          liste.querySelectorAll("[data-tip]").forEach(function(b){ b.classList.remove("duzenle-menu-secenek--secili"); });
+          this.classList.add("duzenle-menu-secenek--secili");
+          document.getElementById("btnIlerletDevam").textContent = (TIP_ETIKET_ILERLET[ilerletSeciliTip]||ilerletSeciliTip) + " seçeneğine devam et";
+          document.getElementById("ilerletDevamSatiri").hidden = false;
+        };
+      });
+      document.getElementById("ilerletSecOverlay").hidden = false;
+    }catch(e){ hataGoster("İlerlet popup'ı açılamadı: " + e.message); }
   };
   document.getElementById("btnIlerletVazgec").onclick = function(){ document.getElementById("ilerletSecOverlay").hidden = true; };
   document.getElementById("btnIlerletDevam").onclick = function(){
-    if(!sonCizilenKayit || !ilerletSeciliTip) return;
-    document.getElementById("ilerletSecOverlay").hidden = true;
-    ReportsData.revizeBaslat(sonCizilenKayit, ilerletSeciliTip);
+    try{
+      if(!sonCizilenKayit || !ilerletSeciliTip) return;
+      document.getElementById("ilerletSecOverlay").hidden = true;
+      ReportsData.revizeBaslat(sonCizilenKayit, ilerletSeciliTip);
+    }catch(e){ hataGoster("İlerletilemedi: " + e.message); }
   };
 
   document.getElementById("msTekrarla").onclick = function(){
