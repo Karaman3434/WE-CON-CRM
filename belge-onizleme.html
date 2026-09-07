@@ -16,7 +16,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.070926.1229.161">
 <link rel="stylesheet" href="belge-style.css?v=WG.070926.1924.170">
-<link rel="stylesheet" href="reports-style.css?v=WG.070926.1946.177">
+<link rel="stylesheet" href="reports-style.css?v=WG.070926.1953.182">
 </head>
 <body>
 
@@ -138,6 +138,20 @@
     </div>
   </div>
 
+  <!-- İlerlet — hangi aşamaya dönüştürüleceği seçimi -->
+  <div class="duzenle-overlay" id="ilerletSecOverlay" hidden>
+    <div class="duzenle-kutu">
+      <div class="duzenle-baslik">Bu kayıt hangi aşamaya dönüştürülecek?</div>
+      <div class="duzenle-menu-liste" id="ilerletSecenekListesi"></div>
+      <div class="duzenle-buton-satir duzenle-buton-satir--dikey" id="ilerletDevamSatiri" hidden>
+        <button class="duzenle-kaydet-btn" id="btnIlerletDevam">Devam Et</button>
+      </div>
+      <div class="duzenle-buton-satir duzenle-buton-satir--dikey" style="margin-top:6px;">
+        <button class="duzenle-kapat-btn" id="btnIlerletVazgec">Kapat</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Beklemede notu — sipariş stokta yok, tedarik/termin bekleniyor -->
   <div class="duzenle-overlay" id="beklemedeNotOverlay" hidden>
     <div class="duzenle-kutu">
@@ -171,9 +185,9 @@
 <script src="auth.js?v=WG.030926.1547.104"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.060926.1913.153"></script>
-<script src="reports-data.js?v=WG.070926.1924.167"></script>
+<script src="reports-data.js?v=WG.070926.1953.179"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
 <script src="hata-log.js?v=WG.020926.1523.89"></script>
-<script src="belge-render.js?v=WG.070926.1924.169"></script>
+<script src="belge-render.js?v=WG.070926.1953.180"></script>
 </body>
 </html>

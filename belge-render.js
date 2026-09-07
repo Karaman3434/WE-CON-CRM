@@ -558,18 +558,38 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   };
 
+  // ---- İlerlet — hangi aşamaya dönüştürüleceği artık BURADA sorulur
+  // (Gönder aşamasında tekrar sorulmaz). Numune → Proforma/Teklif;
+  // Teklif → Proforma/Sipariş; Proforma → sadece Sipariş (07.09.2026).
+  var TIP_ETIKET_ILERLET = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
+  var ilerletSeciliTip = null;
   document.getElementById("msIlerlet").onclick = function(){
     document.getElementById("islemlerOverlay").hidden = true;
     if(!sonCizilenKayit) return;
     var secenekler = ReportsData.SONRAKI_ASAMALAR[sonCizilenKayit.tip] || [];
-    var TIP_ETIKET_KISA = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
-    var mesaj = sonCizilenKayit.musteri + " için " + (sonCizilenKayit.urunler||[]).length + " ürün düzenlenmek üzere Sepet'e yüklenecek";
-    mesaj += secenekler.length>1
-      ? " (Gönder aşamasında " + secenekler.map(function(s){return TIP_ETIKET_KISA[s];}).join(" veya ") + " seçebileceksin)."
-      : (" ve " + TIP_ETIKET_KISA[secenekler[0]] + " olarak ilerletilecek.");
-    mesaj += " Devam edilsin mi?";
-    if(!confirm(mesaj)) return;
-    ReportsData.revizeBaslat(sonCizilenKayit);
+    if(!secenekler.length) return;
+    ilerletSeciliTip = null;
+    document.getElementById("ilerletDevamSatiri").hidden = true;
+    var liste = document.getElementById("ilerletSecenekListesi");
+    liste.innerHTML = secenekler.map(function(tip){
+      return "<button type='button' class='duzenle-menu-secenek' data-tip='" + tip + "'>" + (TIP_ETIKET_ILERLET[tip]||tip) + "</button>";
+    }).join("");
+    liste.querySelectorAll("[data-tip]").forEach(function(btn){
+      btn.onclick = function(){
+        ilerletSeciliTip = this.getAttribute("data-tip");
+        liste.querySelectorAll("[data-tip]").forEach(function(b){ b.classList.remove("duzenle-menu-secenek--secili"); });
+        this.classList.add("duzenle-menu-secenek--secili");
+        document.getElementById("btnIlerletDevam").textContent = (TIP_ETIKET_ILERLET[ilerletSeciliTip]||ilerletSeciliTip) + " seçeneğine devam et";
+        document.getElementById("ilerletDevamSatiri").hidden = false;
+      };
+    });
+    document.getElementById("ilerletSecOverlay").hidden = false;
+  };
+  document.getElementById("btnIlerletVazgec").onclick = function(){ document.getElementById("ilerletSecOverlay").hidden = true; };
+  document.getElementById("btnIlerletDevam").onclick = function(){
+    if(!sonCizilenKayit || !ilerletSeciliTip) return;
+    document.getElementById("ilerletSecOverlay").hidden = true;
+    ReportsData.revizeBaslat(sonCizilenKayit, ilerletSeciliTip);
   };
 
   document.getElementById("msTekrarla").onclick = function(){

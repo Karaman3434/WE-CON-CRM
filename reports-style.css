@@ -337,6 +337,11 @@
   color: #1a2a3a;
   cursor: pointer;
 }
+.duzenle-menu-secenek--secili {
+  background: #e6f1fb;
+  border: 2px solid #185fa5;
+  color: #0c447c;
+}
 .duzenle-menu-not {
   font-size: 10px;
   color: #8a8f98;

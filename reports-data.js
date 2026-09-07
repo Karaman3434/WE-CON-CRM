@@ -408,7 +408,10 @@ var ReportsData = (function(){
   // secenekler.length===1 ise otomatik o aşamaya, >1 ise send.html'de
   // Gönder anında Proforma/Sipariş (veya Proforma/Teklif) seçim popup'ı
   // çıkar. Kayıt başarıyla kaydedilince eski kayıt otomatik silinir.
-  function revizeBaslat(kayit){
+  // hedefTip: opsiyonel — çağıran taraf (İşlemler > İlerlet popup'ı) zaten
+  // hangi aşamaya geçileceğini sorup seçtirdiyse doğrudan o tip verilir,
+  // Gönder aşamasında tekrar sorulmaz (07.09.2026).
+  function revizeBaslat(kayit, hedefTip){
     var secenekler = SONRAKI_ASAMALAR[kayit.tip];
     if(!secenekler){ return false; }
     // Eski kayıtta Dip Fiyat 0/boş kalmışsa (geçmiş bir hata nedeniyle),
@@ -428,7 +431,9 @@ var ReportsData = (function(){
     localStorage.setItem("weiconv2_sepet", JSON.stringify(sepet));
     localStorage.setItem("weicon_secili_musteri", JSON.stringify({ad:kayit.musteri, sehir:kayit.sehir||"", id:kayit.musteriId||null}));
     localStorage.setItem("weiconv2_ilerlet_kaynak", JSON.stringify({tip:kayit.tip, ts:kayit.ts, kod:kayit.kod||null, tarih:kayit.tarih||null, sonrakiAsamaSecenekleri:secenekler}));
-    if(secenekler.length === 1){
+    if(hedefTip && secenekler.indexOf(hedefTip) !== -1){
+      localStorage.setItem("weiconv2_onceden_secilen_tip", hedefTip);
+    } else if(secenekler.length === 1){
       localStorage.setItem("weiconv2_onceden_secilen_tip", secenekler[0]);
     } else {
       localStorage.removeItem("weiconv2_onceden_secilen_tip");

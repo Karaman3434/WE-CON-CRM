@@ -224,10 +224,12 @@ function ilerletKaynagiVarsaSekmeAyarla(){
   var kaynak = ilerletKaynagiOku();
   if(!kaynak || !kaynak.sonrakiAsamaSecenekleri || kaynak.sonrakiAsamaSecenekleri.length===0) return;
   var secenekler = kaynak.sonrakiAsamaSecenekleri;
+  var oncedenSecilen = null;
+  try{ oncedenSecilen = localStorage.getItem("weiconv2_onceden_secilen_tip"); }catch(e){}
   var uyari = document.createElement("div");
   uyari.className = "ilerlet-bilgi-kutu";
-  if(secenekler.length === 1){
-    secilenTip = secenekler[0];
+  if(secenekler.length === 1 || (oncedenSecilen && secenekler.indexOf(oncedenSecilen) !== -1)){
+    secilenTip = (oncedenSecilen && secenekler.indexOf(oncedenSecilen) !== -1) ? oncedenSecilen : secenekler[0];
     uyari.textContent = "▶️ İlerletiliyor — kayıt tamamlanınca önceki aşamanın belgesi otomatik silinecek.";
   } else {
     revizeSecimBekleniyor = secenekler;
