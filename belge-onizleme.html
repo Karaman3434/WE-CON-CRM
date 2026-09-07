@@ -16,7 +16,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.070926.1229.161">
 <link rel="stylesheet" href="belge-style.css?v=WG.070926.1924.170">
-<link rel="stylesheet" href="reports-style.css?v=WG.070926.1924.172">
+<link rel="stylesheet" href="reports-style.css?v=WG.070926.1946.177">
 </head>
 <body>
 
@@ -143,12 +143,10 @@
     <div class="duzenle-kutu">
       <div class="duzenle-baslik">⏳ Beklemede notu</div>
       <p class="ck-not-aciklama" style="margin:-6px 0 10px">Beklemedeyken bu kayıt hiçbir aylık/günlük satış veya prim toplamına dahil edilmez.</p>
-      <textarea class="form-textarea" id="beklemedeNotMetni" rows="3" placeholder="Örn: Ürün depoda yok, tedarikçiden 10 gün termin verildi"></textarea>
-      <div class="duzenle-buton-satir">
-        <button class="duzenle-kapat-btn" id="btnBeklemedeNotSil">Beklemeyi Kaldır</button>
+      <textarea class="beklemede-textarea" id="beklemedeNotMetni" rows="7" placeholder="Örn: Ürün depoda yok, tedarikçiden 10 gün termin verildi"></textarea>
+      <div class="duzenle-buton-satir duzenle-buton-satir--dikey">
         <button class="duzenle-kaydet-btn" id="btnBeklemedeNotKaydet">Kaydet</button>
-      </div>
-      <div class="duzenle-buton-satir" style="margin-top:6px;">
+        <button class="duzenle-kapat-btn" id="btnBeklemedeNotSil">Beklemeyi Kaldır</button>
         <button class="duzenle-kapat-btn" id="btnBeklemedeNotVazgec">Kapat</button>
       </div>
     </div>

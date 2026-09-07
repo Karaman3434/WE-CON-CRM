@@ -360,6 +360,20 @@
   gap: 8px;
   margin-top: 14px;
 }
+.duzenle-buton-satir--dikey {
+  grid-template-columns: 1fr;
+}
+.beklemede-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 160px;
+}
 .duzenle-kapat-btn {
   background: #c0392b;
   color: #fff;
