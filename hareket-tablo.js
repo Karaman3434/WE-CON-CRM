@@ -19,7 +19,7 @@ var HareketTablo = (function(){
   // Rakamın altına küçük birim satırı ekler (€ / TL) — sayı ile birim aynı
   // hücrede iki satıra ayrılır, sütun bu sayede daralabilir (07.09.2026).
   function paraHtml(sayiStr, birim){
-    return sayiStr + "<span class='belge-para-birim'>" + birim + "</span>";
+    return "<span class='belge-para-sayi'>" + sayiStr + "</span><span class='belge-para-birim'>" + birim + "</span>";
   }
 
   // urunler: [{ad, berta, abas, listeFiyat, dipFiyat, iskonto, adet}]
@@ -73,8 +73,8 @@ var HareketTablo = (function(){
     var basHucreler = basit
       ? "<th style='width:58%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:14%;'>NET</th><th style='width:16%;'>TOPLAM</th>"
       : (primGizli
-          ? "<th style='width:4%;'>SR</th><th style='width:44%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:8%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:12%;'>TOPLAM</th>"
-          : "<th style='width:4%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:6%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th>");
+          ? "<th style='width:4%;'>SR</th><th style='width:42%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:12%;'>TOPLAM</th>"
+          : "<th style='width:4%;'>SR</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th>");
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"
       + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli) + "</tbody></table></div>";

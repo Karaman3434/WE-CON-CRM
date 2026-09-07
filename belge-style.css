@@ -232,6 +232,7 @@
   word-break: break-word;
 }
 .belge-para-birim { display: block; font-size: 9px; font-weight: 700; color: #5f6b7a; line-height: 1.15; }
+.belge-para-sayi { white-space: nowrap; }
 .belge-td-sira { color: #8a96a3; font-weight: 600; }
 .belge-td-urun { text-align: left; white-space: normal; }
 

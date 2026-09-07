@@ -94,7 +94,7 @@ function yetkiliSatiriHtml(isim, tel, eposta){
 // Rakamın altına küçük birim satırı ekler (€ / TL) — sayı ile birim aynı
 // hücrede iki satıra ayrılır, sütun bu sayede daralabilir (07.09.2026).
 function paraHtml(sayiStr, birim){
-  return sayiStr + "<span class='belge-para-birim'>" + birim + "</span>";
+  return "<span class='belge-para-sayi'>" + sayiStr + "</span><span class='belge-para-birim'>" + birim + "</span>";
 }
 
 function belgeyiCiz(kayit, musteri){
@@ -164,7 +164,7 @@ function belgeyiCiz(kayit, musteri){
       + "<div class='belge-kart'>"
       + "<div class='belge-belge-baslik-serit'>" + htmlEsc(belgeBaslikMetni) + "</div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:38%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:6%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"
@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", function(){
     belgeyiCiz(kayit, musteri);
     belgeGecmisiniCiz(kayit);
 
-    document.getElementById("msIlerlet").hidden = !ReportsData.SONRAKI_ASAMALAR[kayit.tip];
+    document.getElementById("msIlerlet").hidden = false;
     document.getElementById("msKacti").hidden = !((kayit.tip==="teklif"||kayit.tip==="proforma") && kayit.durum !== "kacan");
     document.getElementById("msBeklemede").hidden = !!kayit.durum;
     return true;
@@ -560,7 +560,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // ---- İlerlet — hangi aşamaya dönüştürüleceği artık BURADA sorulur
   // (Gönder aşamasında tekrar sorulmaz). Numune → Proforma/Teklif;
-  // Teklif → Proforma/Sipariş; Proforma → sadece Sipariş (07.09.2026).
+  // Teklif → Proforma/Sipariş; Proforma → sadece Sipariş. "Tekrarla"
+  // (aynı türde bağımsız yeni kayıt) da aynı popup'ta bir seçenek olarak
+  // sunulur — İlerlet her zaman görünür, tip son aşamada (Sipariş) olsa
+  // bile en azından Tekrarla seçeneği için açılabilir (07.09.2026).
   var TIP_ETIKET_ILERLET = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
   var ilerletSeciliTip = null;
   document.getElementById("msIlerlet").onclick = function(){
@@ -568,19 +571,18 @@ document.addEventListener("DOMContentLoaded", function(){
     try{
       if(!sonCizilenKayit) return;
       var secenekler = ReportsData.SONRAKI_ASAMALAR[sonCizilenKayit.tip] || [];
-      if(!secenekler.length) return;
       ilerletSeciliTip = null;
       document.getElementById("ilerletDevamSatiri").hidden = true;
       var liste = document.getElementById("ilerletSecenekListesi");
       liste.innerHTML = secenekler.map(function(tip){
         return "<button type='button' class='duzenle-menu-secenek' data-tip='" + tip + "'>" + (TIP_ETIKET_ILERLET[tip]||tip) + "</button>";
-      }).join("");
+      }).join("") + "<button type='button' class='duzenle-menu-secenek' data-tip='tekrarla'>🔁 Tekrarla (aynı türde yeni kayıt)</button>";
       liste.querySelectorAll("[data-tip]").forEach(function(btn){
         btn.onclick = function(){
           ilerletSeciliTip = this.getAttribute("data-tip");
           liste.querySelectorAll("[data-tip]").forEach(function(b){ b.classList.remove("duzenle-menu-secenek--secili"); });
           this.classList.add("duzenle-menu-secenek--secili");
-          document.getElementById("btnIlerletDevam").textContent = (TIP_ETIKET_ILERLET[ilerletSeciliTip]||ilerletSeciliTip) + " seçeneğine devam et";
+          document.getElementById("btnIlerletDevam").textContent = ilerletSeciliTip==="tekrarla" ? "Tekrarla — Sepete Yükle" : ((TIP_ETIKET_ILERLET[ilerletSeciliTip]||ilerletSeciliTip) + " seçeneğine devam et");
           document.getElementById("ilerletDevamSatiri").hidden = false;
         };
       });
@@ -592,22 +594,9 @@ document.addEventListener("DOMContentLoaded", function(){
     try{
       if(!sonCizilenKayit || !ilerletSeciliTip) return;
       document.getElementById("ilerletSecOverlay").hidden = true;
-      ReportsData.revizeBaslat(sonCizilenKayit, ilerletSeciliTip);
+      if(ilerletSeciliTip === "tekrarla") ReportsData.tekrarBaslat(sonCizilenKayit);
+      else ReportsData.revizeBaslat(sonCizilenKayit, ilerletSeciliTip);
     }catch(e){ hataGoster("İlerletilemedi: " + e.message); }
-  };
-
-  document.getElementById("msTekrarla").onclick = function(){
-    document.getElementById("islemlerOverlay").hidden = true;
-    if(!sonCizilenKayit) return;
-    var TIP_ETIKET_TEKRAR = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
-    document.getElementById("tekrarlaBaslik").textContent = "Aynı ürünlerle yeni bir " + (TIP_ETIKET_TEKRAR[sonCizilenKayit.tip]||"kayıt") + " oluşturulacak";
-    document.getElementById("tekrarlaOverlay").hidden = false;
-  };
-  document.getElementById("btnTekrarlaVazgec").onclick = function(){ document.getElementById("tekrarlaOverlay").hidden = true; };
-  document.getElementById("btnTekrarlaOnayla").onclick = function(){
-    if(!sonCizilenKayit) return;
-    document.getElementById("tekrarlaOverlay").hidden = true;
-    ReportsData.tekrarBaslat(sonCizilenKayit);
   };
 
   // ---- Beklemede (sipariş verildi ama stokta yok, tedarik/termin
@@ -652,52 +641,6 @@ document.addEventListener("DOMContentLoaded", function(){
       document.getElementById("beklemedeNotOverlay").hidden = true;
       denemeCiz();
     });
-  };
-
-  // ---- Gönder (geçmiş kayıttan) ----
-  // send.html sadece "weiconv2_son_kaydedilen_belge" okuyup gönderim
-  // panelini gösterir, YENİDEN KAYDETMEZ — bu yüzden burada Sepet/cart.html'e
-  // hiç uğramadan doğrudan send.html'e geçebiliyoruz; mevcut kayıt
-  // değişmeden, olduğu gibi kalır.
-  var gonderBeklemedekiKayit = null;
-  function gonderiBaslatVeYonlendir(ekNot){
-    var kayit = gonderBeklemedekiKayit;
-    if(!kayit) return;
-    var musteriGuncel = CustomerData.musteriBul(kayit.musteri) || {ad: kayit.musteri};
-    var musteriGonderimKopyasi = {};
-    for(var k in musteriGuncel){ if(musteriGuncel.hasOwnProperty(k)) musteriGonderimKopyasi[k] = musteriGuncel[k]; }
-    // Bu belgede sadece belirli yetkili(ler) seçilmişse (bkz. Düzenle →
-    // Yetkili Kişi), gönderilen belgede SADECE onlar görünür.
-    if(kayit.gorunecekYetkililer && musteriGonderimKopyasi.iletisimler){
-      musteriGonderimKopyasi.iletisimler = musteriGonderimKopyasi.iletisimler.filter(function(kisi){
-        return kayit.gorunecekYetkililer.indexOf(kisi.isim) !== -1;
-      });
-    }
-    if(ekNot && ekNot.trim()){
-      var mevcutNot = (musteriGuncel.not||"").trim();
-      musteriGonderimKopyasi.not = mevcutNot ? (mevcutNot + "\n" + ekNot.trim()) : ekNot.trim();
-    }
-    localStorage.setItem("weiconv2_son_kaydedilen_belge", JSON.stringify({
-      musteri: musteriGonderimKopyasi, sepet: kayit.urunler||[], tip: kayit.tip,
-      kur: kayit.kur||0, kdv: kayit.kdv||0, kayit: kayit
-    }));
-    window.location.href = "send.html";
-  }
-  document.getElementById("msGonder").onclick = function(){
-    document.getElementById("islemlerOverlay").hidden = true;
-    if(!sonCizilenKayit) return;
-    gonderBeklemedekiKayit = sonCizilenKayit;
-    document.getElementById("gonderNotMetni").value = "";
-    document.getElementById("gonderNotOverlay").hidden = false;
-  };
-  document.getElementById("btnGonderNotAtla").onclick = function(){
-    document.getElementById("gonderNotOverlay").hidden = true;
-    gonderiBaslatVeYonlendir("");
-  };
-  document.getElementById("btnGonderNotEkle").onclick = function(){
-    var not = document.getElementById("gonderNotMetni").value;
-    document.getElementById("gonderNotOverlay").hidden = true;
-    gonderiBaslatVeYonlendir(not);
   };
 
   ReportsData.arsivDegistiginde(denemeCiz);
