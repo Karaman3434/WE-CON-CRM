@@ -43,32 +43,83 @@ function cariSatirHTML(kod, isim, sehir){
 var tumMusterilerModuAktif = false;
 
 // Bir müşterinin "son aktivite" zamanı = en son ziyaret VEYA en son işlem
-// tarihinden hangisi daha yeniyse. 1 günden fazla geçmişse tarih kırmızı
-// ve kalın gösterilir; bu, yeni bir ziyaret/işlem girilene kadar böyle
-// kalır (KESİN KURAL, 06.09.2026).
-var musteriSonIslemHaritasi = null;
+// tarihinden hangisi daha yeniyse. Arama/Tüm Müşteriler sıralamasında
+// en son aktif olan müşteriler öne çıksın diye kullanılır.
+var musteriSonIslemHaritasi = null; // musteriId -> son işlem ts (sıralama için)
+var musteriSonIslemDetayHaritasi = null; // musteriId -> {tip, durum, ts}
+var musteriSonBelgeTemasHaritasi = null; // musteriId -> {harf, ts} (mail/whatsapp gönderimi)
 function sonIslemHaritasiniHazirla(){
-  var harita = {};
+  var ts = {}, detay = {}, belgeTemas = {};
   try{
     if(typeof ReportsData !== "undefined"){
       ReportsData.sonIslemler().forEach(function(k){
         if(!k.musteriId) return;
-        if(!harita[k.musteriId] || k.ts > harita[k.musteriId]) harita[k.musteriId] = k.ts;
+        if(!ts[k.musteriId] || k.ts > ts[k.musteriId]) ts[k.musteriId] = k.ts;
+        if(!detay[k.musteriId] || k.ts > detay[k.musteriId].ts){
+          detay[k.musteriId] = {tip:k.tip, durum:k.durum, ts:k.ts};
+        }
+        if(k.kanal === "mail" || k.kanal === "whatsapp"){
+          var harf = k.kanal === "mail" ? "M" : "W";
+          if(!belgeTemas[k.musteriId] || k.ts > belgeTemas[k.musteriId].ts){
+            belgeTemas[k.musteriId] = {harf:harf, ts:k.ts};
+          }
+        }
       });
     }
   }catch(e){}
-  musteriSonIslemHaritasi = harita;
+  musteriSonIslemHaritasi = ts;
+  musteriSonIslemDetayHaritasi = detay;
+  musteriSonBelgeTemasHaritasi = belgeTemas;
 }
 function sonAktiviteZamani(m){
   var sonIslem = (musteriSonIslemHaritasi && m.id) ? musteriSonIslemHaritasi[m.id] : null;
   var aday = [m.sonZiyaret||0, sonIslem||0];
   return Math.max.apply(null, aday);
 }
-function aktiviteNoktasiHTML(m){
-  var zaman = sonAktiviteZamani(m);
-  var gecikmisMi = (zaman === 0) || ((Date.now()-zaman) > 30*86400000);
-  if(!gecikmisMi) return "";
-  return "<span class='musteri-gecikme-noktasi' title='30+ gündür ziyaret/işlem yok'></span>";
+
+var GUNLER_KISA = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+function tarihFormatlaKisa(ts){
+  var d = new Date(ts);
+  var gg = String(d.getDate()).padStart(2,"0");
+  var aa = String(d.getMonth()+1).padStart(2,"0");
+  return gg + "." + aa + "." + d.getFullYear() + " " + GUNLER_KISA[d.getDay()];
+}
+
+// En son TEMAS: ziyaret (Z), temas/telefon (T), mail gönderimi (M) veya
+// WhatsApp gönderimi (W) — hangisi en yeni tarihliyse o gösterilir.
+function sonTemasBilgisi(m){
+  var adaylar = [];
+  (m.ziyaretGecmisi||[]).forEach(function(z){
+    if(z.tur === "ziyaret") adaylar.push({harf:"Z", ts:z.ts||0});
+    else if(z.tur === "temas") adaylar.push({harf:"T", ts:z.ts||0});
+  });
+  var belgeTemas = (musteriSonBelgeTemasHaritasi && m.id) ? musteriSonBelgeTemasHaritasi[m.id] : null;
+  if(belgeTemas) adaylar.push(belgeTemas);
+  if(!adaylar.length) return null;
+  adaylar.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+  return adaylar[0];
+}
+
+// En son İŞLEM: numune (N), teklif (FT), proforma (PF), sipariş (S) —
+// beklemede olan sipariş için BKS.
+var ISLEM_HARF = {numune:"N", teklif:"FT", proforma:"PF"};
+function sonIslemBilgisi(m){
+  var kayit = (musteriSonIslemDetayHaritasi && m.id) ? musteriSonIslemDetayHaritasi[m.id] : null;
+  if(!kayit) return null;
+  if(kayit.tip === "siparis") return kayit.durum === "beklemede" ? "BKS" : "S";
+  return ISLEM_HARF[kayit.tip] || null;
+}
+
+function temasIslemRozetleriHTML(m){
+  var temas = sonTemasBilgisi(m);
+  var islem = sonIslemBilgisi(m);
+  var temasHTML = temas
+    ? "<span class='musteri-rozet musteri-rozet--temas'>Temas: " + temas.harf + " " + tarihFormatlaKisa(temas.ts) + "</span>"
+    : "<span class='musteri-rozet musteri-rozet--yok'>Temas yok</span>";
+  var islemHTML = islem
+    ? "<span class='musteri-rozet musteri-rozet--islem" + (islem==="BKS" ? " musteri-rozet--beklemede" : "") + "'>İşlem: " + islem + "</span>"
+    : "<span class='musteri-rozet musteri-rozet--yok'>İşlem yok</span>";
+  return "<div class='musteri-rozet-satiri'>" + temasHTML + islemHTML + "</div>";
 }
 
 
@@ -138,7 +189,8 @@ function listeyiCiz(){
       return "<div class='musteri-karti " + zebraSinif + "' data-i='" + i + "'>"
         + "<div class='musteri-karti-satir'>"
         + "<div class='musteri-icerik'>"
-        + "<div class='musteri-ust-satir'>" + aktiviteNoktasiHTML(m) + "<span class='musteri-cari-metin'>" + cariSatirHTML(m.id, m.ad, m.sehir) + "</span></div>"
+        + "<div class='musteri-ust-satir'><span class='musteri-cari-metin'>" + cariSatirHTML(m.id, m.ad, m.sehir) + "</span></div>"
+        + temasIslemRozetleriHTML(m)
         + "</div>"
         + "<div class='musteri-ok-alan'><svg width='8' height='12' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg></div>"
         + "</div>"

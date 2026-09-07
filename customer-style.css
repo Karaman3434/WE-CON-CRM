@@ -82,15 +82,26 @@
 .musteri-cari-metin .cari-ayrac,
 .musteri-cari-metin .cari-isim,
 .musteri-cari-metin .cari-sehir {
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
-.musteri-gecikme-noktasi {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #e0201f;
-  flex-shrink: 0;
+.musteri-rozet-satiri {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
 }
+.musteri-rozet {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.musteri-rozet--temas { background: #eef1f5; color: #556170; }
+.musteri-rozet--islem { background: #e6f1fb; color: #0c447c; }
+.musteri-rozet--beklemede { background: #faeeda; color: #633806; }
+.musteri-rozet--yok { background: #fcebeb; color: #a32d2d; }
 
 .musteri-alt-satir {
   display: flex;
