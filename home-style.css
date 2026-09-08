@@ -179,16 +179,34 @@ body {
   cursor: pointer;
 }
 
+.anasayfa-uyari-satiri {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
 .banner {
   border-radius: 10px;
   padding: 8px 12px;
-  margin-bottom: 6px;
   color: #ffffff;
   cursor: pointer;
+  flex: 1;
+  min-width: 0;
 }
 .banner--kirmizi { background: #c0392b; }
 .banner-baslik { font-size: 16px; font-weight: 900; }
 .banner-alt { font-size: 13px; margin-top: 1px; opacity: .9; }
+
+.is-gunu-kutu {
+  flex: 1;
+  min-width: 0;
+  background: #d9584f;
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #ffffff;
+  text-align: center;
+}
+.is-gunu-etiket { font-size: 11px; font-weight: 900; letter-spacing: .3px; opacity: .95; }
+.is-gunu-deger { font-size: 22px; font-weight: 900; margin-top: 2px; }
 
 .anasayfa-yatacak-kutu {
   background: linear-gradient(135deg, #ffe98a, #ffc94d);

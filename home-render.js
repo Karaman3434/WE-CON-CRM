@@ -79,6 +79,30 @@ function bildirimBanneriGuncelle(){
   }catch(e){ hataGoster("Bildirim banner'ı güncellenemedi: " + e.message); }
 }
 
+function isGunuKaldiHesapla(tarih){
+  var d = tarih || new Date();
+  var yil = d.getFullYear(), ay = d.getMonth();
+  var ayinSonGunu = new Date(yil, ay+1, 0).getDate();
+  var bugunGun = d.getDate();
+  var sayac = 0;
+  for(var g=bugunGun; g<=ayinSonGunu; g++){
+    var haftaGunu = new Date(yil, ay, g).getDay(); // 0=Pazar, 6=Cumartesi
+    if(haftaGunu !== 0 && haftaGunu !== 6) sayac++;
+  }
+  return sayac;
+}
+
+var isGunuSonHesaplananGun = null;
+function isGunuKutusunuGuncelle(){
+  try{
+    var el = document.getElementById("isGunuDeger");
+    if(!el) return;
+    var simdi = new Date();
+    el.textContent = isGunuKaldiHesapla(simdi);
+    isGunuSonHesaplananGun = simdi.getDate();
+  }catch(e){ hataGoster("İş günü göstergesi güncellenemedi: " + e.message); }
+}
+
 function kmDurumuGuncelle(){
   try{
     var el = document.getElementById("kmDurumAlt");
@@ -129,6 +153,10 @@ document.addEventListener("DOMContentLoaded", function(){
   // kurulmuyor (60 sn'de bir küçük bir metin güncellemesi, performansa
   // etkisi yok).
   setInterval(motivasyonuGuncelle, 60000);
+  isGunuKutusunuGuncelle();
+  setInterval(function(){
+    if(new Date().getDate() !== isGunuSonHesaplananGun) isGunuKutusunuGuncelle();
+  }, 60000);
   butonlariBagla();
   WeiconData.veriDegistiginde(kartlariGuncelle);
   WeiconData.bildirimDegistiginde(bildirimBanneriGuncelle);
