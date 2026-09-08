@@ -105,3 +105,31 @@
   flex: 2; background: #0e6b34; color: #fff; border: none;
   padding: 12px; min-height: 44px; font-size: 14px; font-weight: 900; border-radius: 12px; cursor: pointer;
 }
+
+/* İşlemi İptal Onay Popup — Geri/Kapat basınca (WG.080926.196) */
+.iptal-onay-overlay {
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 900;
+}
+.iptal-onay-overlay[hidden] { display: none; }
+.iptal-onay-kutu {
+  background: #ffffff;
+  padding: 20px;
+  width: 100%;
+}
+.iptal-onay-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 8px; text-align: center; }
+.iptal-onay-mesaj { font-size: 13px; color: #44494f; text-align: center; line-height: 1.5; margin-bottom: 16px; }
+.iptal-onay-evet-btn {
+  width: 100%; background: #c0392b; color: #fff; border: none; border-radius: 8px;
+  padding: 12px; min-height: 44px; font-size: 14px; font-weight: 800; margin-bottom: 8px; cursor: pointer;
+}
+.iptal-onay-vazgec-btn {
+  width: 100%; background: #eef1f5; color: #44494f; border: none; border-radius: 8px;
+  padding: 12px; min-height: 44px; font-size: 14px; font-weight: 800; cursor: pointer;
+}

@@ -359,8 +359,17 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnMusterisizWhatsapp").onclick = musterisizWhatsappGonder;
   document.getElementById("btnMusterisizMail").onclick = musterisizMailGonder;
   document.getElementById("btnMusterisizVazgec").onclick = function(){ document.getElementById("musterisizGonderOverlay").hidden = true; };
-  document.getElementById("btnSepetIptal").onclick = function(){
-    if(!confirm("Bu işlemi iptal edip sepetteki TÜM ürünleri ve seçili müşteriyi kaldırmak istediğinden emin misin? Bu geri alınamaz.")) return;
+
+  // İşlemi İptal Onay Popup — hem "Geri" butonu hem de mevcut "İşlemi
+  // İptal Et" butonu için ortak (WG.080926.196).
+  function sepetVeyaMusteriVarMi(){
+    var sepetDolu = false;
+    try{ sepetDolu = (JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0); }catch(e){}
+    var musteriSecili = false;
+    try{ musteriSecili = !!JSON.parse(localStorage.getItem("weicon_secili_musteri")||"null"); }catch(e){}
+    return sepetDolu || musteriSecili;
+  }
+  function herSeyiSifirlaVeGit(hedefUrl){
     localStorage.setItem("weiconv2_sepet", "[]");
     CustomerData.secimiKaldir();
     try{
@@ -369,7 +378,32 @@ document.addEventListener("DOMContentLoaded", function(){
       localStorage.removeItem("weiconv2_ilerlet_kaynak");
       localStorage.removeItem("weiconv2_islem_yap_akisi");
     }catch(e){}
-    window.location.href = "home.html";
+    window.location.href = hedefUrl;
+  }
+  var iptalOnayHedefUrl = null;
+  function iptalOnayGoster(hedefUrl){
+    iptalOnayHedefUrl = hedefUrl;
+    document.getElementById("iptalOnayOverlay").hidden = false;
+  }
+  document.getElementById("btnIptalOnayEvet").onclick = function(){
+    var hedef = iptalOnayHedefUrl || "home.html";
+    document.getElementById("iptalOnayOverlay").hidden = true;
+    herSeyiSifirlaVeGit(hedef);
+  };
+  document.getElementById("btnIptalOnayVazgec").onclick = function(){
+    document.getElementById("iptalOnayOverlay").hidden = true;
+    iptalOnayHedefUrl = null;
+  };
+  var geriLink = document.querySelector(".nav-btn--geri");
+  if(geriLink){
+    geriLink.addEventListener("click", function(ev){
+      if(!sepetVeyaMusteriVarMi()) return;
+      ev.preventDefault();
+      iptalOnayGoster(geriLink.getAttribute("href") || "product.html");
+    });
+  }
+  document.getElementById("btnSepetIptal").onclick = function(){
+    iptalOnayGoster("home.html");
   };
 
   CustomerData.listeDegistiginde(sayfayiCiz);

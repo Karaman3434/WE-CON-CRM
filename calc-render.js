@@ -163,6 +163,36 @@ function sepeteEkleTiklandi(){
   }catch(e){ hataGoster("Sepete eklenemedi: " + e.message); }
 }
 
+function sepetDoluMu(){
+  try{ return JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0; }
+  catch(e){ return false; }
+}
+function musteriSeciliMi(){
+  try{ return !!JSON.parse(localStorage.getItem("weicon_secili_musteri")||"null"); }
+  catch(e){ return false; }
+}
+// Bu sayfada "kaybedilecek" bir şey var mı: bulunup seçilmiş bir ürün,
+// sepete zaten eklenmiş ürünler, veya seçili bir müşteri.
+function kaybedilecekBirSeyVarMi(){
+  return !!seciliUrunBilgi || sepetDoluMu() || musteriSeciliMi();
+}
+function herSeyiSifirlaVeGit(hedefUrl){
+  try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+  try{ if(typeof CustomerData !== "undefined") CustomerData.secimiKaldir(); }catch(e){}
+  try{
+    localStorage.removeItem("weiconv2_onceden_secilen_tip");
+    localStorage.removeItem("weiconv2_hesapla_duzenle_idx");
+    localStorage.removeItem("weiconv2_ilerlet_kaynak");
+    localStorage.removeItem("weiconv2_islem_yap_akisi");
+  }catch(e){}
+  window.location.href = hedefUrl;
+}
+var iptalOnayHedefUrl = null;
+function iptalOnayGoster(hedefUrl){
+  iptalOnayHedefUrl = hedefUrl;
+  document.getElementById("iptalOnayOverlay").hidden = false;
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -182,14 +212,26 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   });
   document.getElementById("btnHesapKapat").onclick = function(ev){
-    var sepetDolu = false;
-    try{ sepetDolu = (JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0); }catch(e){}
-    if(!sepetDolu) return; // sepette gerçek bir şey yoksa direkt git, sormaya gerek yok
+    if(!kaybedilecekBirSeyVarMi()) return; // kaybedilecek bir şey yoksa direkt git, sormaya gerek yok
     ev.preventDefault();
-    if(!confirm("Sepetteki ürünler ve seçili müşteri de silinecek. Devam edilsin mi?")) return;
-    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
-    try{ if(typeof CustomerData !== "undefined") CustomerData.secimiKaldir(); }catch(e){}
-    window.location.href = "home.html";
+    iptalOnayGoster("home.html");
+  };
+  var geriLink = document.querySelector(".nav-btn--geri");
+  if(geriLink){
+    geriLink.addEventListener("click", function(ev){
+      if(!kaybedilecekBirSeyVarMi()) return;
+      ev.preventDefault();
+      iptalOnayGoster(geriLink.getAttribute("href") || "home.html");
+    });
+  }
+  document.getElementById("btnIptalOnayEvet").onclick = function(){
+    var hedef = iptalOnayHedefUrl || "home.html";
+    document.getElementById("iptalOnayOverlay").hidden = true;
+    herSeyiSifirlaVeGit(hedef);
+  };
+  document.getElementById("btnIptalOnayVazgec").onclick = function(){
+    document.getElementById("iptalOnayOverlay").hidden = true;
+    iptalOnayHedefUrl = null;
   };
   // Menü butonu artık yarim-kalan-uyari.js tarafından yönetiliyor (sepette
   // ürün + seçili müşteri varsa uyarıp sonra temizleyip gidiyor).

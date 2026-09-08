@@ -75,6 +75,17 @@
     </div>
   </div>
 
+  <!-- İşlemi İptal Onay Popup — Geri basınca veya "İşlemi İptal Et"
+       butonuna basınca (WG.080926.196) -->
+  <div class="tip-secim-overlay" id="iptalOnayOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">⚠️ İşlemi İptal Ediyorsunuz</div>
+      <p class="sheet-alt" style="text-align:center;">Seçili müşteri ve sepetteki TÜM ürünler silinecek. Emin misiniz?</p>
+      <button id="btnIptalOnayEvet" style="background:#c0392b;color:#fff;border:none;border-radius:8px;padding:12px;min-height:44px;font-size:14px;font-weight:800;width:100%;margin-bottom:8px;cursor:pointer;">Evet, Sil ve Çık</button>
+      <button class="tip-secim-vazgec-btn" id="btnIptalOnayVazgec" style="background:#eef1f5;color:#44494f;">Vazgeç, Devam Et</button>
+    </div>
+  </div>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -88,7 +99,7 @@
 <script src="customer-data.js?v=WG.080926.1732.292"></script>
 <script src="send-data.js?v=WG.030926.1332.102"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="cart-render.js?v=WG.080926.1259.225"></script>
+<script src="cart-render.js?v=WG.080926.1943.302"></script>
 <script src="yarim-kalan-uyari.js?v=WG.040926.1500.115"></script>
 </body>
 </html>

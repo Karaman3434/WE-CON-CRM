@@ -15,7 +15,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.080926.1437.247">
 <link rel="stylesheet" href="product-style.css?v=WG.080926.1437.250">
-<link rel="stylesheet" href="calc-style.css?v=WG.080926.1437.241">
+<link rel="stylesheet" href="calc-style.css?v=WG.080926.1943.300">
 </head>
 <body>
 
@@ -104,6 +104,15 @@
     <button class="hc-listeye-ekle-buton" id="btnHesapSepeteEkle">➕ LİSTEYE EKLE</button>
   </div>
 
+  <div class="iptal-onay-overlay" id="iptalOnayOverlay" hidden>
+    <div class="iptal-onay-kutu">
+      <div class="iptal-onay-baslik">⚠️ İşlemi İptal Ediyorsunuz</div>
+      <p class="iptal-onay-mesaj">Seçili müşteri, bulunan ürün ve yaptığınız hesaplama silinecek. Emin misiniz?</p>
+      <button class="iptal-onay-evet-btn" id="btnIptalOnayEvet">Evet, Sil ve Çık</button>
+      <button class="iptal-onay-vazgec-btn" id="btnIptalOnayVazgec">Vazgeç, Devam Et</button>
+    </div>
+  </div>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -116,7 +125,7 @@
 <script src="cart-data.js?v=WG.020926.1338.87"></script>
 <script src="customer-data.js?v=WG.080926.1732.292"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="calc-render.js?v=WG.080926.1259.223"></script>
+<script src="calc-render.js?v=WG.080926.1943.301"></script>
 <script src="yarim-kalan-uyari.js?v=WG.040926.1500.115"></script>
 </body>
 </html>
