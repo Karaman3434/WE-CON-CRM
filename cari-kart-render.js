@@ -515,10 +515,17 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
   // Firebase'den taze veri gelince ana sayfayı ve (açıksa) akordiyonu tazele.
+  // HATA DÜZELTME (WG.080926.196): isim değişikliğinden hemen sonra bu
+  // dinleyici eski isimle arama yapıp müşteriyi "bulamıyor" ve ekran
+  // güncellenmeden kalıyordu (kayıt kendisi her zaman doğruydu). Artık
+  // kalıcı ID ile aranıyor — isim ne olursa olsun doğru kayıt bulunur.
   CustomerData.listeDegistiginde(function(){
-    var taze = CustomerData.musteriBul(seciliMusteriAdi);
+    var taze = (musteriVerisi && musteriVerisi.id)
+      ? CustomerData.musteriIdIleBul(musteriVerisi.id)
+      : CustomerData.musteriBul(seciliMusteriAdi);
     if(!taze) return;
     musteriVerisi = taze;
+    seciliMusteriAdi = taze.ad;
     document.getElementById("cariKartAd").textContent = taze.ad;
     document.getElementById("ozetVadeDeger").textContent = taze.vade || "—";
     document.getElementById("ozetFaturaDeger").textContent = taze.fatura || "—";
