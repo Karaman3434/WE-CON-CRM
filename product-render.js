@@ -158,7 +158,7 @@ function urunSatisGecmisiniAc(berta, abas, ad){
           + "<span class='urun-gecmis-musteri'>" + htmlEsc(g.musteri) + "</span>"
           + "<span class='urun-gecmis-tarih'>" + htmlEsc(g.tarih) + "</span>"
           + "</div>"
-          + "<div class='urun-gecmis-detay'>" + g.adet + " adet · " + g.iskBirim.toFixed(2) + "€/birim · %" + g.iskonto + " iskonto</div>"
+          + "<div class='urun-gecmis-detay'>" + g.adet + " adet · " + g.iskBirim.toFixed(2) + " EURO/birim · %" + g.iskonto + " iskonto</div>"
           + "</div>";
       }).join("");
     }

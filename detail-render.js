@@ -171,9 +171,9 @@ function urunGecmisiniAc(){
             return "<tr>"
               + "<td>" + htmlEsc((k.tarih||"").split(" ").slice(0,2).join(" ")) + "</td>"
               + "<td>" + (k.adet||0) + "</td>"
-              + "<td>" + fmtG(k.listeFiyat) + "€</td>"
+              + "<td>" + fmtG(k.listeFiyat) + " EURO</td>"
               + "<td><span class='rozet-isk'>%" + k.iskonto + "</span></td>"
-              + "<td><span class='rozet-net'>" + fmtG(k.netFiyat) + "€</span></td>"
+              + "<td><span class='rozet-net'>" + fmtG(k.netFiyat) + " EURO</span></td>"
               + "</tr>";
           }).join("");
           listesiEl.hidden = true;

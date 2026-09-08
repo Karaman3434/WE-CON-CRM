@@ -95,7 +95,7 @@ function bildirimleriCiz(){
           + "</div>"
           + "<div class='acik-surec-detay'>"
           + "<span style='font-weight:800;color:#003a70;'>" + kanalHarfHTML(b.kanal) + htmlEsc(b.kod||"Sipariş") + "</span>"
-          + " · <b>" + fmt(b.tutar) + " €</b> stok bekliyor</div>"
+          + " · <b>" + fmt(b.tutar) + " EURO</b> stok bekliyor</div>"
           + (b.beklemedeNot ? "<div class='beklemede-hatirlat-not'>" + htmlEsc(b.beklemedeNot) + "</div>" : "")
           + "</div>";
       });
@@ -112,7 +112,7 @@ function bildirimleriCiz(){
           + "</div>"
           + "<div class='acik-surec-detay'>"
           + "<span style='font-weight:800;color:" + kodRenk + ";'>" + kanalHarfHTML(b.kanal) + htmlEsc(b.kod||TIP_ETIKET_B[b.tip]) + "</span>"
-          + " · " + b.urunSayisi + " ürün · <b>" + fmt(b.tutar) + " €</b> · <b>" + b.gun + " gün önce</b></div>"
+          + " · " + b.urunSayisi + " ürün · <b>" + fmt(b.tutar) + " EURO</b> · <b>" + b.gun + " gün önce</b></div>"
           + "<div class='acik-surec-buton-satir'>"
           + "<button class='acik-surec-ilerlet-btn' data-ilerlet='" + htmlEsc(JSON.stringify({tip:b.tip, ts:b.ts})) + "'>▶️ İlerlet</button>"
           + (b.seviye==="kritik" ? "<button class='acik-surec-sil-btn' data-sil-tip='" + b.tip + "' data-sil-ts='" + b.ts + "'>🗑 Sil</button>" : "")

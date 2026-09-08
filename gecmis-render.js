@@ -95,7 +95,7 @@ function tlKartHTML(k, gosterIsim){
     + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
     + "<div class='tl-alt'>"
     + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
-    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " €</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
+    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " EURO</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
     + "</div>"
     + (kacanMi && k.kacanRakip ? "<div class='tl-durum-ek'>Rakip: " + htmlEsc(k.kacanRakip) + "</div>" : "")
     + (k.durum==="beklemede" ? "<div class='tl-durum-ek tl-durum-ek--beklemede'>⏳ Beklemede" + (k.beklemedeNot ? ": " + htmlEsc(k.beklemedeNot) : "") + "</div>" : "")
@@ -121,7 +121,7 @@ function tlListeHTML(gruplar, gosterIsim){
     // (varsayılan) gün toplamına dahil edilmez.
     var toplamGun = g.kayitlar.reduce(function(s,k){ return s + ((k.durum==="beklemede" && !beklemedeDahil) ? 0 : k._tutar); }, 0);
     var kartlar = g.kayitlar.map(function(k){ return tlKartHTML(k, gosterIsim); }).join("<div class='tl-arasi'></div>");
-    return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " €</span></div>"
+    return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " EURO</span></div>"
       + "<div class='tl-liste-kutu'>" + kartlar + "</div>";
   }).join("");
 }

@@ -89,7 +89,7 @@ function ayDetayiniCiz(){
 
     document.getElementById("ayDetayBaslik").textContent = "📅 " + ayVerisi.ayAd + " " + ayVerisi.yil + " Kayıtları";
     document.getElementById("ayDetayToplamEtiket").textContent = "🧮 SİPARİŞ TOPLAMI (" + kayitlarBuAy.length + " kayıt)";
-    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayToplamEuro) + " € · ≈ " + fmt(ayToplamTl) + " TL";
+    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayToplamEuro) + " EURO · ≈ " + fmt(ayToplamTl) + " TL";
 
     kayitlarBuAy.forEach(function(k){
       k._tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
@@ -130,19 +130,19 @@ function istatistikleriCiz(){
       var mevcutAySinifi = i===0 ? " aylik-ozet-satir--mevcut-ay" : "";
       return "<tr class='" + mevcutAySinifi.trim() + "'>"
         + "<td class='aylik-ozet-ay-hucre'>" + a.ayAd + " " + a.yil + "</td>"
-        + "<td>" + fmt(a.toplam) + " €</td>"
+        + "<td>" + fmt(a.toplam) + " EURO</td>"
         + "<td class='aylik-ozet-satirtl-hucre'>" + fmt(a.toplamTl) + " ₺</td>"
-        + "<td class='aylik-ozet-prim-hucre'>" + fmt(a.prim) + " €</td>"
+        + "<td class='aylik-ozet-prim-hucre'>" + fmt(a.prim) + " EURO</td>"
         + "<td class='aylik-ozet-primtl-hucre'>" + fmt(a.primTl) + " ₺</td>"
         + "</tr>";
     }).join("");
-    document.getElementById("istAylikGenelToplam").textContent = fmt(genelToplam) + " €";
-    document.getElementById("istAylikGenelPrim").textContent = fmt(genelPrim) + " €";
+    document.getElementById("istAylikGenelToplam").textContent = fmt(genelToplam) + " EURO";
+    document.getElementById("istAylikGenelPrim").textContent = fmt(genelPrim) + " EURO";
     document.getElementById("istAylikGenelPrimTl").textContent = fmt(genelPrimTl) + " ₺";
     var kurNotuEl = document.getElementById("istAylikKurNotu");
     if(ozet.kur){
       kurNotuEl.className = "aylik-ozet-kur-notu";
-      kurNotuEl.textContent = "Kur: 1 € = " + fmt(ozet.kur) + " ₺ üzerinden hesaplandı";
+      kurNotuEl.textContent = "Kur: 1 EURO = " + fmt(ozet.kur) + " ₺ üzerinden hesaplandı";
     } else {
       kurNotuEl.className = "aylik-ozet-kur-notu aylik-ozet-kur-notu--hata";
       kurNotuEl.textContent = "⚠️ Güncel kur bulunamadı, TL Prim hesaplanamadı";
@@ -200,7 +200,7 @@ function tlKartHTML(k, gosterIsim){
     + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
     + "<div class='tl-alt'>"
     + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
-    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " €</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
+    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " EURO</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
     + "</div>"
     + (k.durum==="beklemede" ? "<div class='tl-durum-ek tl-durum-ek--beklemede'>⏳ Beklemede" + (k.beklemedeNot ? ": " + htmlEsc(k.beklemedeNot) : "") + "</div>" : "")
     + "</div>"
@@ -220,7 +220,7 @@ function tlListeHTML(gruplar, gosterIsim){
   return gruplar.map(function(g){
     var toplamGun = g.kayitlar.reduce(function(s,k){ return s + k._tutar; }, 0);
     var kartlar = g.kayitlar.map(function(k){ return tlKartHTML(k, gosterIsim); }).join("<div class='tl-arasi'></div>");
-    return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " €</span></div>"
+    return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " EURO</span></div>"
       + "<div class='tl-liste-kutu'>" + kartlar + "</div>";
   }).join("");
 }

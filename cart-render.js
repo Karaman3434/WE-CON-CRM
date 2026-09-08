@@ -169,7 +169,7 @@ function anomaliUyarilariniTopla(sepet, kur, kdv){
     }
     var h = CartData.hesapla(u, kur, kdv);
     if(u.dipFiyat && h.iskontoluFiyat < u.dipFiyat){
-      uyarilar.push("🔴 " + u.ad + " dip maliyetin (" + CartData.fmt(u.dipFiyat) + " €) altında satılıyor (net: " + CartData.fmt(h.iskontoluFiyat) + " €) — zararına satış olabilir.");
+      uyarilar.push("🔴 " + u.ad + " dip maliyetin (" + CartData.fmt(u.dipFiyat) + " EURO) altında satılıyor (net: " + CartData.fmt(h.iskontoluFiyat) + " EURO) — zararına satış olabilir.");
     }
   });
   return uyarilar;
@@ -326,10 +326,10 @@ function musterisizOzetMetniOlustur(){
   var kur = CartData.kurOku();
   var satirlar = sepet.map(function(u, i){
     var toplam = u.toplamEuro!==undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
-    return (i+1) + ". " + u.ad + " — " + (u.adet||0) + " adet x " + CartData.fmt(u.iskBirim||0) + " € = " + CartData.fmt(toplam) + " €";
+    return (i+1) + ". " + u.ad + " — " + (u.adet||0) + " adet x " + CartData.fmt(u.iskBirim||0) + " EURO = " + CartData.fmt(toplam) + " EURO";
   });
   var genelToplam = sepet.reduce(function(s,u){ return s + (u.toplamEuro!==undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0))); }, 0);
-  var metin = "WEICON Fiyat Bilgisi\n\n" + satirlar.join("\n") + "\n\nToplam: " + CartData.fmt(genelToplam) + " €";
+  var metin = "WEICON Fiyat Bilgisi\n\n" + satirlar.join("\n") + "\n\nToplam: " + CartData.fmt(genelToplam) + " EURO";
   if(kur) metin += " (≈ " + Math.round(genelToplam*kur).toLocaleString("tr-TR") + " TL)";
   return metin;
 }

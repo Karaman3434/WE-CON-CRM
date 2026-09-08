@@ -115,10 +115,10 @@ function belgeyiCiz(kayit, musteri){
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
-        + "<td>" + paraHtml(fmt(item.listeFiyat||0),"€") + "</td>"
+        + "<td>" + paraHtml(fmt(item.listeFiyat||0),"EURO") + "</td>"
         + "<td><span class='rozet-isk'>%" + (item.iskonto||0) + "</span></td>"
-        + "<td><span class='rozet-net'>" + paraHtml(fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)),"€") + "</span></td>"
-        + "<td class='belge-td-toplam'>" + paraHtml(fmt(toplamEuro),"€") + "</td>"
+        + "<td><span class='rozet-net'>" + paraHtml(fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)),"EURO") + "</span></td>"
+        + "<td class='belge-td-toplam'>" + paraHtml(fmt(toplamEuro),"EURO") + "</td>"
         + "<td class='belge-td-prim'>" + primHucre + "</td>"
         + "</tr>";
     }).join("");
@@ -170,7 +170,7 @@ function belgeyiCiz(kayit, musteri){
       + "<div class='belge-genel-toplam-serit'>"
       + (kayit.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(kayit.kur) + " Euro</span>" : "")
       + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
-      + "<span class='belge-gt-deger'>" + fmt(netEuro) + " €<span class='belge-gt-deger-alt'>≈ " + Math.round(netEuro*(kayit.kur||0)).toLocaleString("tr-TR") + " TL</span></span>"
+      + "<span class='belge-gt-deger'>" + fmt(netEuro) + " EURO<span class='belge-gt-deger-alt'>≈ " + Math.round(netEuro*(kayit.kur||0)).toLocaleString("tr-TR") + " TL</span></span>"
       + "</div>"
       + "<div class='belge-prim-serit'>"
       + "<span class='belge-prim-etiket'>MÜDÜR PRİMİ (TOPLAM)</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":Math.round(toplamPrimTl).toLocaleString("tr-TR")+" TL") + "</span>"

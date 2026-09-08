@@ -116,9 +116,9 @@ function hesaplaVeGoster(){
     var kdv = CartData.kdvOku();
     var h = CartData.hesapla(urun, kur, kdv);
 
-    document.getElementById("rIskontoluFiyat").innerHTML = CartData.fmt(h.iskontoluFiyat) + "<span class='hc-turuncu-birim'>€</span>";
+    document.getElementById("rIskontoluFiyat").innerHTML = CartData.fmt(h.iskontoluFiyat) + "<span class='hc-turuncu-birim'>EURO</span>";
     document.getElementById("rTlBirimFiyat").innerHTML = CartData.fmt(h.tlBirimFiyat) + "<span class='hc-turuncu-birim'> TL</span>";
-    document.getElementById("rToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " €";
+    document.getElementById("rToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " EURO";
     document.getElementById("rFaturaToplam").textContent = CartData.fmt(h.faturaToplam) + " TL";
     var kur2 = kur||0;
     document.getElementById("rPrimTL").textContent = (h.mudurPrim===0 && urun.iskonto>60) ? "ÖZEL FİYAT" : (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim*kur2)+" TL");

@@ -266,7 +266,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     + "</table></div>"
     + "<div class='belge-genel-toplam-serit'>"
     + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
-    + "<span class='belge-gt-deger'>" + fmtG2(netEuro) + " €</span></div>"
+    + "<span class='belge-gt-deger'>" + fmtG2(netEuro) + " EURO</span></div>"
     + "</div>";
 }
 

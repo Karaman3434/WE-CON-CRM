@@ -34,13 +34,13 @@ function kartlariGuncelle(){
     var ay = WeiconData.buAyinVerisi();
     var bugun = WeiconData.bugununVerisi();
 
-    setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro) + " €");
+    setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro) + " EURO");
     setText("anaSayfaSatisToplamTl", "≈ " + WeiconData.fmt(ay.toplamEuroTl) + " TL");
     setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim) + " TL");
     setText("anaSayfaAyEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " SATIŞ");
     setText("anaSayfaPrimEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " PRİM");
 
-    setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro) + " €");
+    setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro) + " EURO");
     setText("anaSayfaBugunSatisTl", "≈ " + WeiconData.fmt(bugun.toplamEuroTl) + " TL");
     setText("anaSayfaBugunPrim", WeiconData.fmt(bugun.toplamPrim) + " TL");
 
