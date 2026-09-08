@@ -60,7 +60,7 @@ function istatistikleriCiz(){
     var kurNotuEl = document.getElementById("istAylikKurNotu");
     if(ozet.kur){
       kurNotuEl.className = "aylik-ozet-kur-notu";
-      kurNotuEl.textContent = "Kur: 1 EURO = " + fmt(ozet.kur) + " ₺ üzerinden hesaplandı";
+      kurNotuEl.textContent = "Her kayıt kendi işlem gününün kuruyla hesaplanır; kuru eksik olan eski kayıtlarda yedek olarak bugünün kuru (1 EURO = " + fmt(ozet.kur) + " ₺) kullanılır.";
     } else {
       kurNotuEl.className = "aylik-ozet-kur-notu aylik-ozet-kur-notu--hata";
       kurNotuEl.textContent = "⚠️ Güncel kur bulunamadı, TL Prim hesaplanamadı";
