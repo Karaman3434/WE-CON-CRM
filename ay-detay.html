@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — İSTATİSTİKLER v3
-  ===================================
-  Eski uygulamayla AYNI sıra: istatistik kartları → kaçan özet →
-  kısayollar. "🕘 Son İşlemler" artık AYRI bir sayfa (son-islemler.html),
-  "❌ Kaçan İşlemler" ile aynı mantıkta.
+  WEICON ASİST — AY DETAYI (ayrı sayfa)
+  ===========================================================
+  Eskiden reports.html'in altında açılan inline bir bölümdü. Artık
+  "Son İşlemler" / "Kaçan İşlemler" ile aynı mantıkta ayrı bir sayfa.
+  Hangi ayın gösterileceği localStorage'daki "weiconv2_goruntulenen_ay"
+  anahtarından okunur (reports-render.js aylık tabloda bir satıra
+  dokununca bunu yazıp buraya yönlendirir).
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — İstatistikler</title>
+<title>WEICON ASİST — Ay Detayı</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.080926.1437.247">
 <link rel="stylesheet" href="reports-style.css?v=WG.080926.1513.260">
@@ -29,28 +31,20 @@
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 </div>
-<div class="rota-etiketi">Raporlar › <b>İstatistikler</b></div>
+<div class="rota-etiketi">Raporlar › İstatistikler › <b id="rotaAyEtiketi">Ay Detayı</b></div>
 
 <main class="sayfa">
 
-  <div class="istatistik-bolum-baslik">📅 Aylık Sipariş &amp; Prim Özeti (Son 12 Ay)</div>
-  <div class="data-table-container">
-    <table class="aylik-ozet-tablo">
-      <thead><tr><th style='width:16%;'>AY</th><th style='width:21%;'>SATIŞ (EURO)</th><th style='width:24%;'>SATIŞ (TL)</th><th style='width:17%;'>PRİM</th><th style='width:22%;'>TL PRİM</th></tr></thead>
-      <tbody id="istAylikListe"></tbody>
-      <tfoot><tr class="aylik-ozet-toplam-satir">
-        <td>TOPLAM (12 Ay)</td>
-        <td id="istAylikGenelToplam">-</td>
-        <td id="istAylikGenelPrim">-</td>
-        <td id="istAylikGenelPrimTl">-</td>
-      </tr></tfoot>
-    </table>
+  <div class="ay-detay-baslik" id="ayDetayBaslik"></div>
+  <label class="ay-detay-beklemede-satir">
+    <input type="checkbox" id="ayDetayBeklemedeToggle">
+    <span>⏳ Beklemede siparişleri dahil et</span>
+  </label>
+  <div class="ay-detay-toplam-kutu">
+    <span id="ayDetayToplamEtiket"></span>
+    <strong id="ayDetayToplamDeger"></strong>
   </div>
-  <p class="aylik-ozet-kur-notu" id="istAylikKurNotu"></p>
-
-  <div class="raporlar-kisayol-satiri">
-    <a class="raporlar-kisayol-btn raporlar-kisayol-btn--kacan" href="kacan-satislar.html"><span>❌ Kaçan İşlemler</span><span class="kisayol-ok"><svg width="8" height="12" viewBox="0 0 20 32" fill="none"><path d="M4 4 L16 16 L4 28" stroke="#e24b4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-  </div>
+  <div id="ayDetayListesi"></div>
 
 </main>
 
@@ -65,6 +59,6 @@
 <script src="reports-data.js?v=WG.070926.2130.195"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="reports-render.js?v=WG.080926.1533.277"></script>
+<script src="ay-detay-render.js?v=WG.080926.1533.276"></script>
 </body>
 </html>

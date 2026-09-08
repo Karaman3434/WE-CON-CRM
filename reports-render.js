@@ -1,8 +1,10 @@
 /*
   reports-render.js
   =================
-  İstatistik kartlarını, aylık özet tablosunu ve Ay Detayı panelini yönetir.
-  Son İşlemler listesi artık ayrı bir sayfada (son-islemler-render.js).
+  Sadece Aylık Sipariş & Prim Özeti (son 12 ay) tablosunu çizer. Bir aya
+  dokununca artık aynı sayfada açılmıyor — ay-detay.html'e yönlendirir
+  (bkz. ay-detay-render.js). "Bu Ay/Geçen Ay Toplam" kartları ve Son
+  İşlemler listesi de artık bu sayfada yok (son-islemler.html'de).
 */
 
 function hataGoster(mesaj){
@@ -26,103 +28,19 @@ function tarihiGuncelle(){
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
-function htmlEsc(s){
-  return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-var TIP_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
-
-function ilerletTiklandi(k){
-  try{
-    var secenekler = ReportsData.SONRAKI_ASAMALAR[k.tip];
-    if(!secenekler) return;
-    var etiketler = secenekler.map(function(s){ return TIP_ETIKET[s]; }).join(" veya ");
-    if(!confirm(k.musteri + " için " + (k.urunler||[]).length + " ürün düzenlenmek üzere Sepet'e yüklenecek" + (secenekler.length>1 ? " (Gönder'de " + etiketler + " seçebileceksin)." : (" ve " + etiketler + " olarak ilerletilecek.")) + " Devam edilsin mi?")) return;
-    ReportsData.revizeBaslat(k);
-  }catch(e){ hataGoster("İlerletilemedi: " + e.message); }
-}
-
-var BEKLEMEDE_DAHIL_ANAHTAR = "weiconv2_beklemede_dahil_et";
-var sonAcilanAy = null;
-
-function ayDetayiniAc(ayVerisi){
-  try{
-    if(!ayVerisi) return;
-    sonAcilanAy = ayVerisi;
-    var toggle = document.getElementById("ayDetayBeklemedeToggle");
-    if(toggle) toggle.checked = localStorage.getItem(BEKLEMEDE_DAHIL_ANAHTAR) === "1";
-    ayDetayiniCiz();
-  }catch(e){ hataGoster("Ay detayı açılamadı: " + e.message); }
-}
-
-function ayDetayiniCiz(){
-  try{
-    var ayVerisi = sonAcilanAy;
-    if(!ayVerisi) return;
-    var beklemedeDahil = localStorage.getItem(BEKLEMEDE_DAHIL_ANAHTAR) === "1";
-    // Sadece SİPARİŞ'ler sayılır ve listelenir — Numune/Fiyat Teklifi/
-    // Proforma bu ekranda gösterilmez (hepsi zaten "Son İşlemler"de
-    // ayrıca görünüyor). "AY TOPLAMI" gerçek satış hacmini yansıtsın diye.
-    // HATA DÜZELTME (WG.070926.2120.191): "beklemede" siparişler gerçek
-    // satış değildir, varsayılan olarak hiçbir toplama dahil edilmez
-    // (permanent kural). YENİ (WG.070926.194): "Beklemede dahil et"
-    // anahtarı açıksa, sadece bu ekranda geçici olarak gösterilir.
-    var kayitlarBuAy = ReportsData.sonIslemler().filter(function(k){
-      if(!k.tarih) return false;
-      if(k.tip !== "siparis") return false;
-      if(k.durum === "beklemede" && !beklemedeDahil) return false;
-      var parca = k.tarih.split(" ");
-      return (parca[1]||"")===ayVerisi.ayAd && (parca[2]||"")===ayVerisi.yil;
-    });
-    if(kayitlarBuAy.length === 0){
-      alert("Bu ayda sipariş kaydı yok.");
-      return;
-    }
-
-    var ayToplamEuro = kayitlarBuAy.reduce(function(s,k){
-      return s + (k.urunler||[]).reduce(function(ss,u){ return ss+(u.toplamEuro||0); }, 0);
-    }, 0);
-    var ayToplamTl = kayitlarBuAy.reduce(function(s,k){
-      var kKuru = k.kur || (parseFloat(localStorage.getItem("weicon_kur"))||0);
-      return s + (k.urunler||[]).reduce(function(ss,u){ return ss+((u.toplamEuro||0)*kKuru); }, 0);
-    }, 0);
-
-    document.getElementById("ayDetayBaslik").textContent = "📅 " + ayVerisi.ayAd + " " + ayVerisi.yil + " Kayıtları";
-    document.getElementById("ayDetayToplamEtiket").textContent = "🧮 SİPARİŞ TOPLAMI (" + kayitlarBuAy.length + " kayıt)";
-    document.getElementById("ayDetayToplamDeger").textContent = fmt(ayToplamEuro) + " EURO · ≈ " + fmt(ayToplamTl) + " TL";
-
-    kayitlarBuAy.forEach(function(k){
-      k._tutar = (k.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
-    });
-    var gruplar = tlGrupla(kayitlarBuAy);
-    document.getElementById("ayDetayListesi").innerHTML = tlListeHTML(gruplar, true);
-
-    document.getElementById("ayDetayListesi").querySelectorAll(".tl-kart").forEach(function(el){
-      el.onclick = function(){
-        var k = kayitlarBuAy[parseInt(this.getAttribute("data-i"), 10)];
-        localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:k.tip, ts:k.ts}));
-        window.location.href = "belge-onizleme.html";
-      };
-    });
-
-    document.getElementById("ayDetayBolumu").hidden = false;
-    document.getElementById("ayDetayBolumu").scrollIntoView({behavior:"smooth", block:"start"});
-  }catch(e){ hataGoster("Ay detayı açılamadı: " + e.message); }
-}
-
 function fmt(n){
   return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
+function ayinaGit(ayVerisi){
+  try{
+    localStorage.setItem("weiconv2_goruntulenen_ay", JSON.stringify(ayVerisi));
+    window.location.href = "ay-detay.html";
+  }catch(e){ hataGoster("Ay detayına gidilemedi: " + e.message); }
+}
+
 function istatistikleriCiz(){
   try{
-    var buAy = ReportsData.ayToplami(0);
-    var gecenAy = ReportsData.ayToplami(1);
-    document.getElementById("istBuAyToplam").textContent = fmt(buAy.toplam) + " EUR";
-    document.getElementById("istBuAySiparisSayisi").textContent = buAy.sayi + " sipariş";
-    document.getElementById("istGecenAyToplam").textContent = fmt(gecenAy.toplam) + " EUR";
-    document.getElementById("istGecenAySiparisSayisi").textContent = gecenAy.sayi + " sipariş";
-
     var ozet = ReportsData.aylikPrimOzeti12();
     var genelToplam=0, genelToplamTl=0, genelPrim=0, genelPrimTl=0;
     document.getElementById("istAylikListe").innerHTML = ozet.aylar.map(function(a, i){
@@ -149,80 +67,9 @@ function istatistikleriCiz(){
     }
 
     document.getElementById("istAylikListe").querySelectorAll("tr").forEach(function(tr, i){
-      tr.onclick = function(){ ayDetayiniAc(ozet.aylar[i]); };
+      tr.onclick = function(){ ayinaGit(ozet.aylar[i]); };
     });
   }catch(e){ hataGoster("İstatistikler çizilemedi: " + e.message); }
-}
-
-// v3 — tarih gruplu tasarım (05.09.2026). Bu sabitler gecmis-render.js,
-// son-islemler-render.js, satis-listesi-render.js ve
-// kacan-satislar-render.js'de birebir aynı tutulmalı.
-var TIP_META = {
-  siparis:  {rozet:"SİP",   rozetBg:"#e6f1fb", rozetRenk:"#0c447c", serit:"#185fa5", kodRenk:"#003a70"},
-  teklif:   {rozet:"F.TEK", rozetBg:"#e1f5ee", rozetRenk:"#0e6b58", serit:"#28a745", kodRenk:"#1a7431"},
-  proforma: {rozet:"P.FAT", rozetBg:"#f3e8fb", rozetRenk:"#6a1b9a", serit:"#8e44ad", kodRenk:"#5c1680"},
-  numune:   {rozet:"NUM",   rozetBg:"#faeeda", rozetRenk:"#854f0b", serit:"#b7601f", kodRenk:"#7a4008"}
-};
-var RVZ_META = {rozet:"RVZ", rozetBg:"#faeeda", rozetRenk:"#854f0b", serit:"#b7601f"};
-var KACAN_META = {rozet:"KAÇTI", rozetBg:"#fdecea", rozetRenk:"#a32d2d", serit:"#c0392b"};
-var KANAL_HARF = {mail:"M", whatsapp:"W"};
-var KANAL_RENK = {mail:"#185fa5", whatsapp:"#128C7E"};
-var GUNLER_UZUN = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
-var AYLAR_UZUN = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-var OK_SVG = "<svg width='8' height='12' viewBox='0 0 20 32' fill='none'><path d='M4 4 L16 16 L4 28' stroke='#e24b4a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/></svg>";
-function kanalHarfHTML(kanal){
-  if(!kanal || !KANAL_HARF[kanal]) return "";
-  return "<span class='tl-kanal-harf' style='color:" + KANAL_RENK[kanal] + ";'>" + KANAL_HARF[kanal] + "</span>";
-}
-function gunAnahtari(ts){
-  var d = new Date(ts);
-  return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate();
-}
-function gunBasligi(ts){
-  var d = new Date(ts);
-  return d.getDate() + " " + AYLAR_UZUN[d.getMonth()] + " " + d.getFullYear() + " • " + GUNLER_UZUN[d.getDay()];
-}
-function cariSatirHTML(kod, isim, sehir){
-  return "<span class='cari-kod'>" + htmlEsc(kod||"—") + "</span>"
-    + "<span class='cari-ayrac'> - </span>"
-    + "<span class='cari-isim'>" + htmlEsc(isim||"") + "</span>"
-    + (sehir ? "<span class='cari-ayrac'> - </span><span class='cari-sehir'>" + htmlEsc(sehir) + "</span>" : "");
-}
-function tlKartHTML(k, gosterIsim){
-  var kacanMi = k.durum === "kacan";
-  var revizeMi = !!k.revizeZamani;
-  var meta = TIP_META[k.tip] || TIP_META.siparis;
-  var rozetMeta = kacanMi ? KACAN_META : (revizeMi ? RVZ_META : meta);
-  var kod = k.kod || meta.rozet;
-  return "<div class='tl-kart' data-i='" + k._i + "'>"
-    + "<div class='tl-serit' style='background:" + rozetMeta.serit + ";'></div>"
-    + "<div class='tl-govde'>"
-    + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
-    + "<div class='tl-alt'>"
-    + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
-    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " EURO</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
-    + "</div>"
-    + (k.durum==="beklemede" ? "<div class='tl-durum-ek tl-durum-ek--beklemede'>⏳ Beklemede" + (k.beklemedeNot ? ": " + htmlEsc(k.beklemedeNot) : "") + "</div>" : "")
-    + "</div>"
-    + "</div>";
-}
-function tlGrupla(liste){
-  var gruplar = [], harita = {};
-  liste.forEach(function(k, i){
-    k._i = i;
-    var anahtar = gunAnahtari(k.ts);
-    if(!harita[anahtar]){ harita[anahtar] = {ts:k.ts, kayitlar:[]}; gruplar.push(harita[anahtar]); }
-    harita[anahtar].kayitlar.push(k);
-  });
-  return gruplar;
-}
-function tlListeHTML(gruplar, gosterIsim){
-  return gruplar.map(function(g){
-    var toplamGun = g.kayitlar.reduce(function(s,k){ return s + k._tutar; }, 0);
-    var kartlar = g.kayitlar.map(function(k){ return tlKartHTML(k, gosterIsim); }).join("<div class='tl-arasi'></div>");
-    return "<div class='tl-grup-baslik'><span>" + gunBasligi(g.ts) + "</span><span>" + g.kayitlar.length + " işlem&nbsp;&nbsp;|&nbsp;&nbsp;" + fmt(toplamGun) + " EURO</span></div>"
-      + "<div class='tl-liste-kutu'>" + kartlar + "</div>";
-  }).join("");
 }
 
 window.addEventListener("error", function(ev){
@@ -232,9 +79,6 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-  // Akıllı Geri: Raporlar (raporlar.html) üzerinden gerçekten buraya
-  // gelindiyse tarayıcı geçmişinde bir adım geri gider; geçmiş yoksa
-  // (doğrudan bağlantıyla açıldıysa) Raporlar'a düşer.
   (function(){
     var btn = document.getElementById("btnGeriAkilli");
     if(btn) btn.onclick = function(){
@@ -243,13 +87,6 @@ document.addEventListener("DOMContentLoaded", function(){
     };
   })();
 
-  document.getElementById("btnAyDetayKapat").onclick = function(){ document.getElementById("ayDetayBolumu").hidden = true; };
-  document.getElementById("ayDetayBeklemedeToggle").onchange = function(){
-    localStorage.setItem(BEKLEMEDE_DAHIL_ANAHTAR, this.checked ? "1" : "0");
-    ayDetayiniCiz();
-  };
   ReportsData.arsivDegistiginde(function(){ istatistikleriCiz(); });
-  // Firebase verisi sayfa tam yüklenmeden önce gelmiş olabilir (dinleyici
-  // kaçırmış olabilir) — bu yüzden ilk anda da bir kez elle çiziyoruz.
   istatistikleriCiz();
 });
