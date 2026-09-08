@@ -3,7 +3,7 @@
    kullanıyor: küçük, pastel zemin + renkli kenarlık + renkli başlık —
    koyu/dolgun renkli devasa kutular değil. */
 
-.sayfa { padding: 8px 14px 24px; }
+.sayfa { padding: 4px 4px 16px; }
 
 .hareketler-tile-satir {
   display: grid;

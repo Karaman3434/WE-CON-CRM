@@ -4,7 +4,7 @@
   home-style.css'in üzerine eklenir. Aynı kural: gradyan/gölge yığılması yok.
 */
 
-.sayfa { padding: 8px 14px 24px; }
+.sayfa { padding: 4px 4px 16px; }
 
 .kur-satiri {
   display: flex;

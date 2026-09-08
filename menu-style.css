@@ -1,7 +1,7 @@
 /* menu-style.css — eski uygulamanın açılır menü listesiyle BİREBİR aynı:
    satır satır, sol hizalı, alt çizgi ayraçlı, her satır kendi rengi. */
 
-.sayfa { padding: 8px 14px 24px; }
+.sayfa { padding: 4px 4px 16px; }
 
 .menu-liste {
   background: #ffffff;

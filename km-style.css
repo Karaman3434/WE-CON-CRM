@@ -1,6 +1,6 @@
 /* km-style.css — aynı kural: gradyan/gölge yığılması yok. */
 
-.sayfa { padding: 8px 14px 24px; }
+.sayfa { padding: 4px 4px 16px; }
 
 .km-form-kutu {
   border: 1px solid #e2e6ec;

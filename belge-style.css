@@ -2,7 +2,7 @@
    ağırlıklı yazılar (kalın değil). Cari Bilgi ve Ürün Tablosu artık İKİ AYRI
    kart (.belge-kart), aralarında ince bir boşluk (.belge-kart-ayrac). */
 
-.sayfa { padding: 8px 14px 24px; }
+.sayfa { padding: 4px 4px 16px; }
 
 /* Genel amaçlı temiz kart — Cari Bilgi ve Ürün Tablosu ayrı ayrı bunu kullanır. */
 .belge-kart {

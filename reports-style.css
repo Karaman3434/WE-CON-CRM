@@ -1,6 +1,6 @@
 /* reports-style.css — aynı kural: gradyan/gölge yığılması yok. */
 
-.sayfa { padding: 8px 14px 24px; }
+.sayfa { padding: 4px 4px 16px; }
 
 /* Son İşlemler — eski uygulamadaki merkezi, altı yeşil çizgili başlık */
 .son-islemler-baslik {
@@ -809,7 +809,7 @@
 }
 .tl-kart { display: flex; align-items: stretch; background: #ffffff; cursor: pointer; }
 .tl-serit { width: 4px; flex-shrink: 0; }
-.tl-govde { flex: 1; min-width: 0; padding: 10px 8px; }
+.tl-govde { flex: 1; min-width: 0; padding: 5px 4px; }
 .tl-ust { font-size: 14px; }
 .tl-isim { font-weight: 800; color: #111827; }
 .tl-sehir { color: #5f6b7a; font-weight: 500; }

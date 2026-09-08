@@ -2,7 +2,7 @@
    (turuncu iskonto kutuları hariç — onlar kasıtlı olarak biraz daha
    büyük, sayı boyu %20 daha büyük). */
 
-.sayfa { padding: 8px 14px 24px; background: #f4f6f9; }
+.sayfa { padding: 4px 4px 16px; background: #f4f6f9; }
 
 .arama-kutusu { position: relative; margin-bottom: 8px; }
 .arama-kutusu input { width: 100%; border: 2px solid #1f9d55; border-radius: 999px; padding: 12px 40px 12px 16px; font-size: 14px; background: #fff; }
