@@ -48,20 +48,35 @@ var tumMusterilerModuAktif = false;
 var musteriSonIslemHaritasi = null; // musteriId -> son işlem ts (sıralama için)
 var musteriSonIslemDetayHaritasi = null; // musteriId -> {tip, durum, ts}
 var musteriSonBelgeTemasHaritasi = null; // musteriId -> {harf, ts} (mail/whatsapp gönderimi)
+// HATA DÜZELTME (WG.080926.196): bazı eski/aktarılmış sipariş-teklif
+// kayıtlarında musteriId hiç yok (sadece isim var) — bu kayıtlar id
+// bazlı haritalarda hiç görünmüyor, müşteri listesinde yakın zamanlı
+// işlemi olan müşteriler için bile yanlışlıkla "İşlem yok"/"Temas yok"
+// gösteriliyordu. Bu üç harita, musteriId'si OLMAYAN kayıtlar için
+// isim bazlı YEDEK arama sağlar.
+var musteriSonIslemHaritasiAd = null;
+var musteriSonIslemDetayHaritasiAd = null;
+var musteriSonBelgeTemasHaritasiAd = null;
 function sonIslemHaritasiniHazirla(){
   var ts = {}, detay = {}, belgeTemas = {};
+  var tsAd = {}, detayAd = {}, belgeTemasAd = {};
   try{
     if(typeof ReportsData !== "undefined"){
       ReportsData.sonIslemler().forEach(function(k){
-        if(!k.musteriId) return;
-        if(!ts[k.musteriId] || k.ts > ts[k.musteriId]) ts[k.musteriId] = k.ts;
-        if(!detay[k.musteriId] || k.ts > detay[k.musteriId].ts){
-          detay[k.musteriId] = {tip:k.tip, durum:k.durum, ts:k.ts};
+        var adAnahtar = (k.musteri||"").toLocaleLowerCase("tr-TR");
+        var hedefTs = k.musteriId ? ts : (adAnahtar ? tsAd : null);
+        var hedefDetay = k.musteriId ? detay : (adAnahtar ? detayAd : null);
+        var hedefBelgeTemas = k.musteriId ? belgeTemas : (adAnahtar ? belgeTemasAd : null);
+        var anahtar = k.musteriId || adAnahtar;
+        if(!hedefTs) return;
+        if(!hedefTs[anahtar] || k.ts > hedefTs[anahtar]) hedefTs[anahtar] = k.ts;
+        if(!hedefDetay[anahtar] || k.ts > hedefDetay[anahtar].ts){
+          hedefDetay[anahtar] = {tip:k.tip, durum:k.durum, ts:k.ts};
         }
         if(k.kanal === "mail" || k.kanal === "whatsapp"){
           var harf = k.kanal === "mail" ? "M" : "W";
-          if(!belgeTemas[k.musteriId] || k.ts > belgeTemas[k.musteriId].ts){
-            belgeTemas[k.musteriId] = {harf:harf, ts:k.ts};
+          if(!hedefBelgeTemas[anahtar] || k.ts > hedefBelgeTemas[anahtar].ts){
+            hedefBelgeTemas[anahtar] = {harf:harf, ts:k.ts};
           }
         }
       });
@@ -70,9 +85,14 @@ function sonIslemHaritasiniHazirla(){
   musteriSonIslemHaritasi = ts;
   musteriSonIslemDetayHaritasi = detay;
   musteriSonBelgeTemasHaritasi = belgeTemas;
+  musteriSonIslemHaritasiAd = tsAd;
+  musteriSonIslemDetayHaritasiAd = detayAd;
+  musteriSonBelgeTemasHaritasiAd = belgeTemasAd;
 }
 function sonAktiviteZamani(m){
+  var adAnahtar = (m.ad||"").toLocaleLowerCase("tr-TR");
   var sonIslem = (musteriSonIslemHaritasi && m.id) ? musteriSonIslemHaritasi[m.id] : null;
+  if(sonIslem == null && musteriSonIslemHaritasiAd) sonIslem = musteriSonIslemHaritasiAd[adAnahtar];
   var aday = [m.sonZiyaret||0, sonIslem||0];
   return Math.max.apply(null, aday);
 }
@@ -93,7 +113,9 @@ function sonTemasBilgisi(m){
     if(z.tur === "ziyaret") adaylar.push({harf:"Z", ts:z.ts||0});
     else if(z.tur === "temas") adaylar.push({harf:"T", ts:z.ts||0});
   });
+  var adAnahtar = (m.ad||"").toLocaleLowerCase("tr-TR");
   var belgeTemas = (musteriSonBelgeTemasHaritasi && m.id) ? musteriSonBelgeTemasHaritasi[m.id] : null;
+  if(!belgeTemas && musteriSonBelgeTemasHaritasiAd) belgeTemas = musteriSonBelgeTemasHaritasiAd[adAnahtar];
   if(belgeTemas) adaylar.push(belgeTemas);
   if(!adaylar.length) return null;
   adaylar.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
@@ -104,7 +126,9 @@ function sonTemasBilgisi(m){
 // beklemede olan sipariş için BKS. Temas rozeti gibi tarihi de gösterir.
 var ISLEM_HARF = {numune:"N", teklif:"FT", proforma:"PF"};
 function sonIslemBilgisi(m){
+  var adAnahtar = (m.ad||"").toLocaleLowerCase("tr-TR");
   var kayit = (musteriSonIslemDetayHaritasi && m.id) ? musteriSonIslemDetayHaritasi[m.id] : null;
+  if(!kayit && musteriSonIslemDetayHaritasiAd) kayit = musteriSonIslemDetayHaritasiAd[adAnahtar];
   if(!kayit) return null;
   var harf = kayit.tip === "siparis"
     ? (kayit.durum === "beklemede" ? "BKS" : "S")
@@ -228,5 +252,11 @@ document.addEventListener("DOMContentLoaded", function(){
   };
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   CustomerData.listeDegistiginde(listeyiCiz);
+  // HATA DÜZELTME (WG.080926.196): Temas/İşlem rozetleri ReportsData'ya
+  // bağlı ama liste sadece CustomerData değiştiğinde yeniden çiziliyordu.
+  // Sayfa ilk açıldığında ReportsData henüz yüklenmemiş olabiliyordu —
+  // veri sonradan gelince liste hiç tazelenmiyor, rozetler kalıcı olarak
+  // "yok" görünüyordu. Artık ReportsData değiştiğinde de yeniden çiziliyor.
+  if(typeof ReportsData !== "undefined") ReportsData.arsivDegistiginde(listeyiCiz);
   listeyiCiz();
 });
