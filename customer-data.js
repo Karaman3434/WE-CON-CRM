@@ -135,10 +135,17 @@ var CustomerData = (function(){
   // değişmez. Sadece id yokken (eski çağrılar / id'siz eski kayıtlar) isme
   // göre arar. Bu sayede müşteri adı o an sayfada güncel değilse (yeniden
   // adlandırma, senkron gecikmesi vb.) kayıt "bulunamadı" diye kaybolmaz.
+  // GÜVENLİK KONTROLÜ (WG.080926.196): eğer aynı kod (id) birden fazla
+  // müşteride kayıtlıysa, ilk bulunanı sessizce güncellemek YANLIŞ
+  // müşteriyi değiştirebilir — bunun yerine açık bir hata fırlatılır.
   function musteriIndexBul(tazeListe, musteriAd, musteriId){
     if(musteriId){
-      var idIdx = tazeListe.findIndex(function(m){ return m.id === musteriId; });
-      if(idIdx !== -1) return idIdx;
+      var eslesenler = [];
+      tazeListe.forEach(function(m, i){ if(m.id === musteriId) eslesenler.push(i); });
+      if(eslesenler.length > 1){
+        throw new Error("'" + musteriId + "' kodu " + eslesenler.length + " farklı müşteride kayıtlı — hangisinin güncelleneceği belirsiz. Lütfen müşteri kodlarını kontrol edin.");
+      }
+      if(eslesenler.length === 1) return eslesenler[0];
     }
     return tazeListe.findIndex(function(m){ return (m.ad||"").toLocaleLowerCase("tr-TR")===(musteriAd||"").toLocaleLowerCase("tr-TR"); });
   }
