@@ -180,7 +180,7 @@
   background: #f7f9fc;
   border: 1px solid #d5dce6;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 7px 8px;
   margin-bottom: 8px;
 }
 .birlestir-arama-sonuc-ad { font-weight: 800; font-size: 14px; color: #003a70; }
@@ -480,7 +480,7 @@
 
 .yetkili-karti {
   border-bottom: 1px solid #e2e6ec;
-  padding: 8px 0;
+  padding: 5px 0;
 }
 .yetkili-ust-satir {
   display: flex;
@@ -565,7 +565,7 @@
 .gecmis-karti {
   border: 1px solid #e2e6ec;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 7px 8px;
   margin-bottom: 8px;
   background: #fafbfc;
 }
@@ -573,7 +573,7 @@
 .gorev-karti {
   border: 1px solid #e2e6ec;
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 6px 7px;
   margin-bottom: 8px;
   background: #ffffff;
 }

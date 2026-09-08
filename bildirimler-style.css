@@ -12,7 +12,7 @@
   background: #f7f9fc;
   border: 1px solid #d5dce6;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 7px 8px;
   margin-bottom: 10px;
 }
 .beklemede-hatirlat-karti {
@@ -20,7 +20,7 @@
   border: 1px solid #f0d9ad;
   border-left: 6px solid #854f0b;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 7px 8px;
   margin-bottom: 10px;
   cursor: pointer;
 }
@@ -69,7 +69,7 @@
   background: #fdf1e8;
   border: 1px solid #f2d9c2;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 7px 8px;
   margin-bottom: 10px;
   cursor: pointer;
   display: flex;
@@ -94,7 +94,7 @@
   background: #fdf1e8;
   border: 1px solid #f2d9c2;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 7px 8px;
   margin-bottom: 10px;
 }
 .gorev-bildirim-musteri { font-size: 15px; font-weight: 900; color: #222222; margin-bottom: 5px; }
