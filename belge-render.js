@@ -315,15 +315,23 @@ function akilliGeriBagla(yedekSayfa){
 var duzenlenenKayit = null;
 var duzenlemeSilinenIndeksler = [];
 
+var duzenlemeUrunDegisiklikleri = {}; // { i: {ad, berta, abas} } — "🔄 Ürünü Değiştir" ile seçilenler
+
 function duzenlemeAc(k){
   duzenlenenKayit = k;
   duzenlemeSilinenIndeksler = [];
+  duzenlemeUrunDegisiklikleri = {};
   var kapsayici = document.getElementById("duzenleUrunListesi");
   kapsayici.innerHTML = (k.urunler||[]).map(function(u, i){
     return "<div class='duzenle-urun-satir' id='duzenleSatir-" + i + "'>"
       + "<div class='duzenle-urun-baslik-satir'>"
-      + "<div class='duzenle-urun-ad'>" + htmlEsc(u.ad) + "</div>"
+      + "<div class='duzenle-urun-ad' id='duzenleUrunAd-" + i + "'>" + htmlEsc(u.ad) + "</div>"
       + "<button class='duzenle-urun-sil-btn' data-urun-sil-i='" + i + "'>🗑️</button>"
+      + "</div>"
+      + "<button type='button' class='duzenle-urun-degistir-link' data-degistir-i='" + i + "'>🔄 Ürünü Değiştir</button>"
+      + "<div class='duzenle-urun-arama' id='duzenleUrunArama-" + i + "' hidden>"
+      + "<input type='text' class='duzenle-urun-arama-input' data-arama-i='" + i + "' placeholder='Ürün adı veya kod ara...'>"
+      + "<div class='duzenle-urun-arama-sonuc' id='duzenleUrunAramaSonuc-" + i + "'></div>"
       + "</div>"
       + "<div class='duzenle-alan-grid'>"
       + "<div class='duzenle-alan'><label class='duzenle-etiket'>Liste Fiyat</label><input type='number' step='0.01' data-alan='listeFiyat' data-i='" + i + "' value='" + (u.listeFiyat||0) + "'></div>"
@@ -347,6 +355,45 @@ function duzenlemeAc(k){
     };
   });
 
+  // "🔄 Ürünü Değiştir" (WG.090926.196): yanlış girilmiş bir ürünü,
+  // kayıt tarihi (ts) değişmeden başka bir ürünle değiştirmek için.
+  kapsayici.querySelectorAll(".duzenle-urun-degistir-link").forEach(function(link){
+    link.onclick = function(){
+      var i = this.getAttribute("data-degistir-i");
+      var arama = document.getElementById("duzenleUrunArama-" + i);
+      arama.hidden = !arama.hidden;
+      if(!arama.hidden) arama.querySelector(".duzenle-urun-arama-input").focus();
+    };
+  });
+  kapsayici.querySelectorAll(".duzenle-urun-arama-input").forEach(function(input){
+    input.addEventListener("input", function(){
+      var i = this.getAttribute("data-arama-i");
+      var sonucKutusu = document.getElementById("duzenleUrunAramaSonuc-" + i);
+      var q = this.value.trim();
+      if(q.length < 2 || typeof ProductData === "undefined"){ sonucKutusu.innerHTML = ""; return; }
+      var sonuclar = ProductData.ara(q).slice(0, 8);
+      var aramaCache = {};
+      sonucKutusu.innerHTML = sonuclar.map(function(s, sIdx){
+        var b = ProductData.urunBilgisi(s.item);
+        aramaCache[sIdx] = b;
+        return "<div class='duzenle-urun-arama-satir' data-sidx='" + sIdx + "'>"
+          + "<div class='duzenle-urun-arama-ad'>" + htmlEsc(b.ad) + "</div>"
+          + "<div class='duzenle-urun-arama-kod'>" + htmlEsc(b.berta) + " - " + htmlEsc(b.abas) + " · Liste: " + fmt(b.fiyat) + " EURO</div>"
+          + "</div>";
+      }).join("") || "<div class='duzenle-urun-arama-bos'>Sonuç yok.</div>";
+      sonucKutusu.querySelectorAll(".duzenle-urun-arama-satir").forEach(function(satir){
+        satir.onclick = function(){
+          var b = aramaCache[this.getAttribute("data-sidx")];
+          if(!b) return;
+          duzenlemeUrunDegisiklikleri[i] = {ad:b.ad, berta:b.berta, abas:b.abas};
+          document.getElementById("duzenleUrunAd-" + i).textContent = b.ad;
+          document.querySelector("[data-alan='listeFiyat'][data-i='"+i+"']").value = b.fiyat;
+          document.getElementById("duzenleUrunArama-" + i).hidden = true;
+        };
+      });
+    });
+  });
+
   document.getElementById("duzenleOverlay").hidden = false;
 }
 
@@ -361,8 +408,11 @@ function duzenlemeKaydet(){
       var adet = parseFloat(document.querySelector("[data-alan='adet'][data-i='"+i+"']").value)||1;
       var dipFiyat = parseFloat(document.querySelector("[data-alan='dipFiyat'][data-i='"+i+"']").value)||0;
       var iskontoluFiyat = listeFiyat - (listeFiyat*iskonto/100);
+      var degisen = duzenlemeUrunDegisiklikleri[i];
       yeniUrunler.push({
-        ad: u.ad, berta: u.berta, abas: u.abas,
+        ad: degisen ? degisen.ad : u.ad,
+        berta: degisen ? degisen.berta : u.berta,
+        abas: degisen ? degisen.abas : u.abas,
         listeFiyat: listeFiyat, iskonto: iskonto, adet: adet, dipFiyat: dipFiyat,
         iskBirim: iskontoluFiyat,
         toplamEuro: iskontoluFiyat * adet
