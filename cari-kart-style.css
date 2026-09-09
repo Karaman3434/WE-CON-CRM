@@ -295,8 +295,8 @@
 }
 .ck-kart + .ck-kart { border-top: 1px solid #eef1f5; }
 .ck-kart-bos { padding: 10px 12px; color: #8b95a1; font-style: italic; font-size: 12px; }
-.ck-kart-ust { font-size: 13.5px; font-weight: 450; color: #1a2a3a; }
-.ck-kart-alt { font-size: 11.5px; color: #556170; margin-top: 3px; line-height: 1.4; white-space: pre-line; font-weight: 450; }
+.ck-kart-ust { font-size: 13.5px; font-weight: 500; color: #1a2a3a; }
+.ck-kart-alt { font-size: 11.5px; color: #556170; margin-top: 3px; line-height: 1.4; white-space: pre-line; font-weight: 500; }
 
 /* İşlem için seçim (WG.090926.196): birden fazla kayıt varsa hangisinin
    bu işlemde kullanılacağını işaretlemek için tik. */
