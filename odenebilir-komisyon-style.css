@@ -162,8 +162,8 @@
   justify-content: space-between;
   align-items: center;
 }
-.ok-gecmis-tarih { font-size: 12px; font-weight: 900; color: #003a70; }
-.ok-gecmis-toplam { font-size: 10px; color: #556170; font-weight: 700; margin-top: 2px; }
+.ok-gecmis-tarih { font-size: 13.5px; font-weight: 500; color: #003a70; }
+.ok-gecmis-toplam { font-size: 10px; color: #556170; font-weight: 500; margin-top: 2px; }
 .ok-gecmis-sil-btn {
   background: none;
   border: none;

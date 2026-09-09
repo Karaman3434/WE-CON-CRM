@@ -43,11 +43,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 13.5px;
+  font-weight: 500;
 }
 .tg-gun-etiket {
   margin-top: 3px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 500;
   color: #a0793d;
 }
 

@@ -503,9 +503,9 @@
   cursor: pointer;
 }
 .gorev-bilgi { flex: 1; min-width: 0; }
-.gorev-musteri { font-size: 14px; font-weight: 800; color: #003a70; }
-.gorev-aciklama { font-size: 13px; color: #333; margin-top: 2px; }
-.gorev-zaman { font-size: 11px; color: #44494f; margin-top: 2px; }
+.gorev-musteri { font-size: 13.5px; font-weight: 500; color: #003a70; }
+.gorev-aciklama { font-size: 12px; color: #333; margin-top: 2px; }
+.gorev-zaman { font-size: 10px; color: #44494f; margin-top: 2px; }
 .gorev-karti.tamamlandi .gorev-aciklama,
 .gorev-karti.tamamlandi .gorev-musteri {
   text-decoration: line-through;
