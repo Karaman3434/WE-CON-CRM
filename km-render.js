@@ -6,6 +6,15 @@
   Kayıtları" gerçek tablo olarak açılıp kapanabilir + Excel'e aktarılabilir.
 */
 
+// "YYYY-MM-DD" anahtarını "GG.AA.YYYY" gösterim metnine çevirir — Tarih
+// hücresi elle düzenlenince, kullanıcının yazdığı yeni metin gerçekten
+// değişmiş mi diye karşılaştırmak için kullanılıyor.
+function tarihMetniAyikla(anahtar){
+  var p = (anahtar||"").split("-");
+  if(p.length !== 3) return "";
+  return p[2] + "." + p[1] + "." + p[0];
+}
+
 function hataGoster(mesaj){
   console.error(mesaj);
   if(typeof HataLog !== "undefined") HataLog.kaydet(mesaj);
@@ -148,7 +157,7 @@ function tabloyuCiz(){
       // başlangıç, altta bitiş); tek saat varsa tek satır.
       var saatGosterim = (k.saat||"-").split("-").map(function(s){ return s.trim(); }).join("\n");
       return "<tr" + satirSinifi + " data-anahtar='" + k.anahtar + "'>"
-        + "<td class='km-td-tarih'><div class='km-tarih-gun'>" + tarihGosterim + "</div><div class='km-tarih-adi'>" + gunAdiGosterim + "</div></td>"
+        + "<td class='km-td-tarih'><div class='km-tarih-gun' contenteditable='true' data-alan='tarih'>" + tarihGosterim + "</div><div class='km-tarih-adi'>" + gunAdiGosterim + "</div></td>"
         + "<td class='km-td-saat' contenteditable='true' data-alan='saat'>" + saatGosterim + "</td>"
         + "<td class='km-td-metin' contenteditable='true' data-alan='guzergah'>" + (k.guzergah||"-") + "</td>"
         + "<td class='km-td-metin' contenteditable='true' data-alan='ziyaret'>" + (k.ziyaretYerleri||"-") + "</td>"
@@ -162,12 +171,27 @@ function tabloyuCiz(){
     document.getElementById("kmAyToplamIs").textContent = toplamIs + " km";
     document.getElementById("kmAyToplamOzel").textContent = toplamOzel + " km";
 
-    govde.querySelectorAll("td[contenteditable]").forEach(function(td){
+    govde.querySelectorAll("[contenteditable]").forEach(function(td){
       td.addEventListener("blur", function(){
         var tr = this.closest("tr");
         var anahtar = tr.getAttribute("data-anahtar");
         var alan = this.getAttribute("data-alan");
         var deger = this.textContent.trim();
+        // Tarih hücresi diğerlerinden farklı: bir "alan" değil, kaydın
+        // kendi anahtarı (Firebase'de kayıt tarihe göre saklanıyor) — bu
+        // yüzden değer güncellemesi değil, kaydı yeni tarihe TAŞIMA işlemi.
+        if(alan === "tarih"){
+          if(deger === tarihMetniAyikla(anahtar)) return; // değişmemiş
+          KmData.tarihiDegistir(anahtar, deger, function(basarili, err){
+            if(!basarili){
+              hataGoster("Tarih değiştirilemedi: " + (err && err.message ? err.message : err));
+              tabloyuCiz(); // eski tarihe geri döndür
+              return;
+            }
+            tabloyuCiz(); // satır yeni tarihiyle/sırasıyla yeniden çizilir
+          });
+          return;
+        }
         // Saat hücresi iki satır (başlangıç/bitiş) olarak gösteriliyor —
         // kaydederken tekrar tek satır "09:00-18:00" formatına çeviriyoruz.
         if(alan === "saat"){

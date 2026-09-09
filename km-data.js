@@ -171,6 +171,32 @@ var KmData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  // Tablodaki Tarih hücresini elle değiştirmek için: kayıt Firebase'de
+  // tarihe göre (YYYY-MM-DD) anahtarlanıyor, yani "tarihi değiştirmek"
+  // aslında kaydı eski anahtardan yeni anahtara TAŞIMAK demek. Hedef
+  // tarihte zaten bir kayıt varsa üzerine yazılmaz, hata döner.
+  function tarihiDegistir(eskiAnahtar, yeniTarihGosterim, geriBildir){
+    try{
+      var parca = (yeniTarihGosterim||"").trim().split(".");
+      if(parca.length !== 3){ geriBildir(false, "Tarih GG.AA.YYYY formatında olmalı (örn. 10.09.2026)."); return; }
+      var gun = parseInt(parca[0],10), ay = parseInt(parca[1],10), yil = parseInt(parca[2],10);
+      if(!gun || !ay || !yil || yil < 2000 || yil > 2100){ geriBildir(false, "Geçersiz tarih."); return; }
+      var d = new Date(yil, ay-1, gun);
+      if(d.getFullYear()!==yil || d.getMonth()!==ay-1 || d.getDate()!==gun){ geriBildir(false, "Geçersiz tarih."); return; }
+      var yeniAnahtar = tarihAnahtari(d);
+      if(yeniAnahtar === eskiAnahtar){ geriBildir(true); return; }
+      if(kayitlar[yeniAnahtar]){ geriBildir(false, "Bu tarihte (" + yeniTarihGosterim + ") zaten başka bir kayıt var."); return; }
+      var mevcutVeri = kayitlar[eskiAnahtar];
+      if(!mevcutVeri){ geriBildir(false, "Taşınacak kayıt bulunamadı."); return; }
+      var db = firebase.database();
+      db.ref("kmTakip/" + yeniAnahtar).set(mevcutVeri).then(function(){
+        return db.ref("kmTakip/" + eskiAnahtar).remove();
+      }).then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
   function buAyinKayitlari(){
     var now = new Date();
     var yilAy = now.getFullYear()+"-"+("0"+(now.getMonth()+1)).slice(-2);
@@ -258,6 +284,7 @@ var KmData = (function(){
     gununKmGir: gununKmGir,
     ziyaretYerleriniKaydet: ziyaretYerleriniKaydet,
     hucreGuncelle: hucreGuncelle,
+    tarihiDegistir: tarihiDegistir,
     buAyinKayitlari: buAyinKayitlari,
     ayinKayitlari: ayinKayitlari,
     kayitliAylar: kayitliAylar,

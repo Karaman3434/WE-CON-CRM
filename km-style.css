@@ -270,6 +270,14 @@
   outline: 2px solid #ef9f27;
   background: #eaf2fc;
 }
+.km-tarih-gun[contenteditable] {
+  cursor: text;
+  border-radius: 4px;
+}
+.km-tarih-gun[contenteditable]:focus {
+  outline: 2px solid #ef9f27;
+  background: #eaf2fc;
+}
 .km-satir--bugun {
   background: #eafaf0;
 }
