@@ -320,7 +320,6 @@ function mailOnizlemeAc(){
     var TIP_ETIKET5 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
     var konu = "*** " + TIP_ETIKET5[g.tip] + " *** " + g.musteri.ad;
     document.getElementById("mailOnizlemeKonu").value = konu;
-    document.getElementById("mailOnizlemeAlici").value = document.getElementById("gonderEposta").value.trim();
     document.getElementById("mailOnizlemeMetin").textContent = document.getElementById("gonderMetin").value;
     document.getElementById("mailOnizlemeTablo").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, null);
     document.getElementById("mailOnizlemeOverlay").hidden = false;
@@ -430,7 +429,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnWhatsapp").onclick = function(){ whatsappOnizlemeAc(); };
   document.getElementById("btnEposta").onclick = function(){ mailOnizlemeAc(); };
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
-  document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
+  document.getElementById("anaTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
     document.getElementById("mailOnizlemeOverlay").hidden = true;
