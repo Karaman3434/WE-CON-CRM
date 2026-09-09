@@ -437,11 +437,34 @@ document.addEventListener("DOMContentLoaded", function(){
     return;
   }
   sonKaydedilenBelge = {kayit: kayitliBaglam.kayit, musteri: kayitliBaglam.musteri};
-  adresleriBelirle(kayitliBaglam.musteri);
-  if(kayitliBaglam.revizeMi){
-    document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
+
+  // GÜNCEL MÜŞTERİ VERİSİ (WG.090926.196): sipariş kaydedildikten SONRA
+  // Cari Kart'a eklenen/değiştirilen yetkili kişi, fatura/teslimat adresi
+  // vb. bilgiler burada eski (kayıt anındaki) görünmesin diye, müşteri
+  // kaydı ID'siyle Firebase'den bir kez tazelenir. Tek seferlik — sonradan
+  // kullanıcının MESAJ kutusuna yazdıklarını ezmez.
+  var musteriTazelendiMi = false;
+  function musteriyleDevamEt(musteri){
+    sonKaydedilenBelge.musteri = musteri;
+    adresleriBelirle(musteri);
+    if(kayitliBaglam.revizeMi){
+      document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
+    }
+    gonderKutusunuGoster(musteri, kayitliBaglam.sepet, kayitliBaglam.tip, kayitliBaglam.kur, kayitliBaglam.kdv);
   }
-  gonderKutusunuGoster(kayitliBaglam.musteri, kayitliBaglam.sepet, kayitliBaglam.tip, kayitliBaglam.kur, kayitliBaglam.kdv);
+  if(kayitliBaglam.musteri.id && typeof CustomerData !== "undefined"){
+    CustomerData.listeDegistiginde(function(){
+      if(musteriTazelendiMi) return;
+      var taze = CustomerData.musteriIdIleBul(kayitliBaglam.musteri.id);
+      if(!taze) return;
+      musteriTazelendiMi = true;
+      kayitliBaglam.musteri = taze;
+      musteriyleDevamEt(taze);
+    });
+  }
+  // Taze veri gelene kadar (veya hiç gelmezse) eldeki bilgiyle göster —
+  // taze veri gelince yukarıdaki dinleyici tekrar çizer.
+  musteriyleDevamEt(kayitliBaglam.musteri);
 
   document.getElementById("btnWhatsapp").onclick = function(){ whatsappOnizlemeAc(); };
   document.getElementById("btnEposta").onclick = function(){ mailOnizlemeAc(); };
