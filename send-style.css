@@ -28,29 +28,31 @@
   padding: 4px 10px;
   border-radius: 20px;
 }
+.gonder-alt-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
 .formu-goruntule-btn {
-  width: 100%;
   background: #eaf2fc;
   color: #003a70;
   border: 1.5px solid #3569b8;
   border-radius: 8px;
-  padding: 11px;
-  font-size: 13px;
+  padding: 11px 6px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
-  margin: 10px 0;
 }
 .geri-duzelt-btn {
-  width: 100%;
   background: #fdeaea;
   color: #c0392b;
   border: 1.5px solid #f0b8b3;
   border-radius: 8px;
-  padding: 11px;
-  font-size: 13px;
+  padding: 11px 6px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
-  margin-bottom: 14px;
 }
 
 .adres-secim-grid {
@@ -182,17 +184,15 @@
   resize: vertical;
   margin-bottom: 10px;
 }
-.gonder-alan-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.gonder-alan-grid input {
-  border: 2px solid #cbd5e1;
+.gonder-musteri-bilgi {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 13px;
+  font-weight: 700;
+  color: #2d3540;
+  margin-bottom: 10px;
 }
 .gonder-tile-satir {
   display: grid;
@@ -229,29 +229,13 @@
   border: 3px solid #1f9d55;
 }
 .gonder-tile--whatsapp .gonder-tile-baslik { color: #0e6b34; }
-.sablon-link-satir {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.sablon-link-btn {
-  background: none;
-  border: none;
-  color: #556170;
-  font-size: 11px;
-  text-decoration: underline;
-  cursor: pointer;
-  text-align: center;
-}
 .gonder-bitir-buton {
-  width: 100%;
   background: #ffffff;
   color: #556170;
   border: 2px solid #cbd5e1;
   border-radius: 8px;
-  padding: 12px;
-  font-size: 14px;
+  padding: 11px 6px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -307,17 +291,24 @@
 .btn-vazgec { background: #c0392b; color: #fff; }
 
 .tablo-kopyala-btn {
-  width: 100%;
-  margin-top: 8px;
   background: #eaf2fc;
   color: #003a70;
   border: 1.5px solid #3569b8;
   border-radius: 8px;
-  padding: 10px;
+  padding: 11px 6px;
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
+.gonder-alt-2x2 .tablo-kopyala-btn,
+.gonder-alt-2x2 .gonder-bitir-buton { font-size: 12px; }
+.tablo-kopyala-not { display: none; }
+.mail-onizleme-sheet .tablo-kopyala-btn {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 12px;
+}
+.mail-onizleme-sheet .tablo-kopyala-not { display: block; }
 .tablo-kopyala-not {
   font-size: 10px;
   color: #8a8f98;

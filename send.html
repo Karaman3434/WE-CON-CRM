@@ -16,7 +16,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.080926.1437.247">
 <link rel="stylesheet" href="cart-style.css?v=WG.080926.1513.268">
-<link rel="stylesheet" href="send-style.css?v=WG.030926.1158.98">
+<link rel="stylesheet" href="send-style.css?v=WG.090926.1133.332">
 <link rel="stylesheet" href="belge-style.css?v=WG.080926.1513.261">
 <link rel="stylesheet" href="detail-style.css?v=WG.080926.1513.263">
 </head>
@@ -41,16 +41,11 @@
   <section class="gonder-kutu" id="gonderKutu">
     <div class="gonder-baslik" id="gonderBaslikYazi">✓ Kaydedildi — İstersen müşteriye gönder</div>
 
-    <button class="formu-goruntule-btn" id="btnFormuGoruntule">👁 Formu Görüntüle</button>
-    <button type="button" class="tablo-kopyala-btn" id="anaTabloKopyalaBtn">📋 Tabloyu Resim Olarak Kopyala</button>
-    <div id="tamOnizlemeAlani" hidden></div>
-    <button class="geri-duzelt-btn" id="btnGeriDuzelt">‹ Geri — Sepete Dön ve Düzelt</button>
+    <div class="gonder-musteri-bilgi">👤 Gönderilecek: <b id="gonderMusteriAdi">—</b></div>
 
     <textarea id="gonderMetin" rows="6"></textarea>
-    <div class="gonder-alan-grid">
-      <input type="tel" id="gonderTelefon" placeholder="Telefon (WhatsApp için)">
-      <input type="email" id="gonderEposta" placeholder="E-posta">
-    </div>
+    <input type="tel" id="gonderTelefon" hidden>
+    <input type="email" id="gonderEposta" hidden>
     <div class="gonder-tile-satir">
       <button class="gonder-tile gonder-tile--mail" id="btnEposta">
         <span class="gonder-tile-ikon">📧</span>
@@ -61,11 +56,14 @@
         <span class="gonder-tile-baslik">WHATSAPP GÖNDER</span>
       </button>
     </div>
-    <div class="sablon-link-satir">
-      <button class="sablon-link-btn" id="btnEpostaSablon">✉️ şablonu uygula</button>
-      <button class="sablon-link-btn" id="btnWhatsappSablon">📱 şablonu uygula</button>
+
+    <div class="gonder-alt-2x2">
+      <button class="formu-goruntule-btn" id="btnFormuGoruntule">👁 Formu Görüntüle</button>
+      <button type="button" class="tablo-kopyala-btn" id="anaTabloKopyalaBtn">📋 Tabloyu Resim Olarak Kopyala</button>
+      <button class="geri-duzelt-btn" id="btnGeriDuzelt">‹ Geri — Sepete Dön ve Düzelt</button>
+      <button class="gonder-bitir-buton" id="btnGonderBitir">Ana Sayfa'ya Dön</button>
     </div>
-    <button class="gonder-bitir-buton" id="btnGonderBitir">Ana Sayfa'ya Dön</button>
+    <div id="tamOnizlemeAlani" hidden></div>
   </section>
 
   <!-- Mail Önizleme — MAIL GÖNDER'e basınca, gerçek mail açılmadan önce
@@ -137,7 +135,7 @@
 <script src="customer-data.js?v=WG.090926.1116.326"></script>
 <script src="send-data.js?v=WG.030926.1332.102"></script>
 <script src="hata-log.js?v=WG.020926.1555.92"></script>
-<script src="send-render.js?v=WG.090926.1116.325"></script>
+<script src="send-render.js?v=WG.090926.1133.331"></script>
 <script src="yarim-kalan-uyari.js?v=WG.090926.1116.327"></script>
 </body>
 </html>

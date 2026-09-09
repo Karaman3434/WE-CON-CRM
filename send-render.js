@@ -154,6 +154,7 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
     gonderBaglam = {musteri:musteri, sepet:sepet, tip:tip, kur:kur, kdv:kdv};
+    document.getElementById("gonderMusteriAdi").textContent = musteri.ad || "—";
     document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, null);
 
     // İŞLEM İÇİN SEÇİM (WG.090926.196): Yetkili kişi artık burada
@@ -464,8 +465,6 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("whatsappOnizlemeOverlay").addEventListener("click", function(ev){
     if(ev.target === this) this.hidden = true;
   });
-  document.getElementById("btnWhatsappSablon").onclick = function(){ sablonuUygulaTiklandi("whatsapp"); };
-  document.getElementById("btnEpostaSablon").onclick = function(){ sablonuUygulaTiklandi("mail"); };
   document.getElementById("btnFormuGoruntule").onclick = function(){
     var alan = document.getElementById("tamOnizlemeAlani");
     var geriBtn = document.getElementById("btnGeriDuzelt");
