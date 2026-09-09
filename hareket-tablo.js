@@ -96,8 +96,13 @@ var HareketTablo = (function(){
   }
 
   function yetkiliSatiriHtml(isim, tel, eposta){
-    if(!isim) return "";
-    return "<div class='belge-yetkili-satir'>👤 <b>" + htmlEsc(isim) + "</b></div>";
+    if(!isim && !tel && !eposta) return "";
+    var parcalar = [];
+    if(tel) parcalar.push("📞 " + tel);
+    if(eposta) parcalar.push("✉️ " + eposta);
+    return "<div class='belge-yetkili-satir'>👤 <b>" + htmlEsc(isim||"-") + "</b>"
+      + (parcalar.length ? " — <span class='belge-yetkili-detay'>" + htmlEsc(parcalar.join(" · ")) + "</span>" : "")
+      + "</div>";
   }
 
   return {
