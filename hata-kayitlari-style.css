@@ -83,15 +83,15 @@
 }
 .hk-kart-sayfa {
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 450;
   color: #003a70;
   background: #eaf2fc;
   padding: 2px 7px;
   border-radius: 10px;
   flex-shrink: 0;
 }
-.hk-kart-saat { font-size: 10px; color: #8a94a3; font-weight: 500; flex-shrink: 0; }
-.hk-kart-mesaj { font-size: 13.5px; color: #1a1a1a; font-weight: 500; line-height: 1.4; word-break: break-word; }
+.hk-kart-saat { font-size: 10px; color: #8a94a3; font-weight: 450; flex-shrink: 0; }
+.hk-kart-mesaj { font-size: 13.5px; color: #1a1a1a; font-weight: 450; line-height: 1.4; word-break: break-word; }
 .hk-kart-ek { font-size: 10px; color: #556170; margin-top: 4px; font-style: italic; }
 .hk-kart-sil-btn {
   background: none;

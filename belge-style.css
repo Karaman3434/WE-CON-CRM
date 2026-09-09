@@ -488,7 +488,7 @@
   padding: 6px 8px;
   border: 1.5px solid;
 }
-.belge-gecmis-kart-baslik { font-size: 13.5px; font-weight: 500; }
+.belge-gecmis-kart-baslik { font-size: 13.5px; font-weight: 450; }
 .belge-gecmis-suan {
   float: right;
   background: #16a085;
@@ -498,7 +498,7 @@
   padding: 2px 7px;
   border-radius: 6px;
 }
-.belge-gecmis-kart-alt { font-size: 10px; font-weight: 500; opacity: .8; margin-top: 2px; }
+.belge-gecmis-kart-alt { font-size: 10px; font-weight: 450; opacity: .8; margin-top: 2px; }
 
 @media print {
   .app-header, .app-nav, .belge-alt-buton-satir, .belge-kapat-buton, .belge-islemler-buton, .overlay, .belge-gecmis-kutu { display: none !important; }
