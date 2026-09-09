@@ -25,8 +25,15 @@ function fmt(n){
 }
 
 var TIP_ETIKET_BELGE = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
-var KOD_ONEK_BELGE = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
+var KOD_ONEK_BELGE = {numune:"NM", teklif:"FT", proforma:"PF", siparis:"SP"};
+// HATA DÜZELTME (WG.090926.196): SP/FT/PF/NM standardından önce oluşan
+// eski belgelerin kodu hâlâ eski önekle (SİP./F.TEK./P.FAT./NUM.)
+// başlıyor — bu yüzden renk haritası her iki öneki de tanır.
 var ONEK_RENK_BELGE = {
+  "SP": {yazi:"#003a70", bg:"#eaf2fc"},
+  "FT": {yazi:"#0e6b58", bg:"#eafaf3"},
+  "PF": {yazi:"#5b3a86", bg:"#f1ecf9"},
+  "NM": {yazi:"#b7601f", bg:"#fff4e5"},
   "SİP": {yazi:"#003a70", bg:"#eaf2fc"},
   "F.TEK": {yazi:"#0e6b58", bg:"#eafaf3"},
   "P.FAT": {yazi:"#5b3a86", bg:"#f1ecf9"},

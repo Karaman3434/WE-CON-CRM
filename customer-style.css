@@ -82,7 +82,7 @@
 .musteri-cari-metin .cari-ayrac,
 .musteri-cari-metin .cari-isim,
 .musteri-cari-metin .cari-sehir {
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 500;
 }
 .musteri-rozet-satiri {
@@ -92,7 +92,7 @@
   margin-top: 6px;
 }
 .musteri-rozet {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   padding: 2px 7px;
   border-radius: 4px;

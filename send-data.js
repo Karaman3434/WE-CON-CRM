@@ -45,7 +45,7 @@ var SendData = (function(){
   // kalır (bkz. reports-data.js revizeBaslat/ilerletmeyiTamamla), sadece
   // önek güncellenir — böylece aynı iş fırsatı hep aynı "numara" ile
   // takip edilebilir.
-  var KOD_ONEK = {numune:"NUM", teklif:"F.TEK", proforma:"P.FAT", siparis:"SİP"};
+  var KOD_ONEK = {numune:"NM", teklif:"FT", proforma:"PF", siparis:"SP"};
 
   // varTarihSaatKismi verilirse (bir önceki aşamadan devralınan belge),
   // yeni tarih/saat üretmek yerine onu aynen korur — sadece önek değişir.

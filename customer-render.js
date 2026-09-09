@@ -124,14 +124,14 @@ function sonTemasBilgisi(m){
 
 // En son İŞLEM: numune (N), teklif (FT), proforma (PF), sipariş (S) —
 // beklemede olan sipariş için BKS. Temas rozeti gibi tarihi de gösterir.
-var ISLEM_HARF = {numune:"N", teklif:"FT", proforma:"PF"};
+var ISLEM_HARF = {numune:"NM", teklif:"FT", proforma:"PF"};
 function sonIslemBilgisi(m){
   var adAnahtar = (m.ad||"").toLocaleLowerCase("tr-TR");
   var kayit = (musteriSonIslemDetayHaritasi && m.id) ? musteriSonIslemDetayHaritasi[m.id] : null;
   if(!kayit && musteriSonIslemDetayHaritasiAd) kayit = musteriSonIslemDetayHaritasiAd[adAnahtar];
   if(!kayit) return null;
   var harf = kayit.tip === "siparis"
-    ? (kayit.durum === "beklemede" ? "BKS" : "S")
+    ? (kayit.durum === "beklemede" ? "⏳ SP" : "SP")
     : (ISLEM_HARF[kayit.tip] || null);
   if(!harf) return null;
   return {harf:harf, ts:kayit.ts};
@@ -144,7 +144,7 @@ function temasIslemRozetleriHTML(m){
     ? "<span class='musteri-rozet musteri-rozet--temas'>Temas: " + temas.harf + " " + tarihFormatlaKisa(temas.ts) + "</span>"
     : "<span class='musteri-rozet musteri-rozet--yok'>Temas yok</span>";
   var islemHTML = islem
-    ? "<span class='musteri-rozet musteri-rozet--islem" + (islem.harf==="BKS" ? " musteri-rozet--beklemede" : "") + "'>İşlem: " + islem.harf + " " + tarihFormatlaKisa(islem.ts) + "</span>"
+    ? "<span class='musteri-rozet musteri-rozet--islem" + (islem.harf==="⏳ SP" ? " musteri-rozet--beklemede" : "") + "'>İşlem: " + islem.harf + " " + tarihFormatlaKisa(islem.ts) + "</span>"
     : "<span class='musteri-rozet musteri-rozet--yok'>İşlem yok</span>";
   return "<div class='musteri-rozet-satiri'>" + temasHTML + islemHTML + "</div>";
 }

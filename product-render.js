@@ -114,7 +114,7 @@ window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
-var TIP_ETIKET_URUN = {siparis:"SİP", teklif:"TEK", proforma:"PRO", numune:"NUM"};
+var TIP_ETIKET_URUN = {siparis:"SP", teklif:"FT", proforma:"PF", numune:"NM"};
 var TIP_RENK_URUN = {siparis:"#003a70", teklif:"#1f9d55", proforma:"#8e44ad", numune:"#b7601f"};
 
 function urunSatisGecmisiGetir(berta, abas){

@@ -34,10 +34,10 @@ var siralamaYonu = "yeni"; // yeni | eski
 // serit/rozet her zaman KACAN_META (kırmızı) — tip sadece kod rengini belirler.
 var TIP_ETIKET_KS = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
 var TIP_META = {
-  siparis:  {rozet:"SİP",   kodRenk:"#003a70"},
-  teklif:   {rozet:"F.TEK", kodRenk:"#1a7431"},
-  proforma: {rozet:"P.FAT", kodRenk:"#5c1680"},
-  numune:   {rozet:"NUM",   kodRenk:"#7a4008"}
+  siparis:  {rozet:"SP",    kodRenk:"#003a70"},
+  teklif:   {rozet:"FT",    kodRenk:"#1a7431"},
+  proforma: {rozet:"PF",    kodRenk:"#5c1680"},
+  numune:   {rozet:"NM",    kodRenk:"#7a4008"}
 };
 var KACAN_META = {rozet:"KAÇTI", rozetBg:"#fdecea", rozetRenk:"#a32d2d", serit:"#c0392b"};
 var GUNLER_UZUN = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
