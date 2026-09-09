@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <!-- WEICON ASİST V2 — VERSİYON: WG.260831.0053.46 — customer-cari-kart.html -->
 <!--
-  WEICON ASİST — CARİ KART v6
+  WEICON ASİST — CARİ KART v7
   ==============================
-  Ana sayfa (main) TAMAMEN salt-görüntüleme: isim/şehir, Vade/Fatura/Kargo
-  (yan yana, grid), sonra Fatura Adresi / Yetkili Kişi / Teslimat Adresi /
-  Not blokları (sadece kart listesi, hiçbir buton yok). Tek eylem butonu:
-  "✏️ Bilgiyi Düzenle" — açtığı "bilgiYonetOverlay" ekranı AKORDİYON
-  şeklinde 4 bölüm sunar (CARİ BİLGİLERİ / YETKİLİ KİŞİ / TESLİMAT ADRESİ /
-  NOT): başlığa dokunca açılır/kapanır, açılınca içerik + Ekle/Düzenle/Sil
-  butonları görünür. CARİ BİLGİLERİ; isim/şehir/vade/fatura/kargo ve fatura
-  adresi listesini bir arada tutar (Ekle = yeni fatura adresi; Düzenle =
-  temel bilgiler veya bir fatura adresi seçimi; Sil = bir fatura adresi).
-  Müşteri ADI şu an bilerek düzenlenebilir değil — uygulamada sipariş/
-  rapor/görev/km kayıtları müşteri adını anahtar olarak kullanıyor, isim
-  değişikliği bu bağlantıları koparabilir (ayrı, güvenli bir "yeniden
-  adlandırma" özelliği gerekir).
+  Ana sayfa (main) TAMAMEN salt-görüntüleme: isim/şehir, TEMEL BİLGİLER
+  (Vade/Fatura/Kargo, yan yana), sonra Fatura Adresi / Teslimat Adresi /
+  Yetkili Bilgisi / Not blokları — her biri kendi renkli başlık satırında
+  "Bilgiyi Güncelle" bağlantısına (ve silinebilir olanlarda küçük bir 🗑️
+  butonuna) sahip; artık ayrı bir "Bilgiyi Düzenle" akordiyon ekranı yok
+  (WG.090926.196). Blok başlığı ile içerik kutusu bitişik/kenarsız tek
+  kutu gibi görünür (boşluk yok). Müşteri ADI şu an bilerek düzenlenebilir
+  değil — uygulamada sipariş/rapor/görev/km kayıtları müşteri adını
+  anahtar olarak kullanıyor, isim değişikliği bu bağlantıları koparabilir
+  (ayrı, güvenli bir "yeniden adlandırma" özelliği gerekir).
 -->
 <html lang="tr">
 <head>
@@ -26,7 +23,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.080926.1437.247">
 <link rel="stylesheet" href="customer-style.css?v=WG.080926.1513.262">
 <link rel="stylesheet" href="detail-style.css?v=WG.080926.1513.263">
-<link rel="stylesheet" href="cari-kart-style.css?v=WG.080926.1513.267">
+<link rel="stylesheet" href="cari-kart-style.css?v=WG.090926.1046.310">
 <link rel="stylesheet" href="send-style.css?v=WG.030926.1158.98">
 </head>
 <body>
@@ -56,16 +53,20 @@
   <div class="cari-ad" id="cariKartAd">—</div>
   <div class="cari-alt-baslik" id="cariKartAltBaslik"></div>
 
-  <div class="ozet-satir-3">
-    <div class="ozet-alan"><div class="ozet-ikon">📅</div><div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="ozetVadeDeger">—</div></div></div>
-    <div class="ozet-alan"><div class="ozet-ikon">📄</div><div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="ozetFaturaDeger">—</div></div></div>
-    <div class="ozet-alan"><div class="ozet-ikon">🚚</div><div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="ozetKargoDeger">—</div></div></div>
+  <div class="ck-blok-etiket ck-blok-etiket--temel">
+    <span>🏢 TEMEL BİLGİLER</span>
+    <button class="ck-guncelle-link" data-bolum="cari">Bilgiyi Güncelle</button>
+  </div>
+  <div class="ozet-satir-3 ozet-satir-3--birlesik">
+    <div class="ozet-alan"><span class="ozet-ikon">📅</span><div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="ozetVadeDeger">—</div></div></div>
+    <div class="ozet-alan"><span class="ozet-ikon">📄</span><div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="ozetFaturaDeger">—</div></div></div>
+    <div class="ozet-alan"><span class="ozet-ikon">🚚</span><div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="ozetKargoDeger">—</div></div></div>
   </div>
 
   <!-- FATURA ADRESLERİ -->
   <div class="ck-blok-etiket ck-blok-etiket--fatura">
     <span>🧾 FATURA ADRESİ</span>
-    <span class="ck-blok-sayac" id="faturaSayac">0</span>
+    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="fatura">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="fatura" title="Sil">🗑️</button></span>
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="faturaListesi"></div>
@@ -74,7 +75,7 @@
   <!-- TESLİMAT ADRESLERİ -->
   <div class="ck-blok-etiket ck-blok-etiket--teslimat">
     <span>🚚 TESLİMAT ADRESİ</span>
-    <span class="ck-blok-sayac" id="teslimatSayac">0</span>
+    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="teslimat">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="teslimat" title="Sil">🗑️</button></span>
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="teslimatListesi"></div>
@@ -83,7 +84,7 @@
   <!-- YETKİLİ KİŞİLER -->
   <div class="ck-blok-etiket ck-blok-etiket--yetkili">
     <span>👤 YETKİLİ BİLGİSİ</span>
-    <span class="ck-blok-sayac" id="yetkiliSayac">0</span>
+    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="yetkili">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="yetkili" title="Sil">🗑️</button></span>
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="yetkiliListesi"></div>
@@ -92,7 +93,7 @@
   <!-- NOTLAR -->
   <div class="ck-blok-etiket ck-blok-etiket--not">
     <span>📝 NOT</span>
-    <span class="ck-blok-sayac" id="notSayac">0</span>
+    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="not">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="not" title="Sil">🗑️</button></span>
   </div>
   <section class="ck-blok">
     <div class="ck-kart-liste" id="notListesi"></div>
@@ -100,11 +101,8 @@
 
   <div class="ck-alt-buton-satir">
     <a class="cari-kapat-buton" id="cariKapatBtn" href="customer-detail.html">Kapat</a>
-    <button class="cari-yenibilgi-buton-icerde" id="btnBilgiYonetAc">✏️ Bilgiyi Düzenle</button>
+    <button class="cari-islemedevam-buton" id="btnIslemeDevam" hidden>▶️ İşleme Devam Et</button>
   </div>
-
-  <!-- Sadece Müşteri Kartı'nda "İşlem Yap" ile buraya gelindiyse görünür -->
-  <button class="cari-islemedevam-buton" id="btnIslemeDevam" hidden>▶️ İşleme Devam Et</button>
 
   <div class="tip-secim-overlay" id="tipSecimOverlay" hidden>
     <div class="tip-secim-kutu">
@@ -120,20 +118,6 @@
   </div>
 
 </main>
-
-<!-- "Bilgiyi Düzenle" — akordiyon: 4 başlık (CARİ BİLGİLERİ / YETKİLİ KİŞİ /
-     TESLİMAT ADRESİ / NOT), her birine dokununca açılıp içerik + Ekle/
-     Düzenle/Sil butonlarını gösterir. -->
-<div class="overlay" id="bilgiYonetOverlay" hidden>
-  <div class="sheet">
-    <div class="sheet-baslik">Bilgiyi Düzenle</div>
-    <div class="sheet-alt">Bir başlığa dokun, ne yapmak istediğini seç.</div>
-
-    <div id="akordiyonKapsayici"></div>
-
-    <button class="sheet-secenek sheet-secenek--vazgec" data-kapat="bilgiYonetOverlay">Kapat</button>
-  </div>
-</div>
 
 <!-- "Hangisini düzenlemek/silmek istiyorsun?" seçici -->
 <div class="overlay" id="pickerOverlay" hidden>
@@ -180,6 +164,6 @@
 <script src="reports-data.js?v=WG.070926.2130.195"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="cari-kart-render.js?v=WG.080926.1728.288"></script>
+<script src="cari-kart-render.js?v=WG.090926.1046.309"></script>
 </body>
 </html>

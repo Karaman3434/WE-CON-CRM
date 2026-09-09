@@ -40,16 +40,6 @@ var TIP_META = {
   not:      {baslik:"Not",             tekil:"not",             ikon:"📝"}
 };
 
-// Akordiyonda gösterilecek 4 bölüm — "cari" özel bir sanal bölüm (fatura
-// adresi listesini + tekil temel bilgileri bir arada tutar).
-var AKORDIYON_TANIM = [
-  {id:"cari",     ikon:"🏢", baslik:"CARİ BİLGİLERİ"},
-  {id:"yetkili",  ikon:"👤", baslik:"YETKİLİ BİLGİSİ"},
-  {id:"teslimat", ikon:"🚚", baslik:"TESLİMAT ADRESİ"},
-  {id:"not",      ikon:"📝", baslik:"NOT"}
-];
-var acikBolum = null; // aynı anda tek bölüm açık kalır
-
 var aktifTip = null, aktifEylem = null, aktifIndex = null;
 var silTip = null, silIndex = null;
 
@@ -84,7 +74,6 @@ function anaSayfayiRenderEt(){
   ["fatura","teslimat","yetkili","not"].forEach(function(tip){
     var liste = kayitlariGetir(m, tip);
     var kapsayici = document.getElementById(tip + "Listesi");
-    document.getElementById(tip + "Sayac").textContent = liste.length;
     if(liste.length === 0){
       kapsayici.innerHTML = "<div class='ck-kart-bos'>Henüz " + TIP_META[tip].tekil + " eklenmemiş.</div>";
       return;
@@ -121,74 +110,6 @@ function toastGoster(msg){
 
 function ac(id){ document.getElementById(id).hidden = false; }
 function kapat(id){ document.getElementById(id).hidden = true; }
-
-// ---- Akordiyon ("Bilgiyi Düzenle" ekranı) ----
-function akordiyonuRenderEt(){
-  var kapsayici = document.getElementById("akordiyonKapsayici");
-  kapsayici.innerHTML = AKORDIYON_TANIM.map(function(bolum){
-    var acikMi = acikBolum === bolum.id;
-    var html = "<div class='akordiyon-baslik" + (acikMi ? " akordiyon-baslik--acik" : "") + "' data-bolum='" + bolum.id + "'>"
-      + "<div class='akordiyon-baslik-metin'>" + bolum.ikon + " " + bolum.baslik + "</div>"
-      + "<div class='akordiyon-ok'>" + (acikMi ? "▴" : "▾") + "</div>"
-      + "</div>";
-    if(acikMi) html += akordiyonGovdeHtml(bolum.id);
-    return html;
-  }).join("");
-
-  kapsayici.querySelectorAll(".akordiyon-baslik").forEach(function(el){
-    el.onclick = function(){
-      var id = this.getAttribute("data-bolum");
-      acikBolum = (acikBolum === id) ? null : id;
-      akordiyonuRenderEt();
-    };
-  });
-  kapsayici.querySelectorAll(".akordiyon-buton[data-tip][data-eylem]").forEach(function(btn){
-    btn.onclick = function(ev){
-      ev.stopPropagation();
-      eylemBaslat(this.getAttribute("data-tip"), this.getAttribute("data-eylem"));
-    };
-  });
-}
-
-function akordiyonGovdeHtml(bolumId){
-  if(bolumId === "cari"){
-    var m = musteriVerisi;
-    var faturaListesi = kayitlariGetir(m, "fatura");
-    var satirlar = "<div class='satir'><b>Şehir:</b> " + escapeText(m.sehir||"—") + "</div>"
-      + "<div class='satir'><b>Vade:</b> " + escapeText(m.vade||"—") + " · <b>Fatura:</b> " + escapeText(m.fatura||"—") + " · <b>Kargo:</b> " + escapeText(m.kargo||"—") + "</div>";
-    if(faturaListesi.length === 0){
-      satirlar += "<div class='satir-bos'>Henüz fatura adresi eklenmemiş.</div>";
-    } else {
-      satirlar += faturaListesi.map(function(k){
-        return "<div class='satir'><b>Fatura Adresi" + (k.etiket ? " — "+escapeText(k.etiket) : "") + ":</b> " + escapeText(k.adres||"") + "</div>";
-      }).join("");
-    }
-    return "<div class='akordiyon-govde'>"
-      + "<div class='akordiyon-govde-icerik'>" + satirlar + "</div>"
-      + "<div class='akordiyon-buton-satir'>"
-      + "<button class='akordiyon-buton akordiyon-buton--ekle' data-tip='cari' data-eylem='ekle'>➕ Yeni Fatura Adresi</button>"
-      + "<button class='akordiyon-buton akordiyon-buton--duzenle' data-tip='cari' data-eylem='duzenle'>✏️ Düzenle</button>"
-      + "<button class='akordiyon-buton akordiyon-buton--sil' data-tip='cari' data-eylem='sil'>🗑️ Sil</button>"
-      + "</div></div>";
-  }
-
-  // yetkili / teslimat / not — ortak liste düzeni
-  var liste = kayitlariGetir(musteriVerisi, bolumId);
-  var icerik = liste.length === 0
-    ? "<div class='satir-bos'>Henüz " + TIP_META[bolumId].tekil + " eklenmemiş.</div>"
-    : liste.map(function(k){
-        var baslikMetni = kayitBaslik(bolumId, k);
-        var altMetni = kayitAltMetin(bolumId, k);
-        return "<div class='satir'>" + (baslikMetni && bolumId!=="not" ? "<b>"+escapeText(baslikMetni)+":</b> " : "") + escapeText(altMetni || baslikMetni) + "</div>";
-      }).join("");
-  return "<div class='akordiyon-govde'>"
-    + "<div class='akordiyon-govde-icerik'>" + icerik + "</div>"
-    + "<div class='akordiyon-buton-satir'>"
-    + "<button class='akordiyon-buton akordiyon-buton--ekle' data-tip='" + bolumId + "' data-eylem='ekle'>➕ Ekle</button>"
-    + "<button class='akordiyon-buton akordiyon-buton--duzenle' data-tip='" + bolumId + "' data-eylem='duzenle'>✏️ Düzenle</button>"
-    + "<button class='akordiyon-buton akordiyon-buton--sil' data-tip='" + bolumId + "' data-eylem='sil'>🗑️ Sil</button>"
-    + "</div></div>";
-}
 
 // ---- Genel amaçlı picker (birden fazla kayıt arasından seçim) ----
 function pickerGoster(baslikMetni, altMetni, ogeler){
@@ -473,11 +394,21 @@ document.addEventListener("DOMContentLoaded", function(){
   seciliMusteriAdi = secili.ad;
   alanlariDoldur(secili);
 
-  document.getElementById("btnBilgiYonetAc").onclick = function(){
-    acikBolum = null;
-    akordiyonuRenderEt();
-    ac("bilgiYonetOverlay");
-  };
+  // YENİ TASARIM (WG.090926.196): eski tek "Bilgiyi Düzenle" butonu ve
+  // akordiyon seçim ekranı kaldırıldı — her blok artık kendi başlık
+  // satırında doğrudan "Bilgiyi Güncelle" bağlantısına ve (silinebilir
+  // kayıtlarda) küçük bir 🗑️ butonuna sahip.
+  function guncelleTiklandi(bolumId){
+    if(bolumId === "cari"){ eylemBaslat("cari","duzenle"); return; }
+    var liste = kayitlariGetir(musteriVerisi, bolumId);
+    eylemBaslat(bolumId, liste.length === 0 ? "ekle" : "duzenle");
+  }
+  document.querySelectorAll(".ck-guncelle-link[data-bolum]").forEach(function(btn){
+    btn.onclick = function(){ guncelleTiklandi(this.getAttribute("data-bolum")); };
+  });
+  document.querySelectorAll(".ck-sil-mini[data-bolum]").forEach(function(btn){
+    btn.onclick = function(){ eylemBaslat(this.getAttribute("data-bolum"), "sil"); };
+  });
 
   // Form Kaydet + Sil Onayla
   document.getElementById("formKaydetBtn").onclick = formKaydet;
@@ -531,6 +462,5 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("ozetFaturaDeger").textContent = taze.fatura || "—";
     document.getElementById("ozetKargoDeger").textContent = taze.kargo || "—";
     anaSayfayiRenderEt();
-    if(!document.getElementById("bilgiYonetOverlay").hidden) akordiyonuRenderEt();
   });
 });
