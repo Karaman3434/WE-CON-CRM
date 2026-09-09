@@ -41,15 +41,24 @@ var sonKaydedilenBelge = null;
 
 function adresleriBelirle(musteri){
   seciliAdresler = {};
+  // İŞLEM İÇİN SEÇİM (WG.090926.196): Cari Kart'ta işaretlenen fatura/
+  // teslimat adresi indeksi varsa onu kullan; yoksa (kart üzerinden
+  // gelinmediyse) ilk kayda düş — eski davranış.
+  var secim = {};
+  try{ secim = JSON.parse(localStorage.getItem("weiconv2_secili_iletisim")||"{}"); }catch(e){}
   if(musteri.faturaAdresleri && musteri.faturaAdresleri.length){
-    seciliAdresler.faturaAdresi = musteri.faturaAdresleri[0];
+    var fi = (secim.fatura!=null && musteri.faturaAdresleri[secim.fatura]) ? secim.fatura : 0;
+    seciliAdresler.faturaAdresi = musteri.faturaAdresleri[fi];
   } else if(musteri.acikAdres && musteri.acikAdres.trim()){
     // Geriye dönük kural: ayrı bir fatura adresi hiç girilmemişse, müşteri
     // eklenirken girilen Açık Adres fatura adresi olarak kullanılır — eski
     // müşteri kayıtları için de "Girilmemiş" görünmesin diye.
     seciliAdresler.faturaAdresi = {etiket:"Fatura Adresi", adres: musteri.acikAdres.trim()};
   }
-  if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length) seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[0];
+  if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length){
+    var ti = (secim.teslimat!=null && musteri.teslimatAdresleri[secim.teslimat]) ? secim.teslimat : 0;
+    seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[ti];
+  }
 }
 
 function sablonOku(kanal){
@@ -99,8 +108,14 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var kargo = musteri.kargo || "";
   var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";
   var teslimatAdr = seciliAdresler.teslimatAdresi ? (seciliAdresler.teslimatAdresi.adres||"") : "";
+  // İŞLEM İÇİN SEÇİM (WG.090926.196): tabloda/mailde artık TÜM yetkililer
+  // değil, Cari Kart'ta işaretlenen TEK yetkili gösterilir.
   var yetkililer = musteri.iletisimler || [];
-  var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
+  var yetkiliSecim = {};
+  try{ yetkiliSecim = JSON.parse(localStorage.getItem("weiconv2_secili_iletisim")||"{}"); }catch(e){}
+  var yki = (yetkiliSecim.yetkili!=null && yetkililer[yetkiliSecim.yetkili]) ? yetkiliSecim.yetkili : 0;
+  var seciliYetkili = yetkililer[yki];
+  var yetkiliBilgiHtml = seciliYetkili ? HareketTablo.yetkiliSatiriHtml(seciliYetkili.isim, seciliYetkili.telefon, seciliYetkili.eposta) : "";
   var tToplamEuro = 0;
   (sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, kur, kdv); if(h && h.toplamEuro!=null) tToplamEuro += h.toplamEuro; });
 
@@ -141,19 +156,14 @@ function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
     gonderBaglam = {musteri:musteri, sepet:sepet, tip:tip, kur:kur, kdv:kdv};
     document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, null);
 
+    // İŞLEM İÇİN SEÇİM (WG.090926.196): Yetkili kişi artık burada
+    // seçilmiyor — Cari Kart ekranında işaretlenen kişi kullanılır.
+    // Kart üzerinden gelinmediyse (seçim kaydı yoksa) ilk kayda düşülür.
     var kisiler = musteri.iletisimler || [];
-    var secim = document.getElementById("gonderKisiSecim");
-    if(kisiler.length > 1){
-      secim.hidden = false;
-      secim.innerHTML = kisiler.map(function(k, i){
-        return "<option value='" + i + "'>" + htmlEsc(k.isim) + (k.gorev?" ("+htmlEsc(k.gorev)+")":"") + "</option>";
-      }).join("");
-      secim.onchange = function(){ kisiAlanlariniDoldur(kisiler[parseInt(this.value,10)]); };
-      kisiAlanlariniDoldur(kisiler[0]);
-    } else {
-      secim.hidden = true;
-      kisiAlanlariniDoldur(kisiler[0] || {});
-    }
+    var secim = {};
+    try{ secim = JSON.parse(localStorage.getItem("weiconv2_secili_iletisim")||"{}"); }catch(e){}
+    var ki = (secim.yetkili!=null && kisiler[secim.yetkili]) ? secim.yetkili : 0;
+    kisiAlanlariniDoldur(kisiler[ki] || {});
   }catch(e){ hataGoster("Gönderim alanı hazırlanamadı: " + e.message); }
 }
 
@@ -220,8 +230,14 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
   var kargo = musteri.kargo || "";
   var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";
   var teslimatAdr = seciliAdresler.teslimatAdresi ? (seciliAdresler.teslimatAdresi.adres||"") : "";
+  // İŞLEM İÇİN SEÇİM (WG.090926.196): tabloda/mailde artık TÜM yetkililer
+  // değil, Cari Kart'ta işaretlenen TEK yetkili gösterilir.
   var yetkililer = musteri.iletisimler || [];
-  var yetkiliBilgiHtml = yetkililer.map(function(k){ return HareketTablo.yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
+  var yetkiliSecim = {};
+  try{ yetkiliSecim = JSON.parse(localStorage.getItem("weiconv2_secili_iletisim")||"{}"); }catch(e){}
+  var yki = (yetkiliSecim.yetkili!=null && yetkililer[yetkiliSecim.yetkili]) ? yetkiliSecim.yetkili : 0;
+  var seciliYetkili = yetkililer[yki];
+  var yetkiliBilgiHtml = seciliYetkili ? HareketTablo.yetkiliSatiriHtml(seciliYetkili.isim, seciliYetkili.telefon, seciliYetkili.eposta) : "";
 
   // Giden görselde dahili belge kodu (F.TEK.../SİP...) GÖSTERİLMEZ — sadece
   // belge türü + tarih. (Sistem içi görünümde — belge-onizleme.html — kod
@@ -470,6 +486,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnGonderBitir").onclick = function(){
     try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
     try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_secili_iletisim"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
     window.location.href = "home.html";

@@ -69,6 +69,14 @@ function kayitAltMetin(tip, kayit){
   return sehir && adres ? (adres + ", " + sehir) : adres;
 }
 
+// İŞLEM İÇİN SEÇİM (WG.090926.196): birden fazla fatura adresi/teslimat
+// adresi/yetkili kişi varsa, hangisinin bu işlemde (sipariş/teklif/vb.)
+// kullanılacağını burada işaretleyebilirsin. Tek kayıt varsa seçim
+// göstermeye gerek yok, o zaten kullanılacak. "İşleme Devam Et"e
+// basınca seçim localStorage'a yazılır; cart.html ve send.html bunu
+// okuyup varsayılan ilk kayıt yerine SENİN işaretlediğini kullanır.
+var secimler = {fatura:0, teslimat:0, yetkili:0};
+
 function anaSayfayiRenderEt(){
   var m = musteriVerisi;
   ["fatura","teslimat","yetkili","not"].forEach(function(tip){
@@ -78,9 +86,30 @@ function anaSayfayiRenderEt(){
       kapsayici.innerHTML = "<div class='ck-kart-bos'>Henüz " + TIP_META[tip].tekil + " eklenmemiş.</div>";
       return;
     }
-    kapsayici.innerHTML = liste.map(function(k){
-      return "<div class='ck-kart'><div class='ck-kart-ust'>" + escapeText(kayitBaslik(tip,k)) + "</div><div class='ck-kart-alt'>" + escapeText(kayitAltMetin(tip,k)) + "</div></div>";
+    var secilebilirMi = tip !== "not" && liste.length > 1;
+    if(secimler[tip] >= liste.length) secimler[tip] = 0;
+    kapsayici.innerHTML = liste.map(function(k, i){
+      var govde = "<div class='ck-kart-ust'>" + escapeText(kayitBaslik(tip,k)) + "</div><div class='ck-kart-alt'>" + escapeText(kayitAltMetin(tip,k)) + "</div>";
+      if(!secilebilirMi) return "<div class='ck-kart'>" + govde + "</div>";
+      var seciliMi = secimler[tip] === i;
+      return "<div class='ck-kart ck-kart--secilebilir" + (seciliMi ? " ck-kart--secili" : "") + "' data-tip='" + tip + "' data-i='" + i + "'>"
+        + "<div class='ck-tik" + (seciliMi ? " ck-tik--secili" : "") + "'>" + (seciliMi ? "✓" : "") + "</div>"
+        + "<div class='ck-kart-govde'>" + govde + "</div>"
+        + "</div>";
     }).join("");
+  });
+
+  secimTiklariniBagla();
+}
+
+function secimTiklariniBagla(){
+  document.querySelectorAll(".ck-kart--secilebilir").forEach(function(el){
+    el.onclick = function(){
+      var tip = this.getAttribute("data-tip");
+      var i = parseInt(this.getAttribute("data-i"), 10);
+      secimler[tip] = i;
+      anaSayfayiRenderEt();
+    };
   });
 }
 
@@ -434,6 +463,7 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("tipSecimOverlay").querySelectorAll(".tip-btn").forEach(function(btn2){
       btn2.onclick = function(){
         localStorage.setItem("weiconv2_onceden_secilen_tip", this.getAttribute("data-tip"));
+        localStorage.setItem("weiconv2_secili_iletisim", JSON.stringify(secimler));
         localStorage.removeItem("weiconv2_islem_yap_akisi");
         window.location.href = "product.html";
       };

@@ -65,6 +65,10 @@ var CustomerData = (function(){
 
   function secimiKaldir(){
     try{ localStorage.removeItem(SECILI_MUSTERI_KEY); }catch(e){}
+    // İŞLEM İÇİN SEÇİM (WG.090926.196): müşteri seçimi kalkınca, o
+    // müşteri için işaretlenmiş fatura/teslimat/yetkili seçimi de bir
+    // sonraki (farklı) müşteriye sızmasın diye temizlenir.
+    try{ localStorage.removeItem("weiconv2_secili_iletisim"); }catch(e){}
   }
 
   function seciliyiOku(){

@@ -35,6 +35,7 @@
     if(devamEt) return false;
     localStorage.setItem("weiconv2_sepet", "[]");
     localStorage.removeItem("weicon_secili_musteri");
+    localStorage.removeItem("weiconv2_secili_iletisim");
     return true;
   }
 

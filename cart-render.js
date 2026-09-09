@@ -41,8 +41,19 @@ var revizeSecimBekleniyor = null;
 
 function adresleriBelirle(musteri){
   seciliAdresler = {};
-  if(musteri.faturaAdresleri && musteri.faturaAdresleri.length) seciliAdresler.faturaAdresi = musteri.faturaAdresleri[0];
-  if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length) seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[0];
+  // İŞLEM İÇİN SEÇİM (WG.090926.196): Cari Kart'ta işaretlenen fatura/
+  // teslimat adresi indeksi varsa onu kullan; yoksa (kart üzerinden
+  // gelinmediyse) ilk kayda düş — eski davranış.
+  var secim = {};
+  try{ secim = JSON.parse(localStorage.getItem("weiconv2_secili_iletisim")||"{}"); }catch(e){}
+  if(musteri.faturaAdresleri && musteri.faturaAdresleri.length){
+    var fi = (secim.fatura!=null && musteri.faturaAdresleri[secim.fatura]) ? secim.fatura : 0;
+    seciliAdresler.faturaAdresi = musteri.faturaAdresleri[fi];
+  }
+  if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length){
+    var ti = (secim.teslimat!=null && musteri.teslimatAdresleri[secim.teslimat]) ? secim.teslimat : 0;
+    seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[ti];
+  }
 }
 
 function urunuHesaplamayaGonder(idx){
