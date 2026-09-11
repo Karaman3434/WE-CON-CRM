@@ -299,9 +299,11 @@ var CustomerData = (function(){
   }
 
   function musteriIdUret(tazeListe, sehir){
-    var ilKodu = ilKoduBul(sehir);
+    // STANDART (WG.100926.196): artık il koduna bakılmıyor — tüm yeni
+    // müşteriler tek, global "M-XXXX" (4 haneli, sıralı) formatında kod
+    // alıyor. `sehir` parametresi geriye dönük uyumluluk için duruyor.
     var maxNo = 0;
-    var yeniDesen = new RegExp("^M" + ilKodu + "(\\d{4})$");
+    var yeniDesen = /^M-(\d{4})$/;
     tazeListe.forEach(function(m){
       var eslesme = m.id && m.id.match(yeniDesen);
       if(eslesme){
@@ -309,7 +311,73 @@ var CustomerData = (function(){
         if(no > maxNo) maxNo = no;
       }
     });
-    return "M" + ilKodu + String(maxNo+1).padStart(4, "0");
+    return "M-" + String(maxNo+1).padStart(4, "0");
+  }
+
+  // ---- TEK SEFERLİK GÖÇ (WG.100926.196): tüm müşteri kodlarını
+  // "M-XXXX" standardına çevirir, geriye {eskiId: yeniId} eşleşmesi
+  // döner ki arşiv kayıtları da buna göre güncellenebilsin. ----
+  function idleriStandartlastir(geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    try{
+      var db = firebase.database();
+      var eslesme = {};
+      var mutateHatasi = null;
+      db.ref("musteriler").transaction(function(currentData){
+        var tazeListe = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
+        try{
+          eslesme = {};
+          return tazeListe.map(function(m, i){
+            var yeniId = "M-" + String(i+1).padStart(4, "0");
+            if(m.id && m.id !== yeniId) eslesme[m.id] = yeniId;
+            var kopya = {};
+            for(var k in m){ if(m.hasOwnProperty(k)) kopya[k] = m[k]; }
+            kopya.id = yeniId;
+            return kopya;
+          });
+        }catch(e){ mutateHatasi = e; return; }
+      }).then(function(result){
+        if(mutateHatasi){ cb(false, mutateHatasi); return; }
+        if(!result || !result.committed){ cb(false, new Error("Kayıt güncellenemedi — tekrar dene.")); return; }
+        cb(true, eslesme);
+      }).catch(function(err){ cb(false, err); });
+    }catch(e){ cb(false, e); }
+  }
+
+  // Numune/Teklif/Proforma/Sipariş arşivindeki her kaydın musteriId'sini
+  // yukarıdaki eşleşmeye göre günceller — geçmiş kayıtlar kopmasın diye.
+  function arsivMusteriIdGuncelle(eslesme, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    if(!eslesme || Object.keys(eslesme).length === 0){ cb(true); return; }
+    var tipler = ["numune","teklif","proforma","siparis"];
+    var db = firebase.database();
+    var kalan = tipler.length;
+    var ilkHata = null;
+    tipler.forEach(function(tip){
+      var mutateHatasi = null;
+      db.ref("arsiv/" + tip).transaction(function(currentData){
+        var liste = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
+        try{
+          return liste.map(function(k){
+            if(k && k.musteriId && eslesme[k.musteriId]){
+              var kopya = {};
+              for(var f in k){ if(k.hasOwnProperty(f)) kopya[f] = k[f]; }
+              kopya.musteriId = eslesme[k.musteriId];
+              return kopya;
+            }
+            return k;
+          });
+        }catch(e){ mutateHatasi = e; return; }
+      }).then(function(result){
+        if(mutateHatasi || !result || !result.committed){ ilkHata = ilkHata || mutateHatasi || new Error(tip + " arşivi güncellenemedi."); }
+        kalan--;
+        if(kalan === 0) cb(!ilkHata, ilkHata);
+      }).catch(function(err){
+        ilkHata = ilkHata || err;
+        kalan--;
+        if(kalan === 0) cb(!ilkHata, ilkHata);
+      });
+    });
   }
 
   function benzerMusterileriBul(ad){
@@ -594,6 +662,8 @@ var CustomerData = (function(){
     ilKoduEkleGuncelle: ilKoduEkleGuncelle,
     ilKoduSil: ilKoduSil,
     musteriIdIleBul: musteriIdIleBul,
+    idleriStandartlastir: idleriStandartlastir,
+    arsivMusteriIdGuncelle: arsivMusteriIdGuncelle,
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,
     tumZiyaretTemaslar: tumZiyaretTemaslar,

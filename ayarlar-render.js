@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.100926.2217.463";
+var APP_VERSION = "WG.100926.0011.466";
 
 function hataGoster(mesaj){
   console.error(mesaj);
@@ -74,6 +74,41 @@ document.addEventListener("DOMContentLoaded", function(){
   ayarlariDoldur();
   document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+
+  document.getElementById("btnKodlariStandartlastir").onclick = function(){
+    var onay = confirm(
+      "⚠️ Bu işlem TÜM müşteri kodlarını M-0001, M-0002... şeklinde yeniden numaralandırır ve geçmiş Numune/Teklif/Proforma/Sipariş kayıtlarındaki müşteri bağlantılarını buna göre günceller.\n\n" +
+      "Bu işlem GERİ ALINAMAZ. Devam etmek istiyor musun?"
+    );
+    if(!onay) return;
+    if(typeof CustomerData === "undefined"){ hataGoster("Müşteri veri modülü yüklenemedi."); return; }
+    var btn = this;
+    var sonucEl = document.getElementById("kodStandartSonuc");
+    btn.disabled = true;
+    btn.textContent = "⏳ Müşteri kodları güncelleniyor...";
+    sonucEl.textContent = "";
+    CustomerData.idleriStandartlastir(function(basarili, eslesmeVeyaHata){
+      if(!basarili){
+        btn.disabled = false;
+        btn.textContent = "🔧 Müşteri Kodlarını Standartlaştır (M-XXXX)";
+        sonucEl.textContent = "❌ Müşteri kodları güncellenemedi: " + (eslesmeVeyaHata && eslesmeVeyaHata.message ? eslesmeVeyaHata.message : eslesmeVeyaHata);
+        hataGoster("Müşteri kodu standardizasyonu başarısız: " + (eslesmeVeyaHata && eslesmeVeyaHata.message ? eslesmeVeyaHata.message : eslesmeVeyaHata));
+        return;
+      }
+      var eslesmeSayisi = Object.keys(eslesmeVeyaHata||{}).length;
+      btn.textContent = "⏳ Geçmiş kayıtlar güncelleniyor (" + eslesmeSayisi + " kod değişti)...";
+      CustomerData.arsivMusteriIdGuncelle(eslesmeVeyaHata, function(basarili2, hata2){
+        btn.disabled = false;
+        btn.textContent = "🔧 Müşteri Kodlarını Standartlaştır (M-XXXX)";
+        if(!basarili2){
+          sonucEl.textContent = "⚠️ Müşteri kodları güncellendi ama bazı geçmiş kayıtlar güncellenemedi: " + (hata2 && hata2.message ? hata2.message : hata2);
+          hataGoster("Arşiv güncellemesi kısmen başarısız: " + (hata2 && hata2.message ? hata2.message : hata2));
+          return;
+        }
+        sonucEl.textContent = "✓ Tamamlandı — " + eslesmeSayisi + " müşteri kodu M-XXXX formatına çevrildi, geçmiş kayıtlar güncellendi.";
+      });
+    });
+  };
   document.getElementById("btnKurSimdiDene").onclick = function(){
     var btn = this;
     btn.disabled = true;
