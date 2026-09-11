@@ -849,14 +849,14 @@
 .tl-kart { display: flex; align-items: stretch; background: #ffffff; cursor: pointer; }
 .tl-serit { width: 4px; flex-shrink: 0; }
 .tl-govde { flex: 1; min-width: 0; padding: 5px 4px; }
-.tl-ust { font-size: 13.5px; font-weight: 500; }
-.tl-isim { font-weight: 500; color: #111827; }
-.tl-sehir { color: #5f6b7a; font-weight: 500; }
+.tl-ust { font-size: 13px; font-weight: 400; }
+.tl-isim { font-weight: 400; color: #111827; }
+.tl-sehir { color: #5f6b7a; font-weight: 400; }
 .tl-alt { margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
-.tl-rozet { font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+.tl-rozet { font-size: 9.5px; font-weight: 400; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
 .tl-kod {
-  font-size: 11.5px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 400;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -865,7 +865,7 @@
 }
 .tl-kanal-harf { margin-right: 2px; }
 .tl-sag { display: flex; align-items: center; gap: 8px; padding: 0 4px 0 4px; flex-shrink: 0; margin-left: auto; }
-.tl-tutar { font-size: 13.5px; font-weight: 500; color: #042c53; white-space: nowrap; }
+.tl-tutar { font-size: 13px; font-weight: 400; color: #042c53; white-space: nowrap; }
 .tl-divider { width: 1px; height: 18px; background: #d8dee6; flex-shrink: 0; }
 .tl-ok {
   width: 20px;
