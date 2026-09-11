@@ -161,6 +161,7 @@ function sepeteEkleTiklandi(){
       // Sepet'ten bir ürünü düzenlemek için geldik — yeni satır AÇMA,
       // mevcut satırı güncelleyip hesaplandı say ve sepete geri dön.
       CartData.hesaplandiIsaretle(duzenlenenSepetIdx, listeFiyat, dipFiyat, iskonto, adet);
+      if(kurOverride!=null) localStorage.setItem("weiconv2_sepet_kur_override", kurOverride);
       window.location.href = "cart.html";
       return;
     }
@@ -179,6 +180,7 @@ function sepeteEkleTiklandi(){
     var mevcutSepet = [];
     try{ mevcutSepet = JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]"); }catch(e){}
     mevcutSepet.push(yeniUrun);
+    if(kurOverride!=null) localStorage.setItem("weiconv2_sepet_kur_override", kurOverride);
     localStorage.setItem("weiconv2_sepet", JSON.stringify(mevcutSepet));
     if(confirm("✓ Sepete eklendi. Sepete gidip devam etmek ister misin?")){
       window.location.href = "cart.html";
@@ -201,6 +203,7 @@ function kaybedilecekBirSeyVarMi(){
 }
 function herSeyiSifirlaVeGit(hedefUrl){
   try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+  try{ localStorage.removeItem("weiconv2_sepet_kur_override"); }catch(e){}
   try{ if(typeof CustomerData !== "undefined") CustomerData.secimiKaldir(); }catch(e){}
   try{
     localStorage.removeItem("weiconv2_onceden_secilen_tip");

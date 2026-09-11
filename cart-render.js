@@ -39,6 +39,15 @@ var secilenTip = "siparis";
 var seciliAdresler = {};
 var revizeSecimBekleniyor = null;
 
+// Hızlı Hesapla'da manuel kur girilip "Listeye Ekle" ile buraya
+// eklendiyse, o kur bu işlem boyunca (Sepet + Gönder) geçerli olmaya
+// devam eder — günlük kur değişse bile bu sepet/sipariş etkilenmez.
+// Sepet boşalınca (CustomerData.secimiKaldir vb.) bu da temizlenir.
+function aktifKuruOku(){
+  var override = parseFloat(localStorage.getItem("weiconv2_sepet_kur_override"));
+  return (!isNaN(override) && override > 0) ? override : CartData.kurOku();
+}
+
 function adresleriBelirle(musteri){
   seciliAdresler = {};
   // İŞLEM İÇİN SEÇİM (WG.090926.196): Cari Kart'ta işaretlenen fatura/
@@ -98,7 +107,7 @@ function sayfayiCiz(){
     document.getElementById("btnSepetIptal").hidden = false;
     adresleriBelirle(musteri);
 
-    var kur = CartData.kurOku();
+    var kur = aktifKuruOku();
     var kdv = CartData.kdvOku();
     var hesapla = function(u){ return CartData.hesapla(u, kur, kdv); };
 
@@ -281,7 +290,7 @@ function kaydetGercekIslem(niyet){
     var sepet = CartData.liste();
     if(!musteri || sepet.length === 0) return;
 
-    var kur = CartData.kurOku();
+    var kur = aktifKuruOku();
     var kdv = CartData.kdvOku();
 
     var uyarilar = anomaliUyarilariniTopla(sepet, kur, kdv);
@@ -334,7 +343,7 @@ function kaydetTiklandi(niyet){
 // ---- Müşterisiz hızlı gönder — kayıt oluşturmadan sadece paylaşım ----
 function musterisizOzetMetniOlustur(){
   var sepet = CartData.liste();
-  var kur = CartData.kurOku();
+  var kur = aktifKuruOku();
   var satirlar = sepet.map(function(u, i){
     var toplam = u.toplamEuro!==undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
     return (i+1) + ". " + u.ad + " — " + (u.adet||0) + " adet x " + CartData.fmt(u.iskBirim||0) + " EURO = " + CartData.fmt(toplam) + " EURO";
@@ -382,6 +391,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   function herSeyiSifirlaVeGit(hedefUrl){
     localStorage.setItem("weiconv2_sepet", "[]");
+    localStorage.removeItem("weiconv2_sepet_kur_override");
     CustomerData.secimiKaldir();
     try{
       localStorage.removeItem("weiconv2_onceden_secilen_tip");
