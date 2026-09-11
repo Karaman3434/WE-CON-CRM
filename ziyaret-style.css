@@ -111,6 +111,7 @@
   margin-bottom: 6px;
 }
 .ziy-kayit-musteri { font-size: 13.5px; font-weight: 500; color: #111; }
+.ziy-kayit-musteri .cari-kod, .ziy-kayit-musteri .cari-ayrac, .ziy-kayit-musteri .cari-isim, .ziy-kayit-musteri .cari-sehir { font-size: 13.5px; font-weight: 500; letter-spacing: normal; }
 .ziy-kayit-tur { font-size: 10px; margin-top: 2px; font-weight: 500; }
 
 .ziy-yeni-kayit-baslik {
@@ -140,6 +141,7 @@
   margin-bottom: 4px;
   cursor: pointer;
 }
+.ziy-firma-satir .cari-kod, .ziy-firma-satir .cari-ayrac, .ziy-firma-satir .cari-isim, .ziy-firma-satir .cari-sehir { font-size: 12px; font-weight: 500; letter-spacing: normal; }
 .ziy-firma-sehir { color: #44494f; font-weight: 400; }
 .ziy-secili-firma {
   background: #eafaf0;

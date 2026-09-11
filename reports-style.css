@@ -504,6 +504,7 @@
 }
 .gorev-bilgi { flex: 1; min-width: 0; }
 .gorev-musteri { font-size: 13.5px; font-weight: 500; color: #003a70; }
+.gorev-musteri .cari-kod, .gorev-musteri .cari-ayrac, .gorev-musteri .cari-isim, .gorev-musteri .cari-sehir { font-size: 13.5px; font-weight: 500; letter-spacing: normal; }
 .gorev-aciklama { font-size: 12px; color: #333; margin-top: 2px; }
 .gorev-zaman { font-size: 10px; color: #44494f; margin-top: 2px; }
 .gorev-karti.tamamlandi .gorev-aciklama,
@@ -850,6 +851,15 @@
 .tl-serit { width: 4px; flex-shrink: 0; }
 .tl-govde { flex: 1; min-width: 0; padding: 5px 4px; }
 .tl-ust { font-size: 13px; font-weight: 400; }
+/* HATA DÜZELTME (WG.100926.196): asıl yazılar .tl-isim değil, cariSatirHTML()
+   tarafından üretilen .cari-kod/.cari-ayrac/.cari-isim/.cari-sehir sınıflarını
+   kullanıyor — bunlar home-style.css'teki genel 16px/700 kuralına düşüyordu.
+   Burada .tl-ust içindeyken üzerine yazılıyor. */
+.tl-ust .cari-kod, .tl-ust .cari-ayrac, .tl-ust .cari-isim, .tl-ust .cari-sehir {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: normal;
+}
 .tl-isim { font-weight: 400; color: #111827; }
 .tl-sehir { color: #5f6b7a; font-weight: 400; }
 .tl-alt { margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
