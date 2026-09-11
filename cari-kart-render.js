@@ -414,6 +414,30 @@ function tarihiGuncelle(){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+
+  // "🔄 Sayfayı Yenile" (WG.090926.196): kullanıcı Firebase'e kaydettiği
+  // bir güncellemenin bu ekrana anında yansıdığından elle emin olmak
+  // isteyebilir — müşteriyi kalıcı ID'siyle tazeden çekip tüm sayfayı
+  // yeniden çizer.
+  document.getElementById("btnSayfayiYenile").onclick = function(){
+    var btn = this;
+    var eskiMetin = btn.textContent;
+    btn.textContent = "⏳ Yenileniyor...";
+    btn.disabled = true;
+    setTimeout(function(){
+      var taze = (musteriVerisi && musteriVerisi.id) ? CustomerData.musteriIdIleBul(musteriVerisi.id) : null;
+      if(taze){
+        musteriVerisi = taze;
+        seciliMusteriAdi = taze.ad;
+        alanlariDoldur(taze);
+        toastGoster("✓ Sayfa güncel bilgiyle yenilendi.");
+      } else {
+        toastGoster("⚠️ Güncel kayıt bulunamadı.");
+      }
+      btn.textContent = eskiMetin;
+      btn.disabled = false;
+    }, 300);
+  };
   var secili = CustomerData.seciliyiOku();
   if(!secili){
     hataGoster("Müşteri seçilmemiş, listeye dönülüyor.");
@@ -453,11 +477,13 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   });
 
-  // --- İşlem Yap akışı (değişmedi) ---
+  // --- Alt buton: normalde "İŞLEMLER" (Temas/Geçmiş hub'ına götürür);
+  // sadece "İşlem Yap" akışından (yeni Numune/Teklif/Sipariş başlatmak
+  // için) geldiyse "▶️ İşleme Devam Et" olur ve ürün seçimine götürür. ---
   var akistanGeldiMi = localStorage.getItem("weiconv2_islem_yap_akisi") === "1";
   var islemeDevamBtn = document.getElementById("btnIslemeDevam");
   if(akistanGeldiMi){
-    islemeDevamBtn.hidden = false;
+    islemeDevamBtn.textContent = "▶️ İşleme Devam Et";
     islemeDevamBtn.onclick = function(){ document.getElementById("tipSecimOverlay").hidden = false; };
     document.getElementById("btnTipSecimVazgec").onclick = function(){ document.getElementById("tipSecimOverlay").hidden = true; };
     document.getElementById("tipSecimOverlay").querySelectorAll(".tip-btn").forEach(function(btn2){
@@ -468,6 +494,9 @@ document.addEventListener("DOMContentLoaded", function(){
         window.location.href = "product.html";
       };
     });
+  } else {
+    islemeDevamBtn.textContent = "📋 İŞLEMLER";
+    islemeDevamBtn.onclick = function(){ window.location.href = "customer-detail.html"; };
   }
 
   ["cariKapatBtn","cariGeriOk"].forEach(function(id){
