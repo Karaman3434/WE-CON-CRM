@@ -5,6 +5,22 @@
   sonucu gösterir. Kaydetme yok — sadece hesaplama aracı.
 */
 
+function kurIkonuGuncelle(){
+  var ikon = document.getElementById("headerKurIkon");
+  if(ikon) ikon.textContent = (kurOverride!=null) ? "✏️" : "🔄";
+}
+
+function kurSecimiGoster(){
+  var gunlukKur = CartData.kurOku();
+  document.getElementById("kurGunlukDeger").textContent = CartData.fmt(gunlukKur);
+  var manuelAlan = document.getElementById("kurManuelAlan");
+  manuelAlan.hidden = true;
+  document.getElementById("kurManuelInput").value = (kurOverride!=null) ? kurOverride : "";
+  document.getElementById("btnKurGunluk").className = "kur-secenek-btn" + (kurOverride==null ? " kur-secenek-btn--secili" : "");
+  document.getElementById("btnKurManuelAc").className = "kur-secenek-btn" + (kurOverride!=null ? " kur-secenek-btn--secili" : "");
+  document.getElementById("kurSecimOverlay").hidden = false;
+}
+
 function hataGoster(mesaj){
   console.error(mesaj);
   if(typeof HataLog !== "undefined") HataLog.kaydet(mesaj);
@@ -92,7 +108,14 @@ function dipFiyatiOner(){
   document.getElementById("hesDipFiyat").value = CartData.dipFiyatOner(liste);
 }
 
+// Döviz Kuru geçici override (WG.100926.196) — sadece o an ekranda olan
+// hesaplama için geçerli, kalıcı DEĞİL. Yeni bir ürün seçilince (yeni
+// "işlem" başladığında) otomatik sıfırlanır, günlük kura dönülür.
+var kurOverride = null;
+
 function urunSec(bilgi){
+  kurOverride = null;
+  kurIkonuGuncelle();
   seciliUrunBilgi = bilgi;
   document.getElementById("seciliUrunAd").textContent = bilgi.ad;
   document.getElementById("seciliUrunKutu").hidden = false;
@@ -112,7 +135,7 @@ function hesaplaVeGoster(){
       iskonto: parseFloat(document.getElementById("hesIskonto").value)||0,
       adet: parseFloat(document.getElementById("hesAdet").value)||1
     };
-    var kur = CartData.kurOku();
+    var kur = (kurOverride!=null) ? kurOverride : CartData.kurOku();
     var kdv = CartData.kdvOku();
     var h = CartData.hesapla(urun, kur, kdv);
 
@@ -233,6 +256,38 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("iptalOnayOverlay").hidden = true;
     iptalOnayHedefUrl = null;
   };
+
+  // Üst header'daki döviz kuru alanına dokununca (sadece bu sayfada) normal
+  // "günlük kuru yenile" davranışı yerine Günlük/Manuel seçim popup'ı açılır.
+  var headerKurBtn = document.getElementById("headerKurYenileBtn");
+  if(headerKurBtn){
+    headerKurBtn.onclick = function(ev){
+      ev.preventDefault();
+      kurSecimiGoster();
+    };
+  }
+  document.getElementById("btnKurGunluk").onclick = function(){
+    kurOverride = null;
+    kurIkonuGuncelle();
+    document.getElementById("kurSecimOverlay").hidden = true;
+    hesaplaVeGoster();
+  };
+  document.getElementById("btnKurManuelAc").onclick = function(){
+    document.getElementById("kurManuelAlan").hidden = false;
+    document.getElementById("kurManuelInput").focus();
+  };
+  document.getElementById("btnKurManuelKaydet").onclick = function(){
+    var deger = parseFloat(document.getElementById("kurManuelInput").value);
+    if(!deger || deger <= 0){ hataGoster("Geçerli bir kur girin."); return; }
+    kurOverride = deger;
+    kurIkonuGuncelle();
+    document.getElementById("kurSecimOverlay").hidden = true;
+    hesaplaVeGoster();
+  };
+  document.getElementById("btnKurSecimVazgec").onclick = function(){
+    document.getElementById("kurSecimOverlay").hidden = true;
+  };
+
   // Menü butonu artık yarim-kalan-uyari.js tarafından yönetiliyor (sepette
   // ürün + seçili müşteri varsa uyarıp sonra temizleyip gidiyor).
   ProductData.katalogDegistiginde(function(){});

@@ -133,3 +133,34 @@
   width: 100%; background: #eef1f5; color: #44494f; border: none; border-radius: 8px;
   padding: 12px; min-height: 44px; font-size: 14px; font-weight: 800; cursor: pointer;
 }
+
+/* Döviz Kuru seçim popup'ı (WG.100926.196) */
+.kur-secenek-btn {
+  width: 100%;
+  background: #f4f6f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #2d3540;
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+.kur-secenek-btn--secili {
+  background: #eaf2fc;
+  border-color: #3569b8;
+  color: #003a70;
+}
+.kur-manuel-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid #3569b8;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-align: center;
+}
