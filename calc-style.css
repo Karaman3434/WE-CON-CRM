@@ -164,3 +164,16 @@
   margin-bottom: 8px;
   text-align: center;
 }
+
+/* Kapat butonu her zaman kırmızı olmalı (app-geneli kural) */
+.kur-kapat-btn {
+  width: 100%;
+  background: #fdeaea;
+  color: #c0392b;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
