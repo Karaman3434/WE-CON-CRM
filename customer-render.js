@@ -228,11 +228,12 @@ function listeyiCiz(){
       kart.onclick = function(){
         CustomerData.sec(sonuclar[i]);
         CustomerData.sonGoruntulendi(sonuclar[i].ad);
-        // Müşteri arama sonuçlarından seçim her zaman Müşteri Kartı'na
-        // gider — sepette eskiden kalmış bir ürün olması bu rotayı
-        // etkilemez (eskiden "yarım kalan işlemi tamamla" mantığıyla
-        // send.html'e atlıyordu, bu yanlış rotaydı).
-        window.location.href = "customer-detail.html";
+        // ROTA DEĞİŞİKLİĞİ (WG.100926.196): Müşteri listesinden seçim artık
+        // doğrudan Cari Kart'a gider (önce temel bilgi/adres/yetkili
+        // gözden geçirilsin diye) — Temas/İşlem Geçmişi/Görevler/Ürün
+        // Geçmişi/Müşteriyi Sil için Cari Kart'taki "İşlemler" bağlantısı
+        // kullanılır (customer-detail.html).
+        window.location.href = "customer-cari-kart.html";
       };
     });
   }catch(e){ hataGoster("Liste çizilemedi: " + e.message); }
