@@ -39,14 +39,7 @@ var seciliMusteriAdi = null;
 
 function ustBilgiyiCiz(musteri){
   document.getElementById("detayAd").textContent = musteri.ad;
-  document.getElementById("detayKod").textContent = musteri.id ? ("🏷 Müşteri Kodu: " + musteri.id) : "";
-
-  var bilgiParcalar = [];
-  if(musteri.sehir) bilgiParcalar.push(musteri.sehir);
-  if(musteri.vade) bilgiParcalar.push(musteri.vade + " vade");
-  var ilkYetkili = (musteri.iletisimler && musteri.iletisimler[0]) ? musteri.iletisimler[0].isim : null;
-  if(ilkYetkili) bilgiParcalar.push(ilkYetkili);
-  document.getElementById("detayOzetSatir").textContent = bilgiParcalar.join(" · ");
+  document.getElementById("detayKod").textContent = musteri.id ? (musteri.id + " -") : "";
 
   var ziyaretSayisi = (musteri.ziyaretGecmisi||[]).length;
   document.getElementById("badgeZiyaret").textContent = ziyaretSayisi;
