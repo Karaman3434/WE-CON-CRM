@@ -287,6 +287,31 @@ body {
 .kart--acik-yesil .kart-deger { color: #0e6b58; }
 .kart--acik-yesil .kart-etiket { color: #16a085; }
 
+/* ---------- Günün Özeti ---------- */
+.gunun-ozeti-kutu {
+  display: block;
+  background: #fff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 10px 4px 0;
+  text-decoration: none;
+}
+.gunun-ozeti-baslik {
+  font-size: 10.5px;
+  font-weight: 900;
+  color: #6a1b9a;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.gunun-ozeti-satir {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #2d3540;
+  margin-bottom: 4px;
+}
+.gunun-ozeti-satir:last-child { margin-bottom: 0; }
+
 /* ---------- Ayraç ---------- */
 .ayrac {
   border: none;

@@ -122,6 +122,24 @@ var WeiconData = (function(){
     return {toplamEuro:toplamEuro, toplamEuroTl:toplamEuroTl, toplamPrim:toplamPrim, aktifMi:true};
   }
 
+  function gununIslemOzeti(){
+    var isGunu = buGununIsGunuTarihi();
+    var dokum = {numune:0, teklif:0, proforma:0, siparis:0};
+    if(!isGunu) return {toplam:0, dokum:dokum};
+    var gunNo = isGunu.getDate().toString();
+    var ayAd = AYLAR[isGunu.getMonth()];
+    var yil = isGunu.getFullYear().toString();
+    ["numune","teklif","proforma","siparis"].forEach(function(tip){
+      (arsivHamData[tip] || []).forEach(function(k){
+        if(!k.tarih) return;
+        var parca = k.tarih.split(" ");
+        if((parca[0]||"")===gunNo && (parca[1]||"")===ayAd && (parca[2]||"")===yil) dokum[tip]++;
+      });
+    });
+    var toplam = dokum.numune+dokum.teklif+dokum.proforma+dokum.siparis;
+    return {toplam:toplam, dokum:dokum};
+  }
+
   function guncelKurYedek(){
     var v = parseFloat(localStorage.getItem("weicon_kur"));
     return isNaN(v) ? 0 : v;
@@ -188,6 +206,7 @@ var WeiconData = (function(){
     veriDegistiginde: veriDegistiginde,
     buAyinVerisi: buAyinVerisi,
     bugununVerisi: bugununVerisi,
+    gununIslemOzeti: gununIslemOzeti,
     fmt: fmt,
     hazirMi: function(){ return hazir; },
     bildirimVerisiDinlemeyeBasla: bildirimVerisiDinlemeyeBasla,

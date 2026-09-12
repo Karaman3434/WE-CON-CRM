@@ -47,6 +47,44 @@ function kartlariGuncelle(){
   }catch(e){ hataGoster("Kartlar güncellenemedi: " + e.message); }
 }
 
+var TEMAS_TUR_ETIKET = {ziyaret:"Ziyaret", telefon:"Telefon", mail:"Mail", whatsapp:"WhatsApp"};
+
+function gununOzetiniGuncelle(){
+  try{
+    var islem = WeiconData.gununIslemOzeti();
+    var islemParcalar = [];
+    if(islem.dokum.numune>0) islemParcalar.push(islem.dokum.numune + " Numune");
+    if(islem.dokum.teklif>0) islemParcalar.push(islem.dokum.teklif + " Fiyat Teklifi");
+    if(islem.dokum.proforma>0) islemParcalar.push(islem.dokum.proforma + " Proforma");
+    if(islem.dokum.siparis>0) islemParcalar.push(islem.dokum.siparis + " Sipariş");
+    setText("gununOzetiIslemSatiri", "🔄 " + islem.toplam + " İşlem" + (islemParcalar.length ? " — " + islemParcalar.join(", ") : ""));
+
+    if(typeof CustomerData !== "undefined"){
+      var bugun = new Date();
+      var temasDokum = {ziyaret:0, telefon:0, mail:0, whatsapp:0};
+      CustomerData.tumZiyaretTemaslar().forEach(function(z){
+        var d = new Date(z.ts);
+        if(d.getFullYear()===bugun.getFullYear() && d.getMonth()===bugun.getMonth() && d.getDate()===bugun.getDate()){
+          var t = z.tur || "ziyaret";
+          if(temasDokum[t]===undefined) temasDokum[t] = 0;
+          temasDokum[t]++;
+        }
+      });
+      var temasToplam = 0, temasParcalar = [];
+      Object.keys(temasDokum).forEach(function(t){
+        temasToplam += temasDokum[t];
+        if(temasDokum[t]>0) temasParcalar.push(temasDokum[t] + " " + (TEMAS_TUR_ETIKET[t]||t));
+      });
+      setText("gununOzetiTemasSatiri", "📍 " + temasToplam + " Temas" + (temasParcalar.length ? " — " + temasParcalar.join(", ") : ""));
+    }
+
+    var bugunTarih = new Date();
+    var tarihStr = bugunTarih.getFullYear() + "-" + String(bugunTarih.getMonth()+1).padStart(2,"0") + "-" + String(bugunTarih.getDate()).padStart(2,"0");
+    var kutu = document.getElementById("gununOzetiKutu");
+    if(kutu) kutu.href = "ziyaret.html?tarih=" + tarihStr;
+  }catch(e){ hataGoster("Günün özeti güncellenemedi: " + e.message); }
+}
+
 function setText(id, deger){
   var el = document.getElementById(id);
   if(el) el.textContent = deger;
@@ -160,10 +198,13 @@ document.addEventListener("DOMContentLoaded", function(){
   butonlariBagla();
   WeiconData.veriDegistiginde(kartlariGuncelle);
   WeiconData.bildirimDegistiginde(bildirimBanneriGuncelle);
+  WeiconData.bildirimDegistiginde(gununOzetiniGuncelle);
   WeiconData.bildirimVerisiDinlemeyeBasla();
+  if(typeof CustomerData !== "undefined") CustomerData.listeDegistiginde(gununOzetiniGuncelle);
   document.getElementById("bildirimBanner").onclick = function(){ window.location.href = "bildirimler.html"; };
   // Firebase verisi henüz gelmemiş olabilir; ilk anda da bir kez dene.
   kartlariGuncelle();
+  gununOzetiniGuncelle();
   if(typeof KmData !== "undefined"){ KmData.degistiginde(kmDurumuGuncelle); kmDurumuGuncelle(); }
 
   // Ana Sayfa'daki "HESABA YATACAK" kutusu — Maaş + Prim Hesaplama

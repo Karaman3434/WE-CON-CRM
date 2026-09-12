@@ -259,6 +259,19 @@ document.addEventListener("DOMContentLoaded", function(){
   };
 
   CustomerData.listeDegistiginde(function(){ if(seciliGunAnahtari===null) takvimiCiz(); });
-  takvimiCiz();
+
+  var urlParams = new URLSearchParams(window.location.search);
+  var urlTarih = urlParams.get("tarih"); // "YYYY-MM-DD" — bkz. Ana Sayfa "Günün Özeti" kutusu
+  if(urlTarih && /^\d{4}-\d{2}-\d{2}$/.test(urlTarih)){
+    var parcaUrl = urlTarih.split("-");
+    goruntulenenYil = parseInt(parcaUrl[0], 10);
+    goruntulenenAy = parseInt(parcaUrl[1], 10) - 1;
+    seciliGunAnahtari = urlTarih;
+    document.getElementById("ziyGunFiltre").value = urlTarih;
+    takvimiCiz();
+    gunPaneliniAc(seciliGunAnahtari, CustomerData.tumZiyaretTemaslar());
+  } else {
+    takvimiCiz();
+  }
   hatirlatmalariKontrolEt();
 });
