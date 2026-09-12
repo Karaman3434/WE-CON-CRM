@@ -115,11 +115,8 @@ function secimTiklariniBagla(){
 
 function alanlariDoldur(musteri){
   musteriVerisi = musteri;
-  document.getElementById("cariKartAd").textContent = musteri.ad;
-  var altBaslikParcalar = [];
-  if(musteri.id) altBaslikParcalar.push("🏷 " + musteri.id);
-  if(musteri.sehir) altBaslikParcalar.push(musteri.sehir);
-  document.getElementById("cariKartAltBaslik").textContent = altBaslikParcalar.join(" · ");
+  document.getElementById("cariKartAd").textContent = (musteri.id ? musteri.id + " - " : "") + musteri.ad;
+  document.getElementById("cariKartAltBaslik").textContent = musteri.sehir || "";
 
   document.getElementById("ozetVadeDeger").textContent = musteri.vade || "—";
   document.getElementById("ozetFaturaDeger").textContent = musteri.fatura || "—";
@@ -514,7 +511,7 @@ document.addEventListener("DOMContentLoaded", function(){
     if(!taze) return;
     musteriVerisi = taze;
     seciliMusteriAdi = taze.ad;
-    document.getElementById("cariKartAd").textContent = taze.ad;
+    document.getElementById("cariKartAd").textContent = (taze.id ? taze.id + " - " : "") + taze.ad;
     document.getElementById("ozetVadeDeger").textContent = taze.vade || "—";
     document.getElementById("ozetFaturaDeger").textContent = taze.fatura || "—";
     document.getElementById("ozetKargoDeger").textContent = taze.kargo || "—";
