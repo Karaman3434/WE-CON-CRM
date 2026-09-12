@@ -37,7 +37,6 @@ function fmtG(n){
 }
 var seciliMusteriAdi = null;
 var seciliMusteriId = null;
-var secilenTemasTuru = null;
 
 function ustBilgiyiCiz(musteri){
   document.getElementById("detayAd").textContent = musteri.ad;
@@ -76,80 +75,11 @@ function siparisGecmisiniCiz(){
   }catch(e){ hataGoster("Sipariş geçmişi sayacı güncellenemedi: " + e.message); }
 }
 
-var TUR_META = {
-  ziyaret:  {etiket:"ZİYARET",  ikon:"📍"},
-  telefon:  {etiket:"TELEFON",  ikon:"📞"},
-  mail:     {etiket:"MAIL",     ikon:"✉️"},
-  whatsapp: {etiket:"WHATSAPP", ikon:"💬"}
-};
 
-function ziyaretGecmisiniCiz(musteri){
-  try{
-    var liste = (musteri.ziyaretGecmisi || []).slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
-    var kapsayici = document.getElementById("detayZiyaretListesi");
-    var bos = document.getElementById("detayZiyaretBos");
-
-    if(liste.length === 0){
-      kapsayici.innerHTML = "";
-      bos.hidden = false;
-      return;
-    }
-    bos.hidden = true;
-    kapsayici.innerHTML = liste.map(function(z){
-      var d = new Date(z.ts);
-      var tarihStr = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear();
-      var tur = TUR_META[z.tur] || TUR_META.ziyaret;
-      return "<div class='gecmis-karti'>"
-        + "<div class='gecmis-karti-ust'>"
-        + "<span class='temas-rozet temas-rozet--" + (z.tur||"ziyaret") + "'>" + tur.ikon + " " + tur.etiket + "</span>"
-        + "<span class='gecmis-tarih'>" + tarihStr + "</span>"
-        + "</div>"
-        + (z.not ? "<div class='gecmis-not'>" + htmlEsc(z.not) + "</div>" : "")
-        + "</div>";
-    }).join("");
-  }catch(e){ hataGoster("Ziyaret geçmişi çizilemedi: " + e.message); }
-}
 
 function tilelariBagla(){
   document.getElementById("tileTemas").onclick = function(){
-    var bolum = document.getElementById("bolumTemas");
-    bolum.hidden = !bolum.hidden;
-    if(!bolum.hidden) bolum.scrollIntoView({behavior:"smooth", block:"start"});
-  };
-
-  // "➕ Temas Gir" (WG.100926.196): tür seç → not yaz → kaydet.
-  document.getElementById("btnTemasGir").onclick = function(){
-    document.getElementById("temasTurOverlay").hidden = false;
-  };
-  document.getElementById("btnTemasTurVazgec").onclick = function(){
-    document.getElementById("temasTurOverlay").hidden = true;
-  };
-  document.querySelectorAll(".temas-tur-btn[data-tur]").forEach(function(btn){
-    btn.onclick = function(){
-      secilenTemasTuru = this.getAttribute("data-tur");
-      var tur = TUR_META[secilenTemasTuru] || TUR_META.ziyaret;
-      document.getElementById("temasTurOverlay").hidden = true;
-      document.getElementById("temasNotBaslik").textContent = tur.ikon + " " + tur.etiket + " Notu";
-      document.getElementById("temasNotInput").value = "";
-      document.getElementById("temasNotOverlay").hidden = false;
-      document.getElementById("temasNotInput").focus();
-    };
-  });
-  document.getElementById("btnTemasNotVazgec").onclick = function(){
-    document.getElementById("temasNotOverlay").hidden = true;
-  };
-  document.getElementById("btnTemasKaydet").onclick = function(){
-    var not = document.getElementById("temasNotInput").value.trim();
-    var btn = this;
-    btn.disabled = true;
-    CustomerData.ziyaretEkle(seciliMusteriAdi, not, secilenTemasTuru, null, function(basarili, err){
-      btn.disabled = false;
-      if(!basarili){
-        hataGoster("Temas kaydedilemedi: " + (err && err.message ? err.message : err));
-        return;
-      }
-      document.getElementById("temasNotOverlay").hidden = true;
-    }, seciliMusteriId);
+    window.location.href = "customer-temas.html";
   };
 
   document.getElementById("tileGecmis").onclick = function(){
@@ -366,12 +296,10 @@ document.addEventListener("DOMContentLoaded", function(){
     var tazeMusteri = CustomerData.musteriBul(seciliMusteriAdi);
     if(tazeMusteri){
       ustBilgiyiCiz(tazeMusteri);
-      ziyaretGecmisiniCiz(tazeMusteri);
     }
   });
   ReportsData.arsivDegistiginde(siparisGecmisiniCiz);
   ReportsData.gorevDegistiginde(musteriGorevleriniCiz);
-  ziyaretGecmisiniCiz(secili);
   siparisGecmisiniCiz();
   musteriGorevleriniCiz();
   // Firebase müşteri listesi sayfa tam yüklenmeden önce gelmiş olabilir —
