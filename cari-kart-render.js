@@ -499,10 +499,8 @@ document.addEventListener("DOMContentLoaded", function(){
     islemeDevamBtn.onclick = function(){ window.location.href = "customer-detail.html"; };
   }
 
-  ["cariKapatBtn","cariGeriOk"].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.addEventListener("click", function(){ localStorage.removeItem("weiconv2_islem_yap_akisi"); });
-  });
+  var cariKapatBtnEl = document.getElementById("cariKapatBtn");
+  if(cariKapatBtnEl) cariKapatBtnEl.addEventListener("click", function(){ localStorage.removeItem("weiconv2_islem_yap_akisi"); });
 
   // Firebase'den taze veri gelince ana sayfayı ve (açıksa) akordiyonu tazele.
   // HATA DÜZELTME (WG.080926.196): isim değişikliğinden hemen sonra bu
