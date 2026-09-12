@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.080926.1437.247">
 <link rel="stylesheet" href="customer-style.css?v=WG.090926.2045.404">
 <link rel="stylesheet" href="detail-style.css?v=WG.100926.1536.470">
-<link rel="stylesheet" href="cari-kart-style.css?v=WG.100926.1621.480">
+<link rel="stylesheet" href="cari-kart-style.css?v=WG.100926.1648.484">
 <link rel="stylesheet" href="send-style.css?v=WG.090926.1133.332">
 </head>
 <body>
@@ -50,9 +50,8 @@
 
   <div class="ck-blok-etiket ck-blok-etiket--temel">
     <span>🏢 TEMEL BİLGİLER</span>
-    <button class="ck-guncelle-link" data-bolum="cari">Bilgiyi Güncelle</button>
   </div>
-  <div class="ozet-satir-3 ozet-satir-3--birlesik">
+  <div class="ozet-satir-3 ozet-satir-3--birlesik ck-tiklanabilir-alan" data-bolum="cari">
     <div class="ozet-alan"><span class="ozet-ikon">📅</span><div class="ozet-metin"><div class="ozet-baslik">VADE</div><div class="ozet-deger" id="ozetVadeDeger">—</div></div></div>
     <div class="ozet-alan"><span class="ozet-ikon">📄</span><div class="ozet-metin"><div class="ozet-baslik">FATURA</div><div class="ozet-deger" id="ozetFaturaDeger">—</div></div></div>
     <div class="ozet-alan"><span class="ozet-ikon">🚚</span><div class="ozet-metin"><div class="ozet-baslik">KARGO</div><div class="ozet-deger" id="ozetKargoDeger">—</div></div></div>
@@ -61,42 +60,53 @@
   <!-- FATURA ADRESLERİ -->
   <div class="ck-blok-etiket ck-blok-etiket--fatura">
     <span>🧾 FATURA ADRESİ</span>
-    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="fatura">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="fatura" title="Sil">🗑️</button></span>
   </div>
-  <section class="ck-blok">
+  <section class="ck-blok ck-tiklanabilir-alan" data-bolum="fatura">
     <div class="ck-kart-liste" id="faturaListesi"></div>
   </section>
 
   <!-- TESLİMAT ADRESLERİ -->
   <div class="ck-blok-etiket ck-blok-etiket--teslimat">
     <span>🚚 TESLİMAT ADRESİ</span>
-    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="teslimat">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="teslimat" title="Sil">🗑️</button></span>
   </div>
-  <section class="ck-blok">
+  <section class="ck-blok ck-tiklanabilir-alan" data-bolum="teslimat">
     <div class="ck-kart-liste" id="teslimatListesi"></div>
   </section>
 
   <!-- YETKİLİ KİŞİLER -->
   <div class="ck-blok-etiket ck-blok-etiket--yetkili">
     <span>👤 YETKİLİ BİLGİSİ</span>
-    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="yetkili">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="yetkili" title="Sil">🗑️</button></span>
   </div>
-  <section class="ck-blok">
+  <section class="ck-blok ck-tiklanabilir-alan" data-bolum="yetkili">
     <div class="ck-kart-liste" id="yetkiliListesi"></div>
   </section>
 
   <!-- NOTLAR -->
   <div class="ck-blok-etiket ck-blok-etiket--not">
     <span>📝 NOT</span>
-    <span class="ck-blok-eylemler"><button class="ck-guncelle-link" data-bolum="not">Bilgiyi Güncelle</button><button class="ck-sil-mini" data-bolum="not" title="Sil">🗑️</button></span>
   </div>
-  <section class="ck-blok">
+  <section class="ck-blok ck-tiklanabilir-alan" data-bolum="not">
     <div class="ck-kart-liste" id="notListesi"></div>
   </section>
 
   <div class="ck-alt-buton-satir">
     <a class="cari-kapat-buton" id="cariKapatBtn" href="customer.html">Kapat</a>
     <button class="cari-islemedevam-buton" id="btnIslemeDevam">📋 İŞLEMLER</button>
+  </div>
+
+  <!-- Bölüm eylem popup'ı (WG.100926.196): her bölümün içeriğine
+       dokununca açılır — Bilgiyi Güncelle / Ekle / Sil / Kapat.
+       Temel Bilgiler'de Ekle/Sil anlamsız olduğu için gizlenir. -->
+  <div class="tip-secim-overlay" id="bolumEylemOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik" id="bolumEylemBaslik">Bilgi</div>
+      <div class="bolum-eylem-grid">
+        <button class="bolum-eylem-btn bolum-eylem-btn--guncelle" id="btnBolumGuncelle">✏️ Bilgiyi Güncelle</button>
+        <button class="bolum-eylem-btn bolum-eylem-btn--ekle" id="btnBolumEkle">➕ Ekle</button>
+        <button class="bolum-eylem-btn bolum-eylem-btn--sil" id="btnBolumSil">🗑️ Sil</button>
+        <button class="bolum-eylem-btn bolum-eylem-btn--kapat" id="btnBolumEylemKapat">✕ Kapat</button>
+      </div>
+    </div>
   </div>
 
   <div class="tip-secim-overlay" id="tipSecimOverlay" hidden>
@@ -159,6 +169,6 @@
 <script src="reports-data.js?v=WG.070926.2130.195"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="cari-kart-render.js?v=WG.100926.1621.479"></script>
+<script src="cari-kart-render.js?v=WG.100926.1648.483"></script>
 </body>
 </html>

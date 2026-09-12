@@ -79,26 +79,28 @@
 .ck-blok-etiket--not { background: #f6f0fd; color: #6a1b9a; }
 .ck-blok-etiket--temel { background: #f4f0fc; color: #4a2d8a; margin-bottom: 0; }
 
-.ck-blok-eylemler { display: flex; align-items: center; gap: 8px; }
-.ck-guncelle-link {
-  background: none;
+.ck-tiklanabilir-alan { cursor: pointer; }
+.ck-tiklanabilir-alan:active { background: #f4f6f9; }
+
+.bolum-eylem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.bolum-eylem-btn {
   border: none;
-  padding: 0;
-  font-size: 11px;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
   font-weight: 800;
-  text-decoration: underline;
-  color: inherit;
   cursor: pointer;
+  text-align: center;
 }
-.ck-sil-mini {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-  line-height: 1;
-  cursor: pointer;
-  opacity: .8;
-}
+.bolum-eylem-btn--guncelle { background: #eaf2fc; color: #003a70; }
+.bolum-eylem-btn--ekle { background: #eafaf0; color: #0e6b34; }
+.bolum-eylem-btn--sil { background: #fdeceb; color: #a32d2d; }
+.bolum-eylem-btn--kapat { background: #f4f6f9; color: #556170; }
 
 /* HATA/TASARIM DÜZELTME (WG.090926.196): dış kutunun 14px iç boşluğu ve
    içindeki .ck-kart'ın kendi kenarlığı kaldırıldı — etiket satırı ile

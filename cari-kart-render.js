@@ -104,7 +104,8 @@ function anaSayfayiRenderEt(){
 
 function secimTiklariniBagla(){
   document.querySelectorAll(".ck-kart--secilebilir").forEach(function(el){
-    el.onclick = function(){
+    el.onclick = function(ev){
+      ev.stopPropagation();
       var tip = this.getAttribute("data-tip");
       var i = parseInt(this.getAttribute("data-i"), 10);
       secimler[tip] = i;
@@ -421,21 +422,38 @@ document.addEventListener("DOMContentLoaded", function(){
   seciliMusteriAdi = secili.ad;
   alanlariDoldur(secili);
 
-  // YENİ TASARIM (WG.090926.196): eski tek "Bilgiyi Düzenle" butonu ve
-  // akordiyon seçim ekranı kaldırıldı — her blok artık kendi başlık
-  // satırında doğrudan "Bilgiyi Güncelle" bağlantısına ve (silinebilir
-  // kayıtlarda) küçük bir 🗑️ butonuna sahip.
-  function guncelleTiklandi(bolumId){
-    if(bolumId === "cari"){ eylemBaslat("cari","duzenle"); return; }
-    var liste = kayitlariGetir(musteriVerisi, bolumId);
-    eylemBaslat(bolumId, liste.length === 0 ? "ekle" : "duzenle");
-  }
-  document.querySelectorAll(".ck-guncelle-link[data-bolum]").forEach(function(btn){
-    btn.onclick = function(){ guncelleTiklandi(this.getAttribute("data-bolum")); };
+  // YENİ TASARIM (WG.100926.196): başlık satırındaki "Bilgiyi Güncelle" /
+  // 🗑️ kaldırıldı — artık bölümün İÇERİĞİNE dokununca bir popup açılıyor
+  // (Bilgiyi Güncelle / Ekle / Sil / Kapat). "cari" (Temel Bilgiler)
+  // eklenip silinemeyeceği için o bölümde sadece Güncelle+Kapat görünür.
+  var acikBolumEylem = null;
+  document.querySelectorAll(".ck-tiklanabilir-alan[data-bolum]").forEach(function(alan){
+    alan.onclick = function(){
+      acikBolumEylem = this.getAttribute("data-bolum");
+      var eklenipSilinebilir = acikBolumEylem !== "cari";
+      document.getElementById("bolumEylemBaslik").textContent = (TIP_META[acikBolumEylem] ? TIP_META[acikBolumEylem].ikon + " " + TIP_META[acikBolumEylem].baslik : "Temel Bilgiler");
+      document.getElementById("btnBolumEkle").hidden = !eklenipSilinebilir;
+      document.getElementById("btnBolumSil").hidden = !eklenipSilinebilir;
+      document.getElementById("bolumEylemOverlay").hidden = false;
+    };
   });
-  document.querySelectorAll(".ck-sil-mini[data-bolum]").forEach(function(btn){
-    btn.onclick = function(){ eylemBaslat(this.getAttribute("data-bolum"), "sil"); };
-  });
+  document.getElementById("btnBolumGuncelle").onclick = function(){
+    document.getElementById("bolumEylemOverlay").hidden = true;
+    if(acikBolumEylem === "cari"){ eylemBaslat("cari","duzenle"); return; }
+    var liste = kayitlariGetir(musteriVerisi, acikBolumEylem);
+    eylemBaslat(acikBolumEylem, liste.length === 0 ? "ekle" : "duzenle");
+  };
+  document.getElementById("btnBolumEkle").onclick = function(){
+    document.getElementById("bolumEylemOverlay").hidden = true;
+    eylemBaslat(acikBolumEylem, "ekle");
+  };
+  document.getElementById("btnBolumSil").onclick = function(){
+    document.getElementById("bolumEylemOverlay").hidden = true;
+    eylemBaslat(acikBolumEylem, "sil");
+  };
+  document.getElementById("btnBolumEylemKapat").onclick = function(){
+    document.getElementById("bolumEylemOverlay").hidden = true;
+  };
 
   // Form Kaydet + Sil Onayla
   document.getElementById("formKaydetBtn").onclick = formKaydet;
