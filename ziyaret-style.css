@@ -169,7 +169,9 @@
 }
 .ziy-tur-btn--secili { opacity: 1; }
 .ziy-tur-btn--ziyaret { background: #f0fbf3; border: 1.5px solid #1f9d55; color: #0e6b34; }
-.ziy-tur-btn--temas { background: #f6f0fd; border: 1.5px solid #8e44ad; color: #8e44ad; }
+.ziy-tur-btn--telefon { background: #eaf2fc; border: 1.5px solid #3569b8; color: #003a70; }
+.ziy-tur-btn--mail { background: #fdf1e6; border: 1.5px solid #d98a3d; color: #a8590c; }
+.ziy-tur-btn--whatsapp { background: #eafaf3; border: 1.5px solid #1f9d78; color: #0e6b58; }
 
 .ziy-hatirlatma-satir {
   display: flex;
@@ -257,4 +259,23 @@
   font-size: 13px;
   padding: 16px 0;
   font-style: italic;
+}
+
+/* Gün Filtrele (WG.100926.196) — takvimde ay ay gezmeden direkt bir güne atlamak için */
+.ziy-gun-filtre-satir {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.ziy-gun-filtre-etiket { font-size: 12px; font-weight: 800; color: #2d3540; }
+.ziy-gun-filtre-input {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
 }

@@ -604,3 +604,72 @@
   padding: 30px 0;
   font-style: italic;
 }
+
+/* Temas Gir akışı (WG.100926.196) */
+.temas-gir-btn {
+  width: 100%;
+  background: #6a1b9a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.temas-tur-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.temas-tur-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+}
+.temas-tur-btn--ziyaret { background: #eafaf0; color: #0e6b34; }
+.temas-tur-btn--telefon { background: #eaf2fc; color: #003a70; }
+.temas-tur-btn--mail { background: #fdf1e6; color: #a8590c; }
+.temas-tur-btn--whatsapp { background: #eafaf3; color: #0e6b58; }
+.temas-not-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  margin-bottom: 10px;
+  font-family: inherit;
+  resize: vertical;
+}
+.temas-kaydet-btn {
+  width: 100%;
+  background: #16a085;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.temas-rozet {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.temas-rozet--ziyaret { background: #eafaf0; color: #0e6b34; }
+.temas-rozet--telefon { background: #eaf2fc; color: #003a70; }
+.temas-rozet--mail { background: #fdf1e6; color: #a8590c; }
+.temas-rozet--whatsapp { background: #eafaf3; color: #0e6b58; }
+.gecmis-karti-ust { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.gecmis-tarih { font-size: 10px; color: #8b95a1; font-weight: 700; flex-shrink: 0; }

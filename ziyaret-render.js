@@ -46,6 +46,12 @@ var goruntulenenYil, goruntulenenAy; // ay: 0-11
 var seciliGunAnahtari = null;
 var seciliFirma = null;
 var seciliTur = "ziyaret";
+var TUR_META = {
+  ziyaret:  {etiket:"Ziyaret",  ikon:"📍", renk:"#0e6b34"},
+  telefon:  {etiket:"Telefon",  ikon:"📞", renk:"#003a70"},
+  mail:     {etiket:"Mail",     ikon:"✉️", renk:"#a8590c"},
+  whatsapp: {etiket:"WhatsApp", ikon:"💬", renk:"#0e6b58"}
+};
 
 function takvimiCiz(){
   try{
@@ -113,11 +119,10 @@ function gunPaneliniAc(anahtar, tumKayitlar){
     } else {
       bos.hidden = true;
       kapsayici.innerHTML = buGununKayitlari.map(function(k){
-        var turEtiket = k.tur==="temas" ? "☎ Temas" : "📍 Ziyaret";
-        var turRenk = k.tur==="temas" ? "#8e44ad" : "#0e6b34";
+        var tur = TUR_META[k.tur] || TUR_META.ziyaret;
         return "<div class='ziy-kayit-karti'>"
           + "<div class='ziy-kayit-musteri'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
-          + "<div class='ziy-kayit-tur' style='color:" + turRenk + "'>" + turEtiket + (k.not ? " — " + htmlEsc(k.not) : "") + "</div>"
+          + "<div class='ziy-kayit-tur' style='color:" + tur.renk + "'>" + tur.ikon + " " + tur.etiket + (k.not ? " — " + htmlEsc(k.not) : "") + "</div>"
           + "</div>";
       }).join("");
     }
@@ -139,8 +144,10 @@ function gunPaneliniAc(anahtar, tumKayitlar){
 }
 
 function turSecimGuncelle(){
-  document.getElementById("btnTurZiyaret").classList.toggle("ziy-tur-btn--secili", seciliTur==="ziyaret");
-  document.getElementById("btnTurTemas").classList.toggle("ziy-tur-btn--secili", seciliTur==="temas");
+  ["ziyaret","telefon","mail","whatsapp"].forEach(function(t){
+    var btn = document.getElementById("btnTur" + t.charAt(0).toUpperCase() + t.slice(1));
+    if(btn) btn.classList.toggle("ziy-tur-btn--secili", seciliTur===t);
+  });
 }
 
 function firmaAramaCiz(){
@@ -202,6 +209,16 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("ziyGunPanel").hidden = true;
     takvimiCiz();
   };
+  document.getElementById("ziyGunFiltre").onchange = function(){
+    var deger = this.value; // "YYYY-MM-DD"
+    if(!deger) return;
+    var parca = deger.split("-");
+    goruntulenenYil = parseInt(parca[0], 10);
+    goruntulenenAy = parseInt(parca[1], 10) - 1;
+    seciliGunAnahtari = deger;
+    takvimiCiz();
+    gunPaneliniAc(seciliGunAnahtari, CustomerData.tumZiyaretTemaslar());
+  };
   document.getElementById("btnZiyGunKapat").onclick = function(){
     document.getElementById("ziyGunPanel").hidden = true;
     seciliGunAnahtari = null;
@@ -209,8 +226,9 @@ document.addEventListener("DOMContentLoaded", function(){
   };
 
   document.getElementById("ziyFirmaAra").addEventListener("input", firmaAramaCiz);
-  document.getElementById("btnTurZiyaret").onclick = function(){ seciliTur = "ziyaret"; turSecimGuncelle(); };
-  document.getElementById("btnTurTemas").onclick = function(){ seciliTur = "temas"; turSecimGuncelle(); };
+  document.querySelectorAll(".ziy-tur-btn[data-tur]").forEach(function(btn){
+    btn.onclick = function(){ seciliTur = this.getAttribute("data-tur"); turSecimGuncelle(); };
+  });
   document.getElementById("ziyHatirlatmaCheck").addEventListener("change", function(){
     document.getElementById("ziyHatirlatmaTarih").hidden = !this.checked;
   });

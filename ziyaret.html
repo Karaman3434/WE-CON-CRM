@@ -14,7 +14,7 @@
 <title>WEICON ASİST — Ziyaret Takvimi</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.080926.1437.247">
-<link rel="stylesheet" href="ziyaret-style.css?v=WG.100926.2115.446">
+<link rel="stylesheet" href="ziyaret-style.css?v=WG.100926.2037.490">
 </head>
 <body>
 
@@ -35,6 +35,11 @@
 <main class="sayfa">
 
   <a class="ziy-takip-btn" href="takip-gerekenler.html">📋 Takip Gerekenler</a>
+
+  <div class="ziy-gun-filtre-satir">
+    <label for="ziyGunFiltre" class="ziy-gun-filtre-etiket">📅 Gün Filtrele</label>
+    <input type="date" id="ziyGunFiltre" class="ziy-gun-filtre-input">
+  </div>
 
   <div class="ziy-ay-gezinme">
     <button class="ziy-ay-ok" id="btnOncekiAy">◀</button>
@@ -66,7 +71,9 @@
 
     <div class="ziy-tur-secim">
       <button class="ziy-tur-btn ziy-tur-btn--ziyaret" id="btnTurZiyaret" data-tur="ziyaret">📍 Ziyaret</button>
-      <button class="ziy-tur-btn ziy-tur-btn--temas" id="btnTurTemas" data-tur="temas">☎ Temas</button>
+      <button class="ziy-tur-btn ziy-tur-btn--telefon" id="btnTurTelefon" data-tur="telefon">📞 Telefon</button>
+      <button class="ziy-tur-btn ziy-tur-btn--mail" id="btnTurMail" data-tur="mail">✉️ Mail</button>
+      <button class="ziy-tur-btn ziy-tur-btn--whatsapp" id="btnTurWhatsapp" data-tur="whatsapp">💬 WhatsApp</button>
     </div>
 
     <input type="text" id="ziyNot" placeholder="Not (opsiyonel)">
@@ -99,6 +106,6 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.100926.0011.464"></script>
 <script src="hata-log.js?v=WG.020926.1338.87"></script>
-<script src="ziyaret-render.js?v=WG.050926.2215.141"></script>
+<script src="ziyaret-render.js?v=WG.100926.2037.489"></script>
 </body>
 </html>
