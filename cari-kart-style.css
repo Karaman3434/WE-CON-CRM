@@ -17,12 +17,6 @@
   line-height: 1;
 }
 
-.cari-ust-satir {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-}
 .cari-ad {
   font-size: 20px;
   font-weight: 900;
@@ -35,19 +29,6 @@
   font-weight: 700;
   color: #7ea6d6;
   margin-bottom: 12px;
-}
-.cari-yenile-btn {
-  flex-shrink: 0;
-  margin-top: 12px;
-  background: #eaf2fc;
-  color: #003a70;
-  border: 1.5px solid #3569b8;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
 }
 
 .ozet-satir-3 {

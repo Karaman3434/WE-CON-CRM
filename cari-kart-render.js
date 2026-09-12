@@ -412,29 +412,6 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
-  // "🔄 Sayfayı Yenile" (WG.090926.196): kullanıcı Firebase'e kaydettiği
-  // bir güncellemenin bu ekrana anında yansıdığından elle emin olmak
-  // isteyebilir — müşteriyi kalıcı ID'siyle tazeden çekip tüm sayfayı
-  // yeniden çizer.
-  document.getElementById("btnSayfayiYenile").onclick = function(){
-    var btn = this;
-    var eskiMetin = btn.textContent;
-    btn.textContent = "⏳ Yenileniyor...";
-    btn.disabled = true;
-    setTimeout(function(){
-      var taze = (musteriVerisi && musteriVerisi.id) ? CustomerData.musteriIdIleBul(musteriVerisi.id) : null;
-      if(taze){
-        musteriVerisi = taze;
-        seciliMusteriAdi = taze.ad;
-        alanlariDoldur(taze);
-        toastGoster("✓ Sayfa güncel bilgiyle yenilendi.");
-      } else {
-        toastGoster("⚠️ Güncel kayıt bulunamadı.");
-      }
-      btn.textContent = eskiMetin;
-      btn.disabled = false;
-    }, 300);
-  };
   var secili = CustomerData.seciliyiOku();
   if(!secili){
     hataGoster("Müşteri seçilmemiş, listeye dönülüyor.");
