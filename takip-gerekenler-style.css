@@ -46,7 +46,9 @@
   font-size: 13.5px;
   font-weight: 500;
 }
-.tg-cari-metin .cari-kod, .tg-cari-metin .cari-ayrac, .tg-cari-metin .cari-isim, .tg-cari-metin .cari-sehir { font-size: 13.5px; font-weight: 500; letter-spacing: normal; }
+.tg-cari-metin .cari-kod, .tg-cari-metin .cari-ayrac, .tg-cari-metin .cari-isim, .tg-cari-metin .cari-sehir { font-size: 13px; font-weight: 400; letter-spacing: normal; }
+.tg-cari-metin .cari-kod { color: #c0392b; }
+.tg-cari-metin .cari-isim { color: #111827; font-weight: 400; }
 .tg-gun-etiket {
   margin-top: 3px;
   font-size: 10px;
