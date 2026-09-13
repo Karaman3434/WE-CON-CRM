@@ -1,52 +1,23 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null",
+    ".read": false,
+    ".write": false,
 
-    "pin": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "ayarlar": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "musteriler": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "arsiv": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "gorevler": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "kmTakip": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "kmTakipAyarlari": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "mesajSablonlari": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "hatalar": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "odenebilirKomisyon": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-
-    "$other": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    }
+    "musteriler":         { ".read": "auth != null", ".write": "auth != null" },
+    "arsiv":               { ".read": "auth != null", ".write": "auth != null" },
+    "gorevler":            { ".read": "auth != null", ".write": "auth != null" },
+    "pin":                 { ".read": "auth != null", ".write": "auth != null" },
+    "ayarlar":             { ".read": "auth != null", ".write": "auth != null" },
+    "kmTakip":             { ".read": "auth != null", ".write": "auth != null" },
+    "kmTakipAyarlari":     { ".read": "auth != null", ".write": "auth != null" },
+    "mesajSablonlari":     { ".read": "auth != null", ".write": "auth != null" },
+    "hatalar":             { ".read": "auth != null", ".write": "auth != null" },
+    "odenebilirKomisyon":  { ".read": "auth != null", ".write": "auth != null" },
+    "urunler":             { ".read": "auth != null", ".write": "auth != null" },
+    "cihazlar":            { ".read": "auth != null", ".write": "auth != null" },
+    "cihazPin":            { ".read": "auth != null", ".write": "auth != null" },
+    "maasKayitlari":       { ".read": "auth != null", ".write": "auth != null" },
+    "avansKayitlari":      { ".read": "auth != null", ".write": "auth != null" },
+    "avansTaslak":         { ".read": "auth != null", ".write": "auth != null" }
   }
 }

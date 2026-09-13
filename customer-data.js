@@ -16,16 +16,6 @@
 
 var CustomerData = (function(){
 
-  var firebaseConfig = {
-    apiKey: "AIzaSyC08Oe1LE7TdQl8gG2H9raZQek211Dxd60",
-    authDomain: "weicon-asist.firebaseapp.com",
-    databaseURL: "https://weicon-asist-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "weicon-asist",
-    storageBucket: "weicon-asist.firebasestorage.app",
-    messagingSenderId: "673730415323",
-    appId: "1:673730415323:web:29c817e05a281261a61afe"
-  };
-
   var SECILI_MUSTERI_KEY = "weicon_secili_musteri";
 
   var liste = [];
@@ -33,7 +23,7 @@ var CustomerData = (function(){
 
   function baslat(){
     try{
-      if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
+      if(!firebase.apps.length){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
       var db = firebase.database();
       db.ref("musteriler").on("value", function(snap){
         var data = snap.val();

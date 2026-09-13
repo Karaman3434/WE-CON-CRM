@@ -14,17 +14,7 @@
 
 (function(){
 
-  var firebaseConfig = {
-    apiKey: "AIzaSyC08Oe1LE7TdQl8gG2H9raZQek211Dxd60",
-    authDomain: "weicon-asist.firebaseapp.com",
-    databaseURL: "https://weicon-asist-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "weicon-asist",
-    storageBucket: "weicon-asist.firebasestorage.app",
-    messagingSenderId: "673730415323",
-    appId: "1:673730415323:web:29c817e05a281261a61afe"
-  };
-
-  if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
+  if(!firebase.apps.length){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
 
   var PIN_KILIT_ESIK_MS = 30*60*1000;   // 30 dakika hareketsizlik -> PIN ekranı
   var TAM_GIRIS_ESIK_MS = 3*60*60*1000; // 3 saat hareketsizlik -> tam e-posta/şifre girişi
