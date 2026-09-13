@@ -54,7 +54,7 @@
   font-size: 11px;
   font-weight: 800;
 }
-.ok-ocr-durum--calisiyor { background: #eaf2fc; color: #003a70; }
+.ok-ocr-durum--calisiyor { background: #eaf2fc; color: #003a70; border: 1.5px solid #95bdf0;}
 .ok-ocr-durum--basarili { background: #eafaf0; color: #0e6b34; border: 1px solid #1f9d55; }
 .ok-ocr-durum--hata { background: #fdeaea; color: #c0392b; border: 1px solid #f0b8b3; }
 
@@ -82,8 +82,7 @@
   padding: 6px 4px;
   font-size: 9px;
   font-weight: 900;
-  text-align: center;
-}
+  text-align: center; border: 1.5px solid #79b1e6;}
 .ok-giris-tablo td { border-bottom: 1px solid #eef1f5; padding: 5px 4px; text-align: center; }
 .ok-giris-ay-hucre { font-weight: 900; color: #003a70; width: 15%; }
 .ok-giris-tablo input {
@@ -135,8 +134,7 @@
   padding: 6px 4px;
   font-size: 9px;
   font-weight: 900;
-  text-align: center;
-}
+  text-align: center; border: 1.5px solid #79b1e6;}
 .ok-fark-tablo td { border-bottom: 1px solid #eef1f5; padding: 6px 4px; text-align: center; font-weight: 800; }
 .ok-fark-pozitif { color: #0e6b34; }
 .ok-fark-negatif { color: #c0392b; }
@@ -149,8 +147,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
-  font-weight: 900;
-}
+  font-weight: 900; border: 1.5px solid #12876f;}
 .ok-fark-tarih-araligi { font-size: 10px; color: #556170; font-weight: 700; margin-bottom: 8px; }
 
 .ok-gecmis-karti {

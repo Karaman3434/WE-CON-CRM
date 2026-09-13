@@ -9,8 +9,7 @@
   text-align: left;
   padding: 8px 6px;
   font-weight: 900;
-  font-size: 11px;
-}
+  font-size: 11px; border: 1.5px solid #79b1e6;}
 .sl-tablo td {
   padding: 10px 6px;
   border-bottom: 1px solid #eef1f5;
@@ -54,5 +53,5 @@
   font-weight: 800;
   cursor: pointer;
 }
-.sl-tablo--kacan th { background: #fdeceb; color: #c0392b; }
+.sl-tablo--kacan th { background: #fdeceb; color: #c0392b; border: 1.5px solid #f49892;}
 .sl-tarih-hucre { font-size: 12px; color: #556170; white-space: nowrap; }

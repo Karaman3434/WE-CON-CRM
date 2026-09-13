@@ -18,12 +18,10 @@
 .hesapla-arama-ad { font-size: 13px; font-weight: 700; color: #111; }
 .hesapla-arama-fiyat {
   font-size: 12px; font-weight: 800; color: #d9182b;
-  background: #fdeaea; padding: 4px 8px; border-radius: 6px; white-space: nowrap; flex-shrink: 0;
-}
+  background: #fdeaea; padding: 4px 8px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; border: 1.5px solid #f59191;}
 
 .hc-secili-urun-kutu {
-  background: #eef2f8; border-radius: 10px; padding: 12px; margin-bottom: 12px;
-}
+  background: #eef2f8; border-radius: 10px; padding: 12px; margin-bottom: 12px; border: 1.5px solid #a9bddc;}
 .hc-secili-urun-baslik { font-size: 11px; font-weight: 800; color: #44494f; margin-bottom: 4px; }
 .hc-secili-urun-ad-satir { display: flex; justify-content: space-between; align-items: center; }
 .hc-secili-urun-ad-satir span { font-size: 15px; font-weight: 800; color: #222; }
@@ -61,12 +59,12 @@
 
 /* Toplam (EUR) / Fatura Toplam — aynı kutu boyutu, sadece farklı ton
    (açık mavi-gri, koyu değil) ve etiket rengi. */
-.hc-kutu--toplam { background: #e7edf5; }
+.hc-kutu--toplam { background: #e7edf5; border: 1.5px solid #a4bbd9;}
 .hc-kutu--toplam .hc-kutu-etiket { color: #3d5a80; }
 .hc-kutu--toplam .hc-kutu-deger { color: #1a2a3a; }
 
 /* İsk (%) kutusu — yeşil zemin, biraz daha koyu ton. */
-.hc-kutu--isk { background: #bdeeda; }
+.hc-kutu--isk { background: #bdeeda; border: 1.5px solid #79ddb4;}
 .hc-kutu--isk .hc-kutu-etiket { color: #0e6b58; }
 .hc-kutu--isk input { color: #0e6b58; font-weight: 800; }
 #hesDipFiyat, #hesIskonto { text-align: left; }
@@ -83,8 +81,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-}
+  text-align: center; border: 1.5px solid #ba5c0c;}
 .hc-turuncu-etiket {
   font-size: 10px; font-weight: 700; color: #fde3cb;
   margin-bottom: 4px; white-space: nowrap;
@@ -151,8 +148,7 @@
 .kur-secenek-btn--secili {
   background: #eaf2fc;
   border-color: #3569b8;
-  color: #003a70;
-}
+  color: #003a70; border: 1.5px solid #95bdf0;}
 .kur-manuel-input {
   width: 100%;
   box-sizing: border-box;

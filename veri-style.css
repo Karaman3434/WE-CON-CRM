@@ -17,8 +17,8 @@
   color: #ffffff;
   margin-bottom: 12px;
 }
-.veri-buton--yesil { background: #16a085; }
-.veri-buton--gri { background: #6c7a8a; }
+.veri-buton--yesil { background: #16a085; border: 1.5px solid #128770;}
+.veri-buton--gri { background: #6c7a8a; border: 1.5px solid #56626e;}
 
 .veri-uyari {
   font-size: 12px;

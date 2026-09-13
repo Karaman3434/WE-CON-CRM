@@ -88,8 +88,7 @@
   font-weight: 900;
   display: flex;
   align-items: center;
-  justify-content: center;
-}
+  justify-content: center; border: 1.5px solid #b35c0c;}
 
 .ziy-gun-panel {
   background: #f9fafb;
@@ -150,8 +149,7 @@
   padding: 8px 10px;
   font-size: 12px;
   font-weight: 800;
-  margin-bottom: 8px;
-}
+  margin-bottom: 8px; border: 1.5px solid #9ce7b8;}
 
 .ziy-tur-secim {
   display: grid;

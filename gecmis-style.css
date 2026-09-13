@@ -11,8 +11,7 @@
   border-radius: 8px;
   padding: 8px 10px;
   margin: 10px 0;
-  cursor: pointer;
-}
+  cursor: pointer; border: 1.5px solid #efc888;}
 .gecmis-beklemede-satir input { width: 16px; height: 16px; flex-shrink: 0; }
 
 .gecmis-filtre-satiri {

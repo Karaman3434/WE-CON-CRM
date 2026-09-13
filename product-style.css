@@ -167,8 +167,7 @@ body {
   font-weight: 700;
   background: #fdeceb;
   border-radius: 6px;
-  padding: 8px 10px;
-}
+  padding: 8px 10px; border: 1.5px solid #f49892;}
 .yeni-urun-kaydet-btn {
   flex: 1;
   background: #16a085;
@@ -227,8 +226,7 @@ body {
 .urun-gecmis-ust-serit {
   background: #003a70;
   color: #ffffff;
-  padding: 14px 16px;
-}
+  padding: 14px 16px; border: 1.5px solid #004f99;}
 .urun-gecmis-kod { font-size: 13px; font-weight: 800; color: #7fd6ff; }
 .urun-gecmis-ad { font-size: 18px; font-weight: 900; margin-top: 2px; }
 .urun-gecmis-ozet-grid {
@@ -358,8 +356,7 @@ body {
   font-weight: bold;
   font-size: 12px;
   white-space: nowrap;
-  display: inline-block;
-}
+  display: inline-block; border: 1.5px solid #f59191;}
 .btn-add {
   background: #eaf2fc;
   color: #003a70;
@@ -375,8 +372,7 @@ body {
 .btn-add.added {
   background: #fdeaea;
   color: #c0392b;
-  border-color: #c0392b;
-}
+  border-color: #c0392b; border: 1.5px solid #f59191;}
 
 .bos-mesaj, .yukleniyor-mesaj {
   text-align: center;

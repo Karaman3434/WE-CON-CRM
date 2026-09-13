@@ -80,7 +80,7 @@ body {
   text-align: center;
 }
 .rota-etiketi b { color: #003a70; font-weight: 900; }
-.rota-etiketi--acik { background: #fdf0dc; border-bottom-color: #f2d9ad; color: #7a5310; }
+.rota-etiketi--acik { background: #fdf0dc; border-bottom-color: #f2d9ad; color: #7a5310; border: 1.5px solid #f8ca83;}
 .rota-etiketi--acik b { color: #b06a10; }
 .app-header .logo {
   background: none;
@@ -193,7 +193,7 @@ body {
   flex: 1;
   min-width: 0;
 }
-.banner--kirmizi { background: #c0392b; }
+.banner--kirmizi { background: #c0392b; border: 1.5px solid #9a2e22;}
 .banner-baslik { font-size: 16px; font-weight: 900; }
 .banner-alt { font-size: 13px; margin-top: 1px; opacity: .9; }
 .banner--kompakt {
@@ -215,8 +215,7 @@ body {
   border-radius: 10px;
   padding: 8px 12px;
   color: #ffffff;
-  text-align: center;
-}
+  text-align: center; border: 1.5px solid #c3342a;}
 .is-gunu-kutu--esit {
   display: flex;
   flex-direction: column;
@@ -290,24 +289,24 @@ body {
   opacity: .8;
 }
 
-.kart--koyu-mavi { background: #003a70; border-color: #003a70; }
+.kart--koyu-mavi { background: #003a70; border-color: #003a70; border: 1.5px solid #004f99;}
 .kart--koyu-mavi .kart-baslik { color: #a9c6e4; }
 .kart--koyu-mavi .kart-deger { color: #fff; }
 .kart--koyu-mavi .kart-etiket { color: #a9c6e4; }
 .kart--koyu-mavi .kart-tl-alt { color: #a9c6e4; }
 
-.kart--koyu-yesil { background: #0e6b58; border-color: #0e6b58; }
+.kart--koyu-yesil { background: #0e6b58; border-color: #0e6b58; border: 1.5px solid #12876f;}
 .kart--koyu-yesil .kart-baslik { color: #a8e6d4; }
 .kart--koyu-yesil .kart-deger { color: #fff; }
 .kart--koyu-yesil .kart-etiket { color: #a8e6d4; }
 .kart--koyu-yesil .kart-tl-alt { color: #a8e6d4; }
 
-.kart--acik-mavi { background: #eaf2fc; border-color: #dce8f7; }
+.kart--acik-mavi { background: #eaf2fc; border-color: #dce8f7; border: 1.5px solid #95bdf0;}
 .kart--acik-mavi .kart-baslik { color: #3569b8; }
 .kart--acik-mavi .kart-deger { color: #003a70; }
 .kart--acik-mavi .kart-etiket { color: #3569b8; }
 
-.kart--acik-yesil { background: #e9f7ee; border-color: #d6ecdf; }
+.kart--acik-yesil { background: #e9f7ee; border-color: #d6ecdf; border: 1.5px solid #a3ddb8;}
 .kart--acik-yesil .kart-baslik { color: #16a085; }
 .kart--acik-yesil .kart-deger { color: #0e6b58; }
 .kart--acik-yesil .kart-etiket { color: #16a085; }
@@ -384,25 +383,25 @@ body {
   color: #1f9d55;
 }
 
-.menu-kart--mavi { background: #eaf2fc; border-color: #3569b8; }
+.menu-kart--mavi { background: #eaf2fc; border-color: #3569b8; border: 1.5px solid #95bdf0;}
 .menu-kart--mavi .menu-baslik { color: #2563eb; }
 
-.menu-kart--yesil { background: #e9f7ee; border-color: #1f9d55; }
+.menu-kart--yesil { background: #e9f7ee; border-color: #1f9d55; border: 1.5px solid #a3ddb8;}
 .menu-kart--yesil .menu-baslik { color: #16a34a; }
 
-.menu-kart--lacivert { background: #e6ecf3; border-color: #003a70; }
+.menu-kart--lacivert { background: #e6ecf3; border-color: #003a70; border: 1.5px solid #a6bbd4;}
 .menu-kart--lacivert .menu-baslik { color: #003a70; }
 
-.menu-kart--gri { background: #f1f3f6; border-color: #8b95a1; }
+.menu-kart--gri { background: #f1f3f6; border-color: #8b95a1; border: 1.5px solid #b6c0d0;}
 .menu-kart--gri .menu-baslik { color: #2d3540; }
 
-.menu-kart--mor { background: #f3e8fb; border-color: #8e44ad; }
+.menu-kart--mor { background: #f3e8fb; border-color: #8e44ad; border: 1.5px solid #c896ed;}
 .menu-kart--mor .menu-baslik { color: #6a1b9a; }
 
-.menu-kart--turuncu { background: #faeeda; border-color: #ef9f27; }
+.menu-kart--turuncu { background: #faeeda; border-color: #ef9f27; border: 1.5px solid #efc888;}
 .menu-kart--turuncu .menu-baslik { color: #b7601f; }
 
-.menu-kart--pembe { background: #fbeaf0; border-color: #d4537e; }
+.menu-kart--pembe { background: #fbeaf0; border-color: #d4537e; border: 1.5px solid #eb99b6;}
 .menu-kart--pembe .menu-baslik { color: #993556; }
 
 .menu-grid--tek { grid-template-columns: 1fr; }

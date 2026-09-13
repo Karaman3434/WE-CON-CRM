@@ -14,8 +14,7 @@
   background: #eef2f8;
   border-radius: 10px;
   padding: 10px 14px;
-  margin-bottom: 12px;
-}
+  margin-bottom: 12px; border: 1.5px solid #a9bddc;}
 .kur-satiri label {
   font-size: 13px;
   font-weight: 700;
@@ -127,8 +126,7 @@
   padding: 10px 12px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px 12px;
-}
+  gap: 6px 12px; border: 1.5px solid #004f99;}
 .hesap-sonuc-satir {
   display: flex;
   flex-direction: column;
@@ -194,8 +192,8 @@
   padding: 8px 10px;
   text-align: left;
 }
-.sepet-grup-baslik--sari { background: #fff9e6; color: #8a6d1a; }
-.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; }
+.sepet-grup-baslik--sari { background: #fff9e6; color: #8a6d1a; border: 1.5px solid #ffe285;}
+.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
 .sepet-satir--sari { background: #fffdf5; }
 .sepet-satir--yesil { background: #f6fdf9; }
 .sepet-urun-ad {
@@ -251,8 +249,7 @@
   font-weight: bold;
   font-size: 11px;
   white-space: nowrap;
-  display: inline-block;
-}
+  display: inline-block; border: 1.5px solid #f59191;}
 .sepet-sil-btn {
   background: none;
   border: none;
@@ -296,8 +293,7 @@
 .devam-buton:disabled {
   background: #d3d1c7;
   color: #8a8880;
-  cursor: not-allowed;
-}
+  cursor: not-allowed; border: 1.5px solid #afab99;}
 .sepet-alt-buton-satir {
   display: flex;
   gap: 8px;
@@ -329,8 +325,7 @@
 .sepet-kaydet-btn:disabled, .sepet-gonder-btn:disabled {
   background: #d3d1c7;
   color: #8a8880;
-  cursor: not-allowed;
-}
+  cursor: not-allowed; border: 1.5px solid #afab99;}
 .devam-uyari {
   text-align: center;
   color: #b7601f;
@@ -379,8 +374,8 @@
   border-radius: 8px;
   margin-bottom: 8px;
 }
-.sepet-grup-baslik--sari { background: #fff9e6; color: #8a6d1a; }
-.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; margin-top: 14px; }
+.sepet-grup-baslik--sari { background: #fff9e6; color: #8a6d1a; border: 1.5px solid #ffe285;}
+.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; margin-top: 14px; border: 1.5px solid #9ce7b8;}
 
 .sepet-bekleyen-kart {
   background: #fffdf5;

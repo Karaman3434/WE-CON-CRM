@@ -122,8 +122,7 @@
   letter-spacing: 1px;
   padding: 3px 8px;
   border-radius: 4px;
-  flex-shrink: 0;
-}
+  flex-shrink: 0; border: 1.5px solid #004f99;}
 .belge-musteri-govde { padding: 7px 8px; }
 .belge-musteri-ad { font-size: 14px; font-weight: 700; color: #1a2a3a; margin-bottom: 8px; }
 .belge-musteri-ad--sade { margin-bottom: 2px; }
@@ -260,8 +259,7 @@
   padding: 2px 6px;
   border-radius: 5px;
   font-size: 12px;
-  white-space: nowrap;
-}
+  white-space: nowrap; border: 1.5px solid #f49892;}
 .rozet-net {
   display: inline-block;
   background: #eafaf3;
@@ -270,8 +268,7 @@
   padding: 2px 7px;
   border-radius: 5px;
   font-size: 11px;
-  white-space: nowrap;
-}
+  white-space: nowrap; border: 1.5px solid #9ce7c6;}
 /* Sayı üstte, para birimi altında ikinci satırda (LİSTE / NET / TOPLAM / PRİM) */
 .belge-td-fiyat { line-height: 1.25; }
 .belge-td-sayi { font-size: 13.5px; font-weight: 700; color: #101828; }
@@ -316,8 +313,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
-}
+  gap: 8px; border: 1.5px solid #ffe285;}
 .sepet-cari-bilgi-etiket {
   font-size: 9px;
   font-weight: 900;
@@ -343,8 +339,7 @@
   font-weight: 800;
   flex-shrink: 0;
   white-space: nowrap;
-  margin-top: 2px;
-}
+  margin-top: 2px; border: 1.5px solid #004f99;}
 
 .belge-genel-toplam-serit {
   background: #003a70;
@@ -453,7 +448,7 @@
   display: flex; align-items: center; gap: 10px;
 }
 .sheet-secenek .ikon { font-size: 18px; }
-.sheet-secenek--sil { background: #fdeaea; border-color: #f0b8b3; color: #c0392b; }
+.sheet-secenek--sil { background: #fdeaea; border-color: #f0b8b3; color: #c0392b; border: 1.5px solid #f59191;}
 .sheet-secenek--vazgec { background: #c0392b; border: none; color: #fff; text-align: center; justify-content: center; margin-top: 6px; }
 
 /* Belge Geçmişi — dikey zaman çizgisi */
@@ -472,8 +467,7 @@
   position: absolute;
   left: 8px; top: 20px; bottom: 0;
   width: 3px;
-  background: #c3d7f0;
-}
+  background: #c3d7f0; border: 1.5px solid #7da9df;}
 .belge-gecmis-nokta {
   position: absolute;
   left: 0; top: 2px;
@@ -496,8 +490,7 @@
   font-size: 9px;
   font-weight: 900;
   padding: 2px 7px;
-  border-radius: 6px;
-}
+  border-radius: 6px; border: 1.5px solid #128770;}
 .belge-gecmis-kart-alt { font-size: 10px; font-weight: 500; opacity: .8; margin-top: 2px; }
 
 @media print {

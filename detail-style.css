@@ -106,8 +106,8 @@
   justify-content: center;
   padding: 0 6px;
 }
-.islemler-rozet--mor { background: #8e44ad; }
-.islemler-rozet--gri { background: #37474f; }
+.islemler-rozet--mor { background: #8e44ad; border: 1.5px solid #72368a;}
+.islemler-rozet--gri { background: #37474f; border: 1.5px solid #3f515a;}
 .islemler-ok { font-size: 18px; }
 .islemler-ok--mor { color: #8e44ad; }
 .islemler-ok--mavi { color: #2563eb; }
@@ -125,8 +125,7 @@
   border-radius: 6px;
   padding: 8px 10px;
   margin: 0 0 18px;
-  line-height: 1.4;
-}
+  line-height: 1.4; border: 1.5px solid #f49892;}
 .islemler-sil-btn {
   flex: 1;
   background: #fdeceb;
@@ -365,8 +364,7 @@
   margin-top: 8px;
   padding: 10px;
   background: #eef2f8;
-  border-radius: 8px;
-}
+  border-radius: 8px; border: 1.5px solid #a9bddc;}
 .adres-duzenle-form input, .yetkili-duzenle-form input {
   border: 2px solid #cbd5e1;
   border-radius: 6px;
@@ -595,8 +593,7 @@
 .sekme-btn--secili {
   border-color: #003a70;
   background: #003a70;
-  color: #ffffff;
-}
+  color: #ffffff; border: 1.5px solid #004f99;}
 .bos-mesaj {
   text-align: center;
   color: #44494f;
@@ -633,10 +630,10 @@
   cursor: pointer;
   text-align: center;
 }
-.temas-tur-btn--ziyaret { background: #eafaf0; color: #0e6b34; }
-.temas-tur-btn--telefon { background: #eaf2fc; color: #003a70; }
-.temas-tur-btn--mail { background: #fdf1e6; color: #a8590c; }
-.temas-tur-btn--whatsapp { background: #eafaf3; color: #0e6b58; }
+.temas-tur-btn--ziyaret { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
+.temas-tur-btn--telefon { background: #eaf2fc; color: #003a70; border: 1.5px solid #95bdf0;}
+.temas-tur-btn--mail { background: #fdf1e6; color: #a8590c; border: 1.5px solid #f6bf8d;}
+.temas-tur-btn--whatsapp { background: #eafaf3; color: #0e6b58; border: 1.5px solid #9ce7c6;}
 .temas-not-input {
   width: 100%;
   box-sizing: border-box;
@@ -667,10 +664,10 @@
   padding: 2px 7px;
   border-radius: 4px;
 }
-.temas-rozet--ziyaret { background: #eafaf0; color: #0e6b34; }
-.temas-rozet--telefon { background: #eaf2fc; color: #003a70; }
-.temas-rozet--mail { background: #fdf1e6; color: #a8590c; }
-.temas-rozet--whatsapp { background: #eafaf3; color: #0e6b58; }
+.temas-rozet--ziyaret { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
+.temas-rozet--telefon { background: #eaf2fc; color: #003a70; border: 1.5px solid #95bdf0;}
+.temas-rozet--mail { background: #fdf1e6; color: #a8590c; border: 1.5px solid #f6bf8d;}
+.temas-rozet--whatsapp { background: #eafaf3; color: #0e6b58; border: 1.5px solid #9ce7c6;}
 .gecmis-karti-ust { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .gecmis-tarih { font-size: 10px; color: #8b95a1; font-weight: 700; flex-shrink: 0; }
 

@@ -40,8 +40,7 @@
 .hareketler-tile--maas,
 .hareketler-tile--avans {
   background: #eaf2fc;
-  border-color: #3569b8;
-}
+  border-color: #3569b8; border: 1.5px solid #95bdf0;}
 .hareketler-tile--satis .hareketler-tile-baslik,
 .hareketler-tile--musteriler .hareketler-tile-baslik,
 .hareketler-tile--komisyon .hareketler-tile-baslik,
@@ -50,7 +49,7 @@
   color: #003a70;
 }
 
-.hareketler-tile--tehlike { background: #fdeceb; border-color: #c0392b; }
+.hareketler-tile--tehlike { background: #fdeceb; border-color: #c0392b; border: 1.5px solid #f49892;}
 .hareketler-tile--tehlike .hareketler-tile-baslik { color: #c0392b; }
 
 .hareketler-tile-satir + .hareketler-tile-satir { margin-top: 12px; }

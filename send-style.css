@@ -26,8 +26,7 @@
   font-weight: 900;
   letter-spacing: .3px;
   padding: 4px 10px;
-  border-radius: 20px;
-}
+  border-radius: 20px; border: 1.5px solid #004f99;}
 .gonder-alt-2x2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -150,8 +149,7 @@
 }
 .kaydet-buton:disabled {
   background: #cbd5e1;
-  cursor: not-allowed;
-}
+  cursor: not-allowed; border: 1.5px solid #95a9c2;}
 
 .gonder-kutu {
   margin-top: 20px;
@@ -287,8 +285,8 @@
   flex: 1; border-radius: 8px; padding: 12px; min-height: 44px;
   font-size: 13px; font-weight: 900; cursor: pointer; border: none;
 }
-.btn-kaydet { background: #16a085; color: #fff; }
-.btn-vazgec { background: #c0392b; color: #fff; }
+.btn-kaydet { background: #16a085; color: #fff; border: 1.5px solid #128770;}
+.btn-vazgec { background: #c0392b; color: #fff; border: 1.5px solid #9a2e22;}
 
 .tablo-kopyala-btn {
   background: #eaf2fc;

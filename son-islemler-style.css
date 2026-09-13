@@ -26,8 +26,8 @@
   font-size: 9px; font-weight: 800; padding: 3px 6px; border-radius: 5px;
   white-space: nowrap; text-align: center;
 }
-.si-pill--kacan { background: #fdeceb; color: #a32d2d; }
-.si-pill--revize { background: #fdf3e3; color: #854f0b; }
+.si-pill--kacan { background: #fdeceb; color: #a32d2d; border: 1.5px solid #f49892;}
+.si-pill--revize { background: #fdf3e3; color: #854f0b; border: 1.5px solid #f7cd89;}
 
 /* Bu sayfaya özgü "Siyah" tema (Ana Sayfa'daki Son İşlemler kutucuğunun
    rengiyle devam ediyor) — sadece #islemAra'yı hedefler, diğer tl- sayfalarını

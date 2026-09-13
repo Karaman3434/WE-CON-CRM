@@ -19,7 +19,7 @@
 }
 .hk-aciklama {
   background: #fff9e6;
-  border: 1px solid #e2e6ec;
+  border: 1.5px solid #ffe285;
   border-top: none;
   border-radius: 0 0 10px 10px;
   padding: 10px 14px;
@@ -88,8 +88,7 @@
   background: #eaf2fc;
   padding: 2px 7px;
   border-radius: 10px;
-  flex-shrink: 0;
-}
+  flex-shrink: 0; border: 1.5px solid #95bdf0;}
 .hk-kart-saat { font-size: 10px; color: #8a94a3; font-weight: 500; flex-shrink: 0; }
 .hk-kart-mesaj { font-size: 13.5px; color: #1a1a1a; font-weight: 500; line-height: 1.4; word-break: break-word; }
 .hk-kart-ek { font-size: 10px; color: #556170; margin-top: 4px; font-style: italic; }

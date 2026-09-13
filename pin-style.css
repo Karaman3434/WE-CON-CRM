@@ -26,8 +26,7 @@
 }
 .pin-nokta.dolu {
   background: #003a70;
-  border-color: #003a70;
-}
+  border-color: #003a70; border: 1.5px solid #004f99;}
 
 .pin-gizli-input {
   position: absolute;
@@ -55,8 +54,7 @@
 .pin-tus--sil {
   background: #fdeaea;
   color: #c0392b;
-  font-size: 16px;
-}
+  font-size: 16px; border: 1.5px solid #f59191;}
 .pin-tus--bos { visibility: hidden; }
 
 .pin-tam-giris-buton {

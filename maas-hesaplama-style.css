@@ -15,7 +15,7 @@
   color: #111;
 }
 
-.mh-sonuc-kutu { background: #eafaf0; border-color: #b8e0c5; }
+.mh-sonuc-kutu { background: #eafaf0; border-color: #b8e0c5; border: 1.5px solid #9ce7b8;}
 .mh-sonuc-satir {
   display: flex;
   justify-content: space-between;
@@ -46,8 +46,7 @@
   font-weight: 900;
   padding: 10px;
   border-radius: 10px;
-  margin-bottom: 16px;
-}
+  margin-bottom: 16px; border: 1.5px solid #004f99;}
 .mh-donem-secici-satir { margin-bottom: 16px; }
 .mh-donem-select {
   width: 100%;
@@ -147,8 +146,7 @@
   border-radius: 12px;
   padding: 16px;
   text-align: center;
-  margin-bottom: 16px;
-}
+  margin-bottom: 16px; border: 1.5px solid #128742;}
 .mh-toplam-etiket { font-size: 12px; font-weight: 900; color: #bdeed0; letter-spacing: 0.3px; }
 .mh-toplam-deger { font-size: 28px; font-weight: 900; color: #fff; margin-top: 4px; }
 
@@ -157,8 +155,7 @@
   border-radius: 12px;
   padding: 18px;
   text-align: center;
-  margin-bottom: 16px;
-}
+  margin-bottom: 16px; border: 1.5px solid #004f99;}
 .mh-yatacak-kutu-standalone .mh-kart-yatacak-etiket { color: #a9c6e4; }
 .mh-yatacak-kutu-standalone .mh-kart-yatacak-deger { color: #fff; font-size: 30px; }
 
@@ -168,8 +165,7 @@
   padding: 12px 14px;
   border-radius: 10px 10px 0 0;
   font-size: 14px;
-  font-weight: 900;
-}
+  font-weight: 900; border: 1.5px solid #12876f;}
 .mh-kart-govde {
   background: #fff;
   border: 1px solid #d5e8dc;
@@ -193,8 +189,7 @@
   border-radius: 10px;
   padding: 12px;
   margin-top: 10px;
-  text-align: center;
-}
+  text-align: center; border: 1.5px solid #9ce7b8;}
 .mh-kart-yatacak-etiket { font-size: 11px; font-weight: 900; color: #0e5c3f; }
 .mh-kart-yatacak-deger { font-size: 24px; font-weight: 900; color: #0e6b34; margin-top: 2px; }
 
@@ -227,8 +222,7 @@
   padding: 5px 4px;
   font-size: 9px;
   font-weight: 900;
-  text-align: left;
-}
+  text-align: left; border: 1.5px solid #f8d780;}
 .mh-harcama-tablo th:last-child, .mh-harcama-tablo td:last-child { text-align: right; width: 24px; }
 .mh-harcama-tablo th:nth-child(3), .mh-harcama-tablo td:nth-child(3) { text-align: right; }
 .mh-harcama-tablo td { border-bottom: 1px solid #f0ede0; padding: 6px 4px; }
@@ -239,8 +233,7 @@
   border-radius: 5px;
   padding: 2px 6px;
   font-size: 9px;
-  font-weight: 800;
-}
+  font-weight: 800; border: 1.5px solid #95bdf0;}
 .mh-harcama-sil-btn { background: none; border: none; color: #c0392b; font-size: 13px; cursor: pointer; }
 
 .mh-sonuc-satir--vurgu { color: #a32d2d; font-weight: 800; }

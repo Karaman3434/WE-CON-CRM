@@ -73,11 +73,11 @@
   border-radius: 8px 8px 0 0;
   margin-top: 16px;
 }
-.ck-blok-etiket--fatura { background: #fff9e6; color: #8a6d1a; }
-.ck-blok-etiket--yetkili { background: #eaf2fc; color: #1a5276; }
-.ck-blok-etiket--teslimat { background: #eafaf0; color: #0e6b34; }
-.ck-blok-etiket--not { background: #f6f0fd; color: #6a1b9a; }
-.ck-blok-etiket--temel { background: #f4f0fc; color: #4a2d8a; margin-bottom: 0; }
+.ck-blok-etiket--fatura { background: #fff9e6; color: #8a6d1a; border: 1.5px solid #ffe285;}
+.ck-blok-etiket--yetkili { background: #eaf2fc; color: #1a5276; border: 1.5px solid #95bdf0;}
+.ck-blok-etiket--teslimat { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
+.ck-blok-etiket--not { background: #f6f0fd; color: #6a1b9a; border: 1.5px solid #c299f1; }
+.ck-blok-etiket--temel { background: #f4f0fc; color: #4a2d8a; margin-bottom: 0; border: 1.5px solid #b89eec;}
 
 .ck-tiklanabilir-alan { cursor: pointer; }
 .ck-tiklanabilir-alan:active { background: #f4f6f9; }
@@ -97,9 +97,9 @@
   cursor: pointer;
   text-align: center;
 }
-.bolum-eylem-btn--guncelle { background: #eaf2fc; color: #003a70; }
-.bolum-eylem-btn--ekle { background: #eafaf0; color: #0e6b34; }
-.bolum-eylem-btn--sil { background: #fdeceb; color: #a32d2d; }
+.bolum-eylem-btn--guncelle { background: #eaf2fc; color: #003a70; border: 1.5px solid #95bdf0;}
+.bolum-eylem-btn--ekle { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
+.bolum-eylem-btn--sil { background: #fdeceb; color: #a32d2d; border: 1.5px solid #f49892;}
 .bolum-eylem-btn--kapat { background: #f4f6f9; color: #556170; }
 
 /* HATA/TASARIM DÜZELTME (WG.090926.196): dış kutunun 14px iç boşluğu ve
@@ -188,7 +188,7 @@
   cursor: pointer;
 }
 .ck-duzenle-btn { background: #eaf2fc; color: #003a70; border: 1px solid #3569b8; }
-.ck-kaydet-btn { background: #16a085; color: #fff; }
+.ck-kaydet-btn { background: #16a085; color: #fff; border: 1.5px solid #128770;}
 .ck-sil-btn { background: #fdeaea; color: #c0392b; border: 1px solid #f0b8b3; }
 
 .detay-bilgi-overlay {
@@ -292,7 +292,7 @@
 }
 .ck-kart--secilebilir .ck-kart-ust,
 .ck-kart--secilebilir .ck-kart-alt { padding: 0; }
-.ck-kart--secili { background: #f0f9f2; }
+.ck-kart--secili { background: #f0f9f2; border: 1.5px solid #aaddb5;}
 .ck-tik {
   width: 20px;
   height: 20px;
@@ -306,7 +306,7 @@
   font-size: 12px;
   color: #fff;
 }
-.ck-tik--secili { background: #16a085; border-color: #16a085; }
+.ck-tik--secili { background: #16a085; border-color: #16a085; border: 1.5px solid #128770;}
 .ck-kart-govde { min-width: 0; }
 
 /* "Yeni Bilgi Ekle" popup'ı — her kategori satırında Ekle/Sil/Düzenle */
@@ -375,7 +375,7 @@
   display: flex; align-items: center; gap: 10px;
 }
 .sheet-secenek .ikon { font-size: 18px; }
-.sheet-secenek--sil { background: #fdeaea; border-color: #f0b8b3; color: #c0392b; }
+.sheet-secenek--sil { background: #fdeaea; border-color: #f0b8b3; color: #c0392b; border: 1.5px solid #f59191;}
 .sheet-secenek--vazgec { background: none; border: none; text-align: center; justify-content: center; color: #6b7684; margin-top: 6px; }
 
 .form-etiket { font-size: 10.5px; font-weight: 900; color: #6b7684; letter-spacing: .3px; margin: 10px 0 4px; }
@@ -395,9 +395,9 @@
   flex: 1; border-radius: 8px; padding: 12px; min-height: 44px;
   font-size: 13px; font-weight: 900; cursor: pointer; border: none;
 }
-.btn-kaydet { background: #16a085; color: #fff; }
-.btn-kaydet--tehlike { background: #c0392b; }
-.btn-vazgec { background: #c0392b; color: #fff; }
+.btn-kaydet { background: #16a085; color: #fff; border: 1.5px solid #128770;}
+.btn-kaydet--tehlike { background: #c0392b; border: 1.5px solid #9a2e22;}
+.btn-vazgec { background: #c0392b; color: #fff; border: 1.5px solid #9a2e22;}
 
 .picker-item {
   width: 100%; text-align: left;
@@ -421,8 +421,7 @@
   z-index: 1200;
   opacity: 0; transform: translateY(-8px);
   transition: all .25s ease;
-  pointer-events: none;
-}
+  pointer-events: none; border: 1.5px solid #2f4c6a;}
 .toast.gorunur { opacity: 1; transform: translateY(0); }
 
 /* ---------- Cari Kart v6 — akordiyon "Bilgiyi Düzenle" ekranı ---------- */
