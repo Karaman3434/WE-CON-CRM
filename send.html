@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.100926.0947.519">
 <link rel="stylesheet" href="cart-style.css?v=WG.100926.0947.512">
 <link rel="stylesheet" href="send-style.css?v=WG.100926.0947.526">
-<link rel="stylesheet" href="belge-style.css?v=WG.100926.0947.509">
+<link rel="stylesheet" href="belge-style.css?v=WG.100926.1723.547">
 <link rel="stylesheet" href="detail-style.css?v=WG.100926.0947.515">
 </head>
 <body>
@@ -66,6 +66,27 @@
     <div id="tamOnizlemeAlani" hidden></div>
   </section>
 
+  <!-- Platform seçimi (WG.100926.196) — Sepet'te "Formu Görüntüle"ye
+       basılınca (niyet=gonder) sayfa açılır açılmaz bu sorulur; seçime
+       göre doğrudan Mail veya WhatsApp Önizleme (form+metin birlikte)
+       açılır. "Kaydet" niyetiyle gelindiyse bu hiç gösterilmez. -->
+  <div class="overlay" id="platformSecimOverlay" hidden>
+    <div class="sheet">
+      <div class="sheet-baslik">Hangi platformla göndereceksin?</div>
+      <div class="gonder-tile-satir">
+        <button class="gonder-tile gonder-tile--mail" id="btnPlatformMail">
+          <span class="gonder-tile-ikon">📧</span>
+          <span class="gonder-tile-baslik">MAIL</span>
+        </button>
+        <button class="gonder-tile gonder-tile--whatsapp" id="btnPlatformWhatsapp">
+          <span class="gonder-tile-ikon">💬</span>
+          <span class="gonder-tile-baslik">WHATSAPP</span>
+        </button>
+      </div>
+      <button class="btn-vazgec" id="platformSecimVazgecBtn" style="margin-top:10px;">Vazgeç</button>
+    </div>
+  </div>
+
   <!-- Mail Önizleme — MAIL GÖNDER'e basınca, gerçek mail açılmadan önce
        konu başlığı + mesaj + sipariş tablosu birlikte gösterilir. -->
   <div class="overlay" id="mailOnizlemeOverlay" hidden>
@@ -81,10 +102,11 @@
 
       <div class="form-etiket">SİPARİŞ TABLOSU (ekte / görsel olarak gidecek)</div>
       <div id="mailOnizlemeTablo"></div>
+      <button type="button" class="tablo-kopyala-btn" id="mailTabloKopyalaBtn">📷 Kopyala ve Kaydet</button>
 
       <div class="sheet-buton-satir">
         <button class="btn-vazgec" id="mailOnizlemeVazgecBtn">Kapat</button>
-        <button class="btn-kaydet" id="mailOnizlemeGonderBtn">📧 Şimdi Gönder</button>
+        <button class="btn-kaydet" id="mailOnizlemeGonderBtn">✓ Gönder</button>
       </div>
     </div>
   </div>
@@ -106,12 +128,12 @@
 
       <div class="form-etiket">SİPARİŞ TABLOSU (ekte / görsel olarak gidecek — fiyat detayı içermez)</div>
       <div id="whatsappOnizlemeTablo"></div>
-      <button type="button" class="tablo-kopyala-btn" id="whatsappTabloKopyalaBtn">📋 Tabloyu Resim Olarak Kopyala</button>
+      <button type="button" class="tablo-kopyala-btn" id="whatsappTabloKopyalaBtn">📷 Kopyala ve Kaydet</button>
       <div class="tablo-kopyala-not">Devam eden bir WhatsApp sohbetine yapıştırmak için kopyala — bu buton yeni bir sohbet açmaz.</div>
 
       <div class="sheet-buton-satir">
         <button class="btn-vazgec" id="whatsappOnizlemeVazgecBtn">Kapat</button>
-        <button class="btn-kaydet" id="whatsappOnizlemeGonderBtn" style="background:#25d366;">💬 Şimdi Gönder</button>
+        <button class="btn-kaydet" id="whatsappOnizlemeGonderBtn" style="background:#25d366;">✓ Gönder</button>
       </div>
     </div>
   </div>
@@ -130,12 +152,12 @@
 <script src="auth.js?v=WG.030926.1547.104"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.020926.1555.92"></script>
-<script src="hareket-tablo.js?v=WG.090926.1604.369"></script>
+<script src="hareket-tablo.js?v=WG.100926.1723.546"></script>
 <script src="cart-data.js?v=WG.020926.1555.92"></script>
 <script src="customer-data.js?v=WG.100926.0011.464"></script>
 <script src="send-data.js?v=WG.090926.1532.365"></script>
 <script src="hata-log.js?v=WG.020926.1555.92"></script>
-<script src="send-render.js?v=WG.100926.1021.434"></script>
+<script src="send-render.js?v=WG.100926.1723.549"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

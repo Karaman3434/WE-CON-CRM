@@ -81,8 +81,10 @@ var HareketTablo = (function(){
     if(opts.genelToplam != null){
       html += "<div class='belge-genel-toplam-serit'>"
         + (opts.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(opts.kur) + " Euro</span>" : "")
+        + "<span class='belge-gt-etiket-deger-grup'>"
         + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
         + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " EURO" + (opts.kur ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(opts.genelToplam*opts.kur).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"
+        + "</span>"
         + "</div>";
     }
     return html;

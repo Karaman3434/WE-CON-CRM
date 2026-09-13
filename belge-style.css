@@ -268,7 +268,7 @@
   padding: 2px 7px;
   border-radius: 5px;
   font-size: 11px;
-  white-space: nowrap; border: 1.5px solid #9ce7c6;}
+  white-space: nowrap;}
 /* Sayı üstte, para birimi altında ikinci satırda (LİSTE / NET / TOPLAM / PRİM) */
 .belge-td-fiyat { line-height: 1.25; }
 .belge-td-sayi { font-size: 13.5px; font-weight: 700; color: #101828; }
@@ -360,7 +360,8 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-.belge-gt-etiket { font-size: 12px; font-weight: 700; letter-spacing: .3px; color: #ffffff; flex: 1; text-align: left; }
+.belge-gt-etiket-deger-grup { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
+.belge-gt-etiket { font-size: 12px; font-weight: 700; letter-spacing: .3px; color: #ffffff; }
 .belge-gt-deger { font-size: 18px; font-weight: 800; flex-shrink: 0; text-align: right; white-space: nowrap; color: #ffffff; }
 .belge-gt-deger-alt {
   font-size: 11px;

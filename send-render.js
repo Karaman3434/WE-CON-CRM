@@ -466,10 +466,31 @@ document.addEventListener("DOMContentLoaded", function(){
   // taze veri gelince yukarıdaki dinleyici tekrar çizer.
   musteriyleDevamEt(kayitliBaglam.musteri);
 
+  // YENİ AKIŞ (WG.100926.196): Sepet'te "📋 Formu Görüntüle"ye basılıp
+  // (niyet=gonder) buraya gelindiyse, ekran açılır açılmaz platform
+  // sorulur — seçilince doğrudan o platformun Önizleme'si (form+metin
+  // birlikte) açılır. "Kaydet" niyetiyle gelindiyse bu hiç sorulmaz,
+  // eski "Kaydedildi" ekranı normal şekilde görünür.
+  if(kayitliBaglam.niyet === "gonder"){
+    document.getElementById("platformSecimOverlay").hidden = false;
+  }
+  document.getElementById("btnPlatformMail").onclick = function(){
+    document.getElementById("platformSecimOverlay").hidden = true;
+    mailOnizlemeAc();
+  };
+  document.getElementById("btnPlatformWhatsapp").onclick = function(){
+    document.getElementById("platformSecimOverlay").hidden = true;
+    whatsappOnizlemeAc();
+  };
+  document.getElementById("platformSecimVazgecBtn").onclick = function(){
+    document.getElementById("platformSecimOverlay").hidden = true;
+  };
+
   document.getElementById("btnWhatsapp").onclick = function(){ whatsappOnizlemeAc(); };
   document.getElementById("btnEposta").onclick = function(){ mailOnizlemeAc(); };
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
   document.getElementById("anaTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
+  document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
     document.getElementById("mailOnizlemeOverlay").hidden = true;
