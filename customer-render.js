@@ -228,6 +228,11 @@ function listeyiCiz(){
       kart.onclick = function(){
         CustomerData.sec(sonuclar[i]);
         CustomerData.sonGoruntulendi(sonuclar[i].ad);
+        // HATA DÜZELTME (WG.100926.196): önceki bir "İşlem Yap" akışından
+        // kalmış bayrak temizlenmeden buraya gelinirse, Cari Kart yanlışlıkla
+        // seçim moduna (İşleme Devam Et) açılıyordu. Doğrudan listeden gelen
+        // her ziyaret düz görüntüleme modunda başlamalı.
+        localStorage.removeItem("weiconv2_islem_yap_akisi");
         // ROTA DEĞİŞİKLİĞİ (WG.100926.196): Müşteri listesinden seçim artık
         // doğrudan Cari Kart'a gider (önce temel bilgi/adres/yetkili
         // gözden geçirilsin diye) — Temas/İşlem Geçmişi/Görevler/Ürün

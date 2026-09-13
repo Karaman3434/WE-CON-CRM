@@ -77,6 +77,12 @@ function kayitAltMetin(tip, kayit){
 // okuyup varsayılan ilk kayıt yerine SENİN işaretlediğini kullanır.
 var secimler = {fatura:0, teslimat:0, yetkili:0};
 
+// HATA DÜZELTME (WG.100926.196): bu artık modül seviyesinde, tek sefer
+// okunuyor — "İşlem Yap" akışından gelinmediyse (düz görüntüleme),
+// fatura/teslimat/yetkili kartlarında SEÇİM ARAYÜZÜ hiç gösterilmemeli,
+// sadece bilgi. Seçim arayüzü SADECE bu akıştan gelince aktif olur.
+var akistanGeldiMi = localStorage.getItem("weiconv2_islem_yap_akisi") === "1";
+
 function anaSayfayiRenderEt(){
   var m = musteriVerisi;
   ["fatura","teslimat","yetkili","not"].forEach(function(tip){
@@ -86,7 +92,7 @@ function anaSayfayiRenderEt(){
       kapsayici.innerHTML = "<div class='ck-kart-bos'>Henüz " + TIP_META[tip].tekil + " eklenmemiş.</div>";
       return;
     }
-    var secilebilirMi = tip !== "not" && liste.length > 1;
+    var secilebilirMi = akistanGeldiMi && tip !== "not" && liste.length > 1;
     if(secimler[tip] >= liste.length) secimler[tip] = 0;
     kapsayici.innerHTML = liste.map(function(k, i){
       var govde = "<div class='ck-kart-ust'>" + escapeText(kayitBaslik(tip,k)) + "</div><div class='ck-kart-alt'>" + escapeText(kayitAltMetin(tip,k)) + "</div>";
@@ -429,6 +435,9 @@ document.addEventListener("DOMContentLoaded", function(){
   var acikBolumEylem = null;
   document.querySelectorAll(".ck-tiklanabilir-alan[data-bolum]").forEach(function(alan){
     alan.onclick = function(){
+      // İşlem Yap akışında (seçim modu) bu ekranda bilgi düzenlenmez,
+      // sadece işlem için fatura/teslimat/yetkili seçimi yapılır.
+      if(akistanGeldiMi) return;
       acikBolumEylem = this.getAttribute("data-bolum");
       var eklenipSilinebilir = acikBolumEylem !== "cari";
       document.getElementById("bolumEylemBaslik").textContent = (TIP_META[acikBolumEylem] ? TIP_META[acikBolumEylem].ikon + " " + TIP_META[acikBolumEylem].baslik : "Temel Bilgiler");
@@ -472,7 +481,6 @@ document.addEventListener("DOMContentLoaded", function(){
   // --- Alt buton: normalde "İŞLEMLER" (Temas/Geçmiş hub'ına götürür);
   // sadece "İşlem Yap" akışından (yeni Numune/Teklif/Sipariş başlatmak
   // için) geldiyse "▶️ İşleme Devam Et" olur ve ürün seçimine götürür. ---
-  var akistanGeldiMi = localStorage.getItem("weiconv2_islem_yap_akisi") === "1";
   var islemeDevamBtn = document.getElementById("btnIslemeDevam");
   if(akistanGeldiMi){
     islemeDevamBtn.textContent = "▶️ İşleme Devam Et";
