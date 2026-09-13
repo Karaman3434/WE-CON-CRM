@@ -178,7 +178,7 @@ function motivasyonuGuncelle(){
     var simdi = new Date();
     var selamEl = document.getElementById("motivasyonSelam");
     var sozEl = document.getElementById("motivasyonSoz");
-    if(selamEl) selamEl.textContent = motivasyonSelamlamaGetir(simdi.getHours()) + ", Abdullah";
+    if(selamEl) selamEl.textContent = "Merhaba,";
     if(sozEl) sozEl.textContent = "\u201c" + motivasyonSozunuGetir(simdi) + "\u201d";
   }catch(e){}
 }

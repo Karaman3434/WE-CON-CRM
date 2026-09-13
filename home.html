@@ -23,14 +23,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.100926.2131.499">
+<link rel="stylesheet" href="home-style.css?v=WG.100926.2150.505">
 </head>
 <body>
 
 <div class="app-ust-sabit">
   <div class="motivasyon-kutu">
-    <div class="motivasyon-selam" id="motivasyonSelam">Günaydın, Abdullah</div>
-    <div class="motivasyon-soz" id="motivasyonSoz">"Küçük adımlar, büyük sonuçlar doğurur."</div>
+    <div class="motivasyon-tek-satir">
+      <span class="motivasyon-selam" id="motivasyonSelam">Merhaba,</span>
+      <span class="motivasyon-soz" id="motivasyonSoz"></span>
+    </div>
   </div>
 
 <header class="app-header">
@@ -49,22 +51,17 @@
 
   <div class="gosterge-paneli-etiket">GÖSTERGE PANELİ</div>
 
-  <div class="anasayfa-uyari-satiri">
-    <div class="banner banner--kirmizi" id="bildirimBanner" hidden>
-      <div class="banner-baslik">⏰ Takip Gerekiyor</div>
-      <div class="banner-alt" id="bildirimBannerAlt"></div>
-    </div>
-    <div class="is-gunu-kutu" id="isGunuKutu">
+  <div class="anasayfa-ust-satir">
+    <div class="is-gunu-kutu is-gunu-kutu--esit" id="isGunuKutu">
       <div class="is-gunu-etiket">İŞ GÜNÜ KALDI</div>
       <div class="is-gunu-deger" id="isGunuDeger">-</div>
     </div>
-  </div>
-
-  <div class="anasayfa-yatacak-kutu" id="anasayfaYatacakKutu" onclick="window.location.href='maas-hesaplama.html'">
-    <div class="anasayfa-yatacak-etiket">HESABA YATACAK</div>
-    <div class="anasayfa-yatacak-deger-satir">
-      <span class="anasayfa-yatacak-ikon">💰</span>
-      <span class="anasayfa-yatacak-deger" id="anasayfaYatacakDeger">0,00 TL</span>
+    <div class="anasayfa-yatacak-kutu anasayfa-yatacak-kutu--esit" id="anasayfaYatacakKutu" onclick="window.location.href='maas-hesaplama.html'">
+      <div class="anasayfa-yatacak-etiket">HESABA YATACAK</div>
+      <div class="anasayfa-yatacak-deger-satir">
+        <span class="anasayfa-yatacak-ikon">💰</span>
+        <span class="anasayfa-yatacak-deger" id="anasayfaYatacakDeger">0,00 TL</span>
+      </div>
     </div>
   </div>
 
@@ -91,6 +88,11 @@
       <div class="kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
     </div>
   </section>
+
+  <div class="banner banner--kirmizi banner--kompakt" id="bildirimBanner" hidden>
+    <span class="banner-baslik" id="bildirimBannerBaslik">⏰ Takip Gerekiyor —</span>
+    <span class="banner-alt" id="bildirimBannerAlt"></span>
+  </div>
 
   <a class="gunun-ozeti-kutu" id="gununOzetiKutu" href="ziyaret.html">
     <div class="gunun-ozeti-baslik">📊 GÜNÜN ÖZETİ</div>
@@ -132,7 +134,7 @@
   </section>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.100926.2131.503 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.100926.2150.507 ***</span>
   </footer>
 
 </main>
@@ -153,6 +155,6 @@
 <script src="maas-kayit-data.js?v=WG.020926.1927.93"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
 <script src="maas-ozet-veri.js?v=WG.030926.0020.96"></script>
-<script src="home-render.js?v=WG.100926.2131.501"></script>
+<script src="home-render.js?v=WG.100926.2150.506"></script>
 </body>
 </html>

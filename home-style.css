@@ -179,8 +179,9 @@ body {
   cursor: pointer;
 }
 
-.anasayfa-uyari-satiri {
+.anasayfa-ust-satir {
   display: flex;
+  align-items: stretch;
   gap: 6px;
   margin-bottom: 6px;
 }
@@ -195,6 +196,17 @@ body {
 .banner--kirmizi { background: #c0392b; }
 .banner-baslik { font-size: 16px; font-weight: 900; }
 .banner-alt { font-size: 13px; margin-top: 1px; opacity: .9; }
+.banner--kompakt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.banner--kompakt .banner-baslik { font-size: 13px; flex-shrink: 0; }
+.banner--kompakt .banner-alt { font-size: 12.5px; margin-top: 0; overflow: hidden; text-overflow: ellipsis; }
 
 .is-gunu-kutu {
   flex: 1;
@@ -204,6 +216,11 @@ body {
   padding: 8px 12px;
   color: #ffffff;
   text-align: center;
+}
+.is-gunu-kutu--esit {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .is-gunu-etiket { font-size: 11px; font-weight: 900; letter-spacing: .3px; opacity: .95; }
 .is-gunu-deger { font-size: 22px; font-weight: 900; margin-top: 2px; }
@@ -217,10 +234,18 @@ body {
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(212,160,23,0.35);
 }
+.anasayfa-yatacak-kutu--esit {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .anasayfa-yatacak-etiket { font-size: 11px; font-weight: 900; color: #7a4a00; letter-spacing: 0.3px; }
-.anasayfa-yatacak-deger-satir { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px; }
-.anasayfa-yatacak-ikon { font-size: 30px; line-height: 1; }
-.anasayfa-yatacak-deger { font-size: 30px; font-weight: 900; color: #5c3a00; }
+.anasayfa-yatacak-deger-satir { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
+.anasayfa-yatacak-ikon { font-size: 26px; line-height: 1; }
+.anasayfa-yatacak-deger { font-size: 22px; font-weight: 900; color: #5c3a00; }
 
 /* ---------- İstatistik kartları ---------- */
 .kart-grid {
@@ -398,14 +423,20 @@ body {
    tarih/logo/kur şeridiyle tek bir görsel blok oluşturur. */
 .motivasyon-kutu {
   background: linear-gradient(135deg, #faeeda, #fac775);
-  padding: 12px 14px;
-  min-height: 60px;
+  padding: 10px 14px;
+  min-height: 38px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.motivasyon-selam { font-size: 14px; font-weight: 700; color: #412402; }
-.motivasyon-soz { font-size: 12px; font-style: italic; color: #2c1902; line-height: 1.5; margin-top: 3px; }
+.motivasyon-tek-satir {
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.motivasyon-selam { font-size: 13px; font-weight: 700; color: #412402; flex-shrink: 0; margin-right: 5px; }
+.motivasyon-soz { font-size: 12px; font-style: italic; color: #2c1902; overflow: hidden; text-overflow: ellipsis; }
 
 .gosterge-paneli-etiket {
   text-align: center;
