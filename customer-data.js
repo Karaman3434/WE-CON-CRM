@@ -380,6 +380,63 @@ var CustomerData = (function(){
     });
   }
 
+  // KÖK NEDEN DÜZELTMESİ (13.09.2026): "Müşteriyi Sil" onay metni kullanıcıya
+  // "tüm sipariş/teklif geçmişi de silinir" diyordu ama musteriSil() SADECE
+  // müşteri kaydını (dolayısıyla ona gömülü Temas geçmişini) siliyordu.
+  // Numune/Teklif/Proforma/Sipariş arşivi ve o müşteriye ait görevler ayrı
+  // Firebase yollarında (arsiv/*, gorevler) yaşadığı için hiç dokunulmuyordu
+  // — silinen müşterinin işlemleri "hayalet kayıt" olarak Son İşlemler,
+  // İşlem Geçmişi, Raporlar/İstatistikler ve Bildirimler'de sonsuza kadar
+  // görünmeye (ve satış/prim toplamlarını kirletmeye) devam ediyordu. Bu
+  // yüzden üç ekran arasında "senkron değil" izlenimi oluşuyordu: aslında
+  // veri kaynağı zaten dinamikti (Firebase .on("value") + arsivDegistiginde
+  // dinleyicileri), sorun silme işleminin YARIM kalmasıydı.
+  // Bu fonksiyon musteriSil() ile AYNI anda/hemen sonrasında çağrılmalı;
+  // dört arşiv koleksiyonunu ve gorevler'i taze-oku-transaction ile temizler.
+  // Eşleştirme: musteriId varsa KESİN id eşleşmesi; yoksa (eski/ID'siz
+  // kayıtlar) TAM isim eşleşmesi — silme geri alınamaz olduğu için burada
+  // başka fonksiyonlardaki (musteriUrunGecmisi vb.) BULANIK alt-dize
+  // eşleşmesi bilerek kullanılmadı, yanlış müşterinin kaydını silme riski var.
+  function arsivVeGorevleriTemizle(musteriAd, musteriId, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    var db = firebase.database();
+    var adNormal = (musteriAd||"").toLocaleLowerCase("tr-TR").trim();
+
+    function ayniMusteriMi(k){
+      if(!k) return false;
+      if(musteriId && k.musteriId) return k.musteriId === musteriId;
+      return (k.musteriAd !== undefined ? (k.musteriAd||"") : (k.musteri||""))
+        .toLocaleLowerCase("tr-TR").trim() === adNormal;
+    }
+
+    var yollar = ["arsiv/numune","arsiv/teklif","arsiv/proforma","arsiv/siparis","gorevler"];
+    var kalan = yollar.length;
+    var ilkHata = null;
+    var toplamSilinen = 0;
+
+    yollar.forEach(function(yol){
+      var mutateHatasi = null;
+      var silinenBuYolda = 0;
+      db.ref(yol).transaction(function(currentData){
+        var liste = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
+        try{
+          var kalanlar = liste.filter(function(k){ return !ayniMusteriMi(k); });
+          silinenBuYolda = liste.length - kalanlar.length;
+          return kalanlar;
+        }catch(e){ mutateHatasi = e; return; }
+      }).then(function(result){
+        if(mutateHatasi || !result){ ilkHata = ilkHata || mutateHatasi || new Error(yol + " temizlenemedi."); }
+        else { toplamSilinen += silinenBuYolda; }
+        kalan--;
+        if(kalan === 0) cb(!ilkHata, ilkHata, toplamSilinen);
+      }).catch(function(err){
+        ilkHata = ilkHata || err;
+        kalan--;
+        if(kalan === 0) cb(!ilkHata, ilkHata, toplamSilinen);
+      });
+    });
+  }
+
   function benzerMusterileriBul(ad){
     var q = (ad||"").trim().toLocaleLowerCase("tr-TR");
     if(!q) return [];
@@ -689,6 +746,7 @@ var CustomerData = (function(){
     notSil: notSil,
     notGuncelle: notGuncelle,
     musteriSil: musteriSil,
+    arsivVeGorevleriTemizle: arsivVeGorevleriTemizle,
     musterileriBirlestir: musterileriBirlestir,
     sonGoruntulendi: sonGoruntulendi
   };
