@@ -47,38 +47,41 @@
     <input type="tel" id="gonderTelefon" hidden>
     <input type="email" id="gonderEposta" hidden>
 
+    <!-- Formun ÜSTÜNDEKİ 3 buton (14.09.2026) — Mail / WhatsApp / Tablo.
+         Ayrı bir "İletişim - Gönder" popup'ı yok artık, doğrudan buradan. -->
+    <div class="iletisim-secenek-grid">
+      <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnUstMail">
+        <span class="iletisim-secenek-ikon">📧</span>
+        <span class="iletisim-secenek-metin">Mail</span>
+      </button>
+      <button class="iletisim-secenek-btn iletisim-secenek-btn--whatsapp" id="btnUstWhatsapp">
+        <span class="iletisim-secenek-ikon">💬</span>
+        <span class="iletisim-secenek-metin">WhatsApp</span>
+      </button>
+      <button class="iletisim-secenek-btn iletisim-secenek-btn--kaydet" id="btnUstTablo">
+        <span class="iletisim-secenek-ikon">📋</span>
+        <span class="iletisim-secenek-metin">Tablo</span>
+      </button>
+    </div>
+
     <div id="tamOnizlemeAlani"></div>
 
     <div class="gonder-alt-2x2 gonder-alt-2li">
       <button class="geri-duzelt-btn" id="btnGeriDuzelt">‹ Geri — Sepete Dön ve Düzelt</button>
       <button type="button" class="tablo-kopyala-btn" id="anaTabloKopyalaBtn">📋 Tabloyu Resim Olarak Kopyala</button>
     </div>
-    <button class="iletisim-gonder-btn" id="btnIletisimGonder">📧💬 İletişim - Gönder</button>
   </section>
 
-  <!-- İletişim - Gönder popup (14.09.2026) — form artık her zaman açık
-       göründüğü için tüm gönderme/çıkış eylemleri BU popup'ta toplandı:
-       Kaydet çık / Mail / WhatsApp. Eski MAIL GÖNDER/WHATSAPP GÖNDER
-       kutucukları, Formu Görüntüle/Gizle ve Ana Sayfa'ya Dön butonları
-       kaldırıldı (Abdullah'ın onayladığı sade tasarım). -->
-  <div class="overlay" id="iletisimGonderOverlay" hidden>
+  <!-- Sadece Tablo önizlemesi (14.09.2026) — cari bilgi/mesaj metni yok,
+       SADECE ürün tablosu + genel toplam. Devam eden bir mail zincirine
+       yapıştırmak için; gönderim değil, salt görüntüleme + kopyalama. -->
+  <div class="overlay" id="tabloSadeceOverlay" hidden>
     <div class="sheet">
-      <div class="sheet-baslik">İletişim - Gönder</div>
-      <div class="iletisim-secenek-grid">
-        <button class="iletisim-secenek-btn iletisim-secenek-btn--kaydet" id="btnIletisimKaydetCik">
-          <span class="iletisim-secenek-ikon">✓</span>
-          <span class="iletisim-secenek-metin">Kaydet çık</span>
-        </button>
-        <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnIletisimMail">
-          <span class="iletisim-secenek-ikon">📧</span>
-          <span class="iletisim-secenek-metin">Mail gönder</span>
-        </button>
-        <button class="iletisim-secenek-btn iletisim-secenek-btn--whatsapp" id="btnIletisimWhatsapp">
-          <span class="iletisim-secenek-ikon">💬</span>
-          <span class="iletisim-secenek-metin">WhatsApp</span>
-        </button>
-      </div>
-      <button class="sheet-secenek sheet-secenek--vazgec" id="btnIletisimVazgec" style="margin-top:10px;">Vazgeç</button>
+      <div class="sheet-baslik">Sadece Tablo</div>
+      <div id="tabloSadeceAlan"></div>
+      <button type="button" class="tablo-kopyala-btn" id="tabloSadeceKopyalaBtn" style="width:100%; margin-top:10px;">📷 Kopyala</button>
+      <button class="gonder-bitir-buton" id="tabloSadeceAnaSayfaBtn" style="margin-top:8px;">Ana Sayfa'ya Dön</button>
+      <button class="sheet-secenek sheet-secenek--vazgec" id="tabloSadeceKapatBtn" style="margin-top:8px;">Kapat</button>
     </div>
   </div>
 
@@ -148,12 +151,12 @@
 <script src="auth.js?v=WG.130926.2010.553"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.130926.2010.553"></script>
-<script src="hareket-tablo.js?v=WG.140926.1211.554"></script>
+<script src="hareket-tablo.js?v=WG.140926.1650.567"></script>
 <script src="cart-data.js?v=WG.020926.1555.92"></script>
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
 <script src="send-data.js?v=WG.140926.1515.562"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="send-render.js?v=WG.140926.1556.565"></script>
+<script src="send-render.js?v=WG.140926.1650.567"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

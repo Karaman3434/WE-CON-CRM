@@ -353,6 +353,44 @@ function whatsappOnizlemeAc(){
   }catch(e){ hataGoster("WhatsApp önizleme açılamadı: " + e.message); }
 }
 
+// "Sadece Tablo" önizlemesi (14.09.2026) — cari bilgi/mesaj metni OLMADAN,
+// SADECE ürün tablosu (adet/liste/isk/net/toplam) + genel toplam. Devam eden
+// bir mail zincirine yapıştırmak için — gönderim değil, salt kopyalama.
+function tabloSadeceOnizlemeAc(){
+  try{
+    var g = gonderBaglam;
+    var hesapla = function(u){ return CartData.hesapla(u, g.kur, g.kdv); };
+    var toplam = 0;
+    (g.sepet||[]).forEach(function(u){ var h = hesapla(u); if(h && h.toplamEuro!=null) toplam += h.toplamEuro; });
+    document.getElementById("tabloSadeceAlan").innerHTML = HareketTablo.grupHtml({
+      urunler: g.sepet, hesapla: hesapla, genelToplam: toplam, kur: g.kur
+    });
+    document.getElementById("tabloSadeceOverlay").hidden = false;
+  }catch(e){ hataGoster("Tablo önizleme açılamadı: " + e.message); }
+}
+function tabloSadeceKopyala(btnEl){
+  var eskiMetin = btnEl.textContent;
+  btnEl.textContent = "⏳ Hazırlanıyor...";
+  btnEl.disabled = true;
+  function eskiHaleDon(){ btnEl.textContent = eskiMetin; btnEl.disabled = false; }
+  if(typeof html2canvas === "undefined"){ eskiHaleDon(); alert("Görsel oluşturulamadı."); return; }
+  html2canvas(document.getElementById("tabloSadeceAlan"), {backgroundColor:"#ffffff", scale:0.85}).then(function(canvas){
+    canvas.toBlob(function(blob){
+      if(!blob || !navigator.clipboard || typeof window.ClipboardItem === "undefined"){
+        eskiHaleDon(); alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor.");
+        return;
+      }
+      navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(function(){
+        btnEl.textContent = "✓ Kopyalandı! Mail/Sohbete yapıştırabilirsin";
+        setTimeout(eskiHaleDon, 2200);
+      }).catch(function(err){
+        eskiHaleDon();
+        alert("Kopyalanamadı: " + (err && err.message ? err.message : "izin verilmedi"));
+      });
+    }, "image/png");
+  }).catch(function(){ eskiHaleDon(); alert("Görsel oluşturulamadı."); });
+}
+
 function gonderimKanaliniKaydet(kanal){
   try{
     if(!sonKaydedilenBelge || !sonKaydedilenBelge.kayit || !gonderBaglam) return;
@@ -526,27 +564,17 @@ document.addEventListener("DOMContentLoaded", function(){
     window.location.href = "home.html";
   }
 
-  // İletişim - Gönder popup — form önizlemesinin altındaki ana buton; tüm
-  // gönderme/çıkış eylemleri burada toplanıyor.
-  document.getElementById("btnIletisimGonder").onclick = function(){
-    document.getElementById("iletisimGonderOverlay").hidden = false;
-  };
-  document.getElementById("btnIletisimVazgec").onclick = function(){
-    document.getElementById("iletisimGonderOverlay").hidden = true;
-  };
-  document.getElementById("iletisimGonderOverlay").addEventListener("click", function(ev){
+  // Formun ÜSTÜNDEKİ 3 buton — Mail / WhatsApp / Tablo (14.09.2026,
+  // Abdullah'ın onayladığı akış). Ayrı bir "İletişim - Gönder" popup'ı
+  // artık yok — bu 3 buton doğrudan formun üstünde duruyor.
+  document.getElementById("btnUstMail").onclick = mailOnizlemeAc;
+  document.getElementById("btnUstWhatsapp").onclick = whatsappOnizlemeAc;
+  document.getElementById("btnUstTablo").onclick = tabloSadeceOnizlemeAc;
+
+  document.getElementById("tabloSadeceKopyalaBtn").onclick = function(){ tabloSadeceKopyala(this); };
+  document.getElementById("tabloSadeceAnaSayfaBtn").onclick = anaSayfayaDonVeTemizle;
+  document.getElementById("tabloSadeceKapatBtn").onclick = function(){ document.getElementById("tabloSadeceOverlay").hidden = true; };
+  document.getElementById("tabloSadeceOverlay").addEventListener("click", function(ev){
     if(ev.target === this) this.hidden = true;
   });
-  document.getElementById("btnIletisimKaydetCik").onclick = function(){
-    document.getElementById("iletisimGonderOverlay").hidden = true;
-    anaSayfayaDonVeTemizle();
-  };
-  document.getElementById("btnIletisimMail").onclick = function(){
-    document.getElementById("iletisimGonderOverlay").hidden = true;
-    mailOnizlemeAc();
-  };
-  document.getElementById("btnIletisimWhatsapp").onclick = function(){
-    document.getElementById("iletisimGonderOverlay").hidden = true;
-    whatsappOnizlemeAc();
-  };
 });
