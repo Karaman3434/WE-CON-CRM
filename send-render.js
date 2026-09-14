@@ -388,7 +388,9 @@ function gonderTiklandi(kanal, ozelKonu){
         var paylasimMetni = kanal==="whatsapp" ? metin : (konuMetni + "\n\n" + metin);
 
         if(navigator.canShare && navigator.canShare({files:[dosya]})){
-          navigator.share({files:[dosya], title:konuMetni, text:paylasimMetni}).catch(function(err){
+          navigator.share({files:[dosya], title:konuMetni, text:paylasimMetni}).then(function(){
+            basariEkraninaGit(kanal);
+          }).catch(function(err){
             if(err && err.name!=="AbortError") hataGoster("Paylaşım penceresi kapatıldı.");
           });
         } else {
@@ -405,6 +407,16 @@ function gonderTiklandi(kanal, ozelKonu){
   }catch(e){ hataGoster("Gönderim başlatılamadı: " + e.message); }
 }
 
+function basariEkraninaGit(kanal){
+  try{
+    localStorage.setItem("weiconv2_gonderim_kanali", JSON.stringify({
+      kanal: kanal,
+      musteriAd: (gonderBaglam && gonderBaglam.musteri && gonderBaglam.musteri.ad) || ""
+    }));
+  }catch(e){}
+  window.location.href = "gonderim-basarili.html";
+}
+
 function metinTabanliGonder(kanal, ozelKonu){
   var metin = document.getElementById("gonderMetin").value;
   if(kanal === "whatsapp"){
@@ -417,6 +429,10 @@ function metinTabanliGonder(kanal, ozelKonu){
     var url2 = "mailto:"+encodeURIComponent(eposta)+"?subject="+encodeURIComponent(konu)+"&body="+encodeURIComponent(metin);
     window.open(url2, "_blank");
   }
+  // Gönderim tetiklendikten sonra artık aynı önizleme/paylaşım ekranları
+  // tekrar tekrar açık kalmıyor — sade bir "gönderiliyor" ekranına geçiliyor
+  // (14.09.2026, Abdullah'ın onayladığı tasarım).
+  basariEkraninaGit(kanal);
 }
 
 window.addEventListener("error", function(ev){

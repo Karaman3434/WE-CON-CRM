@@ -1,0 +1,70 @@
+html, body { margin: 0; padding: 0; background: #eef1f5; }
+.gb-sayfa {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.gb-arkaplan {
+  position: absolute;
+  inset: 0;
+  background-image: url('gonderim-arkaplan.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+}
+.gb-logo {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #003a70;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 18px;
+}
+.gb-kanal-rozeti {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #eafaf0;
+  border: 1.5px solid #0e6b34;
+  color: #0e6b34;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.gb-alt-metin {
+  position: relative;
+  font-size: 13px;
+  color: #556170;
+  max-width: 280px;
+  margin-bottom: 28px;
+}
+.gb-ana-sayfa-btn {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  background: #003a70;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 15px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
