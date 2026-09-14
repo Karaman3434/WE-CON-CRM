@@ -482,14 +482,15 @@ document.addEventListener("DOMContentLoaded", function(){
   // taze veri gelince yukarıdaki dinleyici tekrar çizer.
   musteriyleDevamEt(kayitliBaglam.musteri);
 
-  // YENİ AKIŞ (WG.100926.196): Sepet'te "📋 Formu Görüntüle"ye basılıp
-  // (niyet=gonder) buraya gelindiyse, ekran açılır açılmaz platform
-  // sorulur — seçilince doğrudan o platformun Önizleme'si (form+metin
-  // birlikte) açılır. "Kaydet" niyetiyle gelindiyse bu hiç sorulmaz,
-  // eski "Kaydedildi" ekranı normal şekilde görünür.
-  if(kayitliBaglam.niyet === "gonder"){
-    document.getElementById("platformSecimOverlay").hidden = false;
-  }
+  // DÜZELTME (14.09.2026): "📋 Formu Görüntüle" (Sepet'te, niyet=gonder)
+  // butonuna basınca buraya gelir gelmez "Hangi platformla göndereceksin?"
+  // popup'ı açılıyordu — bu, butonun VAAT ETTİĞİ şeyle (formu görüntülemek)
+  // çelişiyordu, kullanıcı formu hiç göremeden gönderim sorusuyla
+  // karşılaşıyordu. Artık niyet=gonder ile gelindiğinde platform SORULMUYOR
+  // — bunun yerine doğrudan "Formu Görüntüle" tetiklenip form gösteriliyor;
+  // göndermek istediğinde en alttaki "📧💬 İletişim - Gönder" butonunu (veya
+  // yukarıdaki MAIL/WHATSAPP GÖNDER kutucuklarını) kullanabiliyor. Bu tetikleme
+  // en altta, btnFormuGoruntule'nin onclick'i tanımlandıktan SONRA yapılıyor.
   document.getElementById("btnPlatformMail").onclick = function(){
     document.getElementById("platformSecimOverlay").hidden = true;
     mailOnizlemeAc();
@@ -579,4 +580,8 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("iletisimGonderOverlay").hidden = true;
     whatsappOnizlemeAc();
   };
+
+  if(kayitliBaglam.niyet === "gonder"){
+    document.getElementById("btnFormuGoruntule").click();
+  }
 });
