@@ -328,3 +328,34 @@
   margin-top: 10px;
   cursor: pointer;
 }
+
+/* İletişim - Gönder popup'ındaki 3'lü seçenek grid'i (14.09.2026) — boy
+   olarak Ana Sayfa'daki .menu-kart standardına yakın (22px ikon,
+   orta boy dolgu), ne .gonder-tile kadar büyük ne .sheet-secenek kadar
+   düz/küçük. */
+.iletisim-secenek-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.iletisim-secenek-btn {
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 68px;
+  text-align: center;
+}
+.iletisim-secenek-ikon { font-size: 22px; line-height: 1; }
+.iletisim-secenek-metin { font-size: 11.5px; font-weight: 800; }
+.iletisim-secenek-btn--kaydet { background: #f4f6f9; border: 1.5px solid #cbd5e1; }
+.iletisim-secenek-btn--kaydet .iletisim-secenek-metin { color: #2d3540; }
+.iletisim-secenek-btn--mail { background: #faeeda; border: 1.5px solid #b7601f; }
+.iletisim-secenek-btn--mail .iletisim-secenek-metin { color: #b7601f; }
+.iletisim-secenek-btn--whatsapp { background: #eafaf0; border: 1.5px solid #0e6b34; }
+.iletisim-secenek-btn--whatsapp .iletisim-secenek-metin { color: #0e6b34; }

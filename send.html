@@ -16,7 +16,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.140926.1241.557">
 <link rel="stylesheet" href="cart-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="send-style.css?v=WG.140926.1523.563">
+<link rel="stylesheet" href="send-style.css?v=WG.140926.1612.566">
 <link rel="stylesheet" href="belge-style.css?v=WG.140926.1213.555">
 <link rel="stylesheet" href="detail-style.css?v=WG.140926.1213.555">
 </head>
@@ -64,15 +64,20 @@
   <div class="overlay" id="iletisimGonderOverlay" hidden>
     <div class="sheet">
       <div class="sheet-baslik">İletişim - Gönder</div>
-      <button class="sheet-secenek" id="btnIletisimKaydetCik">✓ Kaydet çık</button>
-      <button class="gonder-tile gonder-tile--mail" id="btnIletisimMail" style="margin-top:10px;">
-        <span class="gonder-tile-ikon">📧</span>
-        <span class="gonder-tile-baslik">MAIL GÖNDER</span>
-      </button>
-      <button class="gonder-tile gonder-tile--whatsapp" id="btnIletisimWhatsapp" style="margin-top:10px;">
-        <span class="gonder-tile-ikon">💬</span>
-        <span class="gonder-tile-baslik">WHATSAPP GÖNDER</span>
-      </button>
+      <div class="iletisim-secenek-grid">
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--kaydet" id="btnIletisimKaydetCik">
+          <span class="iletisim-secenek-ikon">✓</span>
+          <span class="iletisim-secenek-metin">Kaydet çık</span>
+        </button>
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnIletisimMail">
+          <span class="iletisim-secenek-ikon">📧</span>
+          <span class="iletisim-secenek-metin">Mail gönder</span>
+        </button>
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--whatsapp" id="btnIletisimWhatsapp">
+          <span class="iletisim-secenek-ikon">💬</span>
+          <span class="iletisim-secenek-metin">WhatsApp</span>
+        </button>
+      </div>
       <button class="sheet-secenek sheet-secenek--vazgec" id="btnIletisimVazgec" style="margin-top:10px;">Vazgeç</button>
     </div>
   </div>
