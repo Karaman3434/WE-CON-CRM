@@ -152,11 +152,11 @@
   cursor: not-allowed; border: 1.5px solid #95a9c2;}
 
 .gonder-kutu {
-  margin-top: 20px;
-  border: 2px solid #0e6b34;
-  border-radius: 10px;
-  padding: 16px;
-  background: #eafaf0;
+  margin-top: 4px;
+  border: none;
+  border-radius: 0;
+  padding: 2px;
+  background: transparent;
 }
 .gonder-baslik {
   font-size: 15px;
@@ -336,23 +336,22 @@
 .iletisim-secenek-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 4px;
+  margin-bottom: 6px;
 }
 .iletisim-secenek-btn {
   cursor: pointer;
-  border-radius: 10px;
-  padding: 12px 4px;
+  border-radius: 8px;
+  padding: 9px 4px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 68px;
+  gap: 5px;
   text-align: center;
 }
-.iletisim-secenek-ikon { font-size: 22px; line-height: 1; }
-.iletisim-secenek-metin { font-size: 11.5px; font-weight: 800; }
+.iletisim-secenek-ikon { font-size: 15px; line-height: 1; }
+.iletisim-secenek-metin { font-size: 12px; font-weight: 800; }
 .iletisim-secenek-btn--kaydet { background: #f4f6f9; border: 1.5px solid #cbd5e1; }
 .iletisim-secenek-btn--kaydet .iletisim-secenek-metin { color: #2d3540; }
 .iletisim-secenek-btn--mail { background: #faeeda; border: 1.5px solid #b7601f; }

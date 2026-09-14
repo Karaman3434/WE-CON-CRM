@@ -530,7 +530,6 @@ document.addEventListener("DOMContentLoaded", function(){
   })();
 
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
-  document.getElementById("anaTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
