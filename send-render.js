@@ -369,7 +369,7 @@ function gonderTiklandi(kanal, ozelKonu){
     // uygulaması açılırken veya sonrasında kullanıcı geri gelip
     // düzeltme yapmak isteyebilir. Sepet/müşteri sadece "✓ Gönderimi
     // Bitir"e basılınca veya Ana Sayfa/Menü'ye gidilince temizlenir
-    // (bkz. btnGonderBitir ve yarim-kalan-uyari.js).
+    // (bkz. İletişim - Gönder popup'ındaki "Kaydet çık" ve yarim-kalan-uyari.js).
     var metin = document.getElementById("gonderMetin").value;
     var g = gonderBaglam;
     var TIP_ETIKET4 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
@@ -482,29 +482,15 @@ document.addEventListener("DOMContentLoaded", function(){
   // taze veri gelince yukarıdaki dinleyici tekrar çizer.
   musteriyleDevamEt(kayitliBaglam.musteri);
 
-  // DÜZELTME (14.09.2026): "📋 Formu Görüntüle" (Sepet'te, niyet=gonder)
-  // butonuna basınca buraya gelir gelmez "Hangi platformla göndereceksin?"
-  // popup'ı açılıyordu — bu, butonun VAAT ETTİĞİ şeyle (formu görüntülemek)
-  // çelişiyordu, kullanıcı formu hiç göremeden gönderim sorusuyla
-  // karşılaşıyordu. Artık niyet=gonder ile gelindiğinde platform SORULMUYOR
-  // — bunun yerine doğrudan "Formu Görüntüle" tetiklenip form gösteriliyor;
-  // göndermek istediğinde en alttaki "📧💬 İletişim - Gönder" butonunu (veya
-  // yukarıdaki MAIL/WHATSAPP GÖNDER kutucuklarını) kullanabiliyor. Bu tetikleme
-  // en altta, btnFormuGoruntule'nin onclick'i tanımlandıktan SONRA yapılıyor.
-  document.getElementById("btnPlatformMail").onclick = function(){
-    document.getElementById("platformSecimOverlay").hidden = true;
-    mailOnizlemeAc();
-  };
-  document.getElementById("btnPlatformWhatsapp").onclick = function(){
-    document.getElementById("platformSecimOverlay").hidden = true;
-    whatsappOnizlemeAc();
-  };
-  document.getElementById("platformSecimVazgecBtn").onclick = function(){
-    document.getElementById("platformSecimOverlay").hidden = true;
-  };
+  // Form artık HER ZAMAN açık — ayrı bir "Formu Görüntüle/Gizle" adımı,
+  // MAIL GÖNDER/WHATSAPP GÖNDER kutucukları ve "Ana Sayfa'ya Dön" butonu
+  // kaldırıldı (14.09.2026, Abdullah'ın onayladığı sade tasarım). Tüm
+  // gönderme/çıkış eylemleri artık tek yerde: "📧💬 İletişim - Gönder" popup'ı.
+  (function(){
+    var g = gonderBaglam;
+    document.getElementById("tamOnizlemeAlani").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv);
+  })();
 
-  document.getElementById("btnWhatsapp").onclick = function(){ whatsappOnizlemeAc(); };
-  document.getElementById("btnEposta").onclick = function(){ mailOnizlemeAc(); };
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
   document.getElementById("anaTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
@@ -526,27 +512,11 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("whatsappOnizlemeOverlay").addEventListener("click", function(ev){
     if(ev.target === this) this.hidden = true;
   });
-  document.getElementById("btnFormuGoruntule").onclick = function(){
-    var alan = document.getElementById("tamOnizlemeAlani");
-    var geriBtn = document.getElementById("btnGeriDuzelt");
-    var iletisimBtn = document.getElementById("btnIletisimGonder");
-    var acikMi = !alan.hidden;
-    if(acikMi){
-      alan.hidden = true;
-      iletisimBtn.hidden = true;
-      this.textContent = "👁 Formu Görüntüle";
-    } else {
-      var g = gonderBaglam;
-      alan.innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv);
-      alan.hidden = false;
-      iletisimBtn.hidden = false;
-      this.textContent = "👁 Formu Gizle";
-    }
-  };
   document.getElementById("btnGeriDuzelt").onclick = function(){
     window.location.href = "cart.html";
   };
-  document.getElementById("btnGonderBitir").onclick = function(){
+
+  function anaSayfayaDonVeTemizle(){
     try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_sepet_kur_override"); }catch(e){}
     try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
@@ -554,11 +524,10 @@ document.addEventListener("DOMContentLoaded", function(){
     try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
     window.location.href = "home.html";
-  };
+  }
 
-  // İletişim - Gönder kısayolu (14.09.2026) — Formu Görüntüle'nin altındaki
-  // buton; popup'taki 3 seçenek yukarıdaki MAIL GÖNDER/WHATSAPP GÖNDER
-  // kutucuklarıyla/Ana Sayfa'ya Dön butonuyla AYNI davranışı tetikler.
+  // İletişim - Gönder popup — form önizlemesinin altındaki ana buton; tüm
+  // gönderme/çıkış eylemleri burada toplanıyor.
   document.getElementById("btnIletisimGonder").onclick = function(){
     document.getElementById("iletisimGonderOverlay").hidden = false;
   };
@@ -570,7 +539,7 @@ document.addEventListener("DOMContentLoaded", function(){
   });
   document.getElementById("btnIletisimKaydetCik").onclick = function(){
     document.getElementById("iletisimGonderOverlay").hidden = true;
-    document.getElementById("btnGonderBitir").click();
+    anaSayfayaDonVeTemizle();
   };
   document.getElementById("btnIletisimMail").onclick = function(){
     document.getElementById("iletisimGonderOverlay").hidden = true;
@@ -580,8 +549,4 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("iletisimGonderOverlay").hidden = true;
     whatsappOnizlemeAc();
   };
-
-  if(kayitliBaglam.niyet === "gonder"){
-    document.getElementById("btnFormuGoruntule").click();
-  }
 });
