@@ -47,6 +47,46 @@ function aktifKuruOku(){
   var override = parseFloat(localStorage.getItem("weiconv2_sepet_kur_override"));
   return (!isNaN(override) && override > 0) ? override : CartData.kurOku();
 }
+function aktifKurManuelMi(){
+  var override = parseFloat(localStorage.getItem("weiconv2_sepet_kur_override"));
+  return !isNaN(override) && override > 0;
+}
+
+// "Hesaplanan Kur" / "✏️ Manuel Kur" rozetine dokununca açılan popup —
+// calc.html'deki Döviz Kuru Seçimi popup'ıyla aynı mantık (Günlük Kuru
+// Kullan / Manuel Gir), burada Sepet'e özel kopyası (13.09.2026).
+function kurManuelOverlayAc(){
+  var gunlukKur = CartData.kurOku();
+  document.getElementById("sepetKurGunlukDeger").textContent = CartData.fmt(gunlukKur);
+  var manuelAlan = document.getElementById("sepetKurManuelAlan");
+  manuelAlan.hidden = true;
+  var mevcutOverride = aktifKurManuelMi() ? parseFloat(localStorage.getItem("weiconv2_sepet_kur_override")) : "";
+  document.getElementById("sepetKurManuelInput").value = mevcutOverride;
+  document.getElementById("btnSepetKurGunluk").className = "kur-secenek-btn" + (!aktifKurManuelMi() ? " kur-secenek-btn--secili" : "");
+  document.getElementById("btnSepetKurManuelAc").className = "kur-secenek-btn" + (aktifKurManuelMi() ? " kur-secenek-btn--secili" : "");
+  document.getElementById("kurManuelOverlay").hidden = false;
+}
+function kurManuelOverlayBaglantilariKur(){
+  document.getElementById("btnSepetKurGunluk").onclick = function(){
+    localStorage.removeItem("weiconv2_sepet_kur_override");
+    document.getElementById("kurManuelOverlay").hidden = true;
+    sayfayiCiz();
+  };
+  document.getElementById("btnSepetKurManuelAc").onclick = function(){
+    document.getElementById("sepetKurManuelAlan").hidden = false;
+    document.getElementById("sepetKurManuelInput").focus();
+  };
+  document.getElementById("btnSepetKurManuelKaydet").onclick = function(){
+    var deger = parseFloat(document.getElementById("sepetKurManuelInput").value);
+    if(isNaN(deger) || deger <= 0){ hataGoster("Geçerli bir kur girin."); return; }
+    localStorage.setItem("weiconv2_sepet_kur_override", deger);
+    document.getElementById("kurManuelOverlay").hidden = true;
+    sayfayiCiz();
+  };
+  document.getElementById("btnKurManuelVazgec").onclick = function(){
+    document.getElementById("kurManuelOverlay").hidden = true;
+  };
+}
 
 function adresleriBelirle(musteri){
   seciliAdresler = {};
@@ -62,6 +102,16 @@ function adresleriBelirle(musteri){
   if(musteri.teslimatAdresleri && musteri.teslimatAdresleri.length){
     var ti = (secim.teslimat!=null && musteri.teslimatAdresleri[secim.teslimat]) ? secim.teslimat : 0;
     seciliAdresler.teslimatAdresi = musteri.teslimatAdresleri[ti];
+  }
+  // KÖK NEDEN DÜZELTMESİ (14.09.2026): fatura/teslimat adresi seçimi kayda
+  // işleniyordu ama YETKİLİ seçimi hiç işlenmiyordu — bu yüzden Belge
+  // Önizleme (kayıt kaydedildikten sonra) her zaman cari karttaki TÜM
+  // yetkilileri gösteriyordu, Formu Görüntüle ise doğru tek kişiyi
+  // gösteriyordu (o an localStorage'dan taze okuyordu). Artık seçili
+  // yetkili de kayda işleniyor — bkz. send-data.js, belge-render.js.
+  if(musteri.iletisimler && musteri.iletisimler.length){
+    var yi = (secim.yetkili!=null && musteri.iletisimler[secim.yetkili]) ? secim.yetkili : 0;
+    seciliAdresler.yetkili = musteri.iletisimler[yi];
   }
 }
 
@@ -133,9 +183,14 @@ function sayfayiCiz(){
         hesapla: hesapla,
         zeminSinifi: "hareket-satir--yesil",
         genelToplam: hesaplananToplam,
-        kur: kur
+        kur: kur,
+        kurManuelMi: aktifKurManuelMi(),
+        kurTiklanabilir: true
       })
     );
+
+    var kurRozeti = document.querySelector(".belge-gt-kur--tiklanabilir");
+    if(kurRozeti) kurRozeti.onclick = kurManuelOverlayAc;
 
     function siraHucresineSilTiklamasiEkle(tr, urun){
       var siraHucre = tr.querySelector("td.belge-td-sira");
@@ -325,7 +380,7 @@ function kaydetGercekIslem(niyet){
         document.getElementById("btnSepetKaydet").textContent = "✓ Kaydet";
         hataGoster("Kaydetme başarısız: " + (sonuc && sonuc.message ? sonuc.message : "bilinmeyen hata"));
       }
-    });
+    }, aktifKurManuelMi());
   }catch(e){ hataGoster("Kaydet işlemi başarısız: " + e.message); }
 }
 
@@ -372,6 +427,7 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   oncedenSecilenTipVarsaUygula();
   ilerletKaynagiVarsaSekmeAyarla();
+  kurManuelOverlayBaglantilariKur();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
   document.getElementById("btnSepetKaydet").onclick = function(){ kaydetTiklandi("kaydet"); };

@@ -102,7 +102,7 @@ var SendData = (function(){
     return d1.getFullYear()===d2.getFullYear() && d1.getMonth()===d2.getMonth() && d1.getDate()===d2.getDate();
   }
 
-  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, devralinanKod, devralinanTarih, geriBildir){
+  function kaydet(tip, musteri, sepetUrunleri, kur, kdv, adresler, devralinanKod, devralinanTarih, geriBildir, kurManuelMi){
     var cb = typeof geriBildir === "function" ? geriBildir : function(){};
     try{
       if(!musteri || !musteri.ad) throw new Error("Müşteri bilgisi eksik.");
@@ -169,9 +169,11 @@ var SendData = (function(){
             eskiKayit.urunler = urunlerKaydi;
             eskiKayit.revizeZamani = simdi;
             eskiKayit.kur = kur; // her revize, o anki kuru kalıcı olarak günceller
+            eskiKayit.kurManuel = !!kurManuelMi;
             eskiKayit.kdv = kdv || 0;
             if(adresler && adresler.faturaAdresi) eskiKayit.faturaAdresi = adresler.faturaAdresi;
             if(adresler && adresler.teslimatAdresi) eskiKayit.teslimatAdresi = adresler.teslimatAdresi;
+            if(adresler && adresler.yetkili && adresler.yetkili.isim) eskiKayit.gorunecekYetkililer = [adresler.yetkili.isim];
             if(!eskiKayit.musteriId && musteri.id) eskiKayit.musteriId = musteri.id;
             otomatikRevizeMi = true;
             kaydedilenKayit = eskiKayit;
@@ -179,9 +181,10 @@ var SendData = (function(){
             kaydedilenKayit = {
               tarih: tarihStr(), ts: simdi, kod: kodUret(tip, devralinanTarihSaat),
               musteri: musteri.ad, musteriId: musteri.id || null, sehir: musteri.sehir || "",
-              mod: tip, urunler: urunlerKaydi, kur: kur, kdv: kdv || 0,
+              mod: tip, urunler: urunlerKaydi, kur: kur, kurManuel: !!kurManuelMi, kdv: kdv || 0,
               faturaAdresi: (adresler && adresler.faturaAdresi) || null,
-              teslimatAdresi: (adresler && adresler.teslimatAdresi) || null
+              teslimatAdresi: (adresler && adresler.teslimatAdresi) || null,
+              gorunecekYetkililer: (adresler && adresler.yetkili && adresler.yetkili.isim) ? [adresler.yetkili.isim] : null
             };
             if(devralinanKod){
               kaydedilenKayit.oncekiKod = devralinanKod;
