@@ -63,7 +63,14 @@ var SendData = (function(){
   }
 
   function urunSetiImzaOlustur(urunler){
-    return (urunler||[]).map(function(u){ return (u.berta||"")+"|"+(u.abas||""); }).sort().join(",");
+    // KÖK NEDEN DÜZELTMESİ (14.09.2026): imza sadece ürün koduna (berta+abas)
+    // bakıyordu — adet ve iskontoyu YOK SAYIYORDU. Bu yüzden aynı müşteriye
+    // aynı gün, aynı ürünle ama FARKLI adet/fiyatla girilen GERÇEKTEN AYRI
+    // bir sipariş, "aynı sipariş" sanılıp bir önceki kaydın üzerine REVİZE
+    // olarak yazılıyor, önceki sipariş görünmez oluyordu. Artık adet ve
+    // iskonto da imzaya dahil — sadece ürün, adet VE iskonto birebir aynıysa
+    // (gerçekten yanlışlıkla tekrar kaydetme durumu) revize sayılır.
+    return (urunler||[]).map(function(u){ return (u.berta||"")+"|"+(u.abas||"")+"|"+(parseFloat(u.adet)||0)+"|"+(parseFloat(u.iskonto)||0); }).sort().join(",");
   }
 
   function fiyatGecmisiKontrolEt(musteri, sepet, geriBildir){
