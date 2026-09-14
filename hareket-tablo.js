@@ -79,8 +79,15 @@ var HareketTablo = (function(){
       + "<thead><tr>" + basHucreler + "</tr></thead>"
       + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli) + "</tbody></table></div>";
     if(opts.genelToplam != null){
+      // Manuel kur girilmişse (opts.kurManuelMi) etiket "Hesaplanan Kur" yerine
+      // kısa "✏️ Manuel Kur" olur — böylece bu işlemde günlük kur DEĞİL, elle
+      // girilmiş özel bir kur kullanıldığı tek bakışta anlaşılır (13.09.2026).
+      // opts.kurTiklanabilir sadece Sepet'te true geçilir; oraya dokununca
+      // manuel kur girme popup'ı açılır (bkz. cart-render.js).
+      var kurSinifi = "belge-gt-kur" + (opts.kurManuelMi ? " belge-gt-kur--manuel" : "") + (opts.kurTiklanabilir ? " belge-gt-kur--tiklanabilir" : "");
+      var kurEtiketMetni = opts.kurManuelMi ? "✏️ Manuel Kur" : "Hesaplanan Kur";
       html += "<div class='belge-genel-toplam-serit'>"
-        + (opts.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(opts.kur) + " Euro</span>" : "")
+        + (opts.kur ? "<span class='" + kurSinifi + "'>" + kurEtiketMetni + "<br>" + fmt(opts.kur) + " Euro</span>" : "")
         + "<span class='belge-gt-etiket-deger-grup'>"
         + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
         + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " EURO" + (opts.kur ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(opts.genelToplam*opts.kur).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"
