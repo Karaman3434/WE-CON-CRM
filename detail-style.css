@@ -33,7 +33,7 @@
 }
 .islemler-tile-icerik { min-width: 0; flex: 1; }
 .islemler-tile-baslik { font-size: 16px; font-weight: 900; }
-.islemler-tile-baslik--mor { color: #6a1b9a; }
+.islemler-tile-baslik--mor { color: #8e44ad; }
 .islemler-tile-baslik--mavi { color: #1a4d9e; }
 .islemler-tile-baslik--gri { color: #333333; }
 .islemler-tile-alt {
@@ -44,13 +44,13 @@
   white-space: nowrap;
 }
 #tileTemas { background: #f6f0fd; border: 2.5px solid #8e44ad; }
-#tileTemas .islemler-tile-alt { color: #8a6bb0; }
+#tileTemas .islemler-tile-alt { color: #8e44ad; }
 #tileUrunBul { background: #f0f7ff; border: 2.5px solid #3569b8; }
 #tileUrunBul .islemler-tile-alt { color: #6a8fc9; }
 #tileGecmis, #tileGorevler { background: #f4f5f6; border: 2.5px solid #2d3540; }
 #tileGecmis .islemler-tile-alt, #tileGorevler .islemler-tile-alt { color: #44494f; }
 #tileUrunGecmisi { background: #f6f0fd; border: 2.5px solid #8e44ad; }
-#tileUrunGecmisi .islemler-tile-alt { color: #8a6bb0; }
+#tileUrunGecmisi .islemler-tile-alt { color: #8e44ad; }
 
 .tip-secim-overlay {
   position: fixed;
@@ -106,8 +106,8 @@
   justify-content: center;
   padding: 0 6px;
 }
-.islemler-rozet--mor { background: #8e44ad; border: 1.5px solid #72368a;}
-.islemler-rozet--gri { background: #37474f; border: 1.5px solid #3f515a;}
+.islemler-rozet--mor { background: #f6f0fd; border: 1.5px solid #8e44ad;}
+.islemler-rozet--gri { background: #f0fdfa; border: 1.5px solid #0e6b58;}
 .islemler-ok { font-size: 18px; }
 .islemler-ok--mor { color: #8e44ad; }
 .islemler-ok--mavi { color: #2563eb; }
@@ -120,17 +120,17 @@
 }
 .islemler-sil-uyari-notu {
   font-size: 11px;
-  color: #a32d2d;
-  background: #fdeceb;
+  color: #c0392b;
+  background: #fdeaea;
   border-radius: 6px;
   padding: 8px 10px;
   margin: 0 0 18px;
-  line-height: 1.4; border: 1.5px solid #f49892;}
+  line-height: 1.4; border: 1.5px solid #c0392b;}
 .islemler-sil-btn {
   flex: 1;
-  background: #fdeceb;
+  background: #fdeaea;
   color: #c0392b;
-  border: 2px solid #e0a49e;
+  border: 2px solid #c0392b;
   border-radius: 8px;
   padding: 12px;
   font-size: 14px;
@@ -141,7 +141,7 @@
   flex: 1;
   background: #f0fdfa;
   color: #0e6b58;
-  border: 2px solid #16a085;
+  border: 2px solid #0e6b58;
   border-radius: 8px;
   padding: 12px;
   font-size: 14px;
@@ -180,17 +180,17 @@
 .birlestir-arama-sonuc-sehir { font-size: 12px; color: #44494f; margin-top: 2px; }
 .birlestir-uyari-metin {
   font-size: 12px;
-  color: #8a590c;
-  background: #fff6ec;
-  border: 1px solid #f2d9c2;
+  color: #b7601f;
+  background: #faeeda;
+  border: 1px solid #b7601f;
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 12px;
   line-height: 1.4;
 }
 .birlestir-onay-kutu { border-radius: 8px; padding: 12px 14px; margin-bottom: 6px; }
-.birlestir-onay-kutu--silinecek { background: #fdeceb; border: 2px solid #c0392b; }
-.birlestir-onay-kutu--kalacak { background: #f0fdfa; border: 2px solid #16a085; }
+.birlestir-onay-kutu--silinecek { background: #fdeaea; border: 2px solid #c0392b; }
+.birlestir-onay-kutu--kalacak { background: #f0fdfa; border: 2px solid #0e6b58; }
 .birlestir-onay-etiket { font-size: 10px; font-weight: 900; letter-spacing: 1px; margin-bottom: 4px; }
 .birlestir-onay-kutu--silinecek .birlestir-onay-etiket { color: #c0392b; }
 .birlestir-onay-kutu--kalacak .birlestir-onay-etiket { color: #0e6b58; }
@@ -231,15 +231,15 @@
   background: #fafbfc;
 }
 .isim-uyusmazlik-kutu {
-  background: #fff9d6;
-  border: 1.5px solid #e0b800;
+  background: #faeeda;
+  border: 1.5px solid #b7601f;
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 12px;
 }
 .isim-uyusmazlik-kutu p {
   font-size: 12px;
-  color: #6b5b00;
+  color: #b7601f;
   margin: 0 0 10px;
   font-weight: 700;
   line-height: 1.4;
@@ -349,7 +349,7 @@
 .satir-sil-btn {
   background: #fdeaea;
   color: #c0392b;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 11px;
@@ -422,7 +422,7 @@
   width: 100%;
   background: #f0fdfa;
   color: #0e6b58;
-  border: 2px dashed #16a085;
+  border: 2px dashed #0e6b58;
   border-radius: 8px;
   padding: 11px;
   font-size: 13px;
@@ -630,10 +630,10 @@
   cursor: pointer;
   text-align: center;
 }
-.temas-tur-btn--ziyaret { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
+.temas-tur-btn--ziyaret { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
 .temas-tur-btn--telefon { background: #eaf2fc; color: #003a70; border: 1.5px solid #95bdf0;}
-.temas-tur-btn--mail { background: #fdf1e6; color: #a8590c; border: 1.5px solid #f6bf8d;}
-.temas-tur-btn--whatsapp { background: #eafaf3; color: #0e6b58; border: 1.5px solid #9ce7c6;}
+.temas-tur-btn--mail { background: #faeeda; color: #b7601f; border: 1.5px solid #b7601f;}
+.temas-tur-btn--whatsapp { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
 .temas-not-input {
   width: 100%;
   box-sizing: border-box;
@@ -664,10 +664,10 @@
   padding: 2px 7px;
   border-radius: 4px;
 }
-.temas-rozet--ziyaret { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
+.temas-rozet--ziyaret { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
 .temas-rozet--telefon { background: #eaf2fc; color: #003a70; border: 1.5px solid #95bdf0;}
-.temas-rozet--mail { background: #fdf1e6; color: #a8590c; border: 1.5px solid #f6bf8d;}
-.temas-rozet--whatsapp { background: #eafaf3; color: #0e6b58; border: 1.5px solid #9ce7c6;}
+.temas-rozet--mail { background: #faeeda; color: #b7601f; border: 1.5px solid #b7601f;}
+.temas-rozet--whatsapp { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
 .gecmis-karti-ust { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .gecmis-tarih { font-size: 10px; color: #8b95a1; font-weight: 700; flex-shrink: 0; }
 

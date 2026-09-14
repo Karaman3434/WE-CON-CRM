@@ -15,7 +15,7 @@
   color: #111;
 }
 
-.mh-sonuc-kutu { background: #eafaf0; border-color: #b8e0c5; border: 1.5px solid #9ce7b8;}
+.mh-sonuc-kutu { background: #eafaf0; border-color: #0e6b34; border: 1.5px solid #0e6b34;}
 .mh-sonuc-satir {
   display: flex;
   justify-content: space-between;
@@ -23,7 +23,7 @@
   padding: 8px 0;
   border-bottom: 1px solid #d5e8dc;
   font-size: 12px;
-  color: #0e5c3f;
+  color: #0e6b34;
 }
 .mh-sonuc-satir:last-child { border-bottom: none; }
 .mh-sonuc-satir b { font-size: 13px; font-weight: 900; color: #0e6b34; }
@@ -109,7 +109,7 @@
 .mh-avans-git-btn {
   display: block;
   text-align: center;
-  background: #f5eafc;
+  background: #f6f0fd;
   color: #8e44ad;
   border: 1.5px solid #8e44ad;
   border-radius: 8px;
@@ -137,17 +137,17 @@
   margin-top: 10px;
   padding-top: 10px;
 }
-.mh-kesinti-oran { font-size: 11px; font-weight: 800; color: #a32d2d; }
+.mh-kesinti-oran { font-size: 11px; font-weight: 800; color: #c0392b; }
 .mh-net-deger { font-size: 12px; color: #556170; }
 .mh-net-deger b { font-size: 15px; font-weight: 900; color: #0e6b34; }
 
 .mh-toplam-kutu {
-  background: #0e6b34;
+  background: #eafaf0;
   border-radius: 12px;
   padding: 16px;
   text-align: center;
-  margin-bottom: 16px; border: 1.5px solid #128742;}
-.mh-toplam-etiket { font-size: 12px; font-weight: 900; color: #bdeed0; letter-spacing: 0.3px; }
+  margin-bottom: 16px; border: 1.5px solid #0e6b34;}
+.mh-toplam-etiket { font-size: 12px; font-weight: 900; color: #0e6b34; letter-spacing: 0.3px; }
 .mh-toplam-deger { font-size: 28px; font-weight: 900; color: #fff; margin-top: 4px; }
 
 .mh-yatacak-kutu-standalone {
@@ -168,7 +168,7 @@
   font-weight: 900; border: 1.5px solid #12876f;}
 .mh-kart-govde {
   background: #fff;
-  border: 1px solid #d5e8dc;
+  border: 1px solid #0e6b34;
   border-top: none;
   border-radius: 0 0 10px 10px;
   padding: 16px;
@@ -189,8 +189,8 @@
   border-radius: 10px;
   padding: 12px;
   margin-top: 10px;
-  text-align: center; border: 1.5px solid #9ce7b8;}
-.mh-kart-yatacak-etiket { font-size: 11px; font-weight: 900; color: #0e5c3f; }
+  text-align: center; border: 1.5px solid #0e6b34;}
+.mh-kart-yatacak-etiket { font-size: 11px; font-weight: 900; color: #0e6b34; }
 .mh-kart-yatacak-deger { font-size: 24px; font-weight: 900; color: #0e6b34; margin-top: 2px; }
 
 .mh-harcama-giris-satir {
@@ -217,12 +217,12 @@
 }
 .mh-harcama-tablo { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 6px; }
 .mh-harcama-tablo th {
-  background: #fdf3d9;
-  color: #7a5b00;
+  background: #faeeda;
+  color: #b7601f;
   padding: 5px 4px;
   font-size: 9px;
   font-weight: 900;
-  text-align: left; border: 1.5px solid #f8d780;}
+  text-align: left; border: 1.5px solid #b7601f;}
 .mh-harcama-tablo th:last-child, .mh-harcama-tablo td:last-child { text-align: right; width: 24px; }
 .mh-harcama-tablo th:nth-child(3), .mh-harcama-tablo td:nth-child(3) { text-align: right; }
 .mh-harcama-tablo td { border-bottom: 1px solid #f0ede0; padding: 6px 4px; }
@@ -236,7 +236,7 @@
   font-weight: 800; border: 1.5px solid #95bdf0;}
 .mh-harcama-sil-btn { background: none; border: none; color: #c0392b; font-size: 13px; cursor: pointer; }
 
-.mh-sonuc-satir--vurgu { color: #a32d2d; font-weight: 800; }
+.mh-sonuc-satir--vurgu { color: #c0392b; font-weight: 800; }
 .mh-sonuc-satir--vurgu b { color: #c0392b; }
 
 .mh-kayit-et-btn {
@@ -272,7 +272,7 @@
   width: 100%;
   background: #fdeaea;
   color: #c0392b;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-radius: 8px;
   padding: 8px;
   font-size: 11px;

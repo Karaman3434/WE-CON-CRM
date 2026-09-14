@@ -101,8 +101,8 @@
 }
 .musteri-rozet--temas { background: #eef1f5; color: #556170; }
 .musteri-rozet--islem { background: #e6f1fb; color: #0c447c; }
-.musteri-rozet--beklemede { background: #faeeda; color: #633806; }
-.musteri-rozet--yok { background: #fcebeb; color: #a32d2d; }
+.musteri-rozet--beklemede { background: #faeeda; color: #b7601f; }
+.musteri-rozet--yok { background: #fdeaea; color: #c0392b; }
 
 .musteri-alt-satir {
   display: flex;
@@ -134,7 +134,7 @@
   width: 100%;
   background: #f0fdfa;
   color: #0e6b58;
-  border: 2px solid #16a085;
+  border: 2px solid #0e6b58;
   border-radius: 8px;
   padding: 12px;
   font-size: 13px;
@@ -214,13 +214,13 @@
 .yeni-musteri-baslik {
   font-size: 16px;
   font-weight: 900;
-  color: #16a085;
+  color: #0e6b58;
   text-transform: uppercase;
   margin-bottom: 12px;
 }
 .yeni-musteri-form {
   background: #f0fdfa;
-  border: 1px dashed #16a085;
+  border: 1px dashed #0e6b58;
   border-radius: 8px;
   padding: 14px;
   display: flex;

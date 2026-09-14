@@ -6,7 +6,7 @@
 .son-islemler-baslik {
   font-size: 18px;
   font-weight: 900;
-  color: #003a70;
+  color: #0e6b58;
   text-align: center;
   border-bottom: 3px solid #16a085;
   padding-bottom: 10px;
@@ -35,9 +35,9 @@
 }
 
 .excel-buton {
-  background: #e9f7ee;
-  color: #16a34a;
-  border: 1px solid #1f9d55;
+  background: #eafaf0;
+  color: #0e6b34;
+  border: 1px solid #0e6b34;
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 12px;
@@ -92,7 +92,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px; border: 1.5px solid #95bdf0;}
-.raporlar-kisayol-btn--kacan { background: #fdeceb; color: #c0392b; border: 1.5px solid #f49892;}
+.raporlar-kisayol-btn--kacan { background: #fdeaea; color: #c0392b; border: 1.5px solid #c0392b;}
 .kisayol-ok { display: flex; align-items: center; flex-shrink: 0; }
 .islem-kod-rozet--buyuk {
   font-size: 13px;
@@ -201,7 +201,7 @@
   width: auto;
   background: #fdeaea;
   color: #c0392b;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-radius: 6px;
   padding: 8px;
   font-size: 11px;
@@ -239,7 +239,7 @@
 .islem-sil-btn {
   background: #fdeaea;
   color: #c0392b;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-radius: 6px;
   padding: 8px 4px;
   font-size: 11px;
@@ -291,7 +291,7 @@
 }
 .duzenle-urun-sil-btn {
   background: #fdeaea;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 13px;
@@ -540,9 +540,9 @@
   background: #0e2038;
   border-color: #0a1628;
 }
-.istatistik-kart--koyu .istatistik-baslik { color: #7fd6ff; }
+.istatistik-kart--koyu .istatistik-baslik { color: #0e6b58; }
 .istatistik-baslik { font-size: 11px; font-weight: 800; color: #2d3540; text-transform: uppercase; margin-bottom: 6px; }
-.istatistik-deger { font-size: 20px; font-weight: 900; color: #00d9ff; }
+.istatistik-deger { font-size: 20px; font-weight: 900; color: #0e6b58; }
 .istatistik-deger--koyu { color: #003a70; }
 .istatistik-alt { font-size: 11px; color: #44494f; margin-top: 4px; }
 .istatistik-kart--koyu .istatistik-alt { color: #a8c0e8; }
@@ -587,11 +587,11 @@
   text-overflow: ellipsis;
 }
 .aylik-ozet-ay-hucre { font-weight: bold; color: #003a70; }
-.aylik-ozet-prim-hucre { font-weight: bold; color: #16a085; }
-.aylik-ozet-primtl-hucre { font-weight: bold; color: #a8790a; }
+.aylik-ozet-prim-hucre { font-weight: bold; color: #0e6b58; }
+.aylik-ozet-primtl-hucre { font-weight: bold; color: #b7601f; }
 .aylik-ozet-satir--mevcut-ay { background: #cfe2f3; border-left: 4px solid #3569b8; }
 .aylik-ozet-toplam-satir {
-  background: #cfe2f3;
+  background: #f0fdfa;
   font-weight: 900;
   border-top: 2px solid #16a085;
 }
@@ -616,7 +616,7 @@
 .ay-detay-baslik {
   font-size: 16px;
   font-weight: 900;
-  color: #003a70;
+  color: #b7601f;
   text-align: center;
   border-bottom: 3px solid #f2994a;
   padding-bottom: 10px;
@@ -628,12 +628,12 @@
   gap: 8px;
   font-size: 12px;
   font-weight: 800;
-  color: #854f0b;
+  color: #b7601f;
   background: #faeeda;
   border-radius: 8px;
   padding: 8px 10px;
   margin-bottom: 10px;
-  cursor: pointer; border: 1.5px solid #efc888;}
+  cursor: pointer; border: 1.5px solid #b7601f;}
 .ay-detay-beklemede-satir input { width: 16px; height: 16px; flex-shrink: 0; }
 .ay-detay-toplam-kutu {
   background: #0a1628;
@@ -644,8 +644,8 @@
   justify-content: space-between;
   align-items: center;
 }
-.ay-detay-toplam-kutu span { font-size: 12px; font-weight: 800; color: #7fd6ff; }
-.ay-detay-toplam-kutu strong { font-size: 18px; font-weight: 900; color: #00d9ff; }
+.ay-detay-toplam-kutu span { font-size: 12px; font-weight: 800; color: #0e6b58; }
+.ay-detay-toplam-kutu strong { font-size: 18px; font-weight: 900; color: #0e6b58; }
 .ay-detay-kapat-btn {
   width: 100%;
   background: #fdeaea;
@@ -677,10 +677,10 @@
   margin-bottom: 10px;
 }
 .kacan-ozet-kart {
-  background: #e0524a;
+  background: #fdeaea;
   border-radius: 10px;
   padding: 8px;
-  text-align: center; border: 1.5px solid #cc2c23;}
+  text-align: center; border: 1.5px solid #c0392b;}
 .kacan-ozet-baslik { font-size: 12px; font-weight: 800; color: #ffffff; opacity: .9; }
 .kacan-ozet-deger { font-size: 22px; font-weight: 900; color: #ffffff; margin-top: 4px; }
 .kacan-satir {
@@ -707,10 +707,10 @@
 }
 .ziyaret-karti--kritik {
   background: #fdeaea;
-  border-color: #e0524a; border: 1.5px solid #f59191;}
+  border-color: #c0392b; border: 1.5px solid #c0392b;}
 .ziyaret-karti--uyari {
-  background: #fff3e6;
-  border-color: #f2994a; border: 1.5px solid #ffc485;}
+  background: #faeeda;
+  border-color: #b7601f; border: 1.5px solid #b7601f;}
 .ziyaret-ust-satir {
   display: flex;
   justify-content: space-between;
@@ -811,13 +811,13 @@
 .ik2-rvz {
   font-size: 20px;
   font-weight: 900;
-  color: #854f0b;
-  background: #fdf3e3;
+  color: #b7601f;
+  background: #faeeda;
   padding: 2px 8px;
   border-radius: 6px;
   flex-shrink: 0;
   white-space: nowrap;
-  line-height: 1.2; border: 1.5px solid #f7cd89;}
+  line-height: 1.2; border: 1.5px solid #b7601f;}
 
 /* ===== v3 — tarih gruplu işlem listesi (05.09.2026). Son İşlemler,
    Bugünün/Aylık Satışları, Müşteri İşlem Geçmişi, Ay Detayı ve Kaçan
@@ -888,17 +888,17 @@
 }
 .tl-arasi { height: 2px; background: #eef1f5; margin-left: 4px; border: 1.5px solid #b1bfd1;}
 .tl-durum-ek { font-size: 11px; font-weight: 800; color: #c0392b; padding: 0 12px 8px 12px; }
-.tl-durum-ek--beklemede { color: #854f0b; }
+.tl-durum-ek--beklemede { color: #b7601f; }
 
 .bekleyen-blok { margin-bottom: 16px; }
 .bekleyen-baslik {
   background: #faeeda;
-  color: #633806;
+  color: #b7601f;
   padding: 8px 12px;
   border-radius: 8px 8px 0 0;
   font-size: 12px;
-  font-weight: 800; border: 1.5px solid #efc888;}
-.bekleyen-blok .tl-liste-kutu { border-color: #f2d9ad; }
-.tl-kart--bekleyen .tl-serit { background: #ef9f27; border: 1.5px solid #cf820f;}
-.bekleyen-not { font-size: 11px; font-weight: 700; color: #854f0b; padding: 0 8px 8px 8px; }
-.bekleyen-not--bos { color: #a08355; font-weight: 600; }
+  font-weight: 800; border: 1.5px solid #b7601f;}
+.bekleyen-blok .tl-liste-kutu { border-color: #b7601f; }
+.tl-kart--bekleyen .tl-serit { background: #faeeda; border: 1.5px solid #b7601f;}
+.bekleyen-not { font-size: 11px; font-weight: 700; color: #b7601f; padding: 0 8px 8px 8px; }
+.bekleyen-not--bos { color: #b7601f; font-weight: 600; }

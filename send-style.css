@@ -46,7 +46,7 @@
 .geri-duzelt-btn {
   background: #fdeaea;
   color: #c0392b;
-  border: 1.5px solid #f0b8b3;
+  border: 1.5px solid #c0392b;
   border-radius: 8px;
   padding: 11px 6px;
   font-size: 12px;
@@ -96,8 +96,8 @@
 .tip-btn--secili { opacity: 1; }
 
 /* Eski uygulamanın "İşlem Türü Seçim" renkleriyle BİREBİR aynı */
-.tip-btn--numune { background: #fff6ec; border: 2.5px solid #b7601f; color: #a8590c; }
-.tip-btn--teklif { background: #f0fbf3; border: 2.5px solid #1f9d55; color: #0e6b34; }
+.tip-btn--numune { background: #faeeda; border: 2.5px solid #b7601f; color: #b7601f; }
+.tip-btn--teklif { background: #eafaf0; border: 2.5px solid #0e6b34; color: #0e6b34; }
 .tip-btn--proforma { background: #f6f0fd; border: 2.5px solid #8e44ad; color: #8e44ad; }
 .tip-btn--siparis { background: #f0f7ff; border: 2.5px solid #3569b8; color: #003a70; }
 
@@ -113,8 +113,8 @@
 }
 
 .fiyat-uyari-kutu {
-  background: #fff3cd;
-  border: 3px solid #ff2d2d;
+  background: #faeeda;
+  border: 3px solid #b7601f;
   border-radius: 8px;
   padding: 14px 16px;
   margin-bottom: 14px;
@@ -132,7 +132,7 @@
 }
 .fiyat-uyari-satir {
   font-size: 12px;
-  color: #7a4508;
+  color: #b7601f;
   margin-bottom: 4px;
 }
 
@@ -153,10 +153,10 @@
 
 .gonder-kutu {
   margin-top: 20px;
-  border: 2px solid #16a34a;
+  border: 2px solid #0e6b34;
   border-radius: 10px;
   padding: 16px;
-  background: #f0fbf3;
+  background: #eafaf0;
 }
 .gonder-baslik {
   font-size: 15px;
@@ -218,13 +218,13 @@
   letter-spacing: .3px;
 }
 .gonder-tile--mail {
-  background: #fff6ec;
+  background: #faeeda;
   border: 3px solid #b7601f;
 }
-.gonder-tile--mail .gonder-tile-baslik { color: #a8590c; }
+.gonder-tile--mail .gonder-tile-baslik { color: #b7601f; }
 .gonder-tile--whatsapp {
-  background: #f0fbf3;
-  border: 3px solid #1f9d55;
+  background: #eafaf0;
+  border: 3px solid #0e6b34;
 }
 .gonder-tile--whatsapp .gonder-tile-baslik { color: #0e6b34; }
 .gonder-bitir-buton {

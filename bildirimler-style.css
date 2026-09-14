@@ -17,7 +17,7 @@
 }
 .beklemede-hatirlat-karti {
   background: #faeeda;
-  border: 1px solid #f0d9ad;
+  border: 1px solid #b7601f;
   border-left: 6px solid #854f0b;
   border-radius: 8px;
   padding: 7px 8px;
@@ -26,7 +26,7 @@
 }
 .beklemede-hatirlat-not {
   font-size: 12px;
-  color: #633806;
+  color: #b7601f;
   margin-top: 6px;
   font-style: italic;
 }
@@ -69,8 +69,8 @@
 }
 
 .ziyaret-hatirlat-karti {
-  background: #fdf1e8;
-  border: 1px solid #f2d9c2;
+  background: #faeeda;
+  border: 1px solid #b7601f;
   border-radius: 8px;
   padding: 7px 8px;
   margin-bottom: 10px;
@@ -85,7 +85,7 @@
 .ziyaret-hatirlat-musteri .cari-kod, .ziyaret-hatirlat-musteri .cari-ayrac, .ziyaret-hatirlat-musteri .cari-isim, .ziyaret-hatirlat-musteri .cari-sehir { font-size: 13px; font-weight: 400; letter-spacing: normal; }
 .ziyaret-hatirlat-musteri .cari-kod { color: #c0392b; }
 .ziyaret-hatirlat-musteri .cari-isim { color: #111827; font-weight: 400; }
-.ziyaret-hatirlat-gun { font-size: 12px; font-weight: 800; color: #a34a1e; white-space: nowrap; }
+.ziyaret-hatirlat-gun { font-size: 12px; font-weight: 800; color: #b7601f; white-space: nowrap; }
 .ziyaret-hatirlat-sag { display: flex; align-items: center; gap: 6px; }
 .ziyaret-hatirlat-ok {
   width: 20px;
@@ -97,8 +97,8 @@
 }
 
 .gorev-bildirim-karti {
-  background: #fdf1e8;
-  border: 1px solid #f2d9c2;
+  background: #faeeda;
+  border: 1px solid #b7601f;
   border-radius: 8px;
   padding: 7px 8px;
   margin-bottom: 10px;
@@ -111,9 +111,9 @@
 .gorev-bildirim-buton-satir { display: flex; gap: 8px; }
 .gorev-tamamla-btn {
   flex: 1;
-  background: #eafaf3;
-  color: #0e7c63;
-  border: 2px solid #7dcdb3;
+  background: #eafaf0;
+  color: #0e6b34;
+  border: 2px solid #0e6b34;
   padding: 11px;
   font-size: 12px;
   font-weight: 800;

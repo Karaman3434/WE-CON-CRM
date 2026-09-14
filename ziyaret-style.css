@@ -3,9 +3,9 @@
 .ziy-takip-btn {
   display: block;
   text-align: center;
-  background: #fdf3e3;
-  border: 1.5px solid #ef9f27;
-  color: #854f0b;
+  background: #faeeda;
+  border: 1.5px solid #b7601f;
+  color: #b7601f;
   border-radius: 10px;
   padding: 12px;
   font-size: 14px;
@@ -74,7 +74,7 @@
 .ziy-gun-hucre--bos { cursor: default; }
 .ziy-gun-hucre--tatil { color: #c0392b; }
 .ziy-gun-hucre--bugun { background: #eaf2fc; border: 2px solid #3569b8; }
-.ziy-gun-hucre--secili { background: #fdf3e3; border: 2px solid #e0730f; }
+.ziy-gun-hucre--secili { background: #faeeda; border: 2px solid #b7601f; }
 .ziy-gun-rozet {
   position: absolute;
   top: 1px;
@@ -153,7 +153,7 @@
   padding: 8px 10px;
   font-size: 12px;
   font-weight: 800;
-  margin-bottom: 8px; border: 1.5px solid #9ce7b8;}
+  margin-bottom: 8px; border: 1.5px solid #0e6b34;}
 
 .ziy-tur-secim {
   display: grid;
@@ -170,10 +170,10 @@
   opacity: .5;
 }
 .ziy-tur-btn--secili { opacity: 1; }
-.ziy-tur-btn--ziyaret { background: #f0fbf3; border: 1.5px solid #1f9d55; color: #0e6b34; }
+.ziy-tur-btn--ziyaret { background: #eafaf0; border: 1.5px solid #0e6b34; color: #0e6b34; }
 .ziy-tur-btn--telefon { background: #eaf2fc; border: 1.5px solid #3569b8; color: #003a70; }
-.ziy-tur-btn--mail { background: #fdf1e6; border: 1.5px solid #d98a3d; color: #a8590c; }
-.ziy-tur-btn--whatsapp { background: #eafaf3; border: 1.5px solid #1f9d78; color: #0e6b58; }
+.ziy-tur-btn--mail { background: #faeeda; border: 1.5px solid #b7601f; color: #b7601f; }
+.ziy-tur-btn--whatsapp { background: #eafaf0; border: 1.5px solid #0e6b34; color: #0e6b34; }
 
 .ziy-hatirlatma-satir {
   display: flex;

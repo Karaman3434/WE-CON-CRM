@@ -18,13 +18,13 @@
   font-size: 13px;
 }
 .hk-aciklama {
-  background: #fff9e6;
-  border: 1.5px solid #ffe285;
+  background: #faeeda;
+  border: 1.5px solid #b7601f;
   border-top: none;
   border-radius: 0 0 10px 10px;
   padding: 10px 14px;
   font-size: 12px;
-  color: #6b5b00;
+  color: #b7601f;
   font-weight: 700;
   line-height: 1.4;
   margin: 0 0 14px;
@@ -48,7 +48,7 @@
 .hk-hepsini-sil-btn {
   background: #fdeaea;
   color: #c0392b;
-  border: 1.5px solid #f0b8b3;
+  border: 1.5px solid #c0392b;
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 12px;
@@ -68,7 +68,7 @@
 
 .hk-kart {
   background: #fff;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-left: 4px solid #c0392b;
   border-radius: 8px;
   padding: 6px 7px;

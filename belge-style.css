@@ -34,7 +34,7 @@
   cursor: pointer;
 }
 .belge-gecmis-cip-kod { display: block; font-size: 10px; font-weight: 900; }
-.belge-gecmis-cip-tarih { display: block; font-size: 8px; color: #5a9c8a; }
+.belge-gecmis-cip-tarih { display: block; font-size: 8px; color: #0e6b58; }
 .belge-gecmis-cip--simdi { cursor: default; }
 .belge-gecmis-cip--simdi .belge-gecmis-cip-tarih { color: #c9dcf0; }
 .belge-gecmis-ok { font-size: 11px; color: #3569b8; }
@@ -193,8 +193,8 @@
 .belge-yetkili-detay { color: #667085; font-size: 11px; font-weight: 500; }
 
 .belge-belge-baslik-serit {
-  background: #f4faf6;
-  color: #1a2a3a;
+  background: #eafaf0;
+  color: #0e6b34;
   padding: 10px 16px;
   font-size: 12px;
   font-weight: 700;
@@ -241,7 +241,7 @@
 .belge-td-urun-kod { font-size: 10.5px; color: #1a2a3a; line-height: 1.3; white-space: nowrap; overflow: hidden; font-weight: 800; }
 /* B (Berta) / A (Abas) kod harfleri — koyu ve kalın */
 .kod-harf { font-weight: 900; font-size: 1.15em; padding: 0 1px; }
-.kod-harf--b { color: #8e1b12; }
+.kod-harf--b { color: #c0392b; }
 .kod-harf--a { color: #062f52; }
 .belge-td-urun-ad { font-weight: 700; color: #101828; margin-top: 2px; font-size: 13.5px; line-height: 1.25; }
 .belge-td-toplam { color: #101828; font-weight: 700; }
@@ -253,17 +253,17 @@
 .belge-td-isk { color: #c0392b; font-weight: 700; }
 .rozet-isk {
   display: inline-block;
-  background: #fdeceb;
-  color: #a32d2d;
+  background: #fdeaea;
+  color: #c0392b;
   font-weight: 800;
   padding: 2px 6px;
   border-radius: 5px;
   font-size: 12px;
-  white-space: nowrap; border: 1.5px solid #f49892;}
+  white-space: nowrap; border: 1.5px solid #c0392b;}
 .rozet-net {
   display: inline-block;
-  background: #eafaf3;
-  color: #0e6b58;
+  background: #eafaf0;
+  color: #0e6b34;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 5px;
@@ -274,7 +274,7 @@
 .belge-td-sayi { font-size: 13.5px; font-weight: 700; color: #101828; }
 .belge-td-birim { font-size: 9.5px; font-weight: 700; color: #98a2b3; letter-spacing: .2px; }
 .belge-td-fiyat--net .belge-td-sayi { color: #0e6b58; }
-.belge-td-fiyat--net .belge-td-birim { color: #5a9c8a; }
+.belge-td-fiyat--net .belge-td-birim { color: #0e6b58; }
 .belge-td-fiyat--toplam .belge-td-sayi { font-size: 14.5px; font-weight: 800; }
 .belge-td-prim .belge-td-sayi { font-size: 11.5px; font-weight: 700; color: #344054; }
 .belge-td-prim .belge-td-birim { font-size: 9px; }
@@ -292,8 +292,8 @@
 }
 .hareket-grup-etiket-rozet {
   background: #fdeaea;
-  border: 1px solid #e0524a;
-  color: #a32d2d;
+  border: 1px solid #c0392b;
+  color: #c0392b;
   padding: 3px 8px;
   border-radius: 6px;
   font-size: 9px;
@@ -301,23 +301,23 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-.hareket-satir--sari { background: #fffdf0; }
-.hareket-satir--yesil { background: #f6fdf9; }
+.hareket-satir--sari { background: #faeeda; }
+.hareket-satir--yesil { background: #eafaf0; }
 
 /* Sepet ekranındaki kompakt Cari Bilgi başlığı — firma adı+şehir tek
    satırda, sağda işlem türü rozeti (SİPARİŞ/TEKLİF/vb). */
 .sepet-cari-bilgi {
-  background: #fff9e6;
+  background: #faeeda;
   border-radius: 8px 8px 0 0;
   padding: 8px 10px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px; border: 1.5px solid #ffe285;}
+  gap: 8px; border: 1.5px solid #b7601f;}
 .sepet-cari-bilgi-etiket {
   font-size: 9px;
   font-weight: 900;
-  color: #8a6d1a;
+  color: #b7601f;
   letter-spacing: .3px;
 }
 .sepet-cari-bilgi-ad {
@@ -360,6 +360,14 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
+/* Sepet'te bu rozete dokunup o işleme özel kur girilebilir (13.09.2026) —
+   tıklanabilir olduğunu belli etmek için noktalı alt çizgi; belge-render.js
+   (Belge Önizleme, salt-okunur geçmiş kayıt) bu sınıfı EKLEMEZ, o yüzden
+   orada tıklanamaz görünür — doğru, çünkü orada zaten tıklanamaz. */
+.belge-gt-kur--tiklanabilir { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
+/* Manuel kur girildiğinde etiket rengi mevcut "sarı" tonuyla (uygulamada
+   zaten kullanılan #ffe285) vurgulanır — yeni bir renk eklenmedi. */
+.belge-gt-kur--manuel { color: #b7601f; }
 .belge-gt-etiket-deger-grup { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
 .belge-gt-etiket { font-size: 12px; font-weight: 700; letter-spacing: .3px; color: #ffffff; }
 .belge-gt-deger { font-size: 18px; font-weight: 800; flex-shrink: 0; text-align: right; white-space: nowrap; color: #ffffff; }
@@ -449,7 +457,7 @@
   display: flex; align-items: center; gap: 10px;
 }
 .sheet-secenek .ikon { font-size: 18px; }
-.sheet-secenek--sil { background: #fdeaea; border-color: #f0b8b3; color: #c0392b; border: 1.5px solid #f59191;}
+.sheet-secenek--sil { background: #fdeaea; border-color: #c0392b; color: #c0392b; border: 1.5px solid #c0392b;}
 .sheet-secenek--vazgec { background: #c0392b; border: none; color: #fff; text-align: center; justify-content: center; margin-top: 6px; }
 
 /* Belge Geçmişi — dikey zaman çizgisi */

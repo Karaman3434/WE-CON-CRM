@@ -6,12 +6,12 @@
   gap: 8px;
   font-size: 12px;
   font-weight: 800;
-  color: #854f0b;
+  color: #b7601f;
   background: #faeeda;
   border-radius: 8px;
   padding: 8px 10px;
   margin: 10px 0;
-  cursor: pointer; border: 1.5px solid #efc888;}
+  cursor: pointer; border: 1.5px solid #b7601f;}
 .gecmis-beklemede-satir input { width: 16px; height: 16px; flex-shrink: 0; }
 
 .gecmis-filtre-satiri {

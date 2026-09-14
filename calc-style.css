@@ -5,7 +5,7 @@
 .sayfa { padding: 4px 4px 16px; background: #f4f6f9; }
 
 .arama-kutusu { position: relative; margin-bottom: 8px; }
-.arama-kutusu input { width: 100%; border: 2px solid #1f9d55; border-radius: 999px; padding: 12px 40px 12px 16px; font-size: 14px; background: #fff; }
+.arama-kutusu input { width: 100%; border: 2px solid #0e6b34; border-radius: 999px; padding: 12px 40px 12px 16px; font-size: 14px; background: #fff; }
 .arama-ikon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; }
 .sonuc-listesi { max-height: 220px; overflow-y: auto; margin-bottom: 8px; }
 .hesapla-arama-karti {
@@ -17,8 +17,8 @@
 .hesapla-arama-kod { font-size: 11px; color: #44494f; }
 .hesapla-arama-ad { font-size: 13px; font-weight: 700; color: #111; }
 .hesapla-arama-fiyat {
-  font-size: 12px; font-weight: 800; color: #d9182b;
-  background: #fdeaea; padding: 4px 8px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; border: 1.5px solid #f59191;}
+  font-size: 12px; font-weight: 800; color: #c0392b;
+  background: #fdeaea; padding: 4px 8px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; border: 1.5px solid #c0392b;}
 
 .hc-secili-urun-kutu {
   background: #eef2f8; border-radius: 10px; padding: 9.6px; margin-bottom: 12px; border: 1.5px solid #a9bddc;}
@@ -65,7 +65,7 @@
 .hc-kutu--toplam .hc-kutu-deger { color: #1a2a3a; }
 
 /* İsk (%) kutusu — yeşil zemin, biraz daha koyu ton. */
-.hc-kutu--isk { background: #bdeeda; border: 1.5px solid #79ddb4;}
+.hc-kutu--isk { background: #eafaf0; border: 1.5px solid #0e6b34;}
 .hc-kutu--isk .hc-kutu-etiket { color: #0e6b58; }
 .hc-kutu--isk input { color: #0e6b58; font-weight: 800; }
 #hesDipFiyat, #hesIskonto { text-align: left; }
@@ -75,16 +75,16 @@
    Kutu boyu sabit, iki kutu aynı satırda olduğu için otomatik eşit
    yükseklikte kalır. Sayı 32px, sonundaki € / TL harf boyunda (16px). */
 .hc-turuncu-kart {
-  background: #e8730f;
+  background: #faeeda;
   border-radius: 10px;
   padding: 12px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center; border: 1.5px solid #ba5c0c;}
+  text-align: center; border: 1.5px solid #b7601f;}
 .hc-turuncu-etiket {
-  font-size: 10px; font-weight: 700; color: #fde3cb;
+  font-size: 10px; font-weight: 700; color: #b7601f;
   margin-bottom: 4px; white-space: nowrap;
 }
 .hc-turuncu-deger { font-size: 32px; font-weight: 800; color: #ffffff; line-height: 1.05; }

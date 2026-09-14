@@ -59,7 +59,7 @@
   flex-shrink: 0;
   background: #fdeaea;
   color: #c0392b;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 12px;
@@ -192,10 +192,10 @@
   padding: 8px 10px;
   text-align: left;
 }
-.sepet-grup-baslik--sari { background: #fff9e6; color: #8a6d1a; border: 1.5px solid #ffe285;}
-.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; border: 1.5px solid #9ce7b8;}
-.sepet-satir--sari { background: #fffdf5; }
-.sepet-satir--yesil { background: #f6fdf9; }
+.sepet-grup-baslik--sari { background: #faeeda; color: #b7601f; border: 1.5px solid #b7601f;}
+.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
+.sepet-satir--sari { background: #faeeda; }
+.sepet-satir--yesil { background: #eafaf0; }
 .sepet-urun-ad {
   font-size: 12px;
   font-weight: 800;
@@ -243,13 +243,13 @@
 }
 .sepet-toplam-deger {
   background: #fdeaea;
-  color: #d9182b;
+  color: #c0392b;
   padding: 3px 5px;
   border-radius: 4px;
   font-weight: bold;
   font-size: 11px;
   white-space: nowrap;
-  display: inline-block; border: 1.5px solid #f59191;}
+  display: inline-block; border: 1.5px solid #c0392b;}
 .sepet-sil-btn {
   background: none;
   border: none;
@@ -276,7 +276,7 @@
 .toplam-satir--alt {
   margin-top: 6px;
   font-size: 13px;
-  color: #a8ffb0;
+  color: #0e6b34;
 }
 
 .devam-buton {
@@ -291,9 +291,9 @@
   cursor: pointer;
 }
 .devam-buton:disabled {
-  background: #d3d1c7;
-  color: #8a8880;
-  cursor: not-allowed; border: 1.5px solid #afab99;}
+  background: #faeeda;
+  color: #b7601f;
+  cursor: not-allowed; border: 1.5px solid #b7601f;}
 .sepet-alt-buton-satir {
   display: flex;
   gap: 8px;
@@ -323,9 +323,9 @@
   cursor: pointer;
 }
 .sepet-kaydet-btn:disabled, .sepet-gonder-btn:disabled {
-  background: #d3d1c7;
-  color: #8a8880;
-  cursor: not-allowed; border: 1.5px solid #afab99;}
+  background: #faeeda;
+  color: #b7601f;
+  cursor: not-allowed; border: 1.5px solid #b7601f;}
 .devam-uyari {
   text-align: center;
   color: #b7601f;
@@ -356,7 +356,7 @@
 }
 .sepet-sira-sil-btn {
   background: #fdeaea;
-  border: 1px solid #f0b8b3;
+  border: 1px solid #c0392b;
   border-radius: 5px;
   color: #c0392b;
   font-size: 12px;
@@ -374,12 +374,12 @@
   border-radius: 8px;
   margin-bottom: 8px;
 }
-.sepet-grup-baslik--sari { background: #fff9e6; color: #8a6d1a; border: 1.5px solid #ffe285;}
-.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; margin-top: 14px; border: 1.5px solid #9ce7b8;}
+.sepet-grup-baslik--sari { background: #faeeda; color: #b7601f; border: 1.5px solid #b7601f;}
+.sepet-grup-baslik--yesil { background: #eafaf0; color: #0e6b34; margin-top: 14px; border: 1.5px solid #0e6b34;}
 
 .sepet-bekleyen-kart {
-  background: #fffdf5;
-  border: 1.5px solid #f0d98a;
+  background: #faeeda;
+  border: 1.5px solid #b7601f;
   border-radius: 10px;
   padding: 7px 8px;
   margin-bottom: 8px;
@@ -397,7 +397,7 @@
 }
 .sepet-bekleyen-kod {
   font-size: 10px;
-  color: #8a6d1a;
+  color: #b7601f;
   margin-top: 2px;
 }
 .sepet-bekleyen-ok {
@@ -407,7 +407,7 @@
 }
 
 /* ---------- HESAPLANDI grubu: tablo, yeşil zemin ---------- */
-.sepet-tablo tbody tr { background: #f6fdf9; }
+.sepet-tablo tbody tr { background: #eafaf0; }
 .sepet-tablo .sepet-urun-ad-tikla {
   font-weight: 800;
   color: #0b3d67;
@@ -443,4 +443,37 @@
   font-size: 11px;
   color: #44494f;
   margin-bottom: 12px;
+}
+
+/* Bu işleme özel kur girme popup'ı (calc-style.css'teki .kur-secenek-btn
+   ailesiyle birebir aynı — 13.09.2026) */
+.kur-secenek-btn {
+  width: 100%;
+  background: #f4f6f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #2d3540;
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+.kur-secenek-btn--secili {
+  background: #eaf2fc;
+  border-color: #3569b8;
+  color: #003a70;
+  border: 1.5px solid #95bdf0;
+}
+.kur-manuel-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid #3569b8;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-align: center;
 }
