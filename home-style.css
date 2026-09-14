@@ -193,7 +193,7 @@ body {
   flex: 1;
   min-width: 0;
 }
-.banner--kirmizi { background: #fdeaea; border: 1.5px solid #c0392b;}
+.banner--kirmizi { background: #fdeaea; border: 1.5px solid #c0392b; color: #c0392b;}
 .banner-baslik { font-size: 16px; font-weight: 900; }
 .banner-alt { font-size: 13px; margin-top: 1px; opacity: .9; }
 .banner--kompakt {
