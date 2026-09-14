@@ -16,7 +16,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.140926.1241.557">
 <link rel="stylesheet" href="cart-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="send-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="send-style.css?v=WG.140926.1523.563">
 <link rel="stylesheet" href="belge-style.css?v=WG.140926.1213.555">
 <link rel="stylesheet" href="detail-style.css?v=WG.140926.1213.555">
 </head>
@@ -64,7 +64,29 @@
       <button class="gonder-bitir-buton" id="btnGonderBitir">Ana Sayfa'ya Dön</button>
     </div>
     <div id="tamOnizlemeAlani" hidden></div>
+    <button class="iletisim-gonder-btn" id="btnIletisimGonder" hidden>📧💬 İletişim - Gönder</button>
   </section>
+
+  <!-- İletişim - Gönder popup (14.09.2026) — Formu Görüntüle açıkken, en
+       alttaki bu kısayoldan da Kaydet çık / Mail / WhatsApp seçilebilir;
+       yukarıdaki MAIL GÖNDER/WHATSAPP GÖNDER kutucuklarıyla AYNI akışı
+       (mailOnizlemeAc/whatsappOnizlemeAc) tetikler, tekrar aynı önizleme
+       ekranını atlamaz — sadece formu en aşağıdan da erişilebilir yapar. -->
+  <div class="overlay" id="iletisimGonderOverlay" hidden>
+    <div class="sheet">
+      <div class="sheet-baslik">İletişim - Gönder</div>
+      <button class="sheet-secenek" id="btnIletisimKaydetCik">✓ Kaydet çık</button>
+      <button class="gonder-tile gonder-tile--mail" id="btnIletisimMail" style="margin-top:10px;">
+        <span class="gonder-tile-ikon">📧</span>
+        <span class="gonder-tile-baslik">MAIL GÖNDER</span>
+      </button>
+      <button class="gonder-tile gonder-tile--whatsapp" id="btnIletisimWhatsapp" style="margin-top:10px;">
+        <span class="gonder-tile-ikon">💬</span>
+        <span class="gonder-tile-baslik">WHATSAPP GÖNDER</span>
+      </button>
+      <button class="sheet-secenek sheet-secenek--vazgec" id="btnIletisimVazgec" style="margin-top:10px;">Vazgeç</button>
+    </div>
+  </div>
 
   <!-- Platform seçimi (WG.100926.196) — Sepet'te "Formu Görüntüle"ye
        basılınca (niyet=gonder) sayfa açılır açılmaz bu sorulur; seçime
@@ -158,7 +180,7 @@
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
 <script src="send-data.js?v=WG.140926.1515.562"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="send-render.js?v=WG.140926.1451.561"></script>
+<script src="send-render.js?v=WG.140926.1523.563"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

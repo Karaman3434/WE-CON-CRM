@@ -528,14 +528,17 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnFormuGoruntule").onclick = function(){
     var alan = document.getElementById("tamOnizlemeAlani");
     var geriBtn = document.getElementById("btnGeriDuzelt");
+    var iletisimBtn = document.getElementById("btnIletisimGonder");
     var acikMi = !alan.hidden;
     if(acikMi){
       alan.hidden = true;
+      iletisimBtn.hidden = true;
       this.textContent = "👁 Formu Görüntüle";
     } else {
       var g = gonderBaglam;
       alan.innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv);
       alan.hidden = false;
+      iletisimBtn.hidden = false;
       this.textContent = "👁 Formu Gizle";
     }
   };
@@ -550,5 +553,30 @@ document.addEventListener("DOMContentLoaded", function(){
     try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
     window.location.href = "home.html";
+  };
+
+  // İletişim - Gönder kısayolu (14.09.2026) — Formu Görüntüle'nin altındaki
+  // buton; popup'taki 3 seçenek yukarıdaki MAIL GÖNDER/WHATSAPP GÖNDER
+  // kutucuklarıyla/Ana Sayfa'ya Dön butonuyla AYNI davranışı tetikler.
+  document.getElementById("btnIletisimGonder").onclick = function(){
+    document.getElementById("iletisimGonderOverlay").hidden = false;
+  };
+  document.getElementById("btnIletisimVazgec").onclick = function(){
+    document.getElementById("iletisimGonderOverlay").hidden = true;
+  };
+  document.getElementById("iletisimGonderOverlay").addEventListener("click", function(ev){
+    if(ev.target === this) this.hidden = true;
+  });
+  document.getElementById("btnIletisimKaydetCik").onclick = function(){
+    document.getElementById("iletisimGonderOverlay").hidden = true;
+    document.getElementById("btnGonderBitir").click();
+  };
+  document.getElementById("btnIletisimMail").onclick = function(){
+    document.getElementById("iletisimGonderOverlay").hidden = true;
+    mailOnizlemeAc();
+  };
+  document.getElementById("btnIletisimWhatsapp").onclick = function(){
+    document.getElementById("iletisimGonderOverlay").hidden = true;
+    whatsappOnizlemeAc();
   };
 });
