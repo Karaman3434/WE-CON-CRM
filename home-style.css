@@ -295,11 +295,11 @@ body {
 .kart--koyu-mavi .kart-etiket { color: #a9c6e4; }
 .kart--koyu-mavi .kart-tl-alt { color: #a9c6e4; }
 
-.kart--koyu-yesil { background: #f0fdfa; border-color: #0e6b58; border: 1.5px solid #0e6b58;}
-.kart--koyu-yesil .kart-baslik { color: #0e6b58; }
+.kart--koyu-yesil { background: #0e6b58; border-color: #0e6b58; border: 1.5px solid #0e6b58;}
+.kart--koyu-yesil .kart-baslik { color: #a8e6d4; }
 .kart--koyu-yesil .kart-deger { color: #fff; }
-.kart--koyu-yesil .kart-etiket { color: #0e6b58; }
-.kart--koyu-yesil .kart-tl-alt { color: #0e6b58; }
+.kart--koyu-yesil .kart-etiket { color: #a8e6d4; }
+.kart--koyu-yesil .kart-tl-alt { color: #a8e6d4; }
 
 .kart--acik-mavi { background: #eaf2fc; border-color: #dce8f7; border: 1.5px solid #95bdf0;}
 .kart--acik-mavi .kart-baslik { color: #3569b8; }
