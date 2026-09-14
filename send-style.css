@@ -280,7 +280,7 @@
   white-space: pre-wrap;
   line-height: 1.5;
 }
-.sheet-buton-satir { display: flex; gap: 8px; margin-top: 16px; }
+.sheet-buton-satir { display: flex; gap: 4px; margin-top: 16px; }
 .btn-kaydet, .btn-vazgec {
   flex: 1; border-radius: 8px; padding: 12px; min-height: 44px;
   font-size: 13px; font-weight: 900; cursor: pointer; border: none;
