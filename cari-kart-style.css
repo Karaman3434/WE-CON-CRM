@@ -100,7 +100,7 @@
 .bolum-eylem-btn--guncelle { background: #eaf2fc; color: #003a70; border: 1.5px solid #95bdf0;}
 .bolum-eylem-btn--ekle { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
 .bolum-eylem-btn--sil { background: #fdeaea; color: #c0392b; border: 1.5px solid #c0392b;}
-.bolum-eylem-btn--kapat { background: #f4f6f9; color: #556170; }
+.bolum-eylem-btn--kapat { background: #fdeaea; color: #c0392b; border: 1.5px solid #c0392b;}
 
 /* HATA/TASARIM DÜZELTME (WG.090926.196): dış kutunun 14px iç boşluğu ve
    içindeki .ck-kart'ın kendi kenarlığı kaldırıldı — etiket satırı ile
