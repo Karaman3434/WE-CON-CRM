@@ -326,19 +326,20 @@ body {
 /* ---------- Günün Özeti ---------- */
 .gunun-ozeti-kutu {
   display: block;
-  background: #fff;
-  border: 1.5px solid #cbd5e1;
+  background: #f3e8fb;
+  border: 1.5px solid #8e44ad;
   border-radius: 10px;
-  padding: 12px 14px;
-  margin: 10px 4px 0;
+  padding: 8px 14px;
+  margin: 10px 4px 14px;
   text-decoration: none;
 }
 .gunun-ozeti-baslik {
   font-size: 10.5px;
   font-weight: 900;
-  color: #8e44ad;
+  color: #000000;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  text-align: center;
 }
 .gunun-ozeti-satir {
   font-size: 12.5px;
@@ -349,8 +350,8 @@ body {
 .gunun-ozeti-satir:last-child { margin-bottom: 0; }
 .gunun-ozeti-satir-3 { display: flex; justify-content: space-between; gap: 6px; }
 .gunun-ozeti-blok { flex: 1; text-align: center; }
-.gunun-ozeti-sayi { font-size: 17px; font-weight: 900; color: #2d3540; }
-.gunun-ozeti-etiket { font-size: 10.5px; color: #6b7684; }
+.gunun-ozeti-sayi { font-size: 26px; font-weight: 900; color: #000000; line-height: 1.1; }
+.gunun-ozeti-etiket { font-size: 10.5px; color: #000000; }
 
 /* ---------- Ayraç ---------- */
 .ayrac {
