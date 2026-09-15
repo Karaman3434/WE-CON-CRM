@@ -140,7 +140,31 @@ function gunPaneliniAc(anahtar, tumKayitlar){
 
     document.getElementById("ziyGunPanel").hidden = false;
     document.getElementById("ziyGunPanel").scrollIntoView({behavior:"smooth", block:"start"});
+    gununIslemleriniCiz(anahtar);
   }catch(e){ hataGoster("Gün paneli açılamadı: " + e.message); }
+}
+
+var ISLEM_TUR_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
+
+// Bugünkü işlemler tablosu (15.09.2026) — seçili gündeki sipariş/teklif/
+// proforma/numune kayıtlarını tarih/işlem no/tür olarak listeler. Temas/
+// ziyaret kayıtlarından tamamen ayrı bir veri kaynağı (ReportsData).
+function gununIslemleriniCiz(anahtar){
+  var baslik = document.getElementById("ziyIslemBaslik");
+  var kutu = document.getElementById("ziyIslemTablosu");
+  if(typeof ReportsData === "undefined"){ baslik.hidden = true; kutu.innerHTML = ""; return; }
+  var hepsi = ReportsData.sonIslemler();
+  var buGununIslemleri = hepsi.filter(function(k){
+    var d = new Date(k.ts);
+    return gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate()) === anahtar;
+  });
+  if(buGununIslemleri.length === 0){ baslik.hidden = true; kutu.innerHTML = ""; return; }
+  baslik.hidden = false;
+  kutu.innerHTML = "<table class='ziy-islem-tablo'><tr><th>Tarih</th><th>İşlem No</th><th>Tür</th></tr>"
+    + buGununIslemleri.map(function(k){
+        return "<tr><td>" + (k.tarih||"-") + "</td><td>" + (k.kod||"-") + "</td><td>" + (ISLEM_TUR_ETIKET[k.tip]||k.tip) + "</td></tr>";
+      }).join("")
+    + "</table>";
 }
 
 function turSecimGuncelle(){

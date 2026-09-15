@@ -281,3 +281,9 @@
   padding: 6px 8px;
   font-size: 13px;
 }
+
+/* Bugünkü işlemler tablosu (15.09.2026) */
+.ziy-islem-baslik { font-size: 13px; font-weight: 800; color: #123b63; margin: 14px 0 6px; }
+.ziy-islem-tablo { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.ziy-islem-tablo th, .ziy-islem-tablo td { border: 1px solid #e8ecf1; padding: 6px; text-align: left; }
+.ziy-islem-tablo th { background: #f4f6f9; color: #556170; font-weight: 700; }
