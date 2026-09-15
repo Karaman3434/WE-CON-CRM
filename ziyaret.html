@@ -58,6 +58,11 @@
   <section class="ziy-gun-panel" id="ziyGunPanel" hidden>
     <div class="ziy-gun-panel-baslik" id="ziyGunPanelBaslik"></div>
 
+    <!-- Günün işlemleri (15.09.2026) — takvimin/başlığın hemen altında,
+         görev girme (temas/yeni kayıt ekle) bölümünden ÖNCE gösterilir. -->
+    <div class="ziy-islem-baslik" id="ziyIslemBaslik" hidden>📋 İşlemler</div>
+    <div id="ziyIslemTablosu"></div>
+
     <div id="ziyGunKayitListesi"></div>
     <p class="bos-mesaj" id="ziyGunKayitBos" hidden>Bu günde kayıt yok.</p>
 
@@ -87,12 +92,6 @@
 
     <button class="ziy-kaydet-btn" id="btnZiyKaydet">✓ Kaydet</button>
     <button class="ziy-panel-kapat-btn" id="btnZiyGunKapat">Kapat</button>
-
-    <!-- Bugünkü işlemler tablosu (15.09.2026) — seçili gün için tarih/işlem
-         numarası/işlem türü listesi; temas/ziyaret kayıtlarından AYRI,
-         bu gün girilen sipariş/teklif/proforma/numune kayıtları. -->
-    <div class="ziy-islem-baslik" id="ziyIslemBaslik" hidden>📋 İşlemler</div>
-    <div id="ziyIslemTablosu"></div>
   </section>
 
 </main>
@@ -114,6 +113,6 @@
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
 <script src="reports-data.js?v=WG.130926.2010.553"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="ziyaret-render.js?v=WG.150926.1503.575"></script>
+<script src="ziyaret-render.js?v=WG.150926.1606.576"></script>
 </body>
 </html>
