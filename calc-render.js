@@ -123,7 +123,40 @@ function urunSec(bilgi){
   dipFiyatiOner();
   document.getElementById("searchInput").value = "";
   document.getElementById("sonucListesi").innerHTML = "";
+  gecmisAlimIpucunuGuncelle(bilgi);
   hesaplaVeGoster();
+}
+
+var gecmisAlimKayitlari = null; // popup'ta "tümünü göster" için son bakılan ürünün kayıtları
+
+// Geçmiş alım ipucu (15.09.2026) — bu müşteri bu ürünü daha önce aldıysa,
+// engelleyici olmayan bir şerit olarak en son alım tarih/adet/net fiyatını
+// gösterir. Müşteri seçili değilse (Hızlı Hesapla tek başına kullanılıyorsa)
+// hiç gösterilmez.
+function gecmisAlimIpucunuGuncelle(bilgi){
+  var kutu = document.getElementById("gecmisAlimIpucu");
+  gecmisAlimKayitlari = null;
+  try{
+    if(typeof CustomerData === "undefined" || typeof ReportsData === "undefined"){ kutu.hidden = true; return; }
+    var musteri = CustomerData.seciliyiOku();
+    if(!musteri){ kutu.hidden = true; return; }
+    var gecmis = ReportsData.musteriUrunGecmisi(musteri.ad, musteri.id);
+    var eslesen = gecmis.filter(function(g){ return g.ad === bilgi.ad; })[0];
+    if(!eslesen || !eslesen.kayitlar.length){ kutu.hidden = true; return; }
+    gecmisAlimKayitlari = eslesen.kayitlar;
+    var son = eslesen.kayitlar[0];
+    kutu.innerHTML = "🕓 Bu müşteri bu ürünü daha önce almış: <b>" + (son.tarih||"-") + " · " + CartData.fmt(son.adet) + " adet · " + CartData.fmt(son.netFiyat) + " EUR net</b>"
+      + (eslesen.kayitlar.length > 1 ? " — tümünü görmek için dokun" : "");
+    kutu.hidden = false;
+  }catch(e){ kutu.hidden = true; }
+}
+function gecmisAlimTumunuGoster(){
+  if(!gecmisAlimKayitlari || !gecmisAlimKayitlari.length) return;
+  var html = gecmisAlimKayitlari.map(function(k){
+    return "<div class='gecmis-alim-satir'>" + (k.tarih||"-") + " · " + CartData.fmt(k.adet) + " adet · %" + CartData.fmt(k.iskonto) + " isk. · " + CartData.fmt(k.netFiyat) + " EUR net</div>";
+  }).join("");
+  document.getElementById("gecmisAlimListesi").innerHTML = html;
+  document.getElementById("gecmisAlimOverlay").hidden = false;
 }
 
 function hesaplaVeGoster(){
@@ -228,8 +261,12 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("searchInput").addEventListener("input", aramaSonuclariniCiz);
   document.getElementById("btnUrunTemizle").onclick = function(){
     document.getElementById("seciliUrunKutu").hidden = true;
+    document.getElementById("gecmisAlimIpucu").hidden = true;
     seciliUrunBilgi = null;
   };
+  document.getElementById("gecmisAlimIpucu").onclick = gecmisAlimTumunuGoster;
+  var gecmisAlimKapatBtn = document.getElementById("gecmisAlimKapatBtn");
+  if(gecmisAlimKapatBtn) gecmisAlimKapatBtn.onclick = function(){ document.getElementById("gecmisAlimOverlay").hidden = true; };
   document.getElementById("btnHesapSepeteEkle").onclick = sepeteEkleTiklandi;
   ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet"].forEach(function(id){
     document.getElementById(id).addEventListener("input", function(){

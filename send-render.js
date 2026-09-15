@@ -296,7 +296,7 @@ function belgeGorseliniOlustur(kanal, callback){
     var kayitliTarih = (sonKaydedilenBelge&&sonKaydedilenBelge.kayit) ? sonKaydedilenBelge.kayit.tarih : "";
     alan.innerHTML = belgeGorselHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, kayitliKod, kanal, kayitliTarih);
     setTimeout(function(){
-      html2canvas(alan, {backgroundColor:"#ffffff", scale:0.85}).then(function(canvas){
+      html2canvas(alan, {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
         callback(canvas);
       }).catch(function(){ callback(null); });
     }, 60);
@@ -374,7 +374,7 @@ function tabloSadeceKopyala(btnEl){
   btnEl.disabled = true;
   function eskiHaleDon(){ btnEl.textContent = eskiMetin; btnEl.disabled = false; }
   if(typeof html2canvas === "undefined"){ eskiHaleDon(); alert("Görsel oluşturulamadı."); return; }
-  html2canvas(document.getElementById("tabloSadeceAlan"), {backgroundColor:"#ffffff", scale:0.85}).then(function(canvas){
+  html2canvas(document.getElementById("tabloSadeceAlan"), {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
     canvas.toBlob(function(blob){
       if(!blob || !navigator.clipboard || typeof window.ClipboardItem === "undefined"){
         eskiHaleDon(); alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor.");

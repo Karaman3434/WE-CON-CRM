@@ -143,6 +143,7 @@ function sayfayiCiz(){
     var musteri = CustomerData.seciliyiOku();
 
     if(liste.length === 0 || !musteri){
+      document.getElementById("cariBilgiAlani").innerHTML = "";
       grupSariAlani.innerHTML = "";
       grupYesilAlani.innerHTML = "";
       bosMesaj.hidden = false;
@@ -164,6 +165,11 @@ function sayfayiCiz(){
     var bekleyenler = liste.filter(function(u){ return !u.hesaplandi; });
     var hesaplananlar = liste.filter(function(u){ return u.hesaplandi; });
 
+    // DÜZELTME (15.09.2026): CARİ BİLGİ artık HER ZAMAN en üstte, kendi
+    // sabit alanında — HESAPLANACAK ve HESAPLANDI tabloları arasında
+    // sıkışmıyor, ikisi de onun altında art arda duruyor.
+    document.getElementById("cariBilgiAlani").innerHTML = cariBilgiOzetiHtml(musteri);
+
     grupSariAlani.innerHTML = bekleyenler.length === 0 ? "" : HareketTablo.grupHtml({
       etiket: "🟡 HESAPLANACAK",
       urunler: bekleyenler,
@@ -173,21 +179,16 @@ function sayfayiCiz(){
 
     var hesaplananToplam = 0;
     hesaplananlar.forEach(function(u){ hesaplananToplam += hesapla(u).toplamEuro; });
-    // CARİ BİLGİ (firma+şehir+işlem türü) HESAPLANDI grubunun HEMEN üstüne,
-    // tabloyla birlikte tek görsel blok gibi görünecek şekilde ekleniyor.
-    grupYesilAlani.innerHTML = hesaplananlar.length === 0 ? "" : (
-      cariBilgiOzetiHtml(musteri) +
-      HareketTablo.grupHtml({
-        etiket: "🟢 HESAPLANDI",
-        urunler: hesaplananlar,
-        hesapla: hesapla,
-        zeminSinifi: "hareket-satir--yesil",
-        genelToplam: hesaplananToplam,
-        kur: kur,
-        kurManuelMi: aktifKurManuelMi(),
-        kurTiklanabilir: true
-      })
-    );
+    grupYesilAlani.innerHTML = hesaplananlar.length === 0 ? "" : HareketTablo.grupHtml({
+      etiket: "🟢 HESAPLANDI",
+      urunler: hesaplananlar,
+      hesapla: hesapla,
+      zeminSinifi: "hareket-satir--yesil",
+      genelToplam: hesaplananToplam,
+      kur: kur,
+      kurManuelMi: aktifKurManuelMi(),
+      kurTiklanabilir: true
+    });
 
     var kurRozeti = document.querySelector(".belge-gt-kur--tiklanabilir");
     if(kurRozeti) kurRozeti.onclick = kurManuelOverlayAc;

@@ -15,7 +15,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.140926.1241.557">
 <link rel="stylesheet" href="product-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="calc-style.css?v=WG.140926.1232.556">
+<link rel="stylesheet" href="calc-style.css?v=WG.150926.1140.570">
 </head>
 <body>
 
@@ -50,6 +50,10 @@
       </div>
     </div>
   </div>
+
+  <!-- Geçmiş alım ipucu (15.09.2026) — bu müşteri bu ürünü daha önce aldıysa
+       otomatik, engelleyici olmayan bir şerit olarak gösterilir. -->
+  <div id="gecmisAlimIpucu" class="gecmis-alim-ipucu" hidden></div>
 
   <div class="hc-grid-2">
     <div class="hc-kutu">
@@ -133,6 +137,16 @@
     </div>
   </div>
 
+  <!-- Geçmiş alım detayı (15.09.2026) — ipucu şeridine dokununca, bu
+       müşterinin bu üründeki TÜM geçmiş alımları listelenir. -->
+  <div class="iptal-onay-overlay" id="gecmisAlimOverlay" hidden>
+    <div class="iptal-onay-kutu">
+      <div class="iptal-onay-baslik">🕓 Geçmiş Alımlar</div>
+      <div id="gecmisAlimListesi"></div>
+      <button class="kur-kapat-btn" id="gecmisAlimKapatBtn" style="margin-top:10px;">Kapat</button>
+    </div>
+  </div>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -145,8 +159,9 @@
 <script src="product-data.js?v=WG.130926.2010.553"></script>
 <script src="cart-data.js?v=WG.020926.1338.87"></script>
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
+<script src="reports-data.js?v=WG.130926.2010.553"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="calc-render.js?v=WG.100926.1021.433"></script>
+<script src="calc-render.js?v=WG.150926.1140.570"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>
