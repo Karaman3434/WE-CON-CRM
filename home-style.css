@@ -120,7 +120,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 4px;
-  padding: 0 12px 12px;
+  padding: 12px 12px 12px;
 }
 .nav-btn {
   background: #eef2f8;
@@ -347,6 +347,10 @@ body {
   margin-bottom: 4px;
 }
 .gunun-ozeti-satir:last-child { margin-bottom: 0; }
+.gunun-ozeti-satir-3 { display: flex; justify-content: space-between; gap: 6px; }
+.gunun-ozeti-blok { flex: 1; text-align: center; }
+.gunun-ozeti-sayi { font-size: 17px; font-weight: 900; color: #2d3540; }
+.gunun-ozeti-etiket { font-size: 10.5px; color: #6b7684; }
 
 /* ---------- Ayraç ---------- */
 .ayrac {
@@ -453,7 +457,7 @@ body {
   text-align: center;
   font-size: 11px;
   font-weight: 800;
-  color: #8a97a6;
+  color: #123b63;
   letter-spacing: .5px;
   margin-bottom: 6px;
 }

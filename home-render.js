@@ -52,12 +52,8 @@ var TEMAS_TUR_ETIKET = {ziyaret:"Ziyaret", telefon:"Telefon", mail:"Mail", whats
 function gununOzetiniGuncelle(){
   try{
     var islem = WeiconData.gununIslemOzeti();
-    var islemParcalar = [];
-    if(islem.dokum.numune>0) islemParcalar.push(islem.dokum.numune + " Numune");
-    if(islem.dokum.teklif>0) islemParcalar.push(islem.dokum.teklif + " Fiyat Teklifi");
-    if(islem.dokum.proforma>0) islemParcalar.push(islem.dokum.proforma + " Proforma");
-    if(islem.dokum.siparis>0) islemParcalar.push(islem.dokum.siparis + " Sipariş");
-    setText("gununOzetiIslemSatiri", "🔄 " + islem.toplam + " İşlem" + (islemParcalar.length ? " — " + islemParcalar.join(", ") : ""));
+    setText("gununOzetiIslemSayi", islem.toplam);
+    setText("gununOzetiSiparisSayi", islem.dokum.siparis||0);
 
     if(typeof CustomerData !== "undefined"){
       var bugun = new Date();
@@ -70,12 +66,9 @@ function gununOzetiniGuncelle(){
           temasDokum[t]++;
         }
       });
-      var temasToplam = 0, temasParcalar = [];
-      Object.keys(temasDokum).forEach(function(t){
-        temasToplam += temasDokum[t];
-        if(temasDokum[t]>0) temasParcalar.push(temasDokum[t] + " " + (TEMAS_TUR_ETIKET[t]||t));
-      });
-      setText("gununOzetiTemasSatiri", "📍 " + temasToplam + " Temas" + (temasParcalar.length ? " — " + temasParcalar.join(", ") : ""));
+      var temasToplam = 0;
+      Object.keys(temasDokum).forEach(function(t){ temasToplam += temasDokum[t]; });
+      setText("gununOzetiTemasSayi", temasToplam);
     }
 
     var bugunTarih = new Date();
