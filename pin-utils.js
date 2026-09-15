@@ -21,6 +21,30 @@ function pinKayitliHashGetir(){
   return localStorage.getItem("weicon_pin_hash") || VARSAYILAN_PIN_HASH;
 }
 
+// KÖK NEDEN DÜZELTMESİ (15.09.2026): pinDogrula() SADECE localStorage'a
+// bakıyordu. Cihazın localStorage'ı (Android'in "kullanılmayan uygulama
+// verilerini temizle" davranışı, tarayıcı verisi silme, vb. nedenlerle)
+// boşalırsa, kullanıcı kendi belirlediği PIN'i (örn. 4967) doğru girse
+// bile sistem sessizce varsayılan "1234" hash'iyle karşılaştırıp
+// "PIN hatalı" diyordu — oysa gerçek PIN Firebase'de (pin/hash) hâlâ
+// güvenle duruyordu, sadece hiç okunmuyordu. Artık localStorage boşsa
+// Firebase'deki yedeğe bakılıyor ve bulunursa localStorage'a geri
+// yazılıyor (bir daha bu cihazda kaybolmasın diye).
+function pinKayitliHashGetirAsync(){
+  var lokal = localStorage.getItem("weicon_pin_hash");
+  if(lokal) return Promise.resolve(lokal);
+  try{
+    return firebase.database().ref("pin").once("value").then(function(snap){
+      var val = snap.val();
+      if(val && val.hash){
+        try{ localStorage.setItem("weicon_pin_hash", val.hash); }catch(e){}
+        return val.hash;
+      }
+      return VARSAYILAN_PIN_HASH;
+    }).catch(function(){ return VARSAYILAN_PIN_HASH; });
+  }catch(e){ return Promise.resolve(VARSAYILAN_PIN_HASH); }
+}
+
 // GÜVENLİK DÜZELTMESİ (v2 üstü): Kullanıcı henüz kendi PIN'ini belirlememişse
 // (localStorage'da özel bir hash yoksa) sistem hâlâ herkesçe bilinen
 // varsayılan "1234" PIN'iyle korunuyor demektir. pin-render.js bu durumu
@@ -31,8 +55,8 @@ function pinVarsayilanKullaniliyorMu(){
 }
 
 function pinDogrula(girilenPin){
-  return pinHashHesapla(girilenPin).then(function(girilenHash){
-    return girilenHash === pinKayitliHashGetir();
+  return Promise.all([pinHashHesapla(girilenPin), pinKayitliHashGetirAsync()]).then(function(sonuc){
+    return sonuc[0] === sonuc[1];
   });
 }
 

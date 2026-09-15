@@ -150,7 +150,16 @@ var WeiconData = (function(){
       var db = firebase.database();
       db.ref("arsiv").on("value", function(snap){
         var data = snap.val() || {};
-        ["numune","teklif","proforma"].forEach(function(t){
+        // KÖK NEDEN DÜZELTMESİ (15.09.2026): bu liste "siparis"i dışarıda
+        // bırakıyordu — arsivHamData.siparis hiç dolmuyor, bu yüzden
+        // gununIslemOzeti() (Ana Sayfa'daki "Günün Özeti" kutusu) bugün
+        // girilen SİPARİŞLERİ asla saymıyordu ("0 İşlem" görünüyordu),
+        // oysa aynı gün BUGÜN SATIŞ tutarı (ayrı bir veri kaynağından
+        // okunuyor) doğru gösteriliyordu — ikisi arasındaki tutarsızlık
+        // buradan geliyordu. bildirimOzetiHesapla()'nın "açık süreç"
+        // sayımı kasıtlı olarak sadece numune/teklif/proforma'ya bakıyor
+        // (kendi ayrı döngüsünde), ona dokunulmadı.
+        ["numune","teklif","proforma","siparis"].forEach(function(t){
           var liste = data[t];
           arsivHamData[t] = liste ? (Array.isArray(liste) ? liste.filter(Boolean) : Object.values(liste)) : [];
         });
