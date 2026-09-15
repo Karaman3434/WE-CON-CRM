@@ -64,6 +64,16 @@ function takvimiCiz(){
       var anahtar = gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate());
       gunSayilari[anahtar] = (gunSayilari[anahtar]||0) + 1;
     });
+    // Takvimdeki gün rozeti artık temas/ziyaretlerin YANINDA o günkü
+    // sipariş/teklif/proforma/numune sayısını da içeriyor (15.09.2026,
+    // Abdullah'ın "günün işlemleri de rozette görünsün" isteği).
+    if(typeof ReportsData !== "undefined"){
+      ReportsData.sonIslemler().forEach(function(k){
+        var d = new Date(k.ts);
+        var anahtar = gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate());
+        gunSayilari[anahtar] = (gunSayilari[anahtar]||0) + 1;
+      });
+    }
 
     var ilkGun = new Date(goruntulenenYil, goruntulenenAy, 1);
     // JS: Pazar=0..Cumartesi=6 → Pazartesi başlangıçlı indekse çevir
@@ -160,9 +170,9 @@ function gununIslemleriniCiz(anahtar){
   });
   if(buGununIslemleri.length === 0){ baslik.hidden = true; kutu.innerHTML = ""; return; }
   baslik.hidden = false;
-  kutu.innerHTML = "<table class='ziy-islem-tablo'><tr><th>Tarih</th><th>İşlem No</th><th>Tür</th></tr>"
+  kutu.innerHTML = "<table class='ziy-islem-tablo'><tr><th>Tarih</th><th>Müşteri</th><th>İşlem No</th><th>Tür</th></tr>"
     + buGununIslemleri.map(function(k){
-        return "<tr><td>" + (k.tarih||"-") + "</td><td>" + (k.kod||"-") + "</td><td>" + (ISLEM_TUR_ETIKET[k.tip]||k.tip) + "</td></tr>";
+        return "<tr><td>" + (k.tarih||"-") + "</td><td>" + htmlEsc(k.musteri||"-") + "</td><td>" + (k.kod||"-") + "</td><td>" + (ISLEM_TUR_ETIKET[k.tip]||k.tip) + "</td></tr>";
       }).join("")
     + "</table>";
 }
@@ -283,6 +293,12 @@ document.addEventListener("DOMContentLoaded", function(){
   };
 
   CustomerData.listeDegistiginde(function(){ if(seciliGunAnahtari===null) takvimiCiz(); });
+  if(typeof ReportsData !== "undefined"){
+    ReportsData.arsivDegistiginde(function(){
+      takvimiCiz();
+      if(seciliGunAnahtari) gununIslemleriniCiz(seciliGunAnahtari);
+    });
+  }
 
   var urlParams = new URLSearchParams(window.location.search);
   var urlTarih = urlParams.get("tarih"); // "YYYY-MM-DD" — bkz. Ana Sayfa "Günün Özeti" kutusu
