@@ -82,6 +82,18 @@ body {
 .rota-etiketi b { color: #003a70; font-weight: 900; }
 .rota-etiketi--acik { background: #faeeda; border-bottom-color: #b7601f; color: #b7601f; border: 1.5px solid #b7601f;}
 .rota-etiketi--acik b { color: #b7601f; }
+/* Tıklanabilir rota şeridi (15.09.2026) — rota-takip.js ile birlikte
+   kullanılır, .rota-etiketi'nin yerini alan yeni nesil sürüm. */
+.rota-serit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: #f4f6f9;
+  border-bottom: 1px solid #e8ecf1;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .app-header .logo {
   background: none;
   color: #ffffff;

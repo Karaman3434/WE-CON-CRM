@@ -12,7 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Temas</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.140926.1241.557">
+<link rel="stylesheet" href="home-style.css?v=WG.150926.1258.574">
 <link rel="stylesheet" href="customer-style.css?v=WG.140926.1213.555">
 <link rel="stylesheet" href="detail-style.css?v=WG.140926.1213.555">
 </head>
@@ -31,7 +31,7 @@
 </nav>
 </div>
 
-<div class="rota-etiketi">Müşteriler › İşlemler › <b>Temas</b></div>
+<div class="rota-serit" id="rotaSeridi"></div>
 
 <div class="islemler-musteri-serit">
   <div class="islemler-musteri-ad" id="temasMusteriAd">—</div>
@@ -77,6 +77,8 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="rota-takip.js?v=WG.150926.1300.573"></script>
+<script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-temas.html", "Temas"); RotaTakip.ciz("rotaSeridi"); });</script>
 <script src="customer-temas-render.js?v=WG.100926.2057.496"></script>
 </body>
 </html>
