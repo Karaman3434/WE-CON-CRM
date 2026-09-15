@@ -138,6 +138,43 @@ var ReportsData = (function(){
     return sonuc;
   }
 
+  // Kod bazlı geçmiş alım araması (15.09.2026) — Hızlı Hesapla'daki "geçmiş
+  // alım ipucu" için. musteriUrunGecmisi() ürün ADINA göre gruplandığı için
+  // ürün ismi kataloğa göre biraz farklı yazılmışsa (boşluk, küçük bir
+  // değişiklik) eşleşme sessizce KAÇIYORDU — kök neden buydu. Bu fonksiyon
+  // yerine ürünün KENDİ KODUNU (berta+abas, kayıt anında zaten satır
+  // üzerinde saklanıyor) kullanıyor, isim farkından etkilenmiyor.
+  function musteriUrunGecmisiKodaGore(musteriAd, musteriId, berta, abas){
+    var bertaN = (berta||"").toString().trim().toLocaleLowerCase("tr-TR");
+    var abasN = (abas||"").toString().trim().toLocaleLowerCase("tr-TR");
+    if(!bertaN && !abasN) return [];
+    var kayitlar = [];
+    tumSiparisler().forEach(function(k){
+      var ayniMusteriMi;
+      if(musteriId && k.musteriId){
+        ayniMusteriMi = k.musteriId === musteriId;
+      } else {
+        var a = (k.musteri||"").toLocaleLowerCase("tr-TR").trim();
+        var b = (musteriAd||"").toLocaleLowerCase("tr-TR").trim();
+        ayniMusteriMi = !!a && !!b && (a===b || a.indexOf(b)===0 || b.indexOf(a)===0);
+      }
+      if(!ayniMusteriMi) return;
+      (k.urunler||[]).forEach(function(u){
+        var uBerta = (u.berta||"").toString().trim().toLocaleLowerCase("tr-TR");
+        var uAbas = (u.abas||"").toString().trim().toLocaleLowerCase("tr-TR");
+        if(uBerta !== bertaN || uAbas !== abasN) return;
+        kayitlar.push({
+          tarih: k.tarih, ts: k.ts,
+          listeFiyat: u.listeFiyat||0, iskonto: u.iskonto||0,
+          netFiyat: u.iskBirim!=null?u.iskBirim:(u.listeFiyat||0),
+          adet: u.adet||0
+        });
+      });
+    });
+    kayitlar.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+    return kayitlar;
+  }
+
   function kaydiKacanIsaretle(tip, ts, sebep, rakip, geriBildir){
     try{
       var db = firebase.database();
@@ -536,6 +573,7 @@ var ReportsData = (function(){
     kaydiSil: kaydiSil,
     kayitlariBirlestir: kayitlariBirlestir,
     musteriUrunGecmisi: musteriUrunGecmisi,
+    musteriUrunGecmisiKodaGore: musteriUrunGecmisiKodaGore,
     kaydiGuncelle: kaydiGuncelle,
     kaydiAlanGuncelle: kaydiAlanGuncelle,
     SONRAKI_ASAMALAR: SONRAKI_ASAMALAR,

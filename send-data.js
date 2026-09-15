@@ -132,7 +132,8 @@ var SendData = (function(){
           iskonto: parseFloat(u.iskonto)||0,
           adet: parseFloat(u.adet)||0,
           iskBirim: h.iskontoluFiyat || 0,
-          toplamEuro: h.toplamEuro || 0
+          toplamEuro: h.toplamEuro || 0,
+          ozelEtiket: u.ozelEtiket || null
         };
       });
       var yeniImza = urunSetiImzaOlustur(urunlerKaydi);

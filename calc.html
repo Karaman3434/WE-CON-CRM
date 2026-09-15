@@ -147,6 +147,18 @@
     </div>
   </div>
 
+  <!-- Bedelsiz / Özel Fiyat seçimi (15.09.2026) — iskonto %100 olduğunda
+       "Listeye Ekle" öncesi sorulur; tabloda hangi etiketin görüneceğini
+       belirler (Ö.F = özel fiyat, 🎁 = bedelsiz). -->
+  <div class="iptal-onay-overlay" id="bedelsizOzelFiyatOverlay" hidden>
+    <div class="iptal-onay-kutu">
+      <div class="iptal-onay-baslik">Bu ürün %100 iskontolu</div>
+      <div style="font-size:12px;color:#556170;text-align:center;margin-bottom:4px;">Tabloda nasıl etiketlensin?</div>
+      <button class="kur-secenek-btn" id="btnOzelFiyatSec" style="background:#eafaf0;border-color:#0e6b34;color:#0e6b34;">Ö.F — Özel Fiyat</button>
+      <button class="kur-secenek-btn" id="btnBedelsizSec" style="background:#faeeda;border-color:#b7601f;color:#b7601f;">🎁 Bedelsiz</button>
+    </div>
+  </div>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -157,11 +169,11 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.130926.2010.553"></script>
 <script src="product-data.js?v=WG.130926.2010.553"></script>
-<script src="cart-data.js?v=WG.020926.1338.87"></script>
+<script src="cart-data.js?v=WG.150926.1224.571"></script>
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
-<script src="reports-data.js?v=WG.130926.2010.553"></script>
+<script src="reports-data.js?v=WG.150926.1224.571"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="calc-render.js?v=WG.150926.1140.570"></script>
+<script src="calc-render.js?v=WG.150926.1224.571"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

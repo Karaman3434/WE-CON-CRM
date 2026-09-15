@@ -129,6 +129,16 @@ function urunSec(bilgi){
 
 var gecmisAlimKayitlari = null; // popup'ta "tümünü göster" için son bakılan ürünün kayıtları
 
+// Sayfa yeni açıldığında Firebase arşiv verisi henüz gelmemiş olabilir —
+// ürün seçimi bu veri gelmeden yapılırsa ipucu YANLIŞLIKLA görünmüyordu
+// (kök nedenin bir parçası, 15.09.2026). Veri geldiğinde, o an seçili
+// ürün varsa ipucu otomatik yeniden hesaplanır.
+if(typeof ReportsData !== "undefined"){
+  ReportsData.arsivDegistiginde(function(){
+    if(seciliUrunBilgi) gecmisAlimIpucunuGuncelle(seciliUrunBilgi);
+  });
+}
+
 // Geçmiş alım ipucu (15.09.2026) — bu müşteri bu ürünü daha önce aldıysa,
 // engelleyici olmayan bir şerit olarak en son alım tarih/adet/net fiyatını
 // gösterir. Müşteri seçili değilse (Hızlı Hesapla tek başına kullanılıyorsa)
@@ -140,13 +150,12 @@ function gecmisAlimIpucunuGuncelle(bilgi){
     if(typeof CustomerData === "undefined" || typeof ReportsData === "undefined"){ kutu.hidden = true; return; }
     var musteri = CustomerData.seciliyiOku();
     if(!musteri){ kutu.hidden = true; return; }
-    var gecmis = ReportsData.musteriUrunGecmisi(musteri.ad, musteri.id);
-    var eslesen = gecmis.filter(function(g){ return g.ad === bilgi.ad; })[0];
-    if(!eslesen || !eslesen.kayitlar.length){ kutu.hidden = true; return; }
-    gecmisAlimKayitlari = eslesen.kayitlar;
-    var son = eslesen.kayitlar[0];
+    var kayitlar = ReportsData.musteriUrunGecmisiKodaGore(musteri.ad, musteri.id, bilgi.berta, bilgi.abas);
+    if(!kayitlar.length){ kutu.hidden = true; return; }
+    gecmisAlimKayitlari = kayitlar;
+    var son = kayitlar[0];
     kutu.innerHTML = "🕓 Bu müşteri bu ürünü daha önce almış: <b>" + (son.tarih||"-") + " · " + CartData.fmt(son.adet) + " adet · " + CartData.fmt(son.netFiyat) + " EUR net</b>"
-      + (eslesen.kayitlar.length > 1 ? " — tümünü görmek için dokun" : "");
+      + (kayitlar.length > 1 ? " — tümünü görmek için dokun" : "");
     kutu.hidden = false;
   }catch(e){ kutu.hidden = true; }
 }
@@ -181,7 +190,23 @@ function hesaplaVeGoster(){
   }catch(e){ hataGoster("Hesaplama yapılamadı: " + e.message); }
 }
 
+var bekleyenSepeteEkleIskonto100 = false; // popup açıkken beklemede olan "sepete ekle" isteği
+
 function sepeteEkleTiklandi(){
+  try{
+    var iskonto = parseFloat(document.getElementById("hesIskonto").value)||0;
+    if(iskonto === 100){
+      // %100 iskonto — Bedelsiz mi Özel Fiyat mı olduğunu sormadan
+      // eklemiyoruz (15.09.2026, Abdullah'ın onayladığı akış).
+      bekleyenSepeteEkleIskonto100 = true;
+      document.getElementById("bedelsizOzelFiyatOverlay").hidden = false;
+      return;
+    }
+    sepeteEkleyiTamamla(null);
+  }catch(e){ hataGoster("Sepete eklenemedi: " + e.message); }
+}
+
+function sepeteEkleyiTamamla(ozelEtiket){
   try{
     var ad = seciliUrunBilgi ? seciliUrunBilgi.ad : prompt("Ürün adı girin:", "");
     if(!ad) return;
@@ -193,7 +218,7 @@ function sepeteEkleTiklandi(){
     if(duzenlenenSepetIdx !== null){
       // Sepet'ten bir ürünü düzenlemek için geldik — yeni satır AÇMA,
       // mevcut satırı güncelleyip hesaplandı say ve sepete geri dön.
-      CartData.hesaplandiIsaretle(duzenlenenSepetIdx, listeFiyat, dipFiyat, iskonto, adet);
+      CartData.hesaplandiIsaretle(duzenlenenSepetIdx, listeFiyat, dipFiyat, iskonto, adet, ozelEtiket);
       if(kurOverride!=null) localStorage.setItem("weiconv2_sepet_kur_override", kurOverride);
       window.location.href = "cart.html";
       return;
@@ -210,6 +235,7 @@ function sepeteEkleTiklandi(){
       adet: adet,
       hesaplandi: true
     };
+    if(ozelEtiket) yeniUrun.ozelEtiket = ozelEtiket;
     var mevcutSepet = [];
     try{ mevcutSepet = JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]"); }catch(e){}
     mevcutSepet.push(yeniUrun);
@@ -267,6 +293,15 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("gecmisAlimIpucu").onclick = gecmisAlimTumunuGoster;
   var gecmisAlimKapatBtn = document.getElementById("gecmisAlimKapatBtn");
   if(gecmisAlimKapatBtn) gecmisAlimKapatBtn.onclick = function(){ document.getElementById("gecmisAlimOverlay").hidden = true; };
+
+  document.getElementById("btnOzelFiyatSec").onclick = function(){
+    document.getElementById("bedelsizOzelFiyatOverlay").hidden = true;
+    if(bekleyenSepeteEkleIskonto100){ bekleyenSepeteEkleIskonto100 = false; sepeteEkleyiTamamla("ozelfiyat"); }
+  };
+  document.getElementById("btnBedelsizSec").onclick = function(){
+    document.getElementById("bedelsizOzelFiyatOverlay").hidden = true;
+    if(bekleyenSepeteEkleIskonto100){ bekleyenSepeteEkleIskonto100 = false; sepeteEkleyiTamamla("bedelsiz"); }
+  };
   document.getElementById("btnHesapSepeteEkle").onclick = sepeteEkleTiklandi;
   ["hesListeFiyat","hesDipFiyat","hesIskonto","hesAdet"].forEach(function(id){
     document.getElementById(id).addEventListener("input", function(){

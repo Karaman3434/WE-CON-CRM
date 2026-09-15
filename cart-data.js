@@ -43,7 +43,7 @@ var CartData = (function(){
 
   // Hesapla popup'ından "Listeye Ekle" ile kesin olarak hesaplandı sayılır
   // (değerler 0 olsa bile — kullanıcı gözden geçirip onayladı demektir).
-  function hesaplandiIsaretle(idx, listeFiyat, dipFiyat, iskonto, adet){
+  function hesaplandiIsaretle(idx, listeFiyat, dipFiyat, iskonto, adet, ozelEtiket){
     var u = sepet.find(function(u){ return u.idx === idx; });
     if(!u) return;
     u.listeFiyat = listeFiyat;
@@ -51,6 +51,7 @@ var CartData = (function(){
     u.iskonto = iskonto;
     u.adet = adet;
     u.hesaplandi = true;
+    if(ozelEtiket) u.ozelEtiket = ozelEtiket; else delete u.ozelEtiket;
     kaydet();
   }
 

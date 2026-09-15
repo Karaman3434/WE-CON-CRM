@@ -117,7 +117,7 @@ function belgeyiCiz(kayit, musteri){
       var satirPrim = ozelFiyatMi ? 0 : mk*(item.adet||0)*0.22;
       var satirPrimTl = Math.round(satirPrim * kaydinKuru);
       if(satirPrim > 0){ toplamPrim += satirPrim; toplamPrimTl += satirPrimTl; }
-      var primHucre = ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<span class='belge-td-prim-tek'>"+paraHtml(satirPrimTl.toLocaleString("tr-TR"),"TL")+"</span>"));
+      var primHucre = item.ozelEtiket === "bedelsiz" ? "🎁 Bedelsiz" : (ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<span class='belge-td-prim-tek'>"+paraHtml(satirPrimTl.toLocaleString("tr-TR"),"TL")+"</span>")));
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
@@ -175,7 +175,7 @@ function belgeyiCiz(kayit, musteri){
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"
-      + (kayit.kur ? "<span class='belge-gt-kur'>Hesaplanan Kur<br>" + fmt(kayit.kur) + " Euro</span>" : "")
+      + (kayit.kur ? "<span class='belge-gt-kur" + (kayit.kurManuel ? " belge-gt-kur--manuel" : "") + "'>" + (kayit.kurManuel ? "✏️ Manuel Kur" : "Hesaplanan Kur") + "<br>" + fmt(kayit.kur) + " Euro</span>" : "")
       + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
       + "<span class='belge-gt-deger'>" + fmt(netEuro) + " EURO<span class='belge-gt-deger-alt'>≈ " + Math.round(netEuro*(kayit.kur||0)).toLocaleString("tr-TR") + " TL</span></span>"
       + "</div>"

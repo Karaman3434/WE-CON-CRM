@@ -42,6 +42,7 @@ var HareketTablo = (function(){
       }
       var primHucre;
       if(!toplamVarMi){ primHucre = "-"; }
+      else if(u.ozelEtiket === "bedelsiz"){ primHucre = "🎁 Bedelsiz"; }
       else if(u.iskonto>60){ primHucre = "Ö.F"; }
       else { primHucre = "<span class='belge-td-prim-tek'>" + paraHtml(Math.round(h.mudurPrimTL).toLocaleString("tr-TR"),"TL") + "</span>"; }
       return "<tr class='" + (zeminSinifi||"") + "'>"
