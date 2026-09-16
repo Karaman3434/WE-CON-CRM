@@ -322,7 +322,12 @@ function tabloyuPanoyaKopyala(kanal, btnEl){
       if(!blob){ eskiHaleDon(); alert("Görsel oluşturulamadı."); return; }
       navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(function(){
         btnEl.textContent = "✓ Kopyalandı! Mail/Sohbete yapıştırabilirsin";
-        setTimeout(eskiHaleDon, 2200);
+        // KÖK NEDEN DÜZELTMESİ (16.09.2026): buton "Kopyala VE Kaydet" diyordu
+        // ama sadece kopyalıyordu — sepet/müşteri seçimi hiç temizlenmiyordu,
+        // bu yüzden az sonra Ana Sayfa/Menü'ye basınca "Yarım Kalan İşlem"
+        // uyarısı çıkıyordu. Artık kopyalama bittiğinde işlem de bitmiş
+        // sayılıyor — aynı "gönderiliyor" ekranına geçiliyor.
+        setTimeout(function(){ basariEkraninaGit("panoya"); }, 900);
       }).catch(function(err){
         eskiHaleDon();
         alert("Kopyalanamadı: " + (err && err.message ? err.message : "izin verilmedi"));
