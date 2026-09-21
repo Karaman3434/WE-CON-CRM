@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEICON ASİST — Mesaj Şablonları</title>
+<title>WEICON ASİST — Mesaj Ayarları</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.150926.2235.579">
 <link rel="stylesheet" href="ayarlar-style.css">
@@ -22,22 +22,26 @@
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 </div>
-<div class="rota-etiketi">Menü › <b>Mesaj Şablonları</b></div>
+<div class="rota-etiketi">Menü › <b>Mesaj Ayarları</b></div>
 
 <main class="sayfa">
-  <div class="sayfa-baslik">✉️ Mesaj Şablonları</div>
+  <div class="sayfa-baslik">✉️ Mesaj Ayarları</div>
 
   <section class="ayar-kutu">
-    <label>E-posta Şablonu ({URUN}, {BELGE}, {FIRMA} yer tutucuları kullanılabilir)</label>
-    <textarea id="sablonMailMetni" rows="4" placeholder="Örn: {FIRMA} için hazırladığımız {BELGE}'i ekte bulabilirsiniz."></textarea>
-    <button class="kaydet-buton" id="btnMailSablonGuncelle">E-posta Şablonunu Güncelle</button>
+    <label>📧 E-posta metni</label>
+    <textarea id="sablonMailMetni" rows="9" placeholder="Mail metnini buraya yaz"></textarea>
+    <button class="kaydet-buton" id="btnMailKaydet">Kaydet</button>
+    <div id="mailDurum" style="font-size:12px;font-weight:700;margin-top:6px;min-height:16px;"></div>
   </section>
 
   <section class="ayar-kutu">
-    <label>📱 WhatsApp Şablonu</label>
-    <textarea id="sablonWhatsappMetni" rows="4" placeholder="Örn: İstediğiniz {URUN} için fiyat bilgisini paylaştım."></textarea>
-    <button class="kaydet-buton" id="btnWhatsappSablonGuncelle">WhatsApp Şablonunu Güncelle</button>
+    <label>📱 WhatsApp metni</label>
+    <textarea id="sablonWhatsappMetni" rows="9" placeholder="WhatsApp metnini buraya yaz"></textarea>
+    <button class="kaydet-buton" id="btnWhatsappKaydet">Kaydet</button>
+    <div id="whatsappDurum" style="font-size:12px;font-weight:700;margin-top:6px;min-height:16px;"></div>
   </section>
+
+  <div style="font-size:11px;color:#8a96a3;font-weight:600;padding:0 2px;">Yazdığın metin, Gönder ekranında ve gönderimde olduğu gibi çıkar.</div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -47,6 +51,7 @@
 <script src="auth.js?v=WG.130926.2010.553"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="mesaj-sablonlari-render.js?v=WG.080926.1103.211"></script>
+<script src="mesaj-data.js?v=WG.210926.1542.584"></script>
+<script src="mesaj-sablonlari-render.js?v=WG.210926.1542.584"></script>
 </body>
 </html>

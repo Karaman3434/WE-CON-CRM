@@ -61,44 +61,11 @@ function adresleriBelirle(musteri){
   }
 }
 
-function sablonOku(kanal){
-  try{
-    var s = JSON.parse(localStorage.getItem("weicon_mesaj_sablonlari")||"{}");
-    return (s && s[kanal]) ? s[kanal].trim() : "";
-  }catch(e){ return ""; }
-}
-
-function sablonUygula(sablon, urunKelimesi, belgeAdi, firmaAdi){
-  return sablon.split("{URUN}").join(urunKelimesi).split("{BELGE}").join(belgeAdi).split("{FIRMA}").join(firmaAdi||"");
-}
-
+// Mesaj metni TAMAMEN MANUEL (WG.210926.1542.584): Mesaj Ayarları'nda
+// yazılan metin olduğu gibi döner — yer tutucu, otomatik "Merhaba,", müşteri
+// notu ekleme veya belge türüne göre değişiklik YOK (bkz. mesaj-data.js).
 function mesajMetniOlustur(musteri, sepet, tip, kanal){
-  var sablon = kanal ? sablonOku(kanal) : "";
-  var metin;
-  if(sablon){
-    var urunKelimesi = sepet.length===1 ? "ürün" : "ürünler";
-    var TIP_ETIKET2 = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
-    metin = "Merhaba,\n" + sablonUygula(sablon, urunKelimesi, TIP_ETIKET2[tip], musteri.ad) + "\n";
-  } else {
-    var tekUrunMu = sepet.length === 1;
-    var govde = "Merhaba,\n";
-    if(kanal === "whatsapp"){
-      if(tip === "numune") govde += tekUrunMu ? "Sizinle paylaştığım ürün ekte, NUMUNE olarak gönderilecektir.\n" : "Sizinle paylaştığım ürünler ekte, NUMUNE olarak gönderilecektir.\n";
-      else govde += tekUrunMu ? "İstediğiniz ürün için fiyat bilgisi ektedir.\n" : "İstediğiniz ürünler için fiyat bilgileri ektedir.\n";
-    } else {
-      if(tip === "siparis") govde += "Bilgilerini paylaştığım Firma için SİPARİŞİ\nişleme almanızı rica ederim.\n";
-      else if(tip === "proforma") govde += "Bilgilerini paylaştığım Firma için PROFORMAYI göndermenizi rica ederim.\n";
-      else if(tip === "numune") govde += "Bilgilerini paylaştığım Firma için NUMUNEYİ göndermenizi rica ederim.\n";
-      else govde += "Bilgilerini paylaştığım Firma için FİYAT TEKLİFİNİ göndermenizi rica ederim.\n";
-      var TIP_ETIKET3 = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
-      govde += TIP_ETIKET3[tip] + " bilgi formu ektedir. BİLGİNİZE.\n";
-    }
-    metin = govde;
-  }
-  if(musteri.not && musteri.not.trim()){
-    metin += "\nNOT: " + musteri.not.trim() + "\n";
-  }
-  return metin;
+  return MesajData.oku(kanal === "whatsapp" ? "whatsapp" : "mail");
 }
 
 // Gönder ekranı yeniden düzeni (WG.210926.1512.583): 1) Cari Bilgi üst şeridi
@@ -183,7 +150,15 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
     gonderBaglam = {musteri:musteri, sepet:sepet, tip:tip, kur:kur, kdv:kdv};
-    document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, null);
+    var metinKutusu = document.getElementById("gonderMetin");
+    metinKutusu.value = mesajMetniOlustur(musteri, sepet, tip, null);
+    // Başka cihazda (S22/iPhone/iPad) Mesaj Ayarları'nda yapılan son kayıt
+    // varsa getir — ama bu ekranda elle yazmaya başlanmışsa metne dokunma.
+    var elleDegisti = false;
+    metinKutusu.addEventListener("input", function(){ elleDegisti = true; });
+    MesajData.tazele(function(){
+      if(!elleDegisti) metinKutusu.value = mesajMetniOlustur(musteri, sepet, tip, null);
+    });
 
     // İŞLEM İÇİN SEÇİM (WG.090926.196): Yetkili kişi artık burada
     // seçilmiyor — Cari Kart ekranında işaretlenen kişi kullanılır.
@@ -201,11 +176,6 @@ function kisiAlanlariniDoldur(kisi){
   document.getElementById("gonderEposta").value = (kisi && kisi.eposta) || "";
 }
 
-function sablonuUygulaTiklandi(kanal){
-  if(!gonderBaglam) return;
-  var g = gonderBaglam;
-  document.getElementById("gonderMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, kanal);
-}
 
 var TIP_ETIKET_BELGE_G = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
 

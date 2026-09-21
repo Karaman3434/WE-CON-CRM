@@ -1,22 +1,21 @@
-WE-CON-CRM — Gönder ekranı yeniden düzeni
-Sürüm: WG.210926.1512.583
+WE-CON-CRM — Mesaj Ayarları: tamamen manuel sistem
+Sürüm: WG.210926.1542.584
 
 DEĞİŞEN DOSYALAR (9) — kök dizindeki aynı isimli dosyalarla değiştir
-1) send-render.js — Cari Bilgi üst şeridi artık SİPARİŞ/WEICON etiketi yerine
-   ortalanmış "SİPARİŞ FORMU" (Teklif/Proforma/Numune için kendi adıyla);
-   VADE/FATURA/KARGO tek satır: "VADE : 555 - FATURA : PAUNT - KARGO : ...".
-   Sığmazsa satır atlamaz, yazı küçülür. Önizleme + giden görsel (Mail ve
-   WhatsApp) aynı yapıyı kullanır. Tablonun kendi SİPARİŞ/WEICON şeridine
-   dokunulmadı.
-2) belge-style.css — yeni .belge-form-baslik / .belge-kosul-satir sınıfları;
-   Gönder ekranında son kartın alt boşluğu kaldırıldı.
-3) send.html — Geri butonu üst boşluğu 10px -> 8px.
-
-CACHE-BUST DAMGASI GÜNCELLENDİ (içerik aynı)
-4) cart.html, 5) belge-onizleme.html, 6) customer-detail.html
-   (belge-style.css'in yeni sürümünü çeksinler diye)
+1) mesaj-data.js — YENİ DOSYA ("yeni dosya ekle" olarak yükle). Mail ve
+   WhatsApp metinlerini olduğu gibi (kırpmadan, yer tutucusuz) kaydeder/okur;
+   localStorage + Firebase (mesajSablonlari/metinler — mevcut kural yeter).
+2) mesaj-sablonlari.html + 3) mesaj-sablonlari-render.js — ekran "Mesaj
+   Ayarları" oldu: iki büyük metin kutusu, her birinin kendi "Kaydet" butonu.
+   {URUN}/{BELGE}/{FIRMA} yok, hiçbir şart yok, boş bırakılabilir.
+4) send-render.js + 5) send.html — Gönder ekranındaki mail metni ve WhatsApp
+   metni artık SADECE Mesaj Ayarları'ndaki metin. Otomatik "Merhaba,", otomatik
+   "NOT:" (müşteri notu) ve belge türüne göre değişen metinler kaldırıldı.
+   Gönder ekranında o anlık elle düzenleme yine mümkün.
+6) menu.html — menü satırı "Mesaj Ayarları".
 
 SÜRÜM SENKRONU
 7) home.html, 8) ayarlar-render.js, 9) ayarlar.html
 
-Belge Önizleme (belge-render.js) eski 3 kutulu yapıyı korur, dokunulmadı.
+NOT: Eski sistemin {FIRMA}/{BELGE} yer tutuculu kayıtları kullanılmıyor (temiz
+başlangıç). İlk açılışta kutularda başlangıç metni görünür; değiştirip Kaydet.
