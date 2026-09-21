@@ -1,27 +1,22 @@
-WE-CON-CRM — WhatsApp'ta sade Cari Bilgi (sadece ad + şehir)
-Sürüm: WG.050926.0023.122
+WE-CON-CRM — Gönder ekranı yeniden düzeni
+Sürüm: WG.210926.1512.583
 
-DEĞİŞEN DOSYALAR (8)
-1) send-render.js —
-   - belgeGorselHtmlOlustur: WhatsApp'a giden gerçek görselde artık
-     Cari Bilgi bloğu sadece müşteri adı + şehir (vade/fatura/kargo,
-     adresler, yetkili bilgisi YOK). Mail'de hâlâ TAM.
-   - tamOnizlemeHtmlOlustur: WhatsApp ÖNİZLEMESİ de aynı sade hale
-     getirildi ki gönderdiğin şeyle önizleme birebir eşleşsin
-   - mesajMetniOlustur: WhatsApp varsayılan metni "İstediğiniz ürün
-     için fiyat bilgisi ektedir." / çoğulda "...ürünler için fiyat
-     bilgileri ektedir." olarak güncellendi (tekil/çoğulu sistem
-     otomatik seçiyor)
-2) belge-style.css — sade Cari Bilgi için küçük şehir satırı stili eklendi
+DEĞİŞEN DOSYALAR (9) — kök dizindeki aynı isimli dosyalarla değiştir
+1) send-render.js — Cari Bilgi üst şeridi artık SİPARİŞ/WEICON etiketi yerine
+   ortalanmış "SİPARİŞ FORMU" (Teklif/Proforma/Numune için kendi adıyla);
+   VADE/FATURA/KARGO tek satır: "VADE : 555 - FATURA : PAUNT - KARGO : ...".
+   Sığmazsa satır atlamaz, yazı küçülür. Önizleme + giden görsel (Mail ve
+   WhatsApp) aynı yapıyı kullanır. Tablonun kendi SİPARİŞ/WEICON şeridine
+   dokunulmadı.
+2) belge-style.css — yeni .belge-form-baslik / .belge-kosul-satir sınıfları;
+   Gönder ekranında son kartın alt boşluğu kaldırıldı.
+3) send.html — Geri butonu üst boşluğu 10px -> 8px.
 
-DAĞITIM ÖNCESİ BUNLARIN CACHE-BUST DAMGASI GÜNCELLENDİ (içerik aynı)
-3) belge-onizleme.html, 4) cart.html, 5) customer-detail.html, 6) send.html
+CACHE-BUST DAMGASI GÜNCELLENDİ (içerik aynı)
+4) cart.html, 5) belge-onizleme.html, 6) customer-detail.html
    (belge-style.css'in yeni sürümünü çeksinler diye)
 
 SÜRÜM SENKRONU
-7) ayarlar-render.js, 8) ayarlar.html + home.html
+7) home.html, 8) ayarlar-render.js, 9) ayarlar.html
 
-DAĞITIM
-Bu 8 dosyayı kök dizindeki aynı isimli dosyalarla değiştir. Mail
-paylaşımına DOKUNULMADI — hâlâ tam Cari Bilgi (vade/fatura/kargo,
-adresler, yetkili) gösteriyor.
+Belge Önizleme (belge-render.js) eski 3 kutulu yapıyı korur, dokunulmadı.

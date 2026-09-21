@@ -514,3 +514,31 @@
 @media print {
   .app-header, .app-nav, .belge-alt-buton-satir, .belge-kapat-buton, .belge-islemler-buton, .overlay, .belge-gecmis-kutu { display: none !important; }
 }
+
+
+/* Gönder ekranı yeniden düzeni (WG.210926.1512.583) — sadece send-render.js kullanır */
+.belge-form-baslik {
+  text-align: center;
+  padding: 9px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #2563a8;
+  background: #f4f8fc;
+  border-bottom: 1px solid #e2ecf6;
+}
+.belge-kosul-satir {
+  white-space: nowrap;
+  overflow: hidden;
+  background: #f7f9fb;
+  border-radius: 8px;
+  padding: 7px 6px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #101828;
+}
+.belge-kosul-satir .kl { font-size: .82em; font-weight: 600; color: #667085; }
+.belge-kosul-satir .ks { color: #9ca3af; font-weight: 500; }
+/* Gönder ekranındaki son kartın alt boşluğu kalkar — Geri butonu GENEL TOPLAM'a yaklaşır */
+#tamOnizlemeAlani .belge-kart:last-child { margin-bottom: 0; }

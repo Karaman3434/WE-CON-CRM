@@ -101,6 +101,34 @@ function mesajMetniOlustur(musteri, sepet, tip, kanal){
   return metin;
 }
 
+// Gönder ekranı yeniden düzeni (WG.210926.1512.583): 1) Cari Bilgi üst şeridi
+// artık SİPARİŞ/WEICON etiketi yerine ortalanmış "<TÜR> FORMU" başlığı;
+// 2) VADE/FATURA/KARGO üç kutu yerine tek satır (etiket değerin başında).
+// Yeni sınıflar SADECE bu dosyada kullanılır — belge-render.js (Belge
+// Önizleme) eski .belge-kosul-grid / .belge-musteri-baslik yapısını korur.
+var FORM_BASLIK = {numune:"NUMUNE FORMU", teklif:"FİYAT TEKLİFİ FORMU", proforma:"PROFORMA FORMU", siparis:"SİPARİŞ FORMU"};
+function formBaslikHtml(tip){
+  return "<div class='belge-form-baslik'>" + (FORM_BASLIK[tip]||"SİPARİŞ FORMU") + "</div>";
+}
+function kosulSatiriHtml(vade, faturaTuru, kargo){
+  return "<div class='belge-kosul-satir'>"
+    + "<span class='kl'>VADE :</span> " + htmlEsc(vade||"-")
+    + " <span class='ks'>-</span> <span class='kl'>FATURA :</span> " + htmlEsc(faturaTuru||"-")
+    + " <span class='ks'>-</span> <span class='kl'>KARGO :</span> " + htmlEsc(kargo||"-")
+    + "</div>";
+}
+// Tek satıra sığmazsa yazı satır atlamaz, küçülür (en fazla 7px'e kadar).
+function kosulSatirlariniSigdir(kok){
+  try{
+    var satirlar = (kok||document).querySelectorAll(".belge-kosul-satir");
+    for(var i=0;i<satirlar.length;i++){
+      var el = satirlar[i]; el.style.fontSize = "";
+      var boyut = 11;
+      while(el.scrollWidth > el.clientWidth + 1 && boyut > 7){ boyut -= 0.5; el.style.fontSize = boyut + "px"; }
+    }
+  }catch(e){}
+}
+
 function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var basit = kanal === "whatsapp";
   var vade = musteri.vade || "";
@@ -127,13 +155,13 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   } else {
     musteriBlokHtml =
       "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-      + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
+      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "")
       + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
       + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
       + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "");
   }
 
-  var html = "<div class='belge-kart'><div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_ROZET[tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
+  var html = "<div class='belge-kart'>" + formBaslikHtml(tip)
     + "<div class='belge-musteri-govde'>"
     + musteriBlokHtml
     + "</div></div><div class='belge-kart-ayrac'></div><div class='belge-kart'>";
@@ -252,17 +280,17 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
   var cariBilgiHtml;
   if(basit){
     cariBilgiHtml =
-      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
+      formBaslikHtml(tip)
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad belge-musteri-ad--sade'>" + htmlEsc(musteri.ad) + "</div>"
       + (musteri.sehir ? "<div class='belge-musteri-sehir'>" + htmlEsc(musteri.sehir) + "</div>" : "")
       + "</div>";
   } else {
     cariBilgiHtml =
-      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
+      formBaslikHtml(tip)
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-      + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
+      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "")
       + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
       + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
       + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
@@ -295,6 +323,7 @@ function belgeGorseliniOlustur(kanal, callback){
     var kayitliKod = (sonKaydedilenBelge&&sonKaydedilenBelge.kayit) ? sonKaydedilenBelge.kayit.kod : "";
     var kayitliTarih = (sonKaydedilenBelge&&sonKaydedilenBelge.kayit) ? sonKaydedilenBelge.kayit.tarih : "";
     alan.innerHTML = belgeGorselHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, kayitliKod, kanal, kayitliTarih);
+    kosulSatirlariniSigdir(alan);
     setTimeout(function(){
       html2canvas(alan, {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
         callback(canvas);
@@ -345,6 +374,7 @@ function mailOnizlemeAc(){
     document.getElementById("mailOnizlemeMetin").textContent = document.getElementById("gonderMetin").value;
     document.getElementById("mailOnizlemeTablo").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, null);
     document.getElementById("mailOnizlemeOverlay").hidden = false;
+    kosulSatirlariniSigdir(document.getElementById("mailOnizlemeTablo"));
   }catch(e){ hataGoster("Mail önizleme açılamadı: " + e.message); }
 }
 
@@ -355,6 +385,7 @@ function whatsappOnizlemeAc(){
     document.getElementById("whatsappOnizlemeMetin").value = mesajMetniOlustur(g.musteri, g.sepet, g.tip, "whatsapp");
     document.getElementById("whatsappOnizlemeTablo").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, "whatsapp");
     document.getElementById("whatsappOnizlemeOverlay").hidden = false;
+    kosulSatirlariniSigdir(document.getElementById("whatsappOnizlemeTablo"));
   }catch(e){ hataGoster("WhatsApp önizleme açılamadı: " + e.message); }
 }
 
@@ -532,6 +563,7 @@ document.addEventListener("DOMContentLoaded", function(){
   (function(){
     var g = gonderBaglam;
     document.getElementById("tamOnizlemeAlani").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv);
+    kosulSatirlariniSigdir(document.getElementById("tamOnizlemeAlani"));
   })();
 
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
