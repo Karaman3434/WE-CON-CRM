@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Ürün Kataloğu Yükle</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.150926.2235.579">
+<link rel="stylesheet" href="veri-style.css?v=WG.140926.1213.555">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="veri.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+<div class="rota-etiketi">Menü › Veri Yönetimi › <b>Ürün Kataloğu Yükle</b></div>
+
+<main class="sayfa">
+  <div class="sayfa-baslik">📦 Ürün Kataloğu Yükle</div>
+  <p class="veri-uyari" style="background:#eaf2fc;border-color:#003a70;color:#003a70;">
+    Bu ekran SADECE ürün kataloğunu (<code>urunler</code>) değiştirir — müşterilere,
+    işlem geçmişine, ayarlara dokunmaz. WEICON'dan gelen fiyat listesi PDF'ini Claude'a
+    verip JSON'a çevirtir, o JSON'u burada yüklersin.
+  </p>
+
+  <button class="veri-buton veri-buton--gri" id="btnDosyaSec" style="width:100%;">📄 JSON Dosyası Seç</button>
+  <input type="file" id="jsonFileInput" accept="application/json" hidden>
+
+  <div id="onizlemeKutu" hidden style="margin-top:14px;">
+    <div id="onizlemeOzet" style="font-weight:800;color:#123b63;margin-bottom:8px;"></div>
+    <div id="onizlemeListe" style="font-size:12px;color:#556170;background:#f4f6f9;border-radius:8px;padding:10px;margin-bottom:12px;"></div>
+    <button class="veri-buton veri-buton--yesil" id="btnOnayYukle" style="width:100%;">✓ urunler Kataloğunu Bu Listeyle Değiştir</button>
+  </div>
+
+  <div id="sonucKutu" hidden style="margin-top:14px;padding:12px;border-radius:8px;font-weight:700;"></div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.130926.2010.553"></script>
+<script src="auth.js?v=WG.130926.2010.553"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="urun-yukle-render.js?v=WG.210926.1030.582"></script>
+</body>
+</html>
