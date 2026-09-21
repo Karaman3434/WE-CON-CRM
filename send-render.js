@@ -61,11 +61,12 @@ function adresleriBelirle(musteri){
   }
 }
 
-// Mesaj metni TAMAMEN MANUEL (WG.210926.1542.584): Mesaj Ayarları'nda
-// yazılan metin olduğu gibi döner — yer tutucu, otomatik "Merhaba,", müşteri
-// notu ekleme veya belge türüne göre değişiklik YOK (bkz. mesaj-data.js).
+// Mesaj metni TAMAMEN MANUEL (WG.210926.1531.584): Mesaj Ayarları'nda
+// yazılan metin olduğu gibi döner — otomatik "Merhaba,", müşteri notu ekleme
+// yok. TEK İSTİSNA (WG.210926.1603.585): metindeki HAREKET kelimesi işleme
+// göre SİPARİŞ/FİYAT TEKLİFİ/PROFORMA FATURA/NUMUNE olur (bkz. mesaj-data.js).
 function mesajMetniOlustur(musteri, sepet, tip, kanal){
-  return MesajData.oku(kanal === "whatsapp" ? "whatsapp" : "mail");
+  return MesajData.uygula(MesajData.oku(kanal === "whatsapp" ? "whatsapp" : "mail"), tip);
 }
 
 // Gönder ekranı yeniden düzeni (WG.210926.1512.583): 1) Cari Bilgi üst şeridi

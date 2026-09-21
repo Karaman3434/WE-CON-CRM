@@ -1,21 +1,17 @@
-WE-CON-CRM — Mesaj Ayarları: tamamen manuel sistem
-Sürüm: WG.210926.1542.584
+WE-CON-CRM — Mesaj metninde HAREKET kelimesi
+Sürüm: WG.210926.1603.585
 
-DEĞİŞEN DOSYALAR (9) — kök dizindeki aynı isimli dosyalarla değiştir
-1) mesaj-data.js — YENİ DOSYA ("yeni dosya ekle" olarak yükle). Mail ve
-   WhatsApp metinlerini olduğu gibi (kırpmadan, yer tutucusuz) kaydeder/okur;
-   localStorage + Firebase (mesajSablonlari/metinler — mevcut kural yeter).
-2) mesaj-sablonlari.html + 3) mesaj-sablonlari-render.js — ekran "Mesaj
-   Ayarları" oldu: iki büyük metin kutusu, her birinin kendi "Kaydet" butonu.
-   {URUN}/{BELGE}/{FIRMA} yok, hiçbir şart yok, boş bırakılabilir.
-4) send-render.js + 5) send.html — Gönder ekranındaki mail metni ve WhatsApp
-   metni artık SADECE Mesaj Ayarları'ndaki metin. Otomatik "Merhaba,", otomatik
-   "NOT:" (müşteri notu) ve belge türüne göre değişen metinler kaldırıldı.
-   Gönder ekranında o anlık elle düzenleme yine mümkün.
-6) menu.html — menü satırı "Mesaj Ayarları".
+DEĞİŞEN DOSYALAR (7) — kök dizindeki aynı isimli dosyalarla değiştir
+1) mesaj-data.js — metindeki büyük harfli HAREKET kelimesi, gönderirken işleme
+   göre SİPARİŞ / FİYAT TEKLİFİ / PROFORMA FATURA / NUMUNE olur. Başka hiçbir
+   şey değişmez (küçük harfli "hareket" dokunulmaz).
+2) send-render.js — Gönder ekranındaki mail metni ve WhatsApp metni bu
+   değiştirmeyi uygular.
+3) mesaj-sablonlari.html — ekrandaki açıklama satırı güncellendi.
+4) send.html — cache-bust damgaları.
 
 SÜRÜM SENKRONU
-7) home.html, 8) ayarlar-render.js, 9) ayarlar.html
+5) home.html, 6) ayarlar-render.js, 7) ayarlar.html
 
-NOT: Eski sistemin {FIRMA}/{BELGE} yer tutuculu kayıtları kullanılmıyor (temiz
-başlangıç). İlk açılışta kutularda başlangıç metni görünür; değiştirip Kaydet.
+Not: kayıtlı metnin kendisi değişmez, kutuda HAREKET olarak durur; değişim
+sadece Gönder ekranında/gönderimde olur.

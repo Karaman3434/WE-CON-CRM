@@ -1,12 +1,14 @@
 /*
   mesaj-data.js
   =============
-  Mesaj Ayarları — TAMAMEN MANUEL sistem (WG.210926.1542.584).
+  Mesaj Ayarları — TAMAMEN MANUEL sistem (WG.210926.1603.585).
 
-  Kural: Mesaj Ayarları ekranında yazılan mail ve WhatsApp metinleri, hiçbir
-  yer tutucu ({URUN}/{BELGE}/{FIRMA}), otomatik "Merhaba," satırı, otomatik
-  "NOT:" ekleme veya belge türüne göre değişiklik OLMADAN, YAZILDIĞI GİBİ
-  Gönder ekranında görünür ve gönderilir. Boş bırakmak da serbesttir.
+  Kural: Mesaj Ayarları ekranında yazılan mail ve WhatsApp metinleri,
+  otomatik "Merhaba," satırı veya otomatik "NOT:" ekleme OLMADAN, YAZILDIĞI
+  GİBİ Gönder ekranında görünür ve gönderilir. Boş bırakmak da serbesttir.
+  TEK İSTİSNA (WG.210926.1603.585): metnin içine büyük harfle HAREKET yazılırsa,
+  gönderirken işleme göre SİPARİŞ / FİYAT TEKLİFİ / PROFORMA FATURA / NUMUNE
+  olarak değişir. Başka hiçbir kelime/işaret değiştirilmez.
 
   Saklama: localStorage + Firebase (mesajSablonlari/metinler — mevcut
   Firebase kuralı zaten bu yolu kapsıyor, kural değişikliği gerekmez).
@@ -22,7 +24,7 @@ var MesajData = (function(){
   // Hiç kayıt yapılmamışken başlangıç metni — sadece bir başlangıç noktası,
   // Mesaj Ayarları'nda istenildiği gibi değiştirilip kaydedilir.
   var VARSAYILAN = {
-    mail: "Merhaba,\nBilgilerini paylaştığım Firma için işlemi yapmanızı rica ederim.\nBilgi formu ektedir. BİLGİNİZE.",
+    mail: "Merhaba,\nBilgilerini paylaştığım Firma için HAREKET bilgi formu ektedir. BİLGİNİZE.",
     whatsapp: "Merhaba,\nİstediğiniz ürün için fiyat bilgisi ektedir."
   };
 
@@ -37,6 +39,15 @@ var MesajData = (function(){
     if(typeof firebase === "undefined") return null;
     if(!firebase.apps.length && typeof WEICON_FIREBASE_CONFIG !== "undefined"){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
     return firebase.apps.length ? firebase.database() : null;
+  }
+
+  var HAREKET_ADLARI = {siparis:"SİPARİŞ", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", numune:"NUMUNE"};
+
+  // Metindeki (büyük harf, birebir) HAREKET kelimesini işlem adıyla değiştirir.
+  function uygula(metin, tip){
+    var ad = HAREKET_ADLARI[tip];
+    if(!ad) return metin;
+    return String(metin).split("HAREKET").join(ad);
   }
 
   // Kaydedilmiş metin varsa (boş bile olsa) onu, hiç kayıt yoksa başlangıç metnini döndürür.
@@ -84,5 +95,5 @@ var MesajData = (function(){
     }catch(e){ son(); }
   }
 
-  return { oku: oku, kaydet: kaydet, tazele: tazele, VARSAYILAN: VARSAYILAN };
+  return { oku: oku, uygula: uygula, kaydet: kaydet, tazele: tazele, VARSAYILAN: VARSAYILAN };
 })();
