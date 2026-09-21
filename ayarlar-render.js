@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.160926.0929.580";
+var APP_VERSION = "WG.210926.0856.581";
 
 function hataGoster(mesaj){
   console.error(mesaj);

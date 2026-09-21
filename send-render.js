@@ -133,13 +133,14 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
       + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "");
   }
 
-  var html = "<div class='belge-kart'><div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
+  var html = "<div class='belge-kart'><div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_ROZET[tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
     + "<div class='belge-musteri-govde'>"
     + musteriBlokHtml
     + "</div></div><div class='belge-kart-ayrac'></div><div class='belge-kart'>";
 
   html += HareketTablo.grupHtml({
     etiket: (TIP_ETIKET_ROZET[tip]||""),
+    etiketRozet: "WEICON",
     urunler: sepet,
     hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
     zeminSinifi: "hareket-satir--yesil",
@@ -154,7 +155,6 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
     gonderBaglam = {musteri:musteri, sepet:sepet, tip:tip, kur:kur, kdv:kdv};
-    document.getElementById("gonderMusteriAdi").textContent = musteri.ad || "—";
     document.getElementById("gonderMetin").value = mesajMetniOlustur(musteri, sepet, tip, null);
 
     // İŞLEM İÇİN SEÇİM (WG.090926.196): Yetkili kişi artık burada
@@ -252,14 +252,14 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
   var cariBilgiHtml;
   if(basit){
     cariBilgiHtml =
-      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
+      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad belge-musteri-ad--sade'>" + htmlEsc(musteri.ad) + "</div>"
       + (musteri.sehir ? "<div class='belge-musteri-sehir'>" + htmlEsc(musteri.sehir) + "</div>" : "")
       + "</div>";
   } else {
     cariBilgiHtml =
-      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
+      "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
       + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + HareketTablo.kosulKutusuHtml("📅","VADE",vade) + HareketTablo.kosulKutusuHtml("📄","FATURA",faturaTuru) + HareketTablo.kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")

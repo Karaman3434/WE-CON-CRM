@@ -69,7 +69,7 @@ var HareketTablo = (function(){
     var primGizli = !!opts.primGizli;
     var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#8a6d1a" : "#0e6b34";
     var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#fff9e6" : "#eafaf0";
-    var etiketRozetHtml = opts.etiketRozet ? "<span class='hareket-grup-etiket-rozet'>" + opts.etiketRozet + "</span>" : "";
+    var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "") + "'>" + opts.etiketRozet + "</span>") : "";
     var html = opts.etiket ? ("<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
     var basHucreler = basit
       ? "<th style='width:58%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:14%;'>NET</th><th style='width:16%;'>TOPLAM</th>"

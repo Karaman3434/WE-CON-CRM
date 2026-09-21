@@ -151,7 +151,7 @@ function belgeyiCiz(kayit, musteri){
     var sehir = (musteri && musteri.sehir) || "";
     var yetkiliBilgiHtml = yetkililer.map(function(k){ return yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
-    var musteriBlokHtml = "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>CARİ BİLGİ</span><span class='belge-logo-mini'>WEICON</span></div>"
+    var musteriBlokHtml = "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad'>" + htmlEsc(kayit.musteri) + "</div>"
       + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + kosulKutusuHtml("📅","VADE",vade) + kosulKutusuHtml("📄","FATURA",faturaTuru) + kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
@@ -169,7 +169,7 @@ function belgeyiCiz(kayit, musteri){
       + "</div>"
       + "<div class='belge-kart-ayrac'></div>"
       + "<div class='belge-kart'>"
-      + "<div class='belge-belge-baslik-serit'>" + htmlEsc(belgeBaslikMetni) + "</div>"
+      + "<div class='belge-belge-baslik-serit'><span class='belge-belge-baslik-serit-metin'>" + htmlEsc(belgeBaslikMetni) + "</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr><th style='width:4%;'>SR</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"

@@ -199,11 +199,13 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   border-bottom: 1px solid #e2f0e6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
+.belge-belge-baslik-serit-metin { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 
 .data-table-container { overflow-x: auto; width: 100%; }
@@ -300,6 +302,13 @@
   font-weight: 900;
   white-space: nowrap;
   flex-shrink: 0;
+}
+/* Ürün tablosu üstündeki küçük WEICON rozeti (16.09.2026) — CARİ BİLGİ
+   kartındaki .belge-logo-mini ile aynı stil, aynı görsel dil. */
+.hareket-grup-etiket-rozet--weicon {
+  background: #003a70;
+  border: 1.5px solid #004f99;
+  color: #ffffff;
 }
 .hareket-satir--sari { background: #faeeda; }
 .hareket-satir--yesil { background: #eafaf0; }
