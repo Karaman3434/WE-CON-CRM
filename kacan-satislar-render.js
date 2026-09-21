@@ -78,7 +78,7 @@ function tlKartHTML(k){
     + "<div class='tl-sagblok'><div class='tl-kod-satir'>"
     + "<span class='tl-kod'>" + kodHTML(kod, k.tip) + "</span></div>"
     + "<div class='tl-tutar'>" + fmt(k.tutar) + " EURO</div></div>"
-    + "<span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
+    + "<button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
     + "</div>"
     + "</div>"
     + "</div>";

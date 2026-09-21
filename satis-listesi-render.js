@@ -85,7 +85,7 @@ function tlKartHTML(k, gosterIsim){
     + "<div class='tl-sagblok'><div class='tl-kod-satir'>"
     + "<span class='tl-kod'>" + kanalHarfHTML(k.kanal) + kodHTML(kod, k.tip) + "</span></div>"
     + "<div class='tl-tutar'>" + fmt(k._tutar) + " EURO</div></div>"
-    + "<span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
+    + "<button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
     + "</div>"
     + "</div>"
     + "</div>";
@@ -118,7 +118,7 @@ function bekleyenKartHTML(k){
     + "<div class='tl-sagblok'><div class='tl-kod-satir'>"
     + "<span class='tl-kod'>" + kanalHarfHTML(k.kanal) + kodHTML(k.kod||meta.rozet, k.tip) + "</span></div>"
     + "<div class='tl-tutar'>" + fmt(k._tutar) + " EURO</div></div>"
-    + "<span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
+    + "<button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
     + "</div>"
     + (k.beklemedeNot ? "<div class='bekleyen-not'>⏳ " + htmlEsc(k.beklemedeNot) + "</div>" : "<div class='bekleyen-not bekleyen-not--bos'>⏳ Not eklenmemiş</div>")
     + "</div>"

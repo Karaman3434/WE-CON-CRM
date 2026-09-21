@@ -891,7 +891,8 @@
   padding: 0;
   cursor: pointer;
 }
-.tl-arasi { height: 2px; background: #eef1f5; margin-left: 4px; border: 1.5px solid #b1bfd1;}
+/* WG.210926.1958.590 — satırlar arası ayraç: 1px ince, açık nötr gri (eskiden ~5px kalın gri-mavi) */
+.tl-arasi { height: 0; background: none; margin-left: 4px; border: 0; border-top: 1px solid #d3d7de; }
 .tl-durum-ek { font-size: 11px; font-weight: 800; color: #c0392b; padding: 0 12px 8px 12px; }
 .tl-durum-ek--beklemede { color: #b7601f; }
 

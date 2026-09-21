@@ -93,7 +93,7 @@ function tlKartHTML(k, gosterIsim){
     + "<span class='tl-rozet' style='background:" + rozetMeta.rozetBg + ";color:" + rozetMeta.rozetRenk + ";'>" + rozetMeta.rozet + "</span>"
     + "<span class='tl-kod'>" + kanalHarfHTML(k.kanal) + kodHTML(kod, k.tip) + "</span></div>"
     + "<div class='tl-tutar'>" + fmt(k._tutar) + " EURO</div></div>"
-    + "<span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
+    + "<button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
     + "</div>"
     + (k.durum==="beklemede" ? "<div class='tl-durum-ek tl-durum-ek--beklemede'>⏳ Beklemede" + (k.beklemedeNot ? ": " + htmlEsc(k.beklemedeNot) : "") + "</div>" : "")
     + "</div>"

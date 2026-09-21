@@ -1,22 +1,21 @@
-WE-CON-CRM — İşlem listeleri yeniden tasarımı
-Sürüm: WG.210926.1709.589
+WE-CON-CRM — İşlem listeleri: Seçenek A + ince ayraç
+Sürüm: WG.210926.1958.590   (589'un değişikliklerini de içerir)
 
-KAPSAM: Tarih gruplu 5 işlem listesi — Son İşlemler, Bugünün/Bu Ayın Satışları,
-Ay Detayı, Geçmiş, Kaçan Satışlar (ve Bekleyen Ürünler bloğu). Hepsi aynı
-ortak stili kullanır.
+KAPSAM: Tarih gruplu 5 işlem listesi — Son İşlemler, Bugünün/Bu Ayın
+Satışları (+ Bekleyen Ürünler), Ay Detayı, Geçmiş, Kaçan Satışlar.
+
+BU SÜRÜMDE YENİ
+- Tutar ile ok arasındaki dikey gri çizgi KALDIRILDI (Seçenek A).
+- Satırlar arası ayraç: ~5px kalın gri-mavi yerine 1px ince, açık nötr gri (#d3d7de).
+
+589'DAN GELEN (aynı zip'te)
+- Açık mavi, kalın ama koyu olmayan tarih şeridi, daha alçak.
+- Satır yazıları %10 küçük; belge kodu tutarın üstünde; SP/FT/PF/NM harfleri işlem renginde.
 
 DEĞİŞEN DOSYALAR (14) — kök dizindeki aynı isimli dosyalarla değiştir
-1) reports-style.css — tarih şeridi açık mavi (#e9f3fc), kalın (700) ama koyu
-   olmayan yazı (#4a6785), yükseklik ~35px -> ~24px, yazı boyutu 13px sabit.
-   Satırlarda müşteri yazıları ve tutar 13 -> 11,7px, belge kodu 11 -> 9,9px.
-   Yeni satır düzeni: solda müşteri bilgisi (gerekirse 2 satır), sağda belge
-   kodu tutarın HEMEN ÜSTÜNDE, en sağda ayırıcı çizgi + ok.
-2) son-islemler-render.js, satis-listesi-render.js, ay-detay-render.js,
-   gecmis-render.js, kacan-satislar-render.js — yeni satır yapısı; belge
-   kodunun BAŞ HARFLERİ (SP/FT/PF/NM) işlem renginde: SP lacivert, FT yeşil,
-   PF mor, NM turuncu (numara kısmı eski renkte).
-3) son-islemler.html, satis-listesi.html, ay-detay.html, gecmis.html,
-   kacan-satislar.html — cache-bust damgaları.
-
-SÜRÜM SENKRONU
-4) home.html, ayarlar-render.js, ayarlar.html
+reports-style.css
+son-islemler-render.js, satis-listesi-render.js, ay-detay-render.js,
+gecmis-render.js, kacan-satislar-render.js
+son-islemler.html, satis-listesi.html, ay-detay.html, gecmis.html,
+kacan-satislar.html (cache-bust)
+home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
