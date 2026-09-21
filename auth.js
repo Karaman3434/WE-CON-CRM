@@ -16,7 +16,10 @@
 
   if(!firebase.apps.length){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
 
-  var PIN_KILIT_ESIK_MS = 30*60*1000;   // 30 dakika hareketsizlik -> PIN ekranı
+  // PIN KİLİDİ (WG.210926.1613.587): 1 dakika kullanılmazsa PIN istenir.
+  // "Kullanılmama" = ekrana son dokunuş/kaydırma/tuş vuruşundan beri geçen
+  // süre (aşağıdaki etkileşim dinleyicileri zaman damgasını taze tutar).
+  var PIN_KILIT_ESIK_MS = 60*1000;
   var TAM_GIRIS_ESIK_MS = 3*60*60*1000; // 3 saat hareketsizlik -> tam e-posta/şifre girişi
 
   // ---- CİHAZ ENGELLEME (bkz. cihaz-data.js / cihazlar.html) ----
@@ -63,12 +66,59 @@
   function gecenSureDurumu(){
     try{
       var son = parseInt(localStorage.getItem("weicon_son_aktivite")||"0", 10);
-      if(!son) return 0;
+      // Kayıt yoksa (tarayıcı verisi silinmiş / yeni cihaz / bozuk kayıt)
+      // eskiden "kilit yok" sayılıyordu — bu, bazı cihazlarda PIN'in hiç
+      // sorulmamasının nedenlerinden biriydi. Artık KİLİTLİ sayılır.
+      if(!son) return 1;
       var fark = Date.now() - son;
+      if(fark < 0) return 1;                 // saat geri alınmışsa da kilitli say
       if(fark > TAM_GIRIS_ESIK_MS) return 2;
       if(fark > PIN_KILIT_ESIK_MS) return 1;
       return 0;
     }catch(e){ return 0; }
+  }
+
+  // SAYFA YÜKLENMEDEN GERİ DÖNÜŞ KONTROLÜ: Uygulama arka plana atılıp (başka
+  // uygulamaya geçme, ekran kilidi) geri gelindiğinde tarayıcı bazen sayfayı
+  // YENİDEN YÜKLEMEZ (telefonun belleğine ve tarayıcıya göre değişir — S22,
+  // iPhone ve iPad'de farklı davranır). Eskiden PIN kontrolü SADECE sayfa
+  // yüklenirken yapıldığı için, sayfa yenilenmeyen cihazda PIN hiç sorulmuyordu.
+  // Şimdi sayfa tekrar görünür olduğunda da aynı kontrol yapılır.
+  var kilitleniyor = false;
+  function geriDonusKilitKontrolu(){
+    if(kilitleniyor || buSayfaLogin || buSayfaPin || buSayfaCihazEngelli) return;
+    try{ if(!firebase.auth().currentUser) return; }catch(e){ return; }
+    var durum = gecenSureDurumu();
+    if(durum === 0) return;
+    kilitleniyor = true;
+    document.documentElement.style.visibility = "hidden"; // içerik bir an bile görünmesin
+    if(durum === 2){ firebase.auth().signOut(); }
+    else { window.location.replace("pin.html"); }
+  }
+  document.addEventListener("visibilitychange", function(){
+    if(!document.hidden) geriDonusKilitKontrolu();
+  });
+  window.addEventListener("pageshow", function(ev){
+    if(ev.persisted) geriDonusKilitKontrolu();   // geri/ileri önbelleğinden dönüş
+  });
+  window.addEventListener("focus", geriDonusKilitKontrolu);
+
+  // GERÇEK KULLANIM TAKİBİ: Zaman damgası eskiden sadece sayfa açılırken
+  // yenileniyordu. Artık ekrana dokunma/kaydırma/tuş vuruşu da (en fazla 2 sn'de
+  // bir yazılarak) yeniler. PIN ekranında yenilenmez — aksi hâlde PIN ekranına
+  // dokunmak kilidi kırardı.
+  if(!buSayfaPin){
+    var sonEtkilesimYazimi = 0;
+    var etkilesimKaydet = function(){
+      var t = Date.now();
+      if(t - sonEtkilesimYazimi < 2000) return;
+      if(kilitleniyor) return;
+      sonEtkilesimYazimi = t;
+      aktiviteZamaniniGuncelle();
+    };
+    ["touchstart","pointerdown","mousedown","keydown","scroll","input"].forEach(function(ad){
+      window.addEventListener(ad, etkilesimKaydet, {passive:true, capture:true});
+    });
   }
 
   // ÇEVRİMDIŞI FARKINDALIK BANNER'I — Firebase Realtime Database yazma

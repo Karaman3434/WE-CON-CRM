@@ -1,17 +1,21 @@
-WE-CON-CRM — Mesaj metninde HAREKET kelimesi
-Sürüm: WG.210926.1603.585
+WE-CON-CRM — PIN kilidi düzeltmesi (güvenlik)
+Sürüm: WG.210926.1613.587
 
-DEĞİŞEN DOSYALAR (7) — kök dizindeki aynı isimli dosyalarla değiştir
-1) mesaj-data.js — metindeki büyük harfli HAREKET kelimesi, gönderirken işleme
-   göre SİPARİŞ / FİYAT TEKLİFİ / PROFORMA FATURA / NUMUNE olur. Başka hiçbir
-   şey değişmez (küçük harfli "hareket" dokunulmaz).
-2) send-render.js — Gönder ekranındaki mail metni ve WhatsApp metni bu
-   değiştirmeyi uygular.
-3) mesaj-sablonlari.html — ekrandaki açıklama satırı güncellendi.
-4) send.html — cache-bust damgaları.
+ÖNEMLİ: Bu zip'teki TÜM dosyaları kök dizindeki aynı isimli dosyaların üzerine
+yükle (auth.js + 41 HTML + ayarlar-render.js). HTML'lerin hepsinde sadece
+auth.js'in cache-bust damgası değişti — hepsi yüklenmezse bazı sayfalar eski
+auth.js'i çekmeye devam eder.
 
-SÜRÜM SENKRONU
-5) home.html, 6) ayarlar-render.js, 7) ayarlar.html
-
-Not: kayıtlı metnin kendisi değişmez, kutuda HAREKET olarak durur; değişim
-sadece Gönder ekranında/gönderimde olur.
+DEĞİŞEN DOSYA
+1) auth.js
+   - PIN süresi 30 dakikadan 1 DAKİKAYA indi.
+   - Süre "sayfa açıldığından" değil, ekrana SON DOKUNUŞ/KAYDIRMA/TUŞ
+     VURUŞUNDAN itibaren sayılıyor.
+   - Uygulamaya geri dönüşte (başka uygulamadan, ekran kilidinden, geri/ileri
+     önbelleğinden) sayfa yenilenmese bile PIN kontrolü yapılıyor. Eskiden
+     kontrol SADECE sayfa yüklenirken yapılıyordu.
+   - Son aktivite kaydı yoksa (tarayıcı verisi silinmiş / yeni cihaz) eskiden
+     "kilit yok" sayılıyordu, artık PIN isteniyor.
+   - PIN ekranındaki dokunuşlar süreyi tazelemez (kilit kırılamaz).
+2) 41 HTML dosyası — auth.js cache-bust damgası
+3) ayarlar-render.js (+ home.html, ayarlar.html) — sürüm senkronu
