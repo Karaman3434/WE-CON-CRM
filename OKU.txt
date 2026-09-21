@@ -1,21 +1,12 @@
-WE-CON-CRM — PIN kilidi düzeltmesi (güvenlik)
-Sürüm: WG.210926.1613.587
+WE-CON-CRM — Sepet'te "Kaydet" artık Ana Sayfa'ya döner
+Sürüm: WG.210926.1647.588
 
-ÖNEMLİ: Bu zip'teki TÜM dosyaları kök dizindeki aynı isimli dosyaların üzerine
-yükle (auth.js + 41 HTML + ayarlar-render.js). HTML'lerin hepsinde sadece
-auth.js'in cache-bust damgası değişti — hepsi yüklenmezse bazı sayfalar eski
-auth.js'i çekmeye devam eder.
+DEĞİŞEN DOSYALAR (5) — kök dizindeki aynı isimli dosyalarla değiştir
+1) cart-render.js — "✓ Kaydet" işlemi kaydeder, sepeti ve seçili müşteriyi
+   temizler ve doğrudan Ana Sayfa'ya gider (Gönder ekranına GİTMEZ).
+   "📋 Formu Görüntüle" butonu eskisi gibi kaydeder ve Gönder ekranına
+   (mail/WhatsApp) gider. Anomali uyarısı, kur kontrolü ve revize akışı aynen.
+2) cart.html — cache-bust damgası.
 
-DEĞİŞEN DOSYA
-1) auth.js
-   - PIN süresi 30 dakikadan 1 DAKİKAYA indi.
-   - Süre "sayfa açıldığından" değil, ekrana SON DOKUNUŞ/KAYDIRMA/TUŞ
-     VURUŞUNDAN itibaren sayılıyor.
-   - Uygulamaya geri dönüşte (başka uygulamadan, ekran kilidinden, geri/ileri
-     önbelleğinden) sayfa yenilenmese bile PIN kontrolü yapılıyor. Eskiden
-     kontrol SADECE sayfa yüklenirken yapılıyordu.
-   - Son aktivite kaydı yoksa (tarayıcı verisi silinmiş / yeni cihaz) eskiden
-     "kilit yok" sayılıyordu, artık PIN isteniyor.
-   - PIN ekranındaki dokunuşlar süreyi tazelemez (kilit kırılamaz).
-2) 41 HTML dosyası — auth.js cache-bust damgası
-3) ayarlar-render.js (+ home.html, ayarlar.html) — sürüm senkronu
+SÜRÜM SENKRONU
+3) home.html, 4) ayarlar-render.js, 5) ayarlar.html

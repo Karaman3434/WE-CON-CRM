@@ -6,7 +6,7 @@
   Bir ürüne dokununca calc.html'e gidilir (hesapla/düzenle). Kaydet/Gönder
   artık GERÇEKTEN kaydeder (kur tazelik kontrolü + anomali uyarısı + varsa
   aşama seçimi dahil) — ikinci bir onay ekranına gerek yok; başarılı kayıt
-  sonrası doğrudan send.html'e (mail/WhatsApp gönderme paneli) geçilir.
+  sonrası: "Kaydet" -> Ana Sayfa, "Formu Görüntüle" -> send.html (mail/WhatsApp paneli).
 */
 
 function hataGoster(mesaj){
@@ -340,6 +340,21 @@ function oncedenSecilenTipVarsaUygula(){
   }catch(e){}
 }
 
+// KAYDET → ANA SAYFA (WG.210926.1647.588): "✓ Kaydet" işlemi bitirir, Gönder
+// ekranına gitmez. Sepet ve seçili müşteri, "Ana Sayfa'ya Git" ve "İşlemi İptal
+// Et" akışlarıyla AYNI şekilde temizlenir. Form görüntüleme/gönderme için
+// "📋 Formu Görüntüle" butonu (niyet = "gonder") eskisi gibi send.html'e gider.
+function kaydetSonrasiAnaSayfayaGit(){
+  try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+  try{ CustomerData.secimiKaldir(); }catch(e){}
+  ["weiconv2_sepet_kur_override","weiconv2_onceden_secilen_tip","weiconv2_hesapla_duzenle_idx",
+   "weiconv2_ilerlet_kaynak","weiconv2_islem_yap_akisi","weiconv2_secili_iletisim",
+   "weiconv2_son_kaydedilen_belge","weiconv2_gonderim_kanali","weicon_secili_musteri"].forEach(function(k){
+    try{ localStorage.removeItem(k); }catch(e){}
+  });
+  window.location.href = "home.html";
+}
+
 function kaydetGercekIslem(niyet){
   try{
     var musteri = CustomerData.seciliyiOku();
@@ -370,6 +385,7 @@ function kaydetGercekIslem(niyet){
         // send.html'e taşınacak bağlam — sepeti/müşteriyi BURADA boşaltmıyoruz,
         // "Geri — Sepete Dön ve Düzelt" hâlâ çalışabilsin diye (aynı gün+
         // müşteri+ürün seti eşleşmesiyle SendData.kaydet zaten revize eder).
+        if(niyet === "kaydet"){ kaydetSonrasiAnaSayfayaGit(); return; }
         localStorage.setItem("weiconv2_son_kaydedilen_belge", JSON.stringify({
           musteri: musteri, sepet: sepet, tip: secilenTip, kur: kur, kdv: kdv,
           kayit: sonuc, revizeMi: !!revizeMi, niyet: niyet
