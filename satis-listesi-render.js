@@ -61,6 +61,17 @@ function cariSatirHTML(kod, isim, sehir){
     + "<span class='cari-isim'>" + htmlEsc(isim||"") + "</span>"
     + (sehir ? "<span class='cari-ayrac'> - </span><span class='cari-sehir'>" + htmlEsc(sehir) + "</span>" : "");
 }
+// Belge kodunun BAŞ HARFLERİ (SP/FT/PF/NM) işlem türünün kendi renginde
+// (WG.210926.1709.589); numara kısmı normal renkte kalır. Renkler uygulamadaki
+// işlem tipi renkleriyle aynı (SİPARİŞ navy, TEKLİF yeşil, PROFORMA mor, NUMUNE turuncu).
+var HARF_RENK = {siparis:"#003a70", teklif:"#28a745", proforma:"#8e44ad", numune:"#b7601f"};
+function kodHTML(kod, tip){
+  kod = String(kod == null ? "" : kod);
+  var i = kod.indexOf(".");
+  var harf = i > 0 ? kod.slice(0, i) : kod;
+  var kalan = i > 0 ? kod.slice(i) : "";
+  return "<span style='color:" + (HARF_RENK[tip] || HARF_RENK.siparis) + ";'>" + htmlEsc(harf) + "</span>" + htmlEsc(kalan);
+}
 function tlKartHTML(k, gosterIsim){
   var kacanMi = k.durum === "kacan";
   var revizeMi = !!k.revizeZamani;
@@ -70,10 +81,11 @@ function tlKartHTML(k, gosterIsim){
   return "<div class='tl-kart' data-i='" + k._i + "'>"
     + "<div class='tl-serit' style='background:" + rozetMeta.serit + ";'></div>"
     + "<div class='tl-govde'>"
-    + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
-    + "<div class='tl-alt'>"
-    + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(kod) + "</span>"
-    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " EURO</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
+    + "<div class='tl-satir'>" + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
+    + "<div class='tl-sagblok'><div class='tl-kod-satir'>"
+    + "<span class='tl-kod'>" + kanalHarfHTML(k.kanal) + kodHTML(kod, k.tip) + "</span></div>"
+    + "<div class='tl-tutar'>" + fmt(k._tutar) + " EURO</div></div>"
+    + "<span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
     + "</div>"
     + "</div>"
     + "</div>";
@@ -102,10 +114,11 @@ function bekleyenKartHTML(k){
   return "<div class='tl-kart tl-kart--bekleyen' data-bekleyen-i='" + k._bi + "'>"
     + "<div class='tl-serit' style='background:#ef9f27;'></div>"
     + "<div class='tl-govde'>"
-    + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
-    + "<div class='tl-alt'>"
-    + "<span class='tl-kod' style='color:" + meta.kodRenk + ";'>" + kanalHarfHTML(k.kanal) + htmlEsc(k.kod||meta.rozet) + "</span>"
-    + "<span class='tl-sag'><span class='tl-tutar'>" + fmt(k._tutar) + " EURO</span><span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button></span>"
+    + "<div class='tl-satir'>" + "<div class='tl-ust'>" + cariSatirHTML(k.musteriId, k.musteri, k.sehir) + "</div>"
+    + "<div class='tl-sagblok'><div class='tl-kod-satir'>"
+    + "<span class='tl-kod'>" + kanalHarfHTML(k.kanal) + kodHTML(k.kod||meta.rozet, k.tip) + "</span></div>"
+    + "<div class='tl-tutar'>" + fmt(k._tutar) + " EURO</div></div>"
+    + "<span class='tl-divider'></span><button class='tl-ok' aria-label='Belgeyi aç'>" + OK_SVG + "</button>"
     + "</div>"
     + (k.beklemedeNot ? "<div class='bekleyen-not'>⏳ " + htmlEsc(k.beklemedeNot) + "</div>" : "<div class='bekleyen-not bekleyen-not--bos'>⏳ Not eklenmemiş</div>")
     + "</div>"
