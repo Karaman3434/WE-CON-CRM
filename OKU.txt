@@ -1,64 +1,19 @@
-WE-CON-CRM — 7 maddelik düzeltme/geliştirme paketi
-Sürüm: WG.220926.1030.595
+WE-CON-CRM — Ürün Bul: Cari Bilgi kutusu hep görünüyordu, düzeldi
+Sürüm: WG.220926.1316.596
 
-1) MAIL — Konu satırı gövdede tekrar etmiyor
-   send-render.js: Mail'e görsel ekiyle gönderirken (navigator.share yolu)
-   konu metni hem "title" (gerçek konu) hem gövdenin başına tekrar
-   ekleniyordu. Artık gövde sadece yazdığın metin.
+SORUN: Bir önceki build'de (WG.220926.1030.595, madde 4) eklenen "müşteri
+adı sepet satırının üstünde" kutusu, sepet boşken de "CARİ BİLGİ —" olarak
+görünüyordu — gizlenmesi gerekirken hep açık kalıyordu.
 
-2) BELGE ÖNİZLEME / GÖNDER EKRANI — Tüm sayılar aynı boyda
-   belge-style.css, belge-render.js, hareket-tablo.js, send-render.js:
-   ADET/LİSTE/İSK/NET/TOPLAM/PRİM artık hepsi aynı büyüklükte (13,5px,
-   kalın). İSK artık ayrı bir kutu/rozet değil — diğerleriyle BİREBİR aynı
-   hizada: rakam üstte, "%" işareti altta (EURO/TL gibi birim etiketi).
+SEBEP: .sepet-cari-bilgi sınıfı (belge-style.css) "display:flex" tanımlıyor.
+Bu, tarayıcının "hidden" özelliği için varsayılan davranışını (display:none)
+eziyor — JS "gizle" dese bile kutu görünür kalıyordu.
 
-3) POPUP GENİŞLİĞİ — iPad 9'da artık kenardan kenara değil
-   home-style.css: Yetkili Kişi, Kur Seçimi, "Ne için ürün arıyorsun?" gibi
-   TÜM popup'lar telefonda (S22/iPhone 13) hâlâ tam genişlik — hiçbir şey
-   değişmedi. ~700px ve üzeri ekranlarda (iPad 9) artık ortalanmış, sınırlı
-   genişlikte (480px) ve köşeleri yuvarlak. Tek bir ortak yamayla (bu dosya,
-   tüm sayfalarda yüklü) 6 farklı CSS dosyasındaki popup'lar birden düzeldi.
+DÜZELTME (1 dosya)
+product-style.css — kutuya özel bir kural eklendi, "hidden" tekrar
+çalışıyor: sepet boşken kutu tamamen kayboluyor, sepete ürün eklenince
+müşteri adıyla görünüyor.
 
-4) ÜRÜN BUL SAYFASI — müşteri takibi + Sepeti Boşalt
-   product.html, product-render.js, product-data.js, product-style.css:
-   Sepet dolduğunda, sepet butonunun hemen üstünde hangi müşteriye işlem
-   yapıldığı görünüyor. Sepet butonunun yanında (aynı satırda) "🗑 Boşalt"
-   kutusu var — sepeti temizler, müşteriyi/sayfayı değiştirmez, sormadan
-   silmez (onay ister).
-
-5) RENKLER — Hesaplanacak sarısı ve Sipariş rozeti
-   belge-style.css, hareket-tablo.js: Sepet'teki HESAPLANACAK grubunun
-   soluk/kirli sarısı, canlı bir sarıya (#ffe066) döndü — hem başlık şeridi
-   hem satır zemini. Cari Bilgi başlığındaki "SİPARİŞ" (vb.) rozeti
-   lacivertten yeşile döndü.
-
-6) TCMB BUTONU — Kur seçim penceresinde
-   cart.html, cart-render.js, cart-style.css: "Bu İşlem İçin Kur"
-   penceresine "🏦 TCMB Günlük Kur Sayfasını Aç" butonu eklendi, dokununca
-   TCMB'nin döviz kurları sayfası yeni sekmede açılıyor.
-
-7) MAIL — Satırlar arası fazla boşluk
-   send-render.js: iOS/iPadOS Mail, gövdedeki her satır sonunu ayrı bir
-   paragraf gibi işleyip aralarına fazladan boşluk ekliyordu. Artık satır
-   sonları özel bir karakterle (U+2028) gönderiliyor, Mail bunu paragraf
-   değil normal satır sonu sayıyor — aynı düzeltme hem görsel+mail hem
-   sadece-metin (mailto:) gönderiminde.
-
-DEĞİŞEN DOSYALAR (22) — kök dizindeki aynı isimli dosyalarla değiştir
-belge-style.css, belge-render.js, hareket-tablo.js, send-render.js,
-home-style.css, product.html, product-render.js, product-data.js,
-product-style.css, cart.html, cart-render.js, cart-style.css,
-belge-onizleme.html, customer-cari-kart.html, customer-detail.html,
-customer-temas.html, km.html, send.html, ziyaret.html, home.html,
-ayarlar-render.js, ayarlar.html
-
-Hiçbiri telefonda/iPad'de denenmedi — kod bilgisayarda sözdizimi ve HTML
-etiket dengesi açısından kontrol edildi. Yükledikten sonra sırayla:
-1) bir mail gönderip konu tekrarı ve satır boşluğunun düzeldiğine,
-2) Belge Önizleme veya Gönder ekranındaki tabloda tüm sayıların aynı boyda
-   olduğuna,
-3) iPad 9'da bir popup açıp artık ortalanmış/sınırlı genişlikte geldiğine,
-4) Ürün Bul'da sepete ürün ekleyip müşteri satırını ve Boşalt'ı,
-5) Sepet'teki HESAPLANACAK sarısı ve SİPARİŞ rozetinin yeşilini,
-6) Kur seçim penceresindeki TCMB butonunun yeni sekme açtığını
-kontrol et.
+DEĞİŞEN DOSYALAR (4)
+1) product-style.css, 2) product.html (cache-bust),
+3) ayarlar-render.js, 4) ayarlar.html (sürüm senkronu)

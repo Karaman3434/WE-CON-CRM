@@ -212,6 +212,11 @@ body {
    kullanılıyor — orijinali (belge-style.css) altı köşesiz, çünkü hemen
    altında tabloya bitişik duruyor; burada dört köşesi de yuvarlak. */
 .sepet-cari-bilgi--tam { border-radius: 8px; margin-bottom: 10px; }
+/* DÜZELTME (22.09.2026): .sepet-cari-bilgi (belge-style.css) "display:flex"
+   koyuyor — bu, tarayıcının [hidden] varsayılanını (display:none) ezip
+   kutuyu hep görünür bırakıyordu, "hidden" özelliği JS'den ayarlansa bile.
+   Bu satır [hidden] durumunu geri kazandırıyor. */
+.sepet-cari-bilgi--tam[hidden] { display: none; }
 
 .acilir-liste-bolum {
   border: 1px solid #e2e6ec;
