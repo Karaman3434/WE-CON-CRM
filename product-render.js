@@ -233,7 +233,19 @@ function ozelListeyiAc(baslik, liste){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("searchInput").addEventListener("input", sonuclariCiz);
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  // Sepet sızıntısı düzeltmesi (22.09.2026): Ürün Bul'dan Geri, Ana Sayfa
+  // veya Menü ile ayrılınca sepet SESSİZCE (sormadan) sıfırlanır — eskiden
+  // bu üç çıkış yolu da sepeti temizlemiyordu, bir sonraki müşteride eski
+  // ürünler sepette "hayalet" olarak kalıyordu.
+  function sepetiSessizceTemizle(){
+    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_sepet_kur_override"); }catch(e){}
+  }
+  var geriLinkEl = document.querySelector(".nav-btn--geri");
+  if(geriLinkEl) geriLinkEl.addEventListener("click", sepetiSessizceTemizle);
+  var anaLinkEl = document.querySelector(".nav-btn--ana");
+  if(anaLinkEl) anaLinkEl.addEventListener("click", sepetiSessizceTemizle);
+  document.getElementById("btnMenu").onclick = function(){ sepetiSessizceTemizle(); window.location.href = "menu.html"; };
   document.getElementById("btnSepeteDevam").onclick = function(){ window.location.href = "cart.html"; };
   document.getElementById("btnSepetiBosalt").onclick = function(){
     if(!confirm("Sepetteki tüm ürünler kaldırılacak. Emin misiniz?")) return;

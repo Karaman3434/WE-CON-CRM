@@ -160,7 +160,7 @@ body {
   font-size: 15px;
   font-weight: 700;
   color: #2d3540;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 /* ---------- Bildirim banner ---------- */
@@ -168,7 +168,7 @@ body {
   background: #0b1f3a;
   border-radius: 10px;
   padding: 10px 14px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -194,8 +194,8 @@ body {
 .anasayfa-ust-satir {
   display: flex;
   align-items: stretch;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 .banner {
   border-radius: 10px;
@@ -241,7 +241,7 @@ body {
   border-radius: 10px;
   padding: 8px 12px;
   text-align: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(212,160,23,0.35);
 }
@@ -262,8 +262,8 @@ body {
 .kart-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 .kart {
   border-radius: 10px;
@@ -329,7 +329,7 @@ body {
 .fvt-kutu {
   display: flex; align-items: center; gap: 12px;
   background: #fdeaea; border: 1.5px solid #c0392b; border-radius: 10px;
-  padding: 10px 14px; margin: 0 0 10px; text-decoration: none;
+  padding: 10px 14px; margin: 0 0 8px; text-decoration: none;
   box-shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 .fvt-kutu--uyari { border-color: #c0392b; }
@@ -347,7 +347,7 @@ body {
   border: 1.5px solid #8e44ad;
   border-radius: 10px;
   padding: 8px 14px;
-  margin: 10px 4px 14px;
+  margin: 8px 4px 8px;
   text-decoration: none;
 }
 .gunun-ozeti-baslik {
@@ -381,8 +381,8 @@ body {
 .menu-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 .menu-kart {
   display: flex;
@@ -477,7 +477,7 @@ body {
   font-weight: 800;
   color: #123b63;
   letter-spacing: .5px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .hizli-islemler-baslik-satiri {
   display: flex;

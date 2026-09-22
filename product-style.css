@@ -46,7 +46,7 @@ body {
 /* ---------- Arama kutusu ---------- */
 .arama-kutusu {
   position: relative;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .arama-kutusu input {
   width: 100%;
@@ -73,8 +73,8 @@ body {
 .ozel-liste-satiri {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 .ozel-liste-btn {
   border-radius: 10px;
@@ -191,11 +191,11 @@ body {
   font-weight: 900;
   text-transform: uppercase;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 /* Madde 4 (22.09.2026): sepet butonu ile aynı satırda "Boşalt" kutusu. */
-.sepet-satir-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.sepet-satir-row { display: flex; gap: 8px; margin-bottom: 8px; }
 .sepet-satir-row .sepet-goster-buton { flex: 2; margin-bottom: 0; }
 .sepet-bosalt-buton {
   flex: 1;
@@ -211,7 +211,7 @@ body {
 /* Sepet sayfasındaki cari bilgi şeridi burada bağımsız bir kutu olarak
    kullanılıyor — orijinali (belge-style.css) altı köşesiz, çünkü hemen
    altında tabloya bitişik duruyor; burada dört köşesi de yuvarlak. */
-.sepet-cari-bilgi--tam { border-radius: 8px; margin-bottom: 10px; }
+.sepet-cari-bilgi--tam { border-radius: 8px; margin-bottom: 8px; }
 /* DÜZELTME (22.09.2026): .sepet-cari-bilgi (belge-style.css) "display:flex"
    koyuyor — bu, tarayıcının [hidden] varsayılanını (display:none) ezip
    kutuyu hep görünür bırakıyordu, "hidden" özelliği JS'den ayarlansa bile.
@@ -222,7 +222,7 @@ body {
   border: 1px solid #e2e6ec;
   border-radius: 10px;
   padding: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   background: #fafbfc;
 }
 .acilir-liste-baslik-satir {
@@ -244,7 +244,7 @@ body {
 .urun-gecmis-bolum {
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   border: 1px solid #eef1f5;
 }
 .urun-gecmis-ust-serit {

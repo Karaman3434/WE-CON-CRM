@@ -47,6 +47,22 @@ function pinEkraniniSifirla(){
   noktalariGuncelle();
 }
 
+// Kaldığı yerden devam (22.09.2026): auth.js, kilitlenme anındaki sayfayı
+// weicon_pin_donus_sayfa'ya kaydeder. PIN doğru girilince oraya dönülür;
+// kayıt yoksa (örn. login sonrası ilk PIN kurulumu) Ana Sayfa'ya gidilir.
+// pin.html/login.html gibi döngüye sokacak sayfalar asla hedef olamaz.
+function pinBasariliYonlendir(){
+  var hedef = "home.html";
+  try{
+    var kayitli = localStorage.getItem("weicon_pin_donus_sayfa");
+    if(kayitli && kayitli.indexOf("pin.html") === -1 && kayitli.indexOf("login.html") === -1){
+      hedef = kayitli;
+    }
+    localStorage.removeItem("weicon_pin_donus_sayfa");
+  }catch(e){}
+  window.location.href = hedef;
+}
+
 function pinKontrolEt(){
   pinDogrula(girilenPin).then(function(dogruMu){
     if(dogruMu){
@@ -60,7 +76,7 @@ function pinKontrolEt(){
         bilgi.hidden = false;
       } else {
         try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
-        window.location.href = "home.html";
+        pinBasariliYonlendir();
       }
     } else {
       document.getElementById("pinHata").hidden = false;
@@ -90,7 +106,7 @@ function yeniPinTekrarIsle(){
   pinHashHesapla(girilenPin).then(function(yeniHash){
     pinYeniHashKaydet(yeniHash);
     try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
-    window.location.href = "home.html";
+    pinBasariliYonlendir();
   });
 }
 

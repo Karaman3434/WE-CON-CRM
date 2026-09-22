@@ -309,19 +309,22 @@ document.addEventListener("DOMContentLoaded", function(){
       hesaplaVeGoster();
     });
   });
-  document.getElementById("btnHesapKapat").onclick = function(ev){
-    if(!kaybedilecekBirSeyVarMi()) return; // kaybedilecek bir şey yoksa direkt git, sormaya gerek yok
-    ev.preventDefault();
-    iptalOnayGoster("home.html");
-  };
-  var geriLink = document.querySelector(".nav-btn--geri");
-  if(geriLink){
-    geriLink.addEventListener("click", function(ev){
-      if(!kaybedilecekBirSeyVarMi()) return;
-      ev.preventDefault();
-      iptalOnayGoster(geriLink.getAttribute("href") || "home.html");
-    });
+  // Sepet sızıntısı düzeltmesi (22.09.2026): Hesaplama sayfasından Geri,
+  // Ana Sayfa, Menü veya Kapat ile ayrılınca sepet SESSİZCE (sormadan,
+  // "Yarım Kalan İşlem" diye sormadan) sıfırlanır. Eskiden sadece Geri ve
+  // Kapat soruyordu, Ana Sayfa ve Menü hiç temizlemiyordu — bir sonraki
+  // müşteride eski ürünler sepette "hayalet" olarak kalıyordu.
+  function sepetiSessizceTemizle(){
+    try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_sepet_kur_override"); }catch(e){}
   }
+  document.getElementById("btnHesapKapat").addEventListener("click", sepetiSessizceTemizle);
+  var geriLink = document.querySelector(".nav-btn--geri");
+  if(geriLink) geriLink.addEventListener("click", sepetiSessizceTemizle);
+  var anaLink = document.querySelector(".nav-btn--ana");
+  if(anaLink) anaLink.addEventListener("click", sepetiSessizceTemizle);
+  var menuBtnEl = document.getElementById("btnMenu");
+  if(menuBtnEl) menuBtnEl.onclick = function(){ sepetiSessizceTemizle(); window.location.href = "menu.html"; };
   document.getElementById("btnIptalOnayEvet").onclick = function(){
     var hedef = iptalOnayHedefUrl || "home.html";
     document.getElementById("iptalOnayOverlay").hidden = true;

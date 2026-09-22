@@ -93,7 +93,14 @@
     kilitleniyor = true;
     document.documentElement.style.visibility = "hidden"; // içerik bir an bile görünmesin
     if(durum === 2){ firebase.auth().signOut(); }
-    else { window.location.replace("pin.html"); }
+    else {
+      // Kaldığı yerden devam (22.09.2026): PIN sonrası her zaman Ana
+      // Sayfa'ya atılmak yerine, kilitlenme anındaki sayfaya dönülsün diye
+      // tam adresi (yol + arama parametreleri) kaydediyoruz. pin-render.js
+      // başarılı girişte bunu okuyup oraya yönlendirir.
+      try{ localStorage.setItem("weicon_pin_donus_sayfa", window.location.pathname + window.location.search); }catch(e){}
+      window.location.replace("pin.html");
+    }
   }
   document.addEventListener("visibilitychange", function(){
     if(!document.hidden) geriDonusKilitKontrolu();
@@ -162,6 +169,7 @@
         return; // signOut tekrar tetikleyecek (user=null dalı çalışacak)
       }
       if(durum === 1 && !buSayfaPin){
+        try{ localStorage.setItem("weicon_pin_donus_sayfa", window.location.pathname + window.location.search); }catch(e){}
         window.location.href = "pin.html";
         return;
       }

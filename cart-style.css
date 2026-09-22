@@ -10,11 +10,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   background: #eef2f8;
   border-radius: 10px;
   padding: 10px 14px;
-  margin-bottom: 12px; border: 1.5px solid #a9bddc;}
+  margin-bottom: 8px; border: 1.5px solid #a9bddc;}
 .kur-satiri label {
   font-size: 13px;
   font-weight: 700;
@@ -35,14 +35,14 @@
   border: 1px solid #e2e6ec;
   border-radius: 10px;
   padding: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   background: #fafbfc;
 }
 .sepet-urun-baslik {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   gap: 8px;
 }
 .sepet-urun-ad {
@@ -71,7 +71,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .hesap-alan {
   display: flex;
@@ -157,7 +157,7 @@
   width: 100%;
   border: 1px solid #3569b8;
   border-radius: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 .sepet-tablo { width: 100%; border-collapse: collapse; }
 .sepet-tablo th {
@@ -442,7 +442,7 @@
 .hesapla-kod {
   font-size: 11px;
   color: #44494f;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 /* Bu işleme özel kur girme popup'ı (calc-style.css'teki .kur-secenek-btn

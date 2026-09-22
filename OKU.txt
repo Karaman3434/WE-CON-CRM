@@ -1,41 +1,67 @@
-WE-CON-CRM — Müşteri adı için TEK, merkezi standart: "Müşteri Şeridi"
-Sürüm: WG.220926.2300.603
+WE-CON-CRM — Sil butonu kaldırma, sayaç büyütme, PIN dönüşü, sepet
+sızıntısı düzeltmesi, 8px boşluk standardı
+Sürüm: WG.220926.2331.604
 
-KURAL (buradan sonra hep geçerli): Müşteri adının/ticari unvanının
-göründüğü hiçbir yerde artık kendi stili YOK. Hepsi musteri-serit.css +
-musteri-serit.js'deki TEK bileşeni kullanıyor: açık mavi zemin, müşteri
-kodu kırmızı, ticari unvan lacivert kalın, şehir aynı satırın sağ ucunda.
-Renk/font/boyut değiştirmek istersen SADECE musteri-serit.css'i
-değiştirmen yeterli — kullanan her sayfa otomatik güncellenir.
+1) CARİ BİLGİ — Müşteriyi Sil kaldırıldı
+   customer-cari-kart.html, cari-kart-render.js: "Müşteriyi Sil" butonu ve
+   altındaki uyarı paneli tamamen kaldırıldı (hem normal görünümde hem
+   İşlem Yap akışından gelindiğinde). Başka bir yere taşınmadı.
 
-BU BUILD'DE BİRLEŞTİRİLEN 5 SAYFA (uygulamanın kendi iç ekranları):
-1) Sepet (cart.html) — CARİ BİLGİ kutusu
-2) Ürün Bul (product.html) — sepet üstündeki müşteri satırı
-3) Müşteri Hub (customer-hub.html) — üst şerit
-4) Cari Bilgi (customer-cari-kart.html) — sayfa başlığı
-5) İşlemler (customer-detail.html) — sayfa başlığı
+2) İŞLEMLER SAYFASI — sayaç daireleri büyütüldü
+   detail-style.css: Kutucuk boyu KESİNLİKLE sabit kalsın diye, sayaç
+   22px'ten 36px'e büyütüldü (tam %100 değil — kutunun boyunu belirleyen
+   asıl şey içindeki yazı bloğu, sayaç o bloğu geçmediği sürece kutu
+   büyümüyor; 36px bu sınırın altında kalan en büyük güvenli boyut).
 
-BİLİNÇLİ OLARAK KAPSAM DIŞI BIRAKILDI (onayını bekliyor)
-- Gönder ekranı / Belge Önizleme'deki müşteri adı: bu, MÜŞTERİYE GİDEN
-  resmi belgenin (teklif/sipariş formu) içeriği — uygulamanın iç
-  navigasyonu değil. Oraya iç mavi kutu + müşteri kodu koymak, müşteriye
-  giden belgeyi tuhaf gösterebilir diye dokunulmadı.
-- Müşteri Bul arama listesi ve Vade Takip listesi: onlarca farklı
-  müşteriyi art arda listeliyorlar, büyük tek-müşteri şeridi oraya
-  sığmaz — farklı, kompakt bir liste-satırı tasarımı gerekir.
-İstersen bu ikisini de aynı kurala bağlarım, ayrıca söyle.
+3) PIN — artık kaldığı yerden devam ediyor
+   auth.js, pin-render.js: PIN kilidi tetiklenmeden önce hangi sayfada
+   olduğun kaydediliyor; doğru PIN girilince Ana Sayfa'ya değil, o sayfaya
+   dönülüyor. Bu değişikliğin çalışması için TÜM sayfalardaki auth.js
+   referansı güncellendi (43 dosya) — sadece birkaçını yüklersen bazı
+   sayfalarda eski davranış (Ana Sayfa'ya atma) devam edebilir.
 
-YENİ DOSYALAR (2)
-1) musteri-serit.css, 2) musteri-serit.js
+4) SEPET SIZINTISI — asıl sorun bulundu ve düzeltildi
+   Kök sebep: Ürün Bul sayfasının Ana Sayfa/Menü butonlarında HİÇ sepet
+   temizleme kodu yoktu; Hesaplama sayfasında ise sadece Geri'de vardı
+   (ayrıca sorup duran eski bir onay penceresiyle).
+   product-render.js, calc-render.js: Artık Ürün Bul'da Geri/Ana Sayfa/
+   Menü, Hesaplama'da Geri/Ana Sayfa/Menü/Kapat — hepsi SORMADAN sessizce
+   sepeti sıfırlıyor. Eski "Yarım Kalan İşlem" onay penceresi (yarim-
+   kalan-uyari.js) SADECE bu iki sayfadan kaldırıldı — Sepet ve Gönder
+   sayfalarında (orada kaybedilecek bir iş gerçekten var) aynen duruyor.
+   NOT: Sekmeyi/uygulamayı doğrudan kapatma (nav butonlarına hiç
+   dokunmadan) JS ile güvenli biçimde yakalanamıyor — bunu denedim, hatalı
+   bir "pagehide" çözümü Sepet'e giderken sepeti boşaltıyordu, o yüzden
+   geri aldım. Bu tek senaryoda (uygulamayı nav kullanmadan kapatmak)
+   sepet teorik olarak bir sonraki açılışa kadar kalabilir — ama artık
+   HER nav butonuyla ayrılışta kesin temizleniyor.
 
-DEĞİŞEN DOSYALAR (11)
-3) customer-cari-kart.html, 4) cari-kart-render.js
-5) customer-hub.html, 6) customer-hub-render.js
-7) customer-detail.html, 8) detail-render.js
-9) cart.html, 10) cart-render.js
-11) product.html, 12) product-render.js
-+ home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
+5) 8px BOŞLUK STANDARDI
+   Şu dosyalardaki kutucuk/kart arası boşluklar 8px'e sabitlendi:
+   home-style.css, detail-style.css, product-style.css, cart-style.css,
+   belge-style.css, vade-takip-style.css, cari-kart-style.css.
+   Bu, Ana Sayfa, İşlemler, Ürün Bul, Sepet, Belge Önizleme/Gönder, Vade
+   Takip ve Cari Bilgi sayfalarını kapsıyor. KAPSAM DIŞI (henüz
+   dokunulmadı): km-style.css, ziyaret-style.css, reports-style.css,
+   send-style.css, calc-style.css, customer-style.css — istersen bunları
+   da aynı standarda çekerim.
 
-Telefonda denenmedi. Yüklemeden sonra bu 5 sayfayı sırayla açıp müşteri
-adının hepsinde BİREBİR aynı göründüğünü (renk, font, zemin, şehrin
-satır sonunda olması) kontrol et.
+DEĞİŞEN DOSYALAR (17)
+customer-cari-kart.html, cari-kart-render.js, cari-kart-style.css,
+detail-style.css, auth.js, pin-render.js, pin.html,
+product-render.js, product.html, product-style.css,
+calc-render.js, calc.html,
+cart.html, cart-style.css,
+belge-style.css, belge-onizleme.html,
+vade-takip-style.css, vade-takip.html,
+customer-detail.html, customer-hub.html, send.html,
+home-style.css, home.html, ayarlar-render.js, ayarlar.html
++ auth.js referansı güncellenen diğer 41 HTML dosyası (liste aşağıda)
+
+Hiçbiri telefonda denenmedi. Yüklemeden sonra sırayla: 1) Cari Bilgi'de
+Sil butonunun kalktığını, 2) İşlemler sayfasında sayaçların büyüdüğünü
+ama kutuların boyunun değişmediğini, 3) 1 dakika bekleyip PIN sorulunca
+girdikten sonra kaldığın sayfaya döndüğünü, 4) bir müşteri seçip Ürün
+Bul'da ürün ekleyip Ana Sayfa'ya dönüp tekrar başka bir müşteriyle Ürün
+Bul'a girince sepetin boş olduğunu, 5) birkaç sayfada kutucuklar arası
+boşluğun eskisine göre daha sık/tutarlı göründüğünü kontrol et.

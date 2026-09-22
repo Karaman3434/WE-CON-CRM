@@ -11,7 +11,7 @@
   border-radius: 10px;
   overflow: hidden;
   box-sizing: border-box;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 .belge-kart-ayrac { height: 0; }
 
@@ -46,7 +46,7 @@
   border-radius: 10px;
   overflow: hidden;
   box-sizing: border-box;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 .belge-kutu--sorunlu { border: 2px solid #c0392b; }
 
@@ -448,7 +448,7 @@
   max-height: 100%;
   overflow-y: auto;
 }
-.sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 10px; }
+.sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 8px; }
 .sheet-secenek {
   width: 100%; text-align: left;
   background: #f8fafc;
@@ -472,7 +472,7 @@
   border: 1px solid #e2e6ec;
   border-radius: 10px;
   padding: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   background: #fafbfc;
 }
 .belge-gecmis-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 4px; }
