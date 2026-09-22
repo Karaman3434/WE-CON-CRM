@@ -1,41 +1,8 @@
 /* customer-hub-style.css — WG.220926.2158.601
    Müşteri arama sonucundan bir müşteriye dokununca açılan, "CARİ" ve
-   "İŞLEMLER" kutucuklarının bulunduğu ara ekran. Renkler, İşlemler
-   sayfasındaki (detail-style.css) mavi/yeşil tonlarla aynı aile. */
+   "İŞLEMLER" kutucuklarının bulunduğu ara ekran. Kutucuklar, İşlemler
+   sayfasındaki (.islemler-tile, detail-style.css) kutucuklarla BİREBİR
+   AYNI boyutta — alt alta iki satır. */
 
-.hub-grid {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-.hub-kutu {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border-radius: 14px;
-  padding: 28px 10px;
-  cursor: pointer;
-  text-align: center;
-}
-.hub-ikon { font-size: 30px; margin-bottom: 4px; }
-.hub-baslik { font-size: 15px; font-weight: 900; letter-spacing: .3px; }
-.hub-alt { font-size: 10.5px; font-weight: 600; opacity: .85; }
-
-.hub-kutu--cari {
-  background: #eaf2fc;
-  border: 2.5px solid #1a4d9e;
-  color: #1a4d9e;
-}
-.hub-kutu--islemler {
-  background: #eafaf0;
-  border: 2.5px solid #0e6b34;
-  color: #0e6b34;
-}
-.hub-kutu:active { opacity: .75; }
-
-@media (max-width: 360px) {
-  .hub-grid { flex-direction: column; }
-}
+#hubCariBtn { background: #eaf2fc; border: 2.5px solid #1a4d9e; }
+#hubIslemlerBtn { background: #eafaf0; border: 2.5px solid #0e6b34; }

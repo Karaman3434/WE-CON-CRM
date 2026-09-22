@@ -532,6 +532,30 @@ document.addEventListener("DOMContentLoaded", function(){
     if(akistanGeldiMi) cariKapatBtnEl.setAttribute("href", "customer.html");
   }
 
+  // Müşteriyi Sil (22.09.2026) — İşlemler sayfasından buraya taşındı.
+  document.getElementById("btnMusteriSil").onclick = function(){
+    if(!confirm("⚠️ DİKKAT: Bu, \"" + seciliMusteriAdi + "\" müşterisinin TÜMÜNÜ (cari bilgileri, tüm sipariş/teklif geçmişi, notlar dahil) kalıcı olarak siler.\n\nSadece tek bir işlemi silmek istiyorsan buraya değil, İşlem Geçmişi listesindeki ilgili kayda dokun.\n\nYine de müşterinin TAMAMINI silmek istiyor musun?")) return;
+    if(!confirm("Bu işlem geri alınamaz. Onaylıyor musunuz?")) return;
+    var silinecekAd = seciliMusteriAdi, silinecekId = musteriVerisi ? musteriVerisi.id : null;
+    CustomerData.musteriSil(silinecekAd, function(basarili, err){
+      if(!basarili){
+        hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        return;
+      }
+      // Müşteri kaydı silindi — şimdi onun arşiv (numune/teklif/proforma/
+      // sipariş) ve görev kayıtlarını da temizle, aksi halde bu "hayalet"
+      // kayıtlar Son İşlemler/İşlem Geçmişi/Raporlar'da sonsuza kadar kalır.
+      CustomerData.arsivVeGorevleriTemizle(silinecekAd, silinecekId, function(basarili2, err2, silinenSayisi){
+        if(basarili2){
+          alert("✓ Müşteri ve " + (silinenSayisi||0) + " ilişkili kayıt (işlem/görev) silindi.");
+        } else {
+          hataGoster("Müşteri silindi ama ilişkili işlem/görev kayıtları tam temizlenemedi: " + (err2 && err2.message ? err2.message : "bilinmeyen hata") + " — Son İşlemler/Raporlar'da eski kayıtlar görülebilir, elle kontrol et.");
+        }
+        window.location.href = "customer.html";
+      });
+    });
+  };
+
   // Firebase'den taze veri gelince ana sayfayı ve (açıksa) akordiyonu tazele.
   // HATA DÜZELTME (WG.080926.196): isim değişikliğinden hemen sonra bu
   // dinleyici eski isimle arama yapıp müşteriyi "bulamıyor" ve ekran

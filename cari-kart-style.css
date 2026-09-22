@@ -249,6 +249,30 @@
    "hidden" ile başlıyor, bu satır olmadan yine de görünür kalırdı. */
 .cari-islemedevam-buton[hidden] { display: none; }
 
+/* Müşteriyi Sil (22.09.2026) — İşlemler sayfasından buraya taşındı. */
+.ck-sil-blok { margin-top: 10px; }
+.ck-sil-buton {
+  width: 100%;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 2px solid #c0392b;
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ck-sil-uyari-notu {
+  font-size: 11px;
+  color: #c0392b;
+  background: #fdeaea;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0 0;
+  line-height: 1.4;
+  border: 1.5px solid #c0392b;
+}
+
 /* ---------- Cari Kart v5 — çoklu kayıt, salt görüntüleme blokları ---------- */
 .ck-ozet-kaydet-btn {
   width: 100%;

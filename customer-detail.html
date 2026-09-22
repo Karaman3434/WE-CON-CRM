@@ -17,7 +17,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.220926.1030.595">
 <link rel="stylesheet" href="customer-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="detail-style.css?v=WG.220926.0840.594">
+<link rel="stylesheet" href="detail-style.css?v=WG.220926.2218.602">
 <link rel="stylesheet" href="send-style.css?v=WG.140926.1729.569">
 <link rel="stylesheet" href="belge-style.css?v=WG.220926.1030.595">
 <link rel="stylesheet" href="vade-takip-style.css?v=WG.220926.1546.600">
@@ -116,11 +116,8 @@
   </div>
 
   <div class="islemler-alt-buton-satir">
-    <button class="islemler-birlestir-btn" id="btnBirlestirAc">🔀 Birleştir</button>
-    <button class="islemler-sil-btn" id="btnMusteriSil">🗑 Müşteriyi Sil</button>
     <a class="islemler-kapat-btn" href="customer.html">Kapat</a>
   </div>
-  <p class="islemler-sil-uyari-notu">⚠️ Bu buton müşterinin tamamını (tüm kayıtlarıyla) siler. Tek bir işlemi silmek için "🕐 İşlem Geçmişi"ne gir, ilgili kayda dokun ve oradan sil.</p>
 
   <!-- ÜRÜN GEÇMİŞİ — önce ürün listesi, bir ürüne dokununca o ürünün
        tarih tarih liste fiyatı/iskonto/net fiyat tablosu. -->
@@ -158,36 +155,6 @@
     </div>
   </div>
 
-  <!-- MÜŞTERİ BİRLEŞTİRME — açılır bölüm, 2 aşamalı (ara→seç, sonra onay) -->
-  <section class="birlestir-bolum" id="bolumBirlestir" hidden>
-    <div class="birlestir-arama-asama" id="birlestirAramaAsama">
-      <div class="acilir-baslik" id="birlestirAnaAdi"></div>
-      <div class="arama-kutusu">
-        <input type="text" id="birlestirAramaInput" placeholder="Birleştirilecek müşteriyi ara..." autocomplete="off">
-        <span class="arama-ikon">🔍</span>
-      </div>
-      <div id="birlestirAramaListesi"></div>
-      <button class="birlestir-vazgec-btn" id="btnBirlestirVazgec">Kapat</button>
-    </div>
-    <div class="birlestir-onay-asama" id="birlestirOnayAsama" hidden>
-      <div class="acilir-baslik">⚠️ Birleştirme Onayı</div>
-      <p class="birlestir-uyari-metin">Aşağıdaki müşteri SİLİNECEK, tüm geçmişi (sipariş/teklif/proforma/numune, temas, yetkili, görev) ana müşteriye taşınacak. Bu işlem geri alınamaz.</p>
-      <div class="birlestir-onay-kutu birlestir-onay-kutu--silinecek">
-        <div class="birlestir-onay-etiket">SİLİNECEK</div>
-        <div class="birlestir-onay-ad" id="birlestirDigerBilgi"></div>
-      </div>
-      <div class="birlestir-onay-ok">↓ birleşecek ↓</div>
-      <div class="birlestir-onay-kutu birlestir-onay-kutu--kalacak">
-        <div class="birlestir-onay-etiket">KALACAK (ANA)</div>
-        <div class="birlestir-onay-ad" id="birlestirAnaBilgi"></div>
-      </div>
-      <div class="form-buton-satir">
-        <button class="birlestir-vazgec-btn" id="btnBirlestirOnayVazgec">Kapat</button>
-        <button class="birlestir-onayla-btn" id="btnBirlestirOnayla">✓ Birleştir</button>
-      </div>
-    </div>
-  </section>
-
   <!-- GÖREVLERİM (bu müşteriyle ilgili) — açılır bölüm -->
   <section class="acilir-bolum" id="bolumGorevler" hidden>
     <div class="acilir-baslik">📋 Bu Müşteriyle İlgili Görevler</div>
@@ -211,6 +178,6 @@
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-detail.html", "İşlemler"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="detail-render.js?v=WG.220926.2158.601"></script>
+<script src="detail-render.js?v=WG.220926.2218.602"></script>
 </body>
 </html>

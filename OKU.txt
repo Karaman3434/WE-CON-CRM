@@ -1,44 +1,29 @@
-WE-CON-CRM — Müşteri Hub (Cari / İşlemler seçimi) + Fatura Takip etiketi
-Sürüm: WG.220926.2158.601
+WE-CON-CRM — Hub kutucukları büyütüldü, Birleştir kaldırıldı, Sil taşındı
+Sürüm: WG.220926.2218.602
 
-1) FATURA TAKİP ETİKETİ
-   customer-detail.html: İşlemler sayfasındaki kutucuk artık
-   "📄 Fatura Takip - Vade - Ödeme" yazıyor (aynı kırmızı kutucuk).
+1) HUB EKRANI — artık İşlemler sayfasındaki kutucuklarla AYNI boyut
+   customer-hub.html, customer-hub-style.css: "CARİ" ve "İŞLEMLER"
+   kutucukları, İşlemler sayfasındaki (Temas, İşlem Yap vb.) kutucuklarla
+   BİREBİR aynı bileşeni kullanıyor — alt alta iki satır, aynı yükseklik/
+   genişlik/yazı boyutu.
 
-2) MÜŞTERİ HUB — Cari / İşlemler seçim ekranı
-   Müşteri Bul'da bir sonuca dokunduğunda artık DOĞRUDAN Cari Bilgi'ye
-   gitmiyor; önce iki büyük kutucuklu yeni bir ekran açılıyor:
-   - 🏢 CARİ (mavi) → müşteri adı/adres/teslimat adresi/yetkili kişinin
-     olduğu sayfa (customer-cari-kart.html, eskisi gibi).
-   - 📋 İŞLEMLER (yeşil) → Temas/İşlem Yap/Fatura Takip/İşlem Geçmişi/
-     Görevlerim/Ürün Geçmişi/Birleştir/Müşteriyi Sil'in olduğu sayfa
-     (customer-detail.html, eskisi gibi).
+2) BİRLEŞTİR — tamamen kaldırıldı
+   customer-detail.html, detail-render.js: "🔀 Birleştir" butonu ve
+   açılır birleştirme ekranı (arama → onay) komple silindi.
 
-   Cari Bilgi sayfasının altındaki "İŞLEMLER" butonu KALDIRILDI — artık
-   SADECE "Kapat" var. Kapat'a basınca bu yeni hub ekranına dönülüyor
-   (müşteri arama listesine değil).
+3) MÜŞTERİYİ SİL — İşlemler'den Cari Bilgi'ye taşındı
+   customer-detail.html, detail-render.js: buton ve uyarı notu kaldırıldı.
+   customer-cari-kart.html, cari-kart-render.js: aynı buton, aynı uyarı
+   notu, aynı silme mantığı (çift onay + arşiv/görev temizliği) artık
+   burada — cari bilgilerin ve Kapat'ın hemen altında.
 
-   İSTİSNA — "İşlem Yap" akışı bozulmadı: İşlemler sayfasındaki "İşlem
-   Yap" kutucuğundan (yeni Numune/Teklif/Sipariş başlatmak için) Cari
-   Bilgi'ye gelindiğinde, eskisi gibi "▶️ İşleme Devam Et" butonu görünür
-   ve Kapat yine müşteri listesine döner — bu akışa hiç dokunulmadı.
+DEĞİŞEN DOSYALAR (8)
+1) customer-hub.html, 2) customer-hub-style.css
+3) customer-detail.html, 4) detail-render.js, 5) detail-style.css
+6) customer-cari-kart.html, 7) cari-kart-render.js, 8) cari-kart-style.css
++ 9) home.html, 10) ayarlar-render.js, ayarlar.html (sürüm senkronu)
 
-YENİ DOSYALAR (3)
-1) customer-hub.html — hub ekranı
-2) customer-hub-render.js — hub'ın render mantığı
-3) customer-hub-style.css — CARİ/İŞLEMLER kutucuklarının stili
-
-DEĞİŞEN DOSYALAR (7)
-4) customer-detail.html — Fatura Takip etiketi
-5) customer-render.js — arama sonucuna dokununca artık hub'a gider
-6) customer-cari-kart.html — alt buton satırı sadeleşti
-7) cari-kart-render.js — "İŞLEMLER" butonu kaldırıldı, "İşleme Devam Et"
-   sadece o akıştan gelindiğinde görünüyor
-8) cari-kart-style.css — gizleme (hidden) düzeltmesi
-9) home.html, 10) ayarlar-render.js, ayarlar.html — sürüm senkronu
-
-Telefonda denenmedi. Yüklemeden sonra: 1) Müşteri Bul'dan bir müşteriye
-dokunup hub ekranının açıldığına, 2) CARİ'ye girip Kapat'a basınca hub'a
-döndüğüne, 3) İŞLEMLER'e girip Fatura Takip etiketinin yeni halini
-gördüğüne, 4) İşlemler sayfasındaki "İşlem Yap"tan yeni bir sipariş
-başlatma akışının eskisi gibi çalıştığına bak.
+Telefonda denenmedi. Yüklemeden sonra: 1) hub ekranındaki iki kutucuğun
+boyutunu, 2) İşlemler sayfasında artık Birleştir/Sil olmadığını (sadece
+Kapat), 3) Cari Bilgi sayfasının altında Müşteriyi Sil'in çalıştığını
+kontrol et.

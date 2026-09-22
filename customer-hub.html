@@ -15,8 +15,8 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.220926.1030.595">
 <link rel="stylesheet" href="customer-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="detail-style.css?v=WG.220926.0840.594">
-<link rel="stylesheet" href="customer-hub-style.css?v=WG.220926.2158.601">
+<link rel="stylesheet" href="detail-style.css?v=WG.220926.2218.602">
+<link rel="stylesheet" href="customer-hub-style.css?v=WG.220926.2218.602">
 </head>
 <body>
 
@@ -44,17 +44,24 @@
 
 <main class="sayfa">
 
-  <div class="hub-grid">
-    <button class="hub-kutu hub-kutu--cari" id="hubCariBtn">
-      <span class="hub-ikon">🏢</span>
-      <span class="hub-baslik">CARİ</span>
-      <span class="hub-alt">Adres · Teslimat · Yetkili</span>
-    </button>
-    <button class="hub-kutu hub-kutu--islemler" id="hubIslemlerBtn">
-      <span class="hub-ikon">📋</span>
-      <span class="hub-baslik">İŞLEMLER</span>
-      <span class="hub-alt">Temas · Fatura Takip · Geçmiş</span>
-    </button>
+  <div class="islemler-tile" id="hubCariBtn">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--mavi">🏢 CARİ</div>
+      <div class="islemler-tile-alt">Adres · Teslimat · Yetkili</div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-ok islemler-ok--mavi">›</span>
+    </div>
+  </div>
+
+  <div class="islemler-tile" id="hubIslemlerBtn">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--yesil">📋 İŞLEMLER</div>
+      <div class="islemler-tile-alt">Temas · Fatura Takip · Geçmiş</div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-ok islemler-ok--yesil">›</span>
+    </div>
   </div>
 
 </main>
@@ -68,7 +75,7 @@
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
-<script src="customer-hub-render.js?v=WG.220926.2158.601"></script>
+<script src="customer-hub-render.js?v=WG.220926.2218.602"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-hub.html", "Müşteri"); RotaTakip.ciz("rotaSeridi"); });</script>
 </body>
 </html>

@@ -37,6 +37,7 @@
 .islemler-tile-baslik--mavi { color: #1a4d9e; }
 .islemler-tile-baslik--gri { color: #333333; }
 .islemler-tile-baslik--kirmizi { color: #c0392b; }
+.islemler-tile-baslik--yesil { color: #0e6b34; }
 .islemler-tile-alt {
   font-size: 12px;
   margin-top: 2px;
@@ -117,6 +118,7 @@
 .islemler-ok--mavi { color: #2563eb; }
 .islemler-ok--gri { color: #2d3540; }
 .islemler-ok--kirmizi { color: #c0392b; }
+.islemler-ok--yesil { color: #0e6b34; }
 
 .islemler-alt-buton-satir {
   display: flex;
