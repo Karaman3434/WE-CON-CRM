@@ -144,6 +144,14 @@ function faturaTakipOzetiGuncelle(){
   }catch(e){ hataGoster("Fatura Takip özeti güncellenemedi: " + e.message); }
 }
 
+function ftVadeRozetiniGuncelle(musteri){
+  var rozet = document.getElementById("ftVadeRozet");
+  var gun = (musteri && typeof VadeTakip !== "undefined") ? VadeTakip.vadeGunSayisi(musteri) : null;
+  if(gun === null){ rozet.hidden = true; return; }
+  document.getElementById("ftVadeDeger").textContent = gun + " gün";
+  rozet.hidden = false;
+}
+
 function faturaTakipCiz(){
   try{
     if(typeof VadeTakip === "undefined" || typeof VadeTakipUI === "undefined") return;
@@ -151,6 +159,7 @@ function faturaTakipCiz(){
     var kok = document.getElementById("ftListe");
     var bosEl = document.getElementById("ftBos");
     var bakiyeEl = document.getElementById("ftBakiye");
+    ftVadeRozetiniGuncelle(musteri);
     if(!musteri){ kok.innerHTML = ""; bosEl.hidden = false; bakiyeEl.hidden = true; return; }
 
     var ogeler = VadeTakip.musteriIcin(musteri.id, musteri.ad);

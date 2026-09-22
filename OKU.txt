@@ -1,20 +1,17 @@
-WE-CON-CRM — Ürün Bul cari bilgi/Boşalt: 3 düzeltme TEK dosyada
-Sürüm: WG.220926.1327.599
+WE-CON-CRM — Fatura Takip başlığına VADE rozeti
+Sürüm: WG.220926.1546.600
 
-Bu zip, son üç ayrı düzeltmeyi birleştirir (artık tek seferde yüklenebilir):
-1) Kutu, "hidden" ayarlansa da CSS yüzünden hep görünüyordu → düzeldi.
-2) Kutu sadece sepette ürün varken görünüyordu → artık müşteri seçiliyse
-   sepet boş olsa da görünüyor.
-3) "Boşalt" butonu hâlâ sepet dolu/boşa bağlıydı → artık Cari Bilgi
-   kutusuyla aynı kurala bağlı: müşteri seçiliyse görünür.
-
-SONUÇ: Bir müşteri seçip Ürün Bul'a geldiğinde, henüz hiç ürün eklemeden
-müşteri adı VE Boşalt butonu birlikte görünür. Müşteri seçili değilse
-ikisi de gizli kalır.
+"📄 Fatura Takip" penceresinin başlığının sağ ucuna, Müşteri Kartı'ndaki
+VADE ile BİREBİR AYNI değeri gösteren bir rozet eklendi (örn. "30 gün").
+Müşterinin VADE'si sayı olarak tanımlı değilse (boş/eski serbest metin)
+rozet hiç görünmez — tıpkı Vade Takip listesindeki mantıkla aynı.
 
 DEĞİŞEN DOSYALAR (5)
-1) product-render.js, 2) product-style.css, 3) product.html (cache-bust),
-4) ayarlar-render.js, 5) ayarlar.html (sürüm senkronu)
+1) customer-detail.html — başlık satırı + rozet HTML'i
+2) vade-takip-style.css — rozetin stili
+3) detail-render.js — rozeti dolduran kod
+4) ayarlar-render.js, 5) ayarlar.html — sürüm senkronu
 
-Önceki WG.220926.1316.596 / .1324.597 / .1326.598 zip'lerini AYRICA
-yüklemene gerek yok — bu tek zip hepsini kapsıyor.
+Telefonda denenmedi. Yüklemeden sonra VADE'si girilmiş bir müşteride
+İşlemler sayfası → Fatura Takip'i açıp rozetin göründüğüne, VADE'si boş
+bir müşteride rozetin görünmediğine bak.

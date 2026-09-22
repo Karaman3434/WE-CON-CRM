@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="detail-style.css?v=WG.220926.0840.594">
 <link rel="stylesheet" href="send-style.css?v=WG.140926.1729.569">
 <link rel="stylesheet" href="belge-style.css?v=WG.220926.1030.595">
-<link rel="stylesheet" href="vade-takip-style.css?v=WG.220926.0900.593">
+<link rel="stylesheet" href="vade-takip-style.css?v=WG.220926.1546.600">
 </head>
 <body>
 
@@ -144,7 +144,10 @@
        (vade-takip-data.js / vade-takip-ui.js). -->
   <div class="tip-secim-overlay" id="faturaTakipOverlay" hidden>
     <div class="tip-secim-kutu" style="max-height:80vh; overflow-y:auto;">
-      <div class="tip-secim-baslik">📄 Fatura Takip</div>
+      <div class="tip-secim-baslik ft-baslik-satir">
+        <span>📄 Fatura Takip</span>
+        <span class="ft-vade-rozet" id="ftVadeRozet" hidden><span class="ft-vade-e">VADE</span><span class="ft-vade-d" id="ftVadeDeger">—</span></span>
+      </div>
       <div class="vt-bakiye-uyari" id="ftBakiye" hidden>
         <span class="vt-b-etiket">⚠ Toplam vadesi geçmiş bakiye</span>
         <span class="vt-b-deger">0,00 EURO</span>
@@ -208,6 +211,6 @@
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-detail.html", "İşlemler"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="detail-render.js?v=WG.220926.0900.593"></script>
+<script src="detail-render.js?v=WG.220926.1546.600"></script>
 </body>
 </html>
