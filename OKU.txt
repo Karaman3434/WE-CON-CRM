@@ -1,21 +1,53 @@
-WE-CON-CRM — İşlem listeleri: Seçenek A + ince ayraç
-Sürüm: WG.210926.1958.590   (589'un değişikliklerini de içerir)
+WE-CON-CRM — Fatura · Vade · Ödeme Takibi (YENİ ÖZELLİK)
+Sürüm: WG.210926.2044.591
 
-KAPSAM: Tarih gruplu 5 işlem listesi — Son İşlemler, Bugünün/Bu Ayın
-Satışları (+ Bekleyen Ürünler), Ay Detayı, Geçmiş, Kaçan Satışlar.
+NASIL ÇALIŞIR (kurgu)
+- Sadece SİPARİŞ kayıtları takip edilir (numune/teklif/proforma/kaçan hariç).
+- Vade tarihi = kaydın kesim tarihi + Müşteri Kartı'ndaki VADE (gün sayısı).
+- VADE artık SAYI olarak girilir (gün cinsinden), eski serbest metin değil.
+  Bir müşterinin VADE'si sayı değilse/boşsa o müşteri takip DIŞI kalır —
+  Ana Sayfa kutusuna ve Vade Takip listesine girmez, ama Müşteri Kartı'nda
+  "kesileli X gün oldu" diye nötr renkte görünmeye devam eder.
+- Durumlar: 🔴 Vadesi Geçti · 🟠 Bugün Vadesi · 🟡 Yaklaşıyor (5 gün içi) ·
+  🟢 Vadesi Var. Her satırda TEK bir rozet var — dokununca "✓ ÖDENDİ"ye
+  döner (tekrar dokununca geri alınır). Ayrı bir buton/satır yok.
+- Ödendi işareti, siparişin kendi kaydında (arsiv/siparis → odendi alanı)
+  tutulur — cihazlar arası otomatik senkron.
 
-BU SÜRÜMDE YENİ
-- Tutar ile ok arasındaki dikey gri çizgi KALDIRILDI (Seçenek A).
-- Satırlar arası ayraç: ~5px kalın gri-mavi yerine 1px ince, açık nötr gri (#d3d7de).
+YENİ DOSYALAR (5)
+1) vade-takip-data.js — hesaplama (vade günü, durum, sıralama, ödendi toggle)
+2) vade-takip-ui.js — ortak 2 satırlı satır görünümü + rozete dokunma
+3) vade-takip-style.css — satır ve liste stilleri
+4) vade-takip.html — Ana Sayfa'dan açılan Vade Takip ekranı
+5) vade-takip-render.js — o ekranın render mantığı
 
-589'DAN GELEN (aynı zip'te)
-- Açık mavi, kalın ama koyu olmayan tarih şeridi, daha alçak.
-- Satır yazıları %10 küçük; belge kodu tutarın üstünde; SP/FT/PF/NM harfleri işlem renginde.
+DEĞİŞEN DOSYALAR (12) — kök dizindeki aynı isimli dosyalarla değiştir
+6) reports-data.js — tumSiparisler() dışa açıldı (davranış değişmedi)
+7) home.html — yeni "FATURA · VADE · ÖDEME TAKİP" kutusu + script eklendi
+8) home-style.css — kutunun stili (.fvt-kutu)
+9) home-render.js — kutuyu dolduran/güncelleyen kod
+10) customer-cari-kart.html — VADE alanı artık "VADE (gün)" sayı girişi;
+    NOT bölümünün altına yeni "📄 FATURA · VADE TAKİBİ" bölümü eklendi
+    (bu müşterinin tüm siparişleri, en yeni üstte, üstte varsa toplam
+    vadesi geçmiş bakiye uyarısı)
+11) cari-kart-render.js — VADE gösterim/kayıt mantığı + yeni bölümün render'ı
+12) customer-add.html — Yeni Müşteri formundaki VADE alanı "gün" ipucu
+13) send-render.js, send.html — Gönder ekranındaki VADE satırı artık
+    "45 gün" gösterir (sayısal değilse eski metin olduğu gibi kalır)
+14) belge-render.js, belge-onizleme.html — Belge Önizleme'de aynı VADE
+    gösterim düzeltmesi
+15) ayarlar-render.js, ayarlar.html — sürüm senkronu
 
-DEĞİŞEN DOSYALAR (14) — kök dizindeki aynı isimli dosyalarla değiştir
-reports-style.css
-son-islemler-render.js, satis-listesi-render.js, ay-detay-render.js,
-gecmis-render.js, kacan-satislar-render.js
-son-islemler.html, satis-listesi.html, ay-detay.html, gecmis.html,
-kacan-satislar.html (cache-bust)
-home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
+ÖNEMLİ — İLK KURULUM
+Mevcut müşterilerin VADE alanı çoğunlukla boş ya da eski serbest metin
+("45 gün", test verisi "555" vb). Yükledikten sonra, takibi başlatmak
+istediğin her müşterinin kartına girip VADE (gün) alanına düz bir SAYI
+yaz ve kaydet (örn. "45"). Girmediğin müşteriler Vade Takip listesinde
+görünmez, ama sipariş geçmişleri Müşteri Kartı'nda görünmeye devam eder.
+
+Bu değişiklikler telefonda denenmedi; kod bilgisayarda ayrı ayrı test
+edildi (hesaplama mantığı, satır HTML'i, VADE biçimlendirme). Yükledikten
+sonra: 1) bir müşteriye VADE gün sayısı gir, 2) o müşteride kayıtlı bir
+sipariş varsa Ana Sayfa kutusunun rakamı değişiyor mu bak, 3) kutuya
+dokunup listeyi, 4) müşteri kartındaki yeni bölümü, 5) bir rozete dokunup
+ödendi/geri al davranışını kontrol et.

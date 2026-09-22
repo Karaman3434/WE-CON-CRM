@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.210926.2044.591 — vade-takip.html -->
+<!--
+  FATURA · VADE · ÖDEME TAKİBİ (21.09.2026) — Ana Sayfa'daki yeni kutudan
+  açılır. Sadece VADE tanımlı (Müşteri Kartı'nda sayısal gün girilmiş) ve
+  henüz ÖDENDİ işaretlenmemiş SİPARİŞ kayıtlarını, durumuna göre gruplayıp
+  listeler. Hesaplama vade-takip-data.js'de, satır görünümü ve rozete
+  dokununca ödendi/geri al davranışı vade-takip-ui.js'de — Müşteri
+  Kartı'ndaki aynı bölümle ORTAK kullanılır.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Vade Takip</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.150926.2235.579">
+<link rel="stylesheet" href="reports-style.css?v=WG.210926.1958.590">
+<link rel="stylesheet" href="satis-listesi-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="vade-takip-style.css?v=WG.210926.2044.591">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+<div class="rota-etiketi">Ana Sayfa › <b>Fatura Vade Takip</b></div>
+
+<main class="sayfa">
+
+  <div class="sl-ust-satir">
+    <div class="sl-baslik" style="color:#c0392b;margin-bottom:0;">📄 Fatura · Vade · Ödeme Takip</div>
+  </div>
+
+  <div id="vtListe"></div>
+
+  <div class="vt-bos-durum" id="vtBos" hidden>✓ Takipte bekleyen fatura yok.</div>
+  <p class="bos-mesaj" id="vtHicVadeYok" hidden>Hiçbir müşteride sayısal VADE (gün) tanımlı değil. Müşteri Kartı → Temel Bilgiler'den vade gününü girince buradaki takip başlar.</p>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.130926.2010.553"></script>
+<script src="auth.js?v=WG.210926.1613.587"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="customer-data.js?v=WG.210926.1613.587"></script>
+<script src="reports-data.js?v=WG.210926.2044.591"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="vade-takip-data.js?v=WG.210926.2044.591"></script>
+<script src="vade-takip-ui.js?v=WG.210926.2044.591"></script>
+<script src="vade-takip-render.js?v=WG.210926.2044.591"></script>
+</body>
+</html>

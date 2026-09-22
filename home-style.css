@@ -324,6 +324,23 @@ body {
 .kart--acik-yesil .kart-etiket { color: #0e6b58; }
 
 /* ---------- Günün Özeti ---------- */
+/* FATURA · VADE · ÖDEME TAKİP kutusu (21.09.2026). Vadesi geçen fatura
+   varsa kırmızı kenarlık + uyarı satırı; yoksa sakin/nötr görünür. */
+.fvt-kutu {
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border: 1.5px solid #e2e6ec; border-radius: 10px;
+  padding: 10px 14px; margin: 10px 4px 0; text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.fvt-kutu--uyari { border-color: #c0392b; }
+.fvt-ikon { font-size: 24px; flex-shrink: 0; }
+.fvt-govde { flex: 1; min-width: 0; }
+.fvt-baslik { font-size: 10.5px; font-weight: 700; letter-spacing: .3px; color: #8a96a3; }
+.fvt-deger { font-size: 16px; font-weight: 800; color: #1c2333; margin-top: 2px; }
+.fvt-alt { font-size: 11.5px; font-weight: 700; color: #c0392b; margin-top: 1px; }
+.fvt-ok { color: #9aa5b1; font-size: 18px; flex-shrink: 0; }
+.fvt-kutu--uyari .fvt-ok { color: #c0392b; }
+
 .gunun-ozeti-kutu {
   display: block;
   background: #f3e8fb;

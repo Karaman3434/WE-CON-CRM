@@ -125,11 +125,55 @@ function alanlariDoldur(musteri){
   document.getElementById("cariKartAd").textContent = (musteri.id ? musteri.id + " - " : "") + musteri.ad;
   document.getElementById("cariKartAltBaslik").textContent = musteri.sehir || "";
 
-  document.getElementById("ozetVadeDeger").textContent = musteri.vade || "—";
+  document.getElementById("ozetVadeDeger").textContent = vadeGosterimMetni(musteri);
   document.getElementById("ozetFaturaDeger").textContent = musteri.fatura || "—";
   document.getElementById("ozetKargoDeger").textContent = musteri.kargo || "—";
 
+  vadeTakipBolumunuCiz(musteri);
   anaSayfayiRenderEt();
+}
+
+// VADE alanı artık sayı (gün) olarak girilir (21.09.2026). Eski
+// müşterilerde hâlâ serbest metin olabilir ("45 gün" gibi) — sayı
+// değilse OLDUĞU GİBİ gösterilir, rep Müşteri Kartı'ndan sayıya
+// çevirene kadar Vade Takip'e girmez (bkz. vade-takip-data.js).
+function vadeGosterimMetni(musteri){
+  var gun = (typeof VadeTakip !== "undefined") ? VadeTakip.vadeGunSayisi(musteri) : null;
+  if(gun !== null) return gun + " gün";
+  return musteri.vade || "—";
+}
+
+// FATURA · VADE TAKİBİ bölümü — bu müşterinin tüm siparişleri, en yeni
+// üstte, iki satırlı ortak satır görünümüyle (vade-takip-ui.js).
+function vadeTakipBolumunuCiz(musteri){
+  try{
+    if(typeof VadeTakip === "undefined" || typeof VadeTakipUI === "undefined") return;
+    var kok = document.getElementById("vtMusteriListe");
+    var bosEl = document.getElementById("vtMusteriBos");
+    var bakiyeEl = document.getElementById("vtMusteriBakiye");
+    if(!kok) return;
+
+    var ogeler = VadeTakip.musteriIcin(musteri.id, musteri.ad);
+    if(!ogeler.length){
+      kok.innerHTML = "";
+      if(bosEl) bosEl.hidden = false;
+      if(bakiyeEl) bakiyeEl.hidden = true;
+      return;
+    }
+    if(bosEl) bosEl.hidden = true;
+
+    var gecmisBakiye = VadeTakip.musteriGecmisBakiye(musteri.id, musteri.ad);
+    if(bakiyeEl){
+      if(gecmisBakiye > 0){
+        bakiyeEl.hidden = false;
+        bakiyeEl.querySelector(".vt-b-deger").textContent = gecmisBakiye.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EURO";
+      } else {
+        bakiyeEl.hidden = true;
+      }
+    }
+
+    kok.innerHTML = ogeler.map(function(o){ return VadeTakipUI.satirHTML(o, {gosterMusteri:false}); }).join("");
+  }catch(e){ if(typeof hataGoster === "function") hataGoster("Vade takip bölümü çizilemedi: " + e.message); }
 }
 
 var toastZamanlayici;
@@ -235,6 +279,19 @@ function silOnayla(){
 }
 
 // ---- Ekle / Düzenle formu ----
+// VADE artık sayısal (gün) giriş. Eski müşterilerde serbest metin olabilir
+// ("45 gün" gibi) — number input bunu göstermez, o yüzden placeholder'a
+// taşıyoruz ki rep eski değeri görüp doğru sayıyı girebilsin.
+function vadeSayisalDeger(v){
+  var n = parseInt(String(v||"").trim(), 10);
+  return (!isNaN(n) && n >= 0 && String(n) === String(v||"").trim()) ? String(n) : "";
+}
+function vadePlaceholder(v){
+  var eski = String(v||"").trim();
+  var sayisalMi = eski === vadeSayisalDeger(v) && eski !== "";
+  var metin = (eski && !sayisalMi) ? ("örn. 45 (önceki: " + eski + ")") : "örn. 45";
+  return escapeText(metin).replace(/'/g, "&#39;");
+}
 function formAlanlariHtml(tip){
   if(tip === "cari-tam"){
     var m = musteriVerisi;
@@ -243,7 +300,7 @@ function formAlanlariHtml(tip){
       + "<p class='ck-not-aciklama' style='margin:-6px 0 10px'>Bu ismi değiştirirsen, geçmiş sipariş/teklif/görev kayıtları da otomatik olarak yeni isme taşınır.</p>"
       + "<div class='form-etiket'>ŞEHİR</div><input class='form-input' id='fSehir' placeholder='Şehir' value=\"" + escapeText(m.sehir||"") + "\">"
       + "<div class='form-satir-2'>"
-      + "<div><div class='form-etiket'>VADE</div><input class='form-input' id='fVade' placeholder='örn. 60 gün' value=\"" + escapeText(m.vade||"") + "\"></div>"
+      + "<div><div class='form-etiket'>VADE (gün)</div><input class='form-input' type='number' min='0' step='1' inputmode='numeric' id='fVade' placeholder='" + vadePlaceholder(m.vade) + "' value=\"" + escapeText(vadeSayisalDeger(m.vade)) + "\"></div>"
       + "<div><div class='form-etiket'>FATURA</div><input class='form-input' id='fFatura' placeholder='örn. EURO fatura' value=\"" + escapeText(m.fatura||"") + "\"></div>"
       + "</div>"
       + "<div class='form-etiket'>KARGO</div><input class='form-input' id='fKargo' placeholder='örn. Ücretsiz' value=\"" + escapeText(m.kargo||"") + "\">"
@@ -252,7 +309,7 @@ function formAlanlariHtml(tip){
   if(tip === "temel"){
     var m2 = musteriVerisi;
     return "<div class='form-etiket'>ŞEHİR</div><input class='form-input' id='fSehir' placeholder='Şehir' value=\"" + escapeText(m2.sehir||"") + "\">"
-      + "<div class='form-etiket'>VADE</div><input class='form-input' id='fVade' placeholder='örn. 60 gün' value=\"" + escapeText(m2.vade||"") + "\">"
+      + "<div class='form-etiket'>VADE (gün)</div><input class='form-input' type='number' min='0' step='1' inputmode='numeric' id='fVade' placeholder='" + vadePlaceholder(m2.vade) + "' value=\"" + escapeText(vadeSayisalDeger(m2.vade)) + "\">"
       + "<div class='form-etiket'>FATURA</div><input class='form-input' id='fFatura' placeholder='örn. EURO fatura' value=\"" + escapeText(m2.fatura||"") + "\">"
       + "<div class='form-etiket'>KARGO</div><input class='form-input' id='fKargo' placeholder='örn. Ücretsiz' value=\"" + escapeText(m2.kargo||"") + "\">";
   }
@@ -427,6 +484,15 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   seciliMusteriAdi = secili.ad;
   alanlariDoldur(secili);
+
+  // Rozete dokununca ödendi/geri al (WG.210926.2044.591) — tek dinleyici,
+  // delegasyonla; her tıklamada güncel müşteri verisiyle yeniden çizer.
+  if(typeof VadeTakipUI !== "undefined"){
+    VadeTakipUI.baglaRozetler(document.getElementById("vtMusteriListe"), function(){ vadeTakipBolumunuCiz(musteriVerisi); });
+  }
+  if(typeof ReportsData !== "undefined"){
+    ReportsData.arsivDegistiginde(function(){ if(musteriVerisi) vadeTakipBolumunuCiz(musteriVerisi); });
+  }
 
   // YENİ TASARIM (WG.100926.196): başlık satırındaki "Bilgiyi Güncelle" /
   // 🗑️ kaldırıldı — artık bölümün İÇERİĞİNE dokununca bir popup açılıyor

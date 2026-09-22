@@ -78,6 +78,17 @@ var FORM_BASLIK = {numune:"NUMUNE FORMU", teklif:"FİYAT TEKLİFİ FORMU", profo
 function formBaslikHtml(tip){
   return "<div class='belge-form-baslik'>" + (FORM_BASLIK[tip]||"SİPARİŞ FORMU") + "</div>";
 }
+// VADE artık Müşteri Kartı'nda SAYI (gün) olarak tutuluyor (21.09.2026);
+// burada okunaklı gösterim için "45" -> "45 gün" biçimine çevrilir. Eski
+// serbest metin kayıtlarda (henüz sayıya çevrilmemiş müşteriler) olduğu
+// gibi gösterilir.
+function vadeGosterimMetni(v){
+  var s = String(v||"").trim();
+  if(s === "") return "";
+  var n = parseInt(s, 10);
+  return (!isNaN(n) && n >= 0 && String(n) === s) ? (n + " gün") : s;
+}
+
 function kosulSatiriHtml(vade, faturaTuru, kargo){
   return "<div class='belge-kosul-satir'>"
     + "<span class='kl'>VADE :</span> " + htmlEsc(vade||"-")
@@ -99,7 +110,7 @@ function kosulSatirlariniSigdir(kok){
 
 function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var basit = kanal === "whatsapp";
-  var vade = musteri.vade || "";
+  var vade = vadeGosterimMetni(musteri.vade);
   var faturaTuru = musteri.fatura || "";
   var kargo = musteri.kargo || "";
   var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";
@@ -225,7 +236,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     tarihStr = simdi.getDate() + " " + aylarKisa[simdi.getMonth()] + " " + simdi.getFullYear() + " " + ("0"+simdi.getHours()).slice(-2) + ":" + ("0"+simdi.getMinutes()).slice(-2);
   }
 
-  var vade = musteri.vade || "";
+  var vade = vadeGosterimMetni(musteri.vade);
   var faturaTuru = musteri.fatura || "";
   var kargo = musteri.kargo || "";
   var faturaAdr = seciliAdresler.faturaAdresi ? (seciliAdresler.faturaAdresi.adres||"") : "";

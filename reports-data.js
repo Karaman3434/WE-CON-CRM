@@ -556,6 +556,7 @@ var ReportsData = (function(){
     arsivDegistiginde: arsivDegistiginde,
     gorevDegistiginde: gorevDegistiginde,
     sonIslemler: sonIslemler,
+    tumSiparisler: tumSiparisler,
     gorevleriGetir: gorevleriGetir,
     gorevEkle: gorevEkle,
     gorevTamamlandiToggle: gorevTamamlandiToggle,

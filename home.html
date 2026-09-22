@@ -23,7 +23,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.150926.2235.579">
+<link rel="stylesheet" href="home-style.css?v=WG.210926.2044.591">
 </head>
 <body>
 
@@ -76,6 +76,18 @@
       <div class="kart-deger" id="anaSayfaPrimToplam">0,00 TL</div>
     </div>
   </section>
+
+  <!-- FATURA · VADE · ÖDEME TAKİP (21.09.2026) — VadeTakip.ozet() ile
+       doldurulur; vadesi geçen varsa kırmızı kenarlıkla uyarır. -->
+  <a class="fvt-kutu" id="fvtKutu" href="vade-takip.html">
+    <div class="fvt-ikon">📄</div>
+    <div class="fvt-govde">
+      <div class="fvt-baslik">FATURA · VADE · ÖDEME TAKİP</div>
+      <div class="fvt-deger" id="fvtDeger">Yükleniyor…</div>
+      <div class="fvt-alt" id="fvtAlt" hidden></div>
+    </div>
+    <div class="fvt-ok">›</div>
+  </a>
 
   <a class="gunun-ozeti-kutu" id="gununOzetiKutu" href="ziyaret.html">
     <div class="gunun-ozeti-baslik">📊 GÜNÜN ÖZETİ</div>
@@ -137,7 +149,7 @@
   </section>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.210926.1958.590 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.210926.2044.591 ***</span>
   </footer>
 
 </main>
@@ -151,6 +163,8 @@
 <script src="ayarlar-sync.js?v=WG.140926.1412.560"></script>
 <script src="home-data.js?v=WG.150926.1241.572"></script>
 <script src="customer-data.js?v=WG.140926.1412.560"></script>
+<script src="reports-data.js?v=WG.210926.2044.591"></script>
+<script src="vade-takip-data.js?v=WG.210926.2044.591"></script>
 <script src="km-data.js?v=WG.140926.1412.560"></script>
 <script src="hata-log.js?v=WG.140926.1412.560"></script>
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
@@ -161,6 +175,6 @@
 <script src="maas-ozet-veri.js?v=WG.030926.0020.96"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.150926.2223.578"></script>
+<script src="home-render.js?v=WG.210926.2044.591"></script>
 </body>
 </html>

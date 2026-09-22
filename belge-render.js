@@ -139,7 +139,12 @@ function belgeyiCiz(kayit, musteri){
           : "<div class='belge-durum-rozet' style='background:" + DURUM_ETIKET[durum].bg + ";color:" + DURUM_ETIKET[durum].renk + ";'>" + DURUM_ETIKET[durum].ikon + " BU KAYIT " + DURUM_ETIKET[durum].ad + (durum==="kacan" && kayit.kacanRakip ? " — → "+htmlEsc(kayit.kacanRakip) : "") + "</div>")
       : "";
 
-    var vade = (musteri && musteri.vade) || "";
+    var vade = (function(v){
+      var s = String(v||"").trim();
+      if(s === "") return "";
+      var n = parseInt(s, 10);
+      return (!isNaN(n) && n >= 0 && String(n) === s) ? (n + " gün") : s;
+    })(musteri && musteri.vade);
     var faturaTuru = (musteri && musteri.fatura) || "";
     var kargo = (musteri && musteri.kargo) || "";
     var faturaAdr = kayit.faturaAdresi ? (kayit.faturaAdresi.adres || "") : "";

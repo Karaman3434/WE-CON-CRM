@@ -176,6 +176,25 @@ function motivasyonuGuncelle(){
   }catch(e){}
 }
 
+// FATURA · VADE · ÖDEME TAKİP kutusu (21.09.2026).
+function vadeTakipKutusunuGuncelle(){
+  try{
+    if(typeof VadeTakip === "undefined") return;
+    var ozet = VadeTakip.ozet();
+    var kutu = document.getElementById("fvtKutu");
+    var altEl = document.getElementById("fvtAlt");
+    setText("fvtDeger", ozet.takipSayisi === 0 ? "Takipte fatura yok" : (ozet.takipSayisi + " fatura takipte"));
+    if(ozet.gectiSayisi > 0){
+      kutu.classList.add("fvt-kutu--uyari");
+      altEl.hidden = false;
+      altEl.textContent = "⚠ " + ozet.gectiSayisi + " fatura vadesi geçti — " + ozet.gectiTutar.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EURO";
+    } else {
+      kutu.classList.remove("fvt-kutu--uyari");
+      altEl.hidden = true;
+    }
+  }catch(e){ if(typeof hataGoster === "function") hataGoster("Vade takip kutusu güncellenemedi: " + e.message); }
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   motivasyonuGuncelle();
@@ -194,6 +213,9 @@ document.addEventListener("DOMContentLoaded", function(){
   WeiconData.bildirimDegistiginde(gununOzetiniGuncelle);
   WeiconData.bildirimVerisiDinlemeyeBasla();
   if(typeof CustomerData !== "undefined") CustomerData.listeDegistiginde(gununOzetiniGuncelle);
+  if(typeof ReportsData !== "undefined"){ ReportsData.arsivDegistiginde(vadeTakipKutusunuGuncelle); }
+  if(typeof CustomerData !== "undefined"){ CustomerData.listeDegistiginde(vadeTakipKutusunuGuncelle); }
+  vadeTakipKutusunuGuncelle();
   document.getElementById("bildirimBanner").onclick = function(){ window.location.href = "bildirimler.html"; };
   // Firebase verisi henüz gelmemiş olabilir; ilk anda da bir kez dene.
   kartlariGuncelle();

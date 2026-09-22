@@ -1,0 +1,42 @@
+/* vade-takip-style.css — WG.210926.2044.591
+   Fatura·Vade·Ödeme Takip satırları (Vade Takip ekranı + Müşteri Kartı'nda
+   ortak kullanılır). Satır İKİ satırdır: üstte müşteri+rozet, altta belge
+   kodu+tutar — ayrı bir "ödendi" butonu/satırı yok, rozet dokunulabilir. */
+
+.vt-grup { border: 1px solid #e2e6ec; border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+.vt-grup:last-child { margin-bottom: 0; }
+.vt-grup-baslik { font-size: 12.5px; font-weight: 700; padding: 6px 12px; background: #f7f9fb; }
+
+.vt-satir { display: flex; background: #fff; border-bottom: 1px solid #eef0f3; }
+.vt-satir:last-child { border-bottom: none; }
+.vt-serit { width: 4px; flex-shrink: 0; }
+.vt-govde { flex: 1; min-width: 0; padding: 8px 10px; }
+
+.vt-ust { display: flex; align-items: center; gap: 8px; }
+.vt-ad { font-size: 12.5px; color: #111827; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vt-ad b { color: #c0392b; }
+.vt-ad--bos { display: none; }
+.vt-rozet {
+  font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 11px;
+  white-space: nowrap; flex-shrink: 0; cursor: pointer; user-select: none;
+  transition: opacity .15s;
+}
+.vt-rozet:active { opacity: .6; }
+
+.vt-alt { display: flex; align-items: baseline; gap: 6px; margin-top: 3px; }
+.vt-kod { font-size: 10.5px; color: #6b7280; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vt-tutar { font-size: 12px; color: #042c53; font-weight: 600; flex-shrink: 0; }
+
+/* Ödenmiş satır hafif soluk görünür */
+.vt-rozet--odendi { }
+.vt-satir:has(.vt-rozet--odendi) { opacity: .72; }
+
+/* Müşteri Kartı üstündeki "vadesi geçmiş toplam bakiye" uyarı kutusu */
+.vt-bakiye-uyari {
+  background: #fdf3f0; border: 1px solid #f3cfc7; border-radius: 10px;
+  padding: 8px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+}
+.vt-bakiye-uyari .vt-b-etiket { font-size: 12px; color: #7a2f24; font-weight: 700; }
+.vt-bakiye-uyari .vt-b-deger { font-size: 16px; color: #c0392b; font-weight: 800; }
+
+.vt-bos-durum { text-align: center; color: #6b7280; font-size: 13px; padding: 30px 14px; }
