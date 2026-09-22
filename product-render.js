@@ -107,7 +107,22 @@ function sepetSatiriniGuncelle(){
     document.getElementById("sepetSayisi").textContent = sayi;
     var btn = document.getElementById("btnSepeteDevam");
     btn.hidden = sayi === 0;
+    document.getElementById("btnSepetiBosalt").hidden = sayi === 0;
+    cariBilgiSatiriniGuncelle(sayi);
   }catch(e){ hataGoster("Sepet satırı güncellenemedi: " + e.message); }
+}
+
+// Madde 4 (22.09.2026): hangi müşteriye işlem yapıldığını takip etmek için
+// müşteri adı, sepet satırının hemen üstünde. Sepet boşken (henüz ürün
+// seçilmemişken) sepet butonuyla aynı şekilde gizli kalır.
+function cariBilgiSatiriniGuncelle(sayi){
+  var kutu = document.getElementById("urunBulCariBilgi");
+  if(sayi === 0 || typeof CustomerData === "undefined"){ kutu.hidden = true; return; }
+  var musteri = CustomerData.seciliyiOku();
+  if(!musteri){ kutu.hidden = true; return; }
+  var sehir = musteri.sehir ? " — " + musteri.sehir : "";
+  document.getElementById("urunBulCariBilgiAd").textContent = musteri.ad + sehir;
+  kutu.hidden = false;
 }
 
 window.addEventListener("error", function(ev){
@@ -216,6 +231,15 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("searchInput").addEventListener("input", sonuclariCiz);
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnSepeteDevam").onclick = function(){ window.location.href = "cart.html"; };
+  document.getElementById("btnSepetiBosalt").onclick = function(){
+    if(!confirm("Sepetteki tüm ürünler kaldırılacak. Emin misiniz?")) return;
+    ProductData.sepetiBosalt();
+    sepetSatiriniGuncelle();
+    sonuclariCiz();
+  };
+  if(typeof CustomerData !== "undefined"){
+    CustomerData.listeDegistiginde(function(){ sepetSatiriniGuncelle(); });
+  }
 
   document.getElementById("btnHitUrunler").onclick = function(){
     ozelListeyiAc("🔥 Hit Ürünler (en çok satılan)", hitUrunleriHesapla());

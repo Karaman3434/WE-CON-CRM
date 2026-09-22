@@ -504,3 +504,24 @@ body {
 .cari-ayrac { color: #5f6b7a; }
 .cari-isim { color: #111827; }
 .cari-sehir { color: #5f6b7a; }
+
+/* GENİŞ EKRAN (iPad 9 vb.) POPUP GENİŞLİĞİ DÜZELTMESİ (22.09.2026) —
+   Popup'lar (Yetkili Kişi, Kur Seçimi, "Ne için ürün arıyorsun?" vb.) telefon
+   ekranında (S22/iPhone 13) kenardan kenara TAM GENİŞLİK kalmaya devam eder
+   — burada HİÇBİR ŞEY değişmedi. ~700px ve üzeri ekranlarda (iPad 9 gibi
+   tabletler) artık ortalanmış, sınırlı genişlikte ve köşeleri yuvarlak
+   görünür. Bu sınıflar 6 ayrı CSS dosyasında (belge-style, cari-kart-style,
+   detail-style, km-style, send-style, ziyaret-style) tanımlı olduğu ve
+   hepsi "width:100%; max-width:none; border-radius:0;" kullandığı için, o
+   dosyaların hiçbirine dokunmadan TEK bir ortak yamayla (bu dosya, TÜM
+   sayfalarda yüklü) düzeltiliyor — !important sadece bu 3 özellik için ve
+   sadece bu geniş-ekran koşulunda kullanıldı. */
+@media (min-width: 700px) {
+  .sheet, .tip-secim-kutu, .km-baslangic-kutu, .ziy-hatirlatma-kutu {
+    max-width: 480px !important;
+    width: calc(100% - 32px) !important;
+    border-radius: 14px !important;
+    margin-top: 16px !important;
+    box-shadow: 0 8px 28px rgba(0,0,0,.25);
+  }
+}

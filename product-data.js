@@ -189,6 +189,16 @@ var ProductData = (function(){
 
   function sepetSayisi(){ return sepet.length; }
 
+  // Sepeti boşalt/sıfırla (22.09.2026) — SADECE ürünleri temizler; seçili
+  // müşteriye ve sayfaya dokunmaz, "İşlemi İptal Et"ten farklı olarak
+  // hiçbir yere yönlendirmez. Kur override'ı da (varsa) temizler ki bir
+  // sonraki ürün seçiminde eski bir manuel kur kalıntısı olmasın.
+  function sepetiBosalt(){
+    sepet = [];
+    sepetiKaydet();
+    try{ localStorage.removeItem("weiconv2_sepet_kur_override"); }catch(e){}
+  }
+
   function yeniUrunEkle(bilgi, geriBildir){
     try{
       var ad = (bilgi.ad||"").trim().slice(0,200);
@@ -240,6 +250,7 @@ var ProductData = (function(){
     sepetteMi: sepetteMi,
     sepeteEkleCikar: sepeteEkleCikar,
     sepetSayisi: sepetSayisi,
+    sepetiBosalt: sepetiBosalt,
     katalogUzunluk: function(){ return katalog.length; },
     yeniUrunEkle: yeniUrunEkle
   };

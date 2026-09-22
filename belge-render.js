@@ -123,7 +123,7 @@ function belgeyiCiz(kayit, musteri){
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
         + "<td>" + paraHtml(fmt(item.listeFiyat||0),"EURO") + "</td>"
-        + "<td><span class='rozet-isk'>%" + (item.iskonto||0) + "</span></td>"
+        + "<td><span class='belge-isk-metin'>" + paraHtml((item.iskonto||0), "%") + "</span></td>"
         + "<td><span class='rozet-net'>" + paraHtml(fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)),"EURO") + "</span></td>"
         + "<td class='belge-td-toplam'>" + paraHtml(fmt(toplamEuro),"EURO") + "</td>"
         + "<td class='belge-td-prim'>" + primHucre + "</td>"

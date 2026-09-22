@@ -216,7 +216,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
         + "<td class='belge-td-fiyat'><div class='belge-td-sayi'>" + fmtG2(u.listeFiyat||0) + "</div><div class='belge-td-birim'>EURO</div></td>"
-        + "<td><span class='rozet-isk'>%" + (u.iskonto||0) + "</span></td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--isk'><div class='belge-td-sayi'>" + (u.iskonto||0) + "</div><div class='belge-td-birim'>%</div></td>"
         + "<td class='belge-td-fiyat belge-td-fiyat--net'><div class='belge-td-sayi'>" + fmtG2(h.iskontoluFiyat) + "</div><div class='belge-td-birim'>EURO</div></td>"
         + "<td class='belge-td-fiyat belge-td-fiyat--toplam'><div class='belge-td-sayi'>" + fmtG2(h.toplamEuro) + "</div><div class='belge-td-birim'>EURO</div></td>"
         + "</tr>";
@@ -441,7 +441,14 @@ function gonderTiklandi(kanal, ozelKonu){
       canvas.toBlob(function(blob){
         if(!blob){ metinTabanliGonder(kanal, konuMetni); return; }
         var dosya = new File([blob], dosyaAdi, {type:"image/png"});
-        var paylasimMetni = kanal==="whatsapp" ? metin : (konuMetni + "\n\n" + metin);
+        // Madde 1 (22.09.2026): mail'e konu (title) zaten ayrı alanla
+        // gidiyor — gövdeye (text) bir daha eklenmiyordu ama burada ikinci
+        // kez ekleniyordu, mail gövdesinde konu satırı tekrar çıkıyordu.
+        // Artık gövde SADECE metin, kanal ne olursa olsun.
+        // Madde 7: mail gövdesindeki \n'leri Mail.app'in paragraf aralığı
+        // eklemesini önlemek için U+2028 ile değiştiriyoruz (WhatsApp'ta
+        // gerek yok, orada normal \n doğru görünüyor).
+        var paylasimMetni = kanal === "whatsapp" ? metin : metin.replace(/\n/g, "\u2028");
 
         if(navigator.canShare && navigator.canShare({files:[dosya]})){
           navigator.share({files:[dosya], title:konuMetni, text:paylasimMetni}).then(function(){
@@ -482,7 +489,12 @@ function metinTabanliGonder(kanal, ozelKonu){
   } else {
     var eposta = document.getElementById("gonderEposta").value.trim();
     var konu = ozelKonu || "WEICON";
-    var url2 = "mailto:"+encodeURIComponent(eposta)+"?subject="+encodeURIComponent(konu)+"&body="+encodeURIComponent(metin);
+    // Madde 7 (22.09.2026): iOS/iPadOS Mail, mailto: gövdesindeki her \n'i
+    // ayrı bir paragraf gibi işleyip aralarına fazladan boşluk ekliyor.
+    // Unicode Line Separator (U+2028) bunu önlüyor — aynı görünür satır
+    // sonu, paragraf boşluğu olmadan.
+    var govde = metin.replace(/\n/g, "\u2028");
+    var url2 = "mailto:"+encodeURIComponent(eposta)+"?subject="+encodeURIComponent(konu)+"&body="+encodeURIComponent(govde);
     window.open(url2, "_blank");
   }
   // Gönderim tetiklendikten sonra artık aynı önizleme/paylaşım ekranları

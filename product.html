@@ -16,7 +16,8 @@
 <title>WEICON ASİST — Ürün Bul</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.150926.2235.579">
-<link rel="stylesheet" href="product-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="product-style.css?v=WG.220926.1030.595">
+<link rel="stylesheet" href="belge-style.css?v=WG.220926.1030.595">
 </head>
 <body>
 
@@ -63,7 +64,16 @@
     </section>
   </div>
 
-  <button class="sepet-goster-buton" id="btnSepeteDevam" hidden>🛒 Sepet (<span id="sepetSayisi">0</span>)</button>
+  <!-- Sepet satırının hemen üstünde hangi müşteriye işlem yapıldığı
+       (22.09.2026) — sepet doluyken görünür, boşken sepet-goster-buton
+       gibi gizli kalır. -->
+  <div class="sepet-cari-bilgi sepet-cari-bilgi--tam" id="urunBulCariBilgi" hidden>
+    <div><div class="sepet-cari-bilgi-etiket">CARİ BİLGİ</div><div class="sepet-cari-bilgi-ad" id="urunBulCariBilgiAd">—</div></div>
+  </div>
+  <div class="sepet-satir-row">
+    <button class="sepet-goster-buton" id="btnSepeteDevam" hidden>🛒 Sepet (<span id="sepetSayisi">0</span>)</button>
+    <button class="sepet-bosalt-buton" id="btnSepetiBosalt" hidden>🗑 Boşalt</button>
+  </div>
 
   <div class="data-table-container" id="anaTabloAlani">
     <table class="data-table">
@@ -125,11 +135,11 @@
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
 <script src="reports-data.js?v=WG.150926.1224.571"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
-<script src="product-data.js?v=WG.130926.2010.553"></script>
+<script src="product-data.js?v=WG.220926.1030.595"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("product.html", "Ürün Bul"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="product-render.js?v=WG.090926.1532.364"></script>
+<script src="product-render.js?v=WG.220926.1030.595"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

@@ -50,7 +50,7 @@ var HareketTablo = (function(){
         + urunHucre
         + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
         + "<td>" + (u.listeFiyat!=null ? paraHtml(fmt(u.listeFiyat),"EURO") : "-") + "</td>"
-        + "<td>" + (u.iskonto!=null ? "<span class='rozet-isk'>%"+u.iskonto+"</span>" : "-") + "</td>"
+        + "<td>" + (u.iskonto!=null ? "<span class='belge-isk-metin'>"+paraHtml(u.iskonto,"%")+"</span>" : "-") + "</td>"
         + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+paraHtml(fmt(h.iskontoluFiyat),"EURO")+"</span>" : "-") + "</td>"
         + "<td class='belge-td-toplam'>" + (toplamVarMi ? paraHtml(fmt(h.toplamEuro),"EURO") : "-") + "</td>"
         + (primGizli ? "" : "<td class='belge-td-prim'>" + primHucre + "</td>")
@@ -67,8 +67,11 @@ var HareketTablo = (function(){
   function grupHtml(opts){
     var basit = opts.kanal === "whatsapp";
     var primGizli = !!opts.primGizli;
-    var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#8a6d1a" : "#0e6b34";
-    var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#fff9e6" : "#eafaf0";
+    // Madde 5 (22.09.2026): HESAPLANACAK grubunun soluk/kirli sarısı
+    // (eskiden #fff9e6 şerit / #faeeda satır) yerine daha canlı, doygun
+    // bir sarı — hem başlık şeridi hem satır zemini aynı ton.
+    var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#7a5c00" : "#0e6b34";
+    var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#ffe066" : "#eafaf0";
     var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "") + "'>" + opts.etiketRozet + "</span>") : "";
     var html = opts.etiket ? ("<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
     var basHucreler = basit

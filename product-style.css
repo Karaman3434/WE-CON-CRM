@@ -194,6 +194,25 @@ body {
   margin-bottom: 10px;
 }
 
+/* Madde 4 (22.09.2026): sepet butonu ile aynı satırda "Boşalt" kutusu. */
+.sepet-satir-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.sepet-satir-row .sepet-goster-buton { flex: 2; margin-bottom: 0; }
+.sepet-bosalt-buton {
+  flex: 1;
+  background: #fdecec;
+  color: #c0392b;
+  border: 2.5px solid #c0392b;
+  border-radius: 8px;
+  padding: 14px 8px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+/* Sepet sayfasındaki cari bilgi şeridi burada bağımsız bir kutu olarak
+   kullanılıyor — orijinali (belge-style.css) altı köşesiz, çünkü hemen
+   altında tabloya bitişik duruyor; burada dört köşesi de yuvarlak. */
+.sepet-cari-bilgi--tam { border-radius: 8px; margin-bottom: 10px; }
+
 .acilir-liste-bolum {
   border: 1px solid #e2e6ec;
   border-radius: 10px;

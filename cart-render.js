@@ -76,6 +76,12 @@ function kurManuelOverlayBaglantilariKur(){
     document.getElementById("sepetKurManuelAlan").hidden = false;
     document.getElementById("sepetKurManuelInput").focus();
   };
+  // Madde 6 (22.09.2026): TCMB'nin günlük döviz kuru sayfasını yeni
+  // sekmede aç — popup kapanmaz, rep TCMB'de bakıp sonra Manuel Gir'e
+  // dönebilir.
+  document.getElementById("btnSepetKurTcmb").onclick = function(){
+    window.open("https://www.tcmb.gov.tr/kurlar/kurlar_tr.html", "_blank");
+  };
   document.getElementById("btnSepetKurManuelKaydet").onclick = function(){
     var deger = parseFloat(document.getElementById("sepetKurManuelInput").value);
     if(isNaN(deger) || deger <= 0){ hataGoster("Geçerli bir kur girin."); return; }
