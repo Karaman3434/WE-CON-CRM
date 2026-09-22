@@ -52,6 +52,8 @@
 #tileGecmis .islemler-tile-alt, #tileGorevler .islemler-tile-alt { color: #44494f; }
 #tileUrunGecmisi { background: #f6f0fd; border: 2.5px solid #8e44ad; }
 #tileUrunGecmisi .islemler-tile-alt { color: #8e44ad; }
+#tileFaturaTakip { background: #fdeaea; border: 2.5px solid #c0392b; }
+#tileFaturaTakip .islemler-tile-alt { color: #c0392b; }
 
 .tip-secim-overlay {
   position: fixed;
