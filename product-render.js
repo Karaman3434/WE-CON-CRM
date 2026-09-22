@@ -107,22 +107,27 @@ function sepetSatiriniGuncelle(){
     document.getElementById("sepetSayisi").textContent = sayi;
     var btn = document.getElementById("btnSepeteDevam");
     btn.hidden = sayi === 0;
-    document.getElementById("btnSepetiBosalt").hidden = sayi === 0;
-    cariBilgiSatiriniGuncelle(sayi);
+    // Madde 4 düzeltme (22.09.2026): "Boşalt" artık sepet dolu/boş
+    // durumuna göre değil, müşteri seçili olup olmamasına göre görünür —
+    // Cari Bilgi kutusuyla aynı mantık, birlikte gelip birlikte gidiyorlar.
+    var musteriSecili = cariBilgiSatiriniGuncelle();
+    document.getElementById("btnSepetiBosalt").hidden = !musteriSecili;
   }catch(e){ hataGoster("Sepet satırı güncellenemedi: " + e.message); }
 }
 
 // Madde 4 (22.09.2026): hangi müşteriye işlem yapıldığını takip etmek için
-// müşteri adı, sepet satırının hemen üstünde. Sepet boşken (henüz ürün
-// seçilmemişken) sepet butonuyla aynı şekilde gizli kalır.
-function cariBilgiSatiriniGuncelle(sayi){
+// müşteri adı, sepet satırının hemen üstünde. TEK koşul: bir müşteri
+// seçili olması — sepet boş olsa da kutu (ve Boşalt butonu) görünür
+// kalır. Geriye, o an bir müşteri seçili olup olmadığını döner.
+function cariBilgiSatiriniGuncelle(){
   var kutu = document.getElementById("urunBulCariBilgi");
-  if(sayi === 0 || typeof CustomerData === "undefined"){ kutu.hidden = true; return; }
+  if(typeof CustomerData === "undefined"){ kutu.hidden = true; return false; }
   var musteri = CustomerData.seciliyiOku();
-  if(!musteri){ kutu.hidden = true; return; }
+  if(!musteri){ kutu.hidden = true; return false; }
   var sehir = musteri.sehir ? " — " + musteri.sehir : "";
   document.getElementById("urunBulCariBilgiAd").textContent = musteri.ad + sehir;
   kutu.hidden = false;
+  return true;
 }
 
 window.addEventListener("error", function(ev){

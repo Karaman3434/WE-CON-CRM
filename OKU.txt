@@ -1,19 +1,20 @@
-WE-CON-CRM — Ürün Bul: Cari Bilgi kutusu hep görünüyordu, düzeldi
-Sürüm: WG.220926.1316.596
+WE-CON-CRM — Ürün Bul cari bilgi/Boşalt: 3 düzeltme TEK dosyada
+Sürüm: WG.220926.1327.599
 
-SORUN: Bir önceki build'de (WG.220926.1030.595, madde 4) eklenen "müşteri
-adı sepet satırının üstünde" kutusu, sepet boşken de "CARİ BİLGİ —" olarak
-görünüyordu — gizlenmesi gerekirken hep açık kalıyordu.
+Bu zip, son üç ayrı düzeltmeyi birleştirir (artık tek seferde yüklenebilir):
+1) Kutu, "hidden" ayarlansa da CSS yüzünden hep görünüyordu → düzeldi.
+2) Kutu sadece sepette ürün varken görünüyordu → artık müşteri seçiliyse
+   sepet boş olsa da görünüyor.
+3) "Boşalt" butonu hâlâ sepet dolu/boşa bağlıydı → artık Cari Bilgi
+   kutusuyla aynı kurala bağlı: müşteri seçiliyse görünür.
 
-SEBEP: .sepet-cari-bilgi sınıfı (belge-style.css) "display:flex" tanımlıyor.
-Bu, tarayıcının "hidden" özelliği için varsayılan davranışını (display:none)
-eziyor — JS "gizle" dese bile kutu görünür kalıyordu.
+SONUÇ: Bir müşteri seçip Ürün Bul'a geldiğinde, henüz hiç ürün eklemeden
+müşteri adı VE Boşalt butonu birlikte görünür. Müşteri seçili değilse
+ikisi de gizli kalır.
 
-DÜZELTME (1 dosya)
-product-style.css — kutuya özel bir kural eklendi, "hidden" tekrar
-çalışıyor: sepet boşken kutu tamamen kayboluyor, sepete ürün eklenince
-müşteri adıyla görünüyor.
+DEĞİŞEN DOSYALAR (5)
+1) product-render.js, 2) product-style.css, 3) product.html (cache-bust),
+4) ayarlar-render.js, 5) ayarlar.html (sürüm senkronu)
 
-DEĞİŞEN DOSYALAR (4)
-1) product-style.css, 2) product.html (cache-bust),
-3) ayarlar-render.js, 4) ayarlar.html (sürüm senkronu)
+Önceki WG.220926.1316.596 / .1324.597 / .1326.598 zip'lerini AYRICA
+yüklemene gerek yok — bu tek zip hepsini kapsıyor.
