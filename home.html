@@ -23,7 +23,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.210926.2044.591">
+<link rel="stylesheet" href="home-style.css?v=WG.220926.0741.592">
 </head>
 <body>
 
@@ -77,18 +77,6 @@
     </div>
   </section>
 
-  <!-- FATURA · VADE · ÖDEME TAKİP (21.09.2026) — VadeTakip.ozet() ile
-       doldurulur; vadesi geçen varsa kırmızı kenarlıkla uyarır. -->
-  <a class="fvt-kutu" id="fvtKutu" href="vade-takip.html">
-    <div class="fvt-ikon">📄</div>
-    <div class="fvt-govde">
-      <div class="fvt-baslik">FATURA · VADE · ÖDEME TAKİP</div>
-      <div class="fvt-deger" id="fvtDeger">Yükleniyor…</div>
-      <div class="fvt-alt" id="fvtAlt" hidden></div>
-    </div>
-    <div class="fvt-ok">›</div>
-  </a>
-
   <a class="gunun-ozeti-kutu" id="gununOzetiKutu" href="ziyaret.html">
     <div class="gunun-ozeti-baslik">📊 GÜNÜN ÖZETİ</div>
     <div class="gunun-ozeti-satir-3">
@@ -121,6 +109,18 @@
     <span class="hizli-islemler-baslik">Hızlı İşlemler</span>
   </div>
 
+  <!-- FATURA · VADE · ÖDEME TAKİP (22.09.2026) — Hızlı İşlemler'in en üst
+       satırı, Ürün Bul/Hızlı Hesapla kutularının üstünde. -->
+  <a class="fvt-kutu" id="fvtKutu" href="vade-takip.html">
+    <div class="fvt-ikon">📄</div>
+    <div class="fvt-govde">
+      <div class="fvt-baslik">FATURA · VADE · ÖDEME TAKİP</div>
+      <div class="fvt-deger" id="fvtDeger">Yükleniyor…</div>
+      <div class="fvt-alt" id="fvtAlt" hidden></div>
+    </div>
+    <div class="fvt-ok">›</div>
+  </a>
+
   <section class="menu-grid">
     <button class="menu-kart menu-kart--mavi" id="btnUrunBul" onclick="window.location.href='product.html'">
       <span class="menu-ikon">🔍</span>
@@ -149,7 +149,7 @@
   </section>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.210926.2044.591 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.220926.0741.592 ***</span>
   </footer>
 
 </main>
