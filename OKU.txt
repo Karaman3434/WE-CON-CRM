@@ -1,29 +1,41 @@
-WE-CON-CRM — Hub kutucukları büyütüldü, Birleştir kaldırıldı, Sil taşındı
-Sürüm: WG.220926.2218.602
+WE-CON-CRM — Müşteri adı için TEK, merkezi standart: "Müşteri Şeridi"
+Sürüm: WG.220926.2300.603
 
-1) HUB EKRANI — artık İşlemler sayfasındaki kutucuklarla AYNI boyut
-   customer-hub.html, customer-hub-style.css: "CARİ" ve "İŞLEMLER"
-   kutucukları, İşlemler sayfasındaki (Temas, İşlem Yap vb.) kutucuklarla
-   BİREBİR aynı bileşeni kullanıyor — alt alta iki satır, aynı yükseklik/
-   genişlik/yazı boyutu.
+KURAL (buradan sonra hep geçerli): Müşteri adının/ticari unvanının
+göründüğü hiçbir yerde artık kendi stili YOK. Hepsi musteri-serit.css +
+musteri-serit.js'deki TEK bileşeni kullanıyor: açık mavi zemin, müşteri
+kodu kırmızı, ticari unvan lacivert kalın, şehir aynı satırın sağ ucunda.
+Renk/font/boyut değiştirmek istersen SADECE musteri-serit.css'i
+değiştirmen yeterli — kullanan her sayfa otomatik güncellenir.
 
-2) BİRLEŞTİR — tamamen kaldırıldı
-   customer-detail.html, detail-render.js: "🔀 Birleştir" butonu ve
-   açılır birleştirme ekranı (arama → onay) komple silindi.
+BU BUILD'DE BİRLEŞTİRİLEN 5 SAYFA (uygulamanın kendi iç ekranları):
+1) Sepet (cart.html) — CARİ BİLGİ kutusu
+2) Ürün Bul (product.html) — sepet üstündeki müşteri satırı
+3) Müşteri Hub (customer-hub.html) — üst şerit
+4) Cari Bilgi (customer-cari-kart.html) — sayfa başlığı
+5) İşlemler (customer-detail.html) — sayfa başlığı
 
-3) MÜŞTERİYİ SİL — İşlemler'den Cari Bilgi'ye taşındı
-   customer-detail.html, detail-render.js: buton ve uyarı notu kaldırıldı.
-   customer-cari-kart.html, cari-kart-render.js: aynı buton, aynı uyarı
-   notu, aynı silme mantığı (çift onay + arşiv/görev temizliği) artık
-   burada — cari bilgilerin ve Kapat'ın hemen altında.
+BİLİNÇLİ OLARAK KAPSAM DIŞI BIRAKILDI (onayını bekliyor)
+- Gönder ekranı / Belge Önizleme'deki müşteri adı: bu, MÜŞTERİYE GİDEN
+  resmi belgenin (teklif/sipariş formu) içeriği — uygulamanın iç
+  navigasyonu değil. Oraya iç mavi kutu + müşteri kodu koymak, müşteriye
+  giden belgeyi tuhaf gösterebilir diye dokunulmadı.
+- Müşteri Bul arama listesi ve Vade Takip listesi: onlarca farklı
+  müşteriyi art arda listeliyorlar, büyük tek-müşteri şeridi oraya
+  sığmaz — farklı, kompakt bir liste-satırı tasarımı gerekir.
+İstersen bu ikisini de aynı kurala bağlarım, ayrıca söyle.
 
-DEĞİŞEN DOSYALAR (8)
-1) customer-hub.html, 2) customer-hub-style.css
-3) customer-detail.html, 4) detail-render.js, 5) detail-style.css
-6) customer-cari-kart.html, 7) cari-kart-render.js, 8) cari-kart-style.css
-+ 9) home.html, 10) ayarlar-render.js, ayarlar.html (sürüm senkronu)
+YENİ DOSYALAR (2)
+1) musteri-serit.css, 2) musteri-serit.js
 
-Telefonda denenmedi. Yüklemeden sonra: 1) hub ekranındaki iki kutucuğun
-boyutunu, 2) İşlemler sayfasında artık Birleştir/Sil olmadığını (sadece
-Kapat), 3) Cari Bilgi sayfasının altında Müşteriyi Sil'in çalıştığını
-kontrol et.
+DEĞİŞEN DOSYALAR (11)
+3) customer-cari-kart.html, 4) cari-kart-render.js
+5) customer-hub.html, 6) customer-hub-render.js
+7) customer-detail.html, 8) detail-render.js
+9) cart.html, 10) cart-render.js
+11) product.html, 12) product-render.js
++ home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
+
+Telefonda denenmedi. Yüklemeden sonra bu 5 sayfayı sırayla açıp müşteri
+adının hepsinde BİREBİR aynı göründüğünü (renk, font, zemin, şehrin
+satır sonunda olması) kontrol et.

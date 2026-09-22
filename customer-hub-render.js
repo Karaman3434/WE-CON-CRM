@@ -29,14 +29,13 @@ document.addEventListener("DOMContentLoaded", function(){
     setTimeout(function(){ window.location.href = "customer.html"; }, 1500);
     return;
   }
-  document.getElementById("hubAd").textContent = secili.ad;
-  document.getElementById("hubKod").textContent = secili.id ? (secili.id + " -") : "";
+  MusteriSeridi.uygula("hubMusteriSeridi", secili);
 
   document.getElementById("hubCariBtn").onclick = function(){ window.location.href = "customer-cari-kart.html"; };
   document.getElementById("hubIslemlerBtn").onclick = function(){ window.location.href = "customer-detail.html"; };
 
   CustomerData.listeDegistiginde(function(){
     var taze = CustomerData.musteriBul(secili.ad);
-    if(taze){ document.getElementById("hubAd").textContent = taze.ad; }
+    if(taze){ MusteriSeridi.uygula("hubMusteriSeridi", taze); }
   });
 });

@@ -1,0 +1,46 @@
+/* musteri-serit.css — WG.220926.2300.603
+   ============================================================
+   TEK KURAL (22.09.2026): Müşteri adının (ticari unvan) göründüğü HER
+   yerde — Sepet, Ürün Bul, Müşteri Hub, Cari Bilgi, İşlemler, Gönder
+   ekranı, Belge Önizleme — SADECE bu dosyadaki .musteri-serit kullanılır.
+   Renk, font, boyut, zemin BURADAN kontrol edilir. Başka hiçbir dosyada
+   müşteri adı için yeni bir stil TANIMLANMAZ — burada değişiklik yapılırsa
+   kullanan her sayfa otomatik günceller.
+   HTML kalıbı (musteri-serit.js MusteriSeridi.html() bunu üretir):
+     <div class="musteri-serit">
+       <span class="ms-ad"><b class="ms-kod">M-0063</b> Firma Adı</span>
+       <span class="ms-sehir">Şehir</span>
+     </div>
+   ============================================================ */
+
+.musteri-serit {
+  background: #eaf1fa;
+  border: 1.5px solid #b7d3ef;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.musteri-serit .ms-ad {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0a2f5c;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.musteri-serit .ms-kod { color: #c0392b; font-weight: 800; }
+.musteri-serit .ms-sehir {
+  font-size: 12px;
+  font-weight: 600;
+  color: #556170;
+  flex-shrink: 0;
+}
+/* Bazı sayfalarda bu şerit koşullu olarak gizlenir (örn. müşteri seçili
+   değilken). display:flex, tarayıcının varsayılan [hidden] davranışını
+   (display:none) eziyor — bu satır olmadan "hidden" hiçbir şey yapmaz. */
+.musteri-serit[hidden] { display: none; }

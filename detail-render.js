@@ -39,8 +39,7 @@ var seciliMusteriAdi = null;
 var seciliMusteriId = null;
 
 function ustBilgiyiCiz(musteri){
-  document.getElementById("detayAd").textContent = musteri.ad;
-  document.getElementById("detayKod").textContent = musteri.id ? (musteri.id + " -") : "";
+  MusteriSeridi.uygula("detayMusteriSeridi", musteri);
 
   var ziyaretSayisi = (musteri.ziyaretGecmisi||[]).length;
   document.getElementById("badgeZiyaret").textContent = ziyaretSayisi;

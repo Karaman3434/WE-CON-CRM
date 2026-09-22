@@ -131,11 +131,8 @@ function urunuHesaplamayaGonder(idx){
 // — mobilde yer kazanmak için. Bu yüzden grup HTML'ini kendimiz üretip
 // HareketTablo.grupHtml'in ürettiği hücreleri içine alıyoruz.
 function cariBilgiOzetiHtml(musteri){
-  var sehir = musteri.sehir ? " <span class='sepet-cari-bilgi-sehir'>— " + htmlEsc(musteri.sehir) + "</span>" : "";
-  return "<div class='sepet-cari-bilgi'>"
-    + "<div><div class='sepet-cari-bilgi-etiket'>CARİ BİLGİ</div><div class='sepet-cari-bilgi-ad'>" + htmlEsc(musteri.ad) + sehir + "</div></div>"
-    + "<span class='sepet-cari-bilgi-tip-rozet'>" + (TIP_ETIKET_ROZET[secilenTip]||"") + "</span>"
-    + "</div>";
+  var rozet = "<span class='sepet-cari-bilgi-tip-rozet'>" + (TIP_ETIKET_ROZET[secilenTip]||"") + "</span>";
+  return MusteriSeridi.html(musteri).replace("</div>", rozet + "</div>");
 }
 
 function sayfayiCiz(){

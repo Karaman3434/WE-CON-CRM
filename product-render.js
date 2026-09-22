@@ -124,8 +124,7 @@ function cariBilgiSatiriniGuncelle(){
   if(typeof CustomerData === "undefined"){ kutu.hidden = true; return false; }
   var musteri = CustomerData.seciliyiOku();
   if(!musteri){ kutu.hidden = true; return false; }
-  var sehir = musteri.sehir ? " — " + musteri.sehir : "";
-  document.getElementById("urunBulCariBilgiAd").textContent = musteri.ad + sehir;
+  MusteriSeridi.uygula("urunBulCariBilgi", musteri);
   kutu.hidden = false;
   return true;
 }
