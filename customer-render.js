@@ -233,12 +233,11 @@ function listeyiCiz(){
         // seçim moduna (İşleme Devam Et) açılıyordu. Doğrudan listeden gelen
         // her ziyaret düz görüntüleme modunda başlamalı.
         localStorage.removeItem("weiconv2_islem_yap_akisi");
-        // ROTA DEĞİŞİKLİĞİ (WG.100926.196): Müşteri listesinden seçim artık
-        // doğrudan Cari Kart'a gider (önce temel bilgi/adres/yetkili
-        // gözden geçirilsin diye) — Temas/İşlem Geçmişi/Görevler/Ürün
-        // Geçmişi/Müşteriyi Sil için Cari Kart'taki "İşlemler" bağlantısı
-        // kullanılır (customer-detail.html).
-        window.location.href = "customer-cari-kart.html";
+        // ROTA DEĞİŞİKLİĞİ (22.09.2026): Müşteri listesinden seçim artık
+        // önce Müşteri Hub'a gider — "CARİ" (ad/adres/yetkili) ve
+        // "İŞLEMLER" (Temas/Fatura Takip/Geçmiş/Görevler) kutucukları
+        // buradan seçilir (bkz. customer-hub.html).
+        window.location.href = "customer-hub.html";
       };
     });
   }catch(e){ hataGoster("Liste çizilemedi: " + e.message); }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.220926.2158.601 — customer-hub.html -->
+<!--
+  MÜŞTERİ HUB (22.09.2026) — Arama sonucunda bir müşteriye dokununca artık
+  doğrudan Cari Bilgi'ye gitmiyor, önce buraya geliniyor. İki kutucuk:
+  CARİ (customer-cari-kart.html — ad/adres/teslimat/yetkili) ve İŞLEMLER
+  (customer-detail.html — Temas/İşlem Yap/Fatura Takip/Geçmiş/Görevler/
+  Ürün Geçmişi/Birleştir/Sil). Cari Bilgi'nin "Kapat" butonu buraya döner.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Müşteri</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.220926.1030.595">
+<link rel="stylesheet" href="customer-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="detail-style.css?v=WG.220926.0840.594">
+<link rel="stylesheet" href="customer-hub-style.css?v=WG.220926.2158.601">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="customer.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+
+<div class="rota-serit" id="rotaSeridi"></div>
+
+<div class="islemler-musteri-serit">
+  <div class="islemler-musteri-ad">
+    <span class="islemler-musteri-kod" id="hubKod"></span>
+    <span id="hubAd">—</span>
+  </div>
+</div>
+
+<main class="sayfa">
+
+  <div class="hub-grid">
+    <button class="hub-kutu hub-kutu--cari" id="hubCariBtn">
+      <span class="hub-ikon">🏢</span>
+      <span class="hub-baslik">CARİ</span>
+      <span class="hub-alt">Adres · Teslimat · Yetkili</span>
+    </button>
+    <button class="hub-kutu hub-kutu--islemler" id="hubIslemlerBtn">
+      <span class="hub-ikon">📋</span>
+      <span class="hub-baslik">İŞLEMLER</span>
+      <span class="hub-alt">Temas · Fatura Takip · Geçmiş</span>
+    </button>
+  </div>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.130926.2010.553"></script>
+<script src="auth.js?v=WG.210926.1613.587"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="customer-data.js?v=WG.130926.2010.553"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="rota-takip.js?v=WG.150926.1300.573"></script>
+<script src="customer-hub-render.js?v=WG.220926.2158.601"></script>
+<script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-hub.html", "Müşteri"); RotaTakip.ciz("rotaSeridi"); });</script>
+</body>
+</html>

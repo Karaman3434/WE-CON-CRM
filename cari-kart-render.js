@@ -501,11 +501,14 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   });
 
-  // --- Alt buton: normalde "İŞLEMLER" (Temas/Geçmiş hub'ına götürür);
-  // sadece "İşlem Yap" akışından (yeni Numune/Teklif/Sipariş başlatmak
-  // için) geldiyse "▶️ İşleme Devam Et" olur ve ürün seçimine götürür. ---
+  // --- Alt buton (22.09.2026): artık SADECE "İşlem Yap" akışından (yeni
+  // Numune/Teklif/Sipariş başlatmak için) geldiyse görünür ve
+  // "▶️ İşleme Devam Et" olarak ürün seçimine götürür. Normal görüntülemede
+  // (müşteri hub'ından "CARİ"ye girildiğinde) bu buton hiç yok — sadece
+  // Kapat var, o da hub'a döner (customer-hub.html, HTML'de zaten ayarlı). ---
   var islemeDevamBtn = document.getElementById("btnIslemeDevam");
   if(akistanGeldiMi){
+    islemeDevamBtn.hidden = false;
     islemeDevamBtn.textContent = "▶️ İşleme Devam Et";
     islemeDevamBtn.onclick = function(){ document.getElementById("tipSecimOverlay").hidden = false; };
     document.getElementById("btnTipSecimVazgec").onclick = function(){ document.getElementById("tipSecimOverlay").hidden = true; };
@@ -517,13 +520,17 @@ document.addEventListener("DOMContentLoaded", function(){
         window.location.href = "product.html";
       };
     });
-  } else {
-    islemeDevamBtn.textContent = "📋 İŞLEMLER";
-    islemeDevamBtn.onclick = function(){ window.location.href = "customer-detail.html"; };
   }
 
   var cariKapatBtnEl = document.getElementById("cariKapatBtn");
-  if(cariKapatBtnEl) cariKapatBtnEl.addEventListener("click", function(){ localStorage.removeItem("weiconv2_islem_yap_akisi"); });
+  if(cariKapatBtnEl){
+    cariKapatBtnEl.addEventListener("click", function(){
+      localStorage.removeItem("weiconv2_islem_yap_akisi");
+    });
+    // "İşlem Yap" akışından gelindiyse Kapat eskisi gibi müşteri listesine
+    // döner (hub'a değil) — o akışta hub'ın bir anlamı yok.
+    if(akistanGeldiMi) cariKapatBtnEl.setAttribute("href", "customer.html");
+  }
 
   // Firebase'den taze veri gelince ana sayfayı ve (açıksa) akordiyonu tazele.
   // HATA DÜZELTME (WG.080926.196): isim değişikliğinden hemen sonra bu

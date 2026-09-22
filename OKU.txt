@@ -1,17 +1,44 @@
-WE-CON-CRM — Fatura Takip başlığına VADE rozeti
-Sürüm: WG.220926.1546.600
+WE-CON-CRM — Müşteri Hub (Cari / İşlemler seçimi) + Fatura Takip etiketi
+Sürüm: WG.220926.2158.601
 
-"📄 Fatura Takip" penceresinin başlığının sağ ucuna, Müşteri Kartı'ndaki
-VADE ile BİREBİR AYNI değeri gösteren bir rozet eklendi (örn. "30 gün").
-Müşterinin VADE'si sayı olarak tanımlı değilse (boş/eski serbest metin)
-rozet hiç görünmez — tıpkı Vade Takip listesindeki mantıkla aynı.
+1) FATURA TAKİP ETİKETİ
+   customer-detail.html: İşlemler sayfasındaki kutucuk artık
+   "📄 Fatura Takip - Vade - Ödeme" yazıyor (aynı kırmızı kutucuk).
 
-DEĞİŞEN DOSYALAR (5)
-1) customer-detail.html — başlık satırı + rozet HTML'i
-2) vade-takip-style.css — rozetin stili
-3) detail-render.js — rozeti dolduran kod
-4) ayarlar-render.js, 5) ayarlar.html — sürüm senkronu
+2) MÜŞTERİ HUB — Cari / İşlemler seçim ekranı
+   Müşteri Bul'da bir sonuca dokunduğunda artık DOĞRUDAN Cari Bilgi'ye
+   gitmiyor; önce iki büyük kutucuklu yeni bir ekran açılıyor:
+   - 🏢 CARİ (mavi) → müşteri adı/adres/teslimat adresi/yetkili kişinin
+     olduğu sayfa (customer-cari-kart.html, eskisi gibi).
+   - 📋 İŞLEMLER (yeşil) → Temas/İşlem Yap/Fatura Takip/İşlem Geçmişi/
+     Görevlerim/Ürün Geçmişi/Birleştir/Müşteriyi Sil'in olduğu sayfa
+     (customer-detail.html, eskisi gibi).
 
-Telefonda denenmedi. Yüklemeden sonra VADE'si girilmiş bir müşteride
-İşlemler sayfası → Fatura Takip'i açıp rozetin göründüğüne, VADE'si boş
-bir müşteride rozetin görünmediğine bak.
+   Cari Bilgi sayfasının altındaki "İŞLEMLER" butonu KALDIRILDI — artık
+   SADECE "Kapat" var. Kapat'a basınca bu yeni hub ekranına dönülüyor
+   (müşteri arama listesine değil).
+
+   İSTİSNA — "İşlem Yap" akışı bozulmadı: İşlemler sayfasındaki "İşlem
+   Yap" kutucuğundan (yeni Numune/Teklif/Sipariş başlatmak için) Cari
+   Bilgi'ye gelindiğinde, eskisi gibi "▶️ İşleme Devam Et" butonu görünür
+   ve Kapat yine müşteri listesine döner — bu akışa hiç dokunulmadı.
+
+YENİ DOSYALAR (3)
+1) customer-hub.html — hub ekranı
+2) customer-hub-render.js — hub'ın render mantığı
+3) customer-hub-style.css — CARİ/İŞLEMLER kutucuklarının stili
+
+DEĞİŞEN DOSYALAR (7)
+4) customer-detail.html — Fatura Takip etiketi
+5) customer-render.js — arama sonucuna dokununca artık hub'a gider
+6) customer-cari-kart.html — alt buton satırı sadeleşti
+7) cari-kart-render.js — "İŞLEMLER" butonu kaldırıldı, "İşleme Devam Et"
+   sadece o akıştan gelindiğinde görünüyor
+8) cari-kart-style.css — gizleme (hidden) düzeltmesi
+9) home.html, 10) ayarlar-render.js, ayarlar.html — sürüm senkronu
+
+Telefonda denenmedi. Yüklemeden sonra: 1) Müşteri Bul'dan bir müşteriye
+dokunup hub ekranının açıldığına, 2) CARİ'ye girip Kapat'a basınca hub'a
+döndüğüne, 3) İŞLEMLER'e girip Fatura Takip etiketinin yeni halini
+gördüğüne, 4) İşlemler sayfasındaki "İşlem Yap"tan yeni bir sipariş
+başlatma akışının eskisi gibi çalıştığına bak.

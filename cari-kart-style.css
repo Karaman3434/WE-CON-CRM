@@ -244,6 +244,10 @@
   cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
+/* DÜZELTME (22.09.2026): display:flex, tarayıcının [hidden] varsayılanını
+   (display:none) eziyordu — bu buton artık normal görüntülemede hep
+   "hidden" ile başlıyor, bu satır olmadan yine de görünür kalırdı. */
+.cari-islemedevam-buton[hidden] { display: none; }
 
 /* ---------- Cari Kart v5 — çoklu kayıt, salt görüntüleme blokları ---------- */
 .ck-ozet-kaydet-btn {
