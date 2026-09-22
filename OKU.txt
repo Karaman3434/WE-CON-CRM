@@ -1,14 +1,33 @@
-WE-CON-CRM — Fatura Vade Takip kutusu Hızlı İşlemler'e taşındı
-Sürüm: WG.220926.0741.592
+WE-CON-CRM — Fatura Takip: yeniden yerleşim ve renklendirme
+Sürüm: WG.220926.0900.593
 
-DEĞİŞEN DOSYALAR (4) — kök dizindeki aynı isimli dosyalarla değiştir
-1) home.html — "FATURA · VADE · ÖDEME TAKİP" kutusu eski yerinden
-   (istatistik kartlarının altı) kaldırıldı; artık "Hızlı İşlemler"
-   başlığının hemen altında, Ürün Bul / Hızlı Hesapla kutularının ÜST
-   satırında, tek satır halinde duruyor.
-2) home-style.css — kutunun boşlukları yeni konumuna göre ayarlandı.
-3) ayarlar-render.js, ayarlar.html — sürüm senkronu.
+NE DEĞİŞTİ
+1) Ana Sayfa'daki "FATURA · VADE · ÖDEME TAKİP" kutusu artık AÇIK KIRMIZI
+   zeminli (#fdeaea, kırmızı çerçeve) — daha önce beyaz/nötrdü.
+2) Cari Bilgi (Müşteri Kartı) sayfasından "FATURA · VADE TAKİBİ" bölümü
+   TAMAMEN KALDIRILDI. VADE alanı (sayı/gün girişi) ve gösterimi ("45 gün")
+   olduğu gibi kalıyor — sadece o müşterinin sipariş/vade listesi bölümü
+   kalktı.
+3) O bölüm, İşlemler sayfasına (Temas / İşlem Yap / İşlem Geçmişi /
+   Görevlerim / Ürün Geçmişi kutucuklarının olduğu sayfa) TAŞINDI: "İşlem
+   Yap" kutucuğunun HEMEN ALTINDA yeni kırmızı "📄 Fatura Takip" kutucuğu.
+   Dokununca aynı liste (bakiye uyarısı + rozete dokununca ödendi/geri al)
+   bir açılır pencerede (overlay) gösteriliyor — Ürün Geçmişi kutucuğunun
+   çalışma şekliyle aynı desende.
 
-Bu build'te başka değişiklik yok — bir önceki WG.210926.2044.591'deki
-Vade Takip özelliğinin tamamı (hesaplama, liste ekranı, müşteri kartı
-bölümü) aynen duruyor, sadece kutunun Ana Sayfa'daki yeri değişti.
+DEĞİŞEN DOSYALAR (7) — kök dizindeki aynı isimli dosyalarla değiştir
+1) home.html, 2) home-style.css — kutunun rengi
+3) customer-cari-kart.html, 4) cari-kart-render.js — bölüm kaldırıldı
+5) customer-detail.html, 6) detail-render.js, 7) detail-style.css — yeni
+   "Fatura Takip" kutucuğu + açılır pencere
+
+Bir önceki iki build'i (WG.210926.2044.591 — Vade Takip özelliğinin
+kendisi, WG.220926.0741.592 — kutunun Hızlı İşlemler'e taşınması)
+yüklemediysen önce onları yükle, sonra bunu.
+
+Bu değişiklikler telefonda denenmedi; kod ve HTML etiket dengeleri
+bilgisayarda kontrol edildi. Yüklemeden sonra: 1) Ana Sayfa'daki kutunun
+kırmızı göründüğüne, 2) bir müşterinin Cari Bilgi sayfasında artık Fatura
+Takip bölümü olmadığına (NOT'un altında direkt Kapat/İŞLEMLER butonları),
+3) aynı müşterinin İşlemler sayfasında İşlem Yap'ın altında yeni kırmızı
+kutucuğun göründüğüne ve açılır pencerenin doğru çalıştığına bak.

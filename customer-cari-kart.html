@@ -25,7 +25,6 @@
 <link rel="stylesheet" href="detail-style.css?v=WG.140926.1213.555">
 <link rel="stylesheet" href="cari-kart-style.css?v=WG.140926.1412.560">
 <link rel="stylesheet" href="send-style.css?v=WG.140926.1729.569">
-<link rel="stylesheet" href="vade-takip-style.css?v=WG.210926.2044.591">
 </head>
 <body>
 
@@ -88,20 +87,6 @@
   </div>
   <section class="ck-blok ck-tiklanabilir-alan" data-bolum="not">
     <div class="ck-kart-liste" id="notListesi"></div>
-  </section>
-
-  <!-- FATURA · VADE · ÖDEME TAKİBİ (21.09.2026) — bu müşterinin tüm
-       siparişleri, en yeni üstte; rozete dokununca ödendi/geri al. -->
-  <div class="ck-blok-etiket ck-blok-etiket--vade">
-    <span>📄 FATURA · VADE TAKİBİ</span>
-  </div>
-  <section class="ck-blok">
-    <div class="vt-bakiye-uyari" id="vtMusteriBakiye" hidden>
-      <span class="vt-b-etiket">⚠ Toplam vadesi geçmiş bakiye</span>
-      <span class="vt-b-deger">0,00 EURO</span>
-    </div>
-    <div id="vtMusteriListe"></div>
-    <p class="ck-not-aciklama" id="vtMusteriBos" hidden style="text-align:center;padding:14px 4px;">Bu müşteriye ait sipariş kaydı yok.</p>
   </section>
 
   <div class="ck-alt-buton-satir">
@@ -185,10 +170,9 @@
 <script src="reports-data.js?v=WG.210926.2044.591"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="vade-takip-data.js?v=WG.210926.2044.591"></script>
-<script src="vade-takip-ui.js?v=WG.210926.2044.591"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-cari-kart.html", "Cari Bilgi"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="cari-kart-render.js?v=WG.210926.2044.591"></script>
+<script src="cari-kart-render.js?v=WG.220926.0900.593"></script>
 </body>
 </html>

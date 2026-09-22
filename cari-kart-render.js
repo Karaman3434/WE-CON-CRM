@@ -129,7 +129,6 @@ function alanlariDoldur(musteri){
   document.getElementById("ozetFaturaDeger").textContent = musteri.fatura || "—";
   document.getElementById("ozetKargoDeger").textContent = musteri.kargo || "—";
 
-  vadeTakipBolumunuCiz(musteri);
   anaSayfayiRenderEt();
 }
 
@@ -141,39 +140,6 @@ function vadeGosterimMetni(musteri){
   var gun = (typeof VadeTakip !== "undefined") ? VadeTakip.vadeGunSayisi(musteri) : null;
   if(gun !== null) return gun + " gün";
   return musteri.vade || "—";
-}
-
-// FATURA · VADE TAKİBİ bölümü — bu müşterinin tüm siparişleri, en yeni
-// üstte, iki satırlı ortak satır görünümüyle (vade-takip-ui.js).
-function vadeTakipBolumunuCiz(musteri){
-  try{
-    if(typeof VadeTakip === "undefined" || typeof VadeTakipUI === "undefined") return;
-    var kok = document.getElementById("vtMusteriListe");
-    var bosEl = document.getElementById("vtMusteriBos");
-    var bakiyeEl = document.getElementById("vtMusteriBakiye");
-    if(!kok) return;
-
-    var ogeler = VadeTakip.musteriIcin(musteri.id, musteri.ad);
-    if(!ogeler.length){
-      kok.innerHTML = "";
-      if(bosEl) bosEl.hidden = false;
-      if(bakiyeEl) bakiyeEl.hidden = true;
-      return;
-    }
-    if(bosEl) bosEl.hidden = true;
-
-    var gecmisBakiye = VadeTakip.musteriGecmisBakiye(musteri.id, musteri.ad);
-    if(bakiyeEl){
-      if(gecmisBakiye > 0){
-        bakiyeEl.hidden = false;
-        bakiyeEl.querySelector(".vt-b-deger").textContent = gecmisBakiye.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EURO";
-      } else {
-        bakiyeEl.hidden = true;
-      }
-    }
-
-    kok.innerHTML = ogeler.map(function(o){ return VadeTakipUI.satirHTML(o, {gosterMusteri:false}); }).join("");
-  }catch(e){ if(typeof hataGoster === "function") hataGoster("Vade takip bölümü çizilemedi: " + e.message); }
 }
 
 var toastZamanlayici;
@@ -485,15 +451,6 @@ document.addEventListener("DOMContentLoaded", function(){
   seciliMusteriAdi = secili.ad;
   alanlariDoldur(secili);
 
-  // Rozete dokununca ödendi/geri al (WG.210926.2044.591) — tek dinleyici,
-  // delegasyonla; her tıklamada güncel müşteri verisiyle yeniden çizer.
-  if(typeof VadeTakipUI !== "undefined"){
-    VadeTakipUI.baglaRozetler(document.getElementById("vtMusteriListe"), function(){ vadeTakipBolumunuCiz(musteriVerisi); });
-  }
-  if(typeof ReportsData !== "undefined"){
-    ReportsData.arsivDegistiginde(function(){ if(musteriVerisi) vadeTakipBolumunuCiz(musteriVerisi); });
-  }
-
   // YENİ TASARIM (WG.100926.196): başlık satırındaki "Bilgiyi Güncelle" /
   // 🗑️ kaldırıldı — artık bölümün İÇERİĞİNE dokununca bir popup açılıyor
   // (Bilgiyi Güncelle / Ekle / Sil / Kapat). "cari" (Temel Bilgiler)
@@ -581,7 +538,7 @@ document.addEventListener("DOMContentLoaded", function(){
     musteriVerisi = taze;
     seciliMusteriAdi = taze.ad;
     document.getElementById("cariKartAd").textContent = (taze.id ? taze.id + " - " : "") + taze.ad;
-    document.getElementById("ozetVadeDeger").textContent = taze.vade || "—";
+    document.getElementById("ozetVadeDeger").textContent = vadeGosterimMetni(taze);
     document.getElementById("ozetFaturaDeger").textContent = taze.fatura || "—";
     document.getElementById("ozetKargoDeger").textContent = taze.kargo || "—";
     anaSayfayiRenderEt();

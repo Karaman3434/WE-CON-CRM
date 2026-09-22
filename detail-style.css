@@ -36,6 +36,7 @@
 .islemler-tile-baslik--mor { color: #8e44ad; }
 .islemler-tile-baslik--mavi { color: #1a4d9e; }
 .islemler-tile-baslik--gri { color: #333333; }
+.islemler-tile-baslik--kirmizi { color: #c0392b; }
 .islemler-tile-alt {
   font-size: 12px;
   margin-top: 2px;
@@ -108,10 +109,12 @@
 }
 .islemler-rozet--mor { background: #f6f0fd; border: 1.5px solid #8e44ad;}
 .islemler-rozet--gri { background: #f0fdfa; border: 1.5px solid #0e6b58;}
+.islemler-rozet--kirmizi { background: #fdeaea; border: 1.5px solid #c0392b; color: #c0392b;}
 .islemler-ok { font-size: 18px; }
 .islemler-ok--mor { color: #8e44ad; }
 .islemler-ok--mavi { color: #2563eb; }
 .islemler-ok--gri { color: #2d3540; }
+.islemler-ok--kirmizi { color: #c0392b; }
 
 .islemler-alt-buton-satir {
   display: flex;

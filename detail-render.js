@@ -107,6 +107,73 @@ function tilelariBagla(){
     document.getElementById("urunGecmisiListesi").hidden = false;
     document.getElementById("urunGecmisiBaslik").textContent = "📦 Ürün Geçmişi";
   };
+
+  document.getElementById("tileFaturaTakip").onclick = function(){
+    document.getElementById("faturaTakipOverlay").hidden = false;
+    faturaTakipCiz();
+  };
+  document.getElementById("btnFaturaTakipKapat").onclick = function(){ document.getElementById("faturaTakipOverlay").hidden = true; };
+  if(typeof VadeTakipUI !== "undefined"){
+    VadeTakipUI.baglaRozetler(document.getElementById("ftListe"), faturaTakipCiz);
+  }
+}
+
+// FATURA · VADE · ÖDEME TAKİBİ — bu müşterinin tüm siparişleri, en yeni
+// üstte, ortak 2 satırlı satır görünümüyle (vade-takip-ui.js). Kutucuktaki
+// rozet/alt metni de burada güncellenir.
+function faturaTakipOzetiGuncelle(){
+  try{
+    if(typeof VadeTakip === "undefined") return;
+    var musteri = CustomerData.musteriBul(seciliMusteriAdi);
+    if(!musteri) return;
+    var ogeler = VadeTakip.musteriIcin(musteri.id, musteri.ad);
+    var acikTakipte = ogeler.filter(function(o){ return o.durum !== "vadesiz" && !o.odendi; });
+    var gecti = acikTakipte.filter(function(o){ return o.durum === "gecti"; });
+    var altEl = document.getElementById("faturaTakipAlt");
+    var badgeEl = document.getElementById("badgeFaturaTakip");
+    if(gecti.length > 0){
+      altEl.textContent = "⚠ " + gecti.length + " fatura vadesi geçti";
+      badgeEl.hidden = false; badgeEl.textContent = gecti.length;
+    } else if(acikTakipte.length > 0){
+      altEl.textContent = acikTakipte.length + " fatura takipte";
+      badgeEl.hidden = false; badgeEl.textContent = acikTakipte.length;
+    } else {
+      altEl.textContent = ogeler.length > 0 ? (ogeler.length + " kayıtlı sipariş") : "Henüz sipariş yok";
+      badgeEl.hidden = true;
+    }
+  }catch(e){ hataGoster("Fatura Takip özeti güncellenemedi: " + e.message); }
+}
+
+function faturaTakipCiz(){
+  try{
+    if(typeof VadeTakip === "undefined" || typeof VadeTakipUI === "undefined") return;
+    var musteri = CustomerData.musteriBul(seciliMusteriAdi);
+    var kok = document.getElementById("ftListe");
+    var bosEl = document.getElementById("ftBos");
+    var bakiyeEl = document.getElementById("ftBakiye");
+    if(!musteri){ kok.innerHTML = ""; bosEl.hidden = false; bakiyeEl.hidden = true; return; }
+
+    var ogeler = VadeTakip.musteriIcin(musteri.id, musteri.ad);
+    if(!ogeler.length){
+      kok.innerHTML = "";
+      bosEl.hidden = false;
+      bakiyeEl.hidden = true;
+      faturaTakipOzetiGuncelle();
+      return;
+    }
+    bosEl.hidden = true;
+
+    var gecmisBakiye = VadeTakip.musteriGecmisBakiye(musteri.id, musteri.ad);
+    if(gecmisBakiye > 0){
+      bakiyeEl.hidden = false;
+      bakiyeEl.querySelector(".vt-b-deger").textContent = gecmisBakiye.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EURO";
+    } else {
+      bakiyeEl.hidden = true;
+    }
+
+    kok.innerHTML = ogeler.map(function(o){ return VadeTakipUI.satirHTML(o, {gosterMusteri:false}); }).join("");
+    faturaTakipOzetiGuncelle();
+  }catch(e){ hataGoster("Fatura Takip listesi çizilemedi: " + e.message); }
 }
 
 function urunGecmisiniAc(){
@@ -306,12 +373,15 @@ document.addEventListener("DOMContentLoaded", function(){
     var tazeMusteri = CustomerData.musteriBul(seciliMusteriAdi);
     if(tazeMusteri){
       ustBilgiyiCiz(tazeMusteri);
+      faturaTakipOzetiGuncelle();
     }
   });
   ReportsData.arsivDegistiginde(siparisGecmisiniCiz);
   ReportsData.gorevDegistiginde(musteriGorevleriniCiz);
   siparisGecmisiniCiz();
   musteriGorevleriniCiz();
+  ReportsData.arsivDegistiginde(faturaTakipOzetiGuncelle);
+  faturaTakipOzetiGuncelle();
   // Firebase müşteri listesi sayfa tam yüklenmeden önce gelmiş olabilir —
   // dinleyici bu ilk anlık görüntüyü kaçırmış olabilir. Zaten yüklenmişse
   // hemen taze veriyle güncelle.

@@ -17,9 +17,10 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.150926.2235.579">
 <link rel="stylesheet" href="customer-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="detail-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="detail-style.css?v=WG.220926.0900.593">
 <link rel="stylesheet" href="send-style.css?v=WG.140926.1729.569">
 <link rel="stylesheet" href="belge-style.css?v=WG.210926.1512.583">
+<link rel="stylesheet" href="vade-takip-style.css?v=WG.220926.0900.593">
 </head>
 <body>
 
@@ -65,6 +66,19 @@
     </div>
     <div class="islemler-tile-sag">
       <span class="islemler-ok islemler-ok--mavi">›</span>
+    </div>
+  </div>
+
+  <!-- FATURA · VADE · ÖDEME TAKİBİ (22.09.2026) — İşlem Yap'ın hemen
+       altında; dokununca bu müşterinin sipariş/vade listesini açar. -->
+  <div class="islemler-tile" id="tileFaturaTakip">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--kirmizi">📄 Fatura Takip</div>
+      <div class="islemler-tile-alt" id="faturaTakipAlt"></div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-rozet islemler-rozet--kirmizi" id="badgeFaturaTakip" hidden>0</span>
+      <span class="islemler-ok islemler-ok--kirmizi">›</span>
     </div>
   </div>
 
@@ -125,6 +139,22 @@
     </div>
   </div>
 
+  <!-- FATURA · VADE · ÖDEME TAKİBİ overlay'i (22.09.2026) — bu müşterinin
+       tüm siparişleri, en yeni üstte; rozete dokununca ödendi/geri al
+       (vade-takip-data.js / vade-takip-ui.js). -->
+  <div class="tip-secim-overlay" id="faturaTakipOverlay" hidden>
+    <div class="tip-secim-kutu" style="max-height:80vh; overflow-y:auto;">
+      <div class="tip-secim-baslik">📄 Fatura Takip</div>
+      <div class="vt-bakiye-uyari" id="ftBakiye" hidden>
+        <span class="vt-b-etiket">⚠ Toplam vadesi geçmiş bakiye</span>
+        <span class="vt-b-deger">0,00 EURO</span>
+      </div>
+      <div id="ftListe"></div>
+      <p class="bos-mesaj" id="ftBos" hidden>Bu müşteriye ait sipariş kaydı yok.</p>
+      <button class="tip-secim-vazgec-btn" id="btnFaturaTakipKapat">Kapat</button>
+    </div>
+  </div>
+
   <!-- MÜŞTERİ BİRLEŞTİRME — açılır bölüm, 2 aşamalı (ara→seç, sonra onay) -->
   <section class="birlestir-bolum" id="bolumBirlestir" hidden>
     <div class="birlestir-arama-asama" id="birlestirAramaAsama">
@@ -171,11 +201,13 @@
 <script src="auth.js?v=WG.210926.1613.587"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
-<script src="reports-data.js?v=WG.150926.1224.571"></script>
+<script src="reports-data.js?v=WG.220926.0900.593"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
+<script src="vade-takip-data.js?v=WG.220926.0900.593"></script>
+<script src="vade-takip-ui.js?v=WG.220926.0900.593"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-detail.html", "İşlemler"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="detail-render.js?v=WG.130926.1918.552"></script>
+<script src="detail-render.js?v=WG.220926.0900.593"></script>
 </body>
 </html>
