@@ -66,7 +66,7 @@ function sonuclariCiz(){
         + "<div class='tablo-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(bilgi.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(bilgi.abas||"-") + "</div>"
         + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span></div>"
         + "</td>"
-        + "<td><span class='tablo-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
+        + "<td><span class='tablo-fiyat" + (bilgi.fiyat >= 1000 ? " tablo-fiyat--buyuk" : "") + "'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
         + "<td><button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"Seç") + "</button></td>"
         + "</tr>";
     }

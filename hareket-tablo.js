@@ -18,8 +18,10 @@ var HareketTablo = (function(){
   }
   // Rakamın altına küçük birim satırı ekler (€ / TL) — sayı ile birim aynı
   // hücrede iki satıra ayrılır, sütun bu sayede daralabilir (07.09.2026).
+  // KURAL (23.09.2026): 1000 ve üzeri sayılarda otomatik biraz küçük yazılır.
   function paraHtml(sayiStr, birim){
-    return "<span class='belge-para-sayi'>" + sayiStr + "</span><span class='belge-para-birim'>" + birim + "</span>";
+    var buyukMu = String(sayiStr).indexOf(".") > -1;
+    return "<span class='belge-para-sayi" + (buyukMu ? " belge-para-sayi--buyuk" : "") + "'>" + sayiStr + "</span><span class='belge-para-birim'>" + birim + "</span>";
   }
 
   // urunler: [{ad, berta, abas, listeFiyat, dipFiyat, iskonto, adet}]
@@ -75,10 +77,10 @@ var HareketTablo = (function(){
     var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "") + "'>" + opts.etiketRozet + "</span>") : "";
     var html = opts.etiket ? ("<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
     var basHucreler = basit
-      ? "<th style='width:58%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:14%;'>NET</th><th style='width:16%;'>TOPLAM</th>"
+      ? "<th style='width:46%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:19%;'>NET</th><th style='width:23%;'>TOPLAM</th>"
       : (primGizli
-          ? "<th style='width:4%;'>SR</th><th style='width:42%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:12%;'>NET</th><th style='width:12%;'>TOPLAM</th>"
-          : "<th style='width:4%;'>SR</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th>");
+          ? "<th style='width:4%;'>SR</th><th style='width:32%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:16%;'>NET</th><th style='width:18%;'>TOPLAM</th>"
+          : "<th style='width:4%;'>SR</th><th style='width:26%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:14%;'>PRİM</th>");
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"
       + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli) + "</tbody></table></div>";

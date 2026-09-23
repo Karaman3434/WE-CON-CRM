@@ -100,8 +100,12 @@ function yetkiliSatiriHtml(isim, tel, eposta){
 
 // Rakamın altına küçük birim satırı ekler (€ / TL) — sayı ile birim aynı
 // hücrede iki satıra ayrılır, sütun bu sayede daralabilir (07.09.2026).
+// KURAL (23.09.2026): 1000 ve üzeri sayılarda (Türkçe biçimde binler
+// ayracı "." olduğu için sayının içinde "." varsa) otomatik olarak biraz
+// küçük yazılır — büyük tutarlar sütun çizgisine yapışmasın/taşmasın diye.
 function paraHtml(sayiStr, birim){
-  return "<span class='belge-para-sayi'>" + sayiStr + "</span><span class='belge-para-birim'>" + birim + "</span>";
+  var buyukMu = String(sayiStr).indexOf(".") > -1;
+  return "<span class='belge-para-sayi" + (buyukMu ? " belge-para-sayi--buyuk" : "") + "'>" + sayiStr + "</span><span class='belge-para-birim'>" + birim + "</span>";
 }
 
 function belgeyiCiz(kayit, musteri){
@@ -176,7 +180,7 @@ function belgeyiCiz(kayit, musteri){
       + "<div class='belge-kart'>"
       + "<div class='belge-belge-baslik-serit'><span class='belge-belge-baslik-serit-metin'>" + htmlEsc(belgeBaslikMetni) + "</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:34%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:10%;'>NET</th><th style='width:10%;'>TOPLAM</th><th style='width:12%;'>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:26%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:14%;'>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"

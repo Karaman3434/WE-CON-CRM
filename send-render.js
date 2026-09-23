@@ -194,6 +194,13 @@ var TIP_ETIKET_BELGE_G = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"
 function fmtG2(n){
   return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
+// KURAL (23.09.2026): 1000 ve üzeri sayılarda (Türkçe binler ayracı "."
+// olduğu için sayının içinde "." varsa) otomatik olarak biraz küçük
+// yazılır — büyük tutarlar sütun çizgisine yapışmasın/taşmasın diye.
+function sayiDivHtml(sayiStr, birim){
+  var buyukMu = String(sayiStr).indexOf(".") > -1;
+  return "<div class='belge-td-sayi" + (buyukMu ? " belge-td-sayi--buyuk" : "") + "'>" + sayiStr + "</div><div class='belge-td-birim'>" + birim + "</div>";
+}
 
 function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, orijinalTarih){
   var basit = kanal === "whatsapp"; // WhatsApp'a giden görsel: ürün tablosunda LİSTE/İSK/SIRA yok (Cari Bilgi her iki kanalda da TAM gösterilir)
@@ -207,18 +214,18 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
       satirlarHtml += "<tr>"
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--net'><div class='belge-td-sayi'>" + fmtG2(h.iskontoluFiyat) + "</div><div class='belge-td-birim'>EURO</div></td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'><div class='belge-td-sayi'>" + fmtG2(h.toplamEuro) + "</div><div class='belge-td-birim'>EURO</div></td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--net'>" + sayiDivHtml(fmtG2(h.iskontoluFiyat), "EURO") + "</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'>" + sayiDivHtml(fmtG2(h.toplamEuro), "EURO") + "</td>"
         + "</tr>";
     } else {
       satirlarHtml += "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
-        + "<td class='belge-td-fiyat'><div class='belge-td-sayi'>" + fmtG2(u.listeFiyat||0) + "</div><div class='belge-td-birim'>EURO</div></td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--isk'><div class='belge-td-sayi'>" + (u.iskonto||0) + "</div><div class='belge-td-birim'>%</div></td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--net'><div class='belge-td-sayi'>" + fmtG2(h.iskontoluFiyat) + "</div><div class='belge-td-birim'>EURO</div></td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'><div class='belge-td-sayi'>" + fmtG2(h.toplamEuro) + "</div><div class='belge-td-birim'>EURO</div></td>"
+        + "<td class='belge-td-fiyat'>" + sayiDivHtml(fmtG2(u.listeFiyat||0), "EURO") + "</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--isk'>" + sayiDivHtml((u.iskonto||0), "%") + "</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--net'>" + sayiDivHtml(fmtG2(h.iskontoluFiyat), "EURO") + "</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'>" + sayiDivHtml(fmtG2(h.toplamEuro), "EURO") + "</td>"
         + "</tr>";
     }
   });
@@ -287,8 +294,8 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo belge-urun-tablo--giden'>"
     + "<thead><tr>" + (basit
-        ? "<th style='width:48%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>AD</th><th style='width:19%;'>NET</th><th style='width:19%;'>TOPLAM</th>"
-        : "<th style='width:4%;'>#</th><th style='width:36%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>AD</th><th style='width:13%;'>LİST</th><th style='width:12%;'>İSK</th><th style='width:14%;'>NET</th><th style='width:14%;'>TOPLAM</th>") + "</tr></thead>"
+        ? "<th style='width:38%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>AD</th><th style='width:24%;'>NET</th><th style='width:24%;'>TOPLAM</th>"
+        : "<th style='width:4%;'>#</th><th style='width:28%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>AD</th><th style='width:11%;'>LİST</th><th style='width:10%;'>İSK</th><th style='width:18%;'>NET</th><th style='width:22%;'>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
     + "<div class='belge-genel-toplam-serit'>"

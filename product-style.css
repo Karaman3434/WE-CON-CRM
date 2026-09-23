@@ -342,7 +342,7 @@ body {
 .data-table td { font-variant-numeric: tabular-nums; }
 .data-table tbody tr:nth-child(even) td { background: #f7f9fc; }
 .col-urun { width: auto; }
-.col-euro { width: 90px; }
+.col-euro { width: 100px; }
 .col-islem { width: 80px; }
 
 .tablo-kod {
@@ -386,7 +386,12 @@ body {
   font-weight: bold;
   font-size: 12px;
   white-space: nowrap;
-  display: inline-block; border: 1.5px solid #c0392b;}
+  display: inline-block; border: 1.5px solid #c0392b;
+  font-variant-numeric: tabular-nums;
+}
+/* KURAL (23.09.2026): 1000 EURO ve üzeri fiyatlarda otomatik biraz küçük
+   yazı — sütun genişliği sabit olduğu için büyük fiyatlar taşmasın diye. */
+.tablo-fiyat--buyuk { font-size: 10.2px; }
 .btn-add {
   background: #eaf2fc;
   color: #003a70;

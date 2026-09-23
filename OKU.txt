@@ -1,37 +1,38 @@
-WE-CON-CRM — Tablo okunabilirlik standardı (C seçeneği): dikey çizgi +
-zebra + sabit genişlikli rakam
-Sürüm: WG.230926.1031.607
+WE-CON-CRM — Büyük sayı sıkışması düzeltmesi: sütun genişliği yeniden
+dağıtımı + otomatik küçülen yazı (Seçenek 3)
+Sürüm: WG.230926.1043.608
 
-KURAL (bundan sonra geçerli): Programdaki her sayısal tablo şu üçünü
-birlikte kullanır:
-1) İnce, açık gri dikey sütun çizgileri.
-2) Zebra — bir satır çok hafif gri zemin, bir satır beyaz (satır satır
-   takip kolaylaşsın diye).
-3) Sabit genişlikli rakam (tabular-nums) — "1" ile "8" yan yana
-   geldiğinde kaymaz, komşu sütunlardaki sayılar (örn. NET ve PRİM)
-   birbirine karışmaz.
+KURAL (bundan sonra geçerli, programdaki TÜM sayısal tablolar için):
+1) Sütun genişlikleri yeniden dağıtıldı: ÜRÜN BİLGİSİ (zaten 2-3 satıra
+   bölünüyor) daraltıldı, NET/TOPLAM/PRİM (büyüyebilen tutarlar) genişletildi.
+   Yazı boyutu NORMAL durumda hiç değişmedi.
+2) Ek güvenlik: bir tutar 1000'i geçerse (Türkçe binler ayracı "."
+   içeriyorsa) otomatik olarak biraz küçük yazılır — asla çizgiye
+   yapışmaz, asla kesilmez/taşmaz. Bugünkü küçük tutarlarda hiçbir
+   değişiklik yok, sadece büyük tutarlarda devreye giriyor.
 
-Para birimi (EURO/TL) etiketleri HİÇBİR YERDE kaldırılmadı/dokunulmadı —
-zaten var olan kural, sadece teyit edildi.
+NEREYE UYGULANDI
+- belge-style.css + belge-render.js: Belge Önizleme
+- hareket-tablo.js: Sepet (3 sütun düzeni de — basit/normal/PRİM'li)
+- send-render.js: Gönder ekranı / müşteriye giden görsel (2 sütun düzeni)
+- product-style.css + product-render.js: Ürün Bul arama sonuçları
+  (EURO sütunu biraz genişletildi + 1000 EURO üstü fiyatlarda otomatik
+  küçülme)
 
-NEREYE UYGULANDI (programdaki tüm canlı/kullanılan sayısal tablolar)
-- belge-style.css → .belge-urun-tablo: Sepet, Belge Önizleme, Gönder
-  ekranı/müşteriye giden görsel — hepsi bu TEK sınıfı paylaşıyor.
-  Zebra, Sepet'teki HESAPLANACAK/HESAPLANDI (sarı/yeşil) grup renklerini
-  EZMEZ — o satırlar kendi anlamlı rengini koruyor, zebra sadece düz
-  (renksiz) satırlara uygulanıyor.
-- product-style.css → .data-table: Ürün Bul arama sonuçları ve Hit
-  Ürünler tablosu.
+Para birimi etiketleri (EURO/TL), sütun sırası, içerik — HİÇBİRİNE
+dokunulmadı. Bir önceki build'deki (607) dikey çizgi/zebra/sabit
+genişlikli rakam kuralı aynen duruyor, bu build onun ÜZERİNE ek bir
+güvenlik katmanı.
 
-Sütun sırası, başlıklar, içerik — HİÇBİRİNE dokunulmadı, sadece görsel
-ayrım katmanı eklendi.
-
-DEĞİŞEN DOSYALAR (7)
-1) belge-style.css, 2) product-style.css
-3) belge-onizleme.html, 4) cart.html, 5) customer-detail.html,
-6) product.html, 7) send.html (cache-bust)
+DEĞİŞEN DOSYALAR (9)
+1) belge-render.js, 2) hareket-tablo.js, 3) send-render.js,
+4) product-render.js, 5) belge-style.css, 6) product-style.css
+7) belge-onizleme.html, 8) cart.html, 9) send.html, product.html,
+   customer-detail.html (cache-bust)
 + home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
 
-Telefonda denenmedi. Yüklemeden sonra birden fazla ürünlü bir Sepet veya
-Belge Önizleme tablosunu açıp sütunlar arası çizgiyi, satır satır renk
-farkını ve sayıların artık daha net ayrıldığını kontrol et.
+Telefonda denenmedi. Yüklemeden sonra: 1) 2+ ürünlü, özellikle biri
+büyük miktarlı (100+ adet gibi) bir Sepet/Belge Önizleme tablosu açıp
+NET/TOPLAM/PRİM'in artık çizgiye yapışmadığını, 2) çok büyük bir tutarda
+(binler basamağına geçtiğinde) yazının otomatik biraz küçüldüğünü
+kontrol et.

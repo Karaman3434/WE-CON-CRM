@@ -249,6 +249,9 @@
 }
 .belge-para-birim { display: block; font-size: 9.5px; font-weight: 700; color: #5f6b7a; line-height: 1.15; }
 .belge-para-sayi { white-space: nowrap; }
+/* KURAL (23.09.2026): 1000+ sayılar otomatik biraz küçülür — sütun
+   çizgisine yapışmasın/taşmasın diye (bkz. paraHtml/sayiDivHtml). */
+.belge-para-sayi--buyuk { font-size: .84em; }
 .belge-td-sira { color: #8a96a3; font-weight: 600; }
 .belge-td-urun { text-align: left; white-space: normal; }
 
@@ -288,6 +291,9 @@
    sınıf çiftini kullanır. Aynı 22.09.2026 düzeltmesi: hepsi aynı boyut. */
 .belge-td-fiyat { line-height: 1.25; }
 .belge-td-sayi { font-size: 13.5px; font-weight: 700; color: #101828; }
+/* KURAL (23.09.2026): send-render.js'in kendi sayı gösterimi için aynı
+   otomatik küçülme — bkz. sayiDivHtml() ve .belge-para-sayi--buyuk. */
+.belge-td-sayi--buyuk { font-size: .84em; }
 .belge-td-birim { font-size: 9.5px; font-weight: 700; color: #98a2b3; letter-spacing: .2px; }
 .belge-td-fiyat--net .belge-td-sayi { color: #0e6b58; }
 .belge-td-fiyat--net .belge-td-birim { color: #0e6b58; }
