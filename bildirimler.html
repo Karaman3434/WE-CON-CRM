@@ -14,7 +14,7 @@
 <title>WEICON ASİST — Bildirimler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.150926.2235.579">
-<link rel="stylesheet" href="bildirimler-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="bildirimler-style.css?v=WG.230926.0954.605">
 </head>
 <body>
 
@@ -35,6 +35,22 @@
 <main class="sayfa">
   <div id="bildirimIcerik"></div>
   <p class="bos-mesaj" id="bildirimBosMesaj" hidden>Takip gerektiren konu yok. 🎉</p>
+
+  <!-- Açık Süreç detay penceresi (23.09.2026) — satıra dokununca açılır;
+       tutar burada, işlem no burada da tıklanabilir bağlantı. -->
+  <div class="surec-detay-overlay" id="surecDetayOverlay" hidden>
+    <div class="surec-detay-kutu">
+      <div class="surec-detay-baslik" id="sdBaslik"></div>
+      <div class="surec-detay-satir"><span class="surec-detay-etiket">İşlem No</span><span class="tiklanabilir-bilgi" id="sdKodLink"></span></div>
+      <div class="surec-detay-satir"><span class="surec-detay-etiket">Tutar</span><span class="surec-detay-deger" id="sdTutar"></span></div>
+      <div class="surec-detay-satir"><span class="surec-detay-etiket">Süre</span><span class="surec-detay-deger" id="sdSure"></span></div>
+      <div class="acik-surec-buton-satir" style="margin-top:12px;">
+        <button class="acik-surec-ilerlet-btn" id="sdIlerlet">▶️ İlerlet</button>
+        <button class="acik-surec-sil-btn" id="sdSil" hidden>🗑 Sil</button>
+      </div>
+      <button class="surec-detay-kapat" id="sdKapat">Kapat</button>
+    </div>
+  </div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -47,6 +63,6 @@
 <script src="reports-data.js?v=WG.150926.1224.571"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="bildirimler-render.js?v=WG.080926.1259.221"></script>
+<script src="bildirimler-render.js?v=WG.230926.0954.605"></script>
 </body>
 </html>

@@ -31,11 +31,13 @@ var VadeTakipUI = (function(){
   };
 
   function rozetYazisi(o){
-    if(o.odendi) return "✓ ÖDENDİ";
-    if(o.durum === "gecti") return o.farkGun + " GÜN GECİKTİ";
-    if(o.durum === "bugun") return "BUGÜN VADESİ";
-    if(o.durum === "yaklasiyor" || o.durum === "var") return (-o.farkGun) + " GÜN KALDI";
-    return o.gecenGun + " GÜN ÖNCE KESİLDİ"; // vadesiz
+    // Tıklanabilir bilgi kuralı (23.09.2026): sonunda ↗ — dokununca
+    // ödendi/geri al olduğu anlaşılsın diye.
+    if(o.odendi) return "✓ ÖDENDİ ↗";
+    if(o.durum === "gecti") return o.farkGun + " GÜN GECİKTİ ↗";
+    if(o.durum === "bugun") return "BUGÜN VADESİ ↗";
+    if(o.durum === "yaklasiyor" || o.durum === "var") return (-o.farkGun) + " GÜN KALDI ↗";
+    return o.gecenGun + " GÜN ÖNCE KESİLDİ ↗"; // vadesiz
   }
 
   // opts.gosterMusteri: true ise üst satırda müşteri adı da yazılır

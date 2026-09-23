@@ -68,6 +68,66 @@
   cursor: pointer;
 }
 
+/* Açık Süreçler — tek satırlık kompakt satır (23.09.2026). %10 küçük yazı,
+   6px boşluk, sol kenar rengi aciliyeti gösterir (metin rozeti YOK). */
+.acik-surec-satir {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f7f9fc;
+  border: 1px solid #d5dce6;
+  border-radius: 7px;
+  padding: 7px 8px;
+  margin-bottom: 6px;
+  font-size: 12.15px;
+  color: #222222;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+}
+.as-kod { color: #c0392b; font-weight: 700; flex-shrink: 0; }
+.as-firma { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.as-sep { color: #b7bfc9; flex-shrink: 0; }
+.as-islem-no { flex-shrink: 0; }
+.as-gun { color: #5f6b7a; flex-shrink: 0; margin-left: auto; padding-left: 6px; font-size: 11px; }
+.as-ok { color: #9aa5b1; font-size: 13px; flex-shrink: 0; margin-left: 2px; }
+
+/* Tıklanabilir bilgi — programdaki TEK standart (23.09.2026): mavi renk,
+   hafif noktalı alt çizgi, sonunda ↗. Bu görüldüğünde dokununca bir
+   bilgi/sayfa/pencere açıldığı anlaşılsın diye — kart/buton DEĞİLDİR,
+   onlara bu stil uygulanmaz. */
+.tiklanabilir-bilgi {
+  color: #003a70;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* Açık Süreç detay penceresi — satıra dokununca açılır. */
+.surec-detay-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 500;
+}
+.surec-detay-overlay[hidden] { display: none; }
+.surec-detay-kutu {
+  background: #fff; width: 100%; max-width: 480px;
+  border-radius: 14px 14px 0 0; padding: 18px 16px;
+}
+.surec-detay-baslik { font-size: 15px; font-weight: 800; color: #1c2333; margin-bottom: 10px; }
+.surec-detay-satir {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; padding: 7px 0; border-bottom: 1px solid #eef0f3;
+}
+.surec-detay-etiket { color: #6b7280; }
+.surec-detay-deger { font-weight: 700; color: #1c2333; }
+.surec-detay-kapat {
+  width: 100%; margin-top: 10px; background: #f4f6f9; color: #556170;
+  border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer;
+}
+
 .ziyaret-hatirlat-karti {
   background: #faeeda;
   border: 1px solid #b7601f;

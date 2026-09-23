@@ -104,19 +104,14 @@ function bildirimleriCiz(){
     if(acikListe.length > 0){
       html += "<div class='bildirim-bolum-baslik'>▶️ Açık Süreçler</div>";
       acikListe.forEach(function(b){
-        var kodRenk = TIP_KOD_RENK[b.tip] || "#003a70";
-        html += "<div class='acik-surec-karti' style='border-left:6px solid " + SEVIYE_RENK[b.seviye] + ";'>"
-          + "<div class='acik-surec-ust'>"
-          + "<div class='acik-surec-musteri'>" + cariSatirHTML(b.musteriId, b.musteri, b.sehir) + "</div>"
-          + "<div class='acik-surec-seviye' style='color:" + SEVIYE_RENK[b.seviye] + ";'>" + SEVIYE_ETIKET[b.seviye] + "</div>"
-          + "</div>"
-          + "<div class='acik-surec-detay'>"
-          + "<span style='font-weight:800;color:" + kodRenk + ";'>" + kanalHarfHTML(b.kanal) + htmlEsc(b.kod||TIP_ETIKET_B[b.tip]) + "</span>"
-          + " · " + b.urunSayisi + " ürün · <b>" + fmt(b.tutar) + " EURO</b> · <b>" + b.gun + " gün önce</b></div>"
-          + "<div class='acik-surec-buton-satir'>"
-          + "<button class='acik-surec-ilerlet-btn' data-ilerlet='" + htmlEsc(JSON.stringify({tip:b.tip, ts:b.ts})) + "'>▶️ İlerlet</button>"
-          + (b.seviye==="kritik" ? "<button class='acik-surec-sil-btn' data-sil-tip='" + b.tip + "' data-sil-ts='" + b.ts + "'>🗑 Sil</button>" : "")
-          + "</div>"
+        var veri = htmlEsc(JSON.stringify({tip:b.tip, ts:b.ts, musteri:b.musteri, kod:(b.kod||TIP_ETIKET_B[b.tip]), tutar:b.tutar, gun:b.gun, kritik:b.seviye==="kritik"}));
+        html += "<div class='acik-surec-satir' style='border-left:4px solid " + SEVIYE_RENK[b.seviye] + ";' data-veri='" + veri + "'>"
+          + "<span class='as-kod'>" + htmlEsc(b.musteriId||"") + "</span>"
+          + "<span class='as-firma'>" + htmlEsc(b.musteri) + "</span>"
+          + "<span class='as-sep'>·</span>"
+          + "<span class='as-islem-no tiklanabilir-bilgi' data-belge-tip='" + b.tip + "' data-belge-ts='" + b.ts + "'>" + htmlEsc(b.kod||TIP_ETIKET_B[b.tip]) + " ↗</span>"
+          + "<span class='as-gun'>" + b.gun + " gün önce</span>"
+          + "<span class='as-ok'>›</span>"
           + "</div>";
       });
     }
@@ -163,12 +158,37 @@ function bildirimleriCiz(){
         window.location.href = "belge-onizleme.html";
       };
     });
-    icerik.querySelectorAll("[data-ilerlet]").forEach(function(btn){
-      btn.onclick = function(){ ilerletTiklandi(JSON.parse(this.getAttribute("data-ilerlet"))); };
+    // Açık Süreçler satırı (23.09.2026): işlem no'ya (mavi/altı çizgili/↗)
+    // dokununca doğrudan o belgenin gerçek tablosu açılır; satırın geri
+    // kalanına dokununca tutar + İlerlet/Sil'in olduğu detay penceresi
+    // açılır — işlem no orada da aynı şekilde tıklanabilir.
+    function belgeyiAc(tip, ts){
+      localStorage.setItem("weiconv2_goruntulenen_belge", JSON.stringify({tip:tip, ts:parseFloat(ts)}));
+      window.location.href = "belge-onizleme.html";
+    }
+    icerik.querySelectorAll(".as-islem-no").forEach(function(el){
+      el.onclick = function(ev){
+        ev.stopPropagation();
+        belgeyiAc(this.getAttribute("data-belge-tip"), this.getAttribute("data-belge-ts"));
+      };
     });
-    icerik.querySelectorAll("[data-sil-tip]").forEach(function(btn){
-      btn.onclick = function(){ acikSureciSil(this.getAttribute("data-sil-tip"), parseFloat(this.getAttribute("data-sil-ts"))); };
+    icerik.querySelectorAll(".acik-surec-satir").forEach(function(satir){
+      satir.onclick = function(){
+        var veri = JSON.parse(this.getAttribute("data-veri"));
+        document.getElementById("sdBaslik").textContent = veri.musteri;
+        var kodLink = document.getElementById("sdKodLink");
+        kodLink.textContent = (veri.kod||"") + " ↗";
+        document.getElementById("sdTutar").textContent = fmt(veri.tutar) + " EURO";
+        document.getElementById("sdSure").textContent = veri.gun + " gün önce";
+        document.getElementById("sdIlerlet").onclick = function(){ ilerletTiklandi({tip:veri.tip, ts:veri.ts}); };
+        var sdSil = document.getElementById("sdSil");
+        sdSil.hidden = !veri.kritik;
+        sdSil.onclick = function(){ acikSureciSil(veri.tip, veri.ts); };
+        kodLink.onclick = function(){ belgeyiAc(veri.tip, veri.ts); };
+        document.getElementById("surecDetayOverlay").hidden = false;
+      };
     });
+    document.getElementById("sdKapat").onclick = function(){ document.getElementById("surecDetayOverlay").hidden = true; };
     icerik.querySelectorAll(".ziyaret-hatirlat-karti").forEach(function(kart){
       kart.onclick = function(){
         var musteri = CustomerData.musteriBul(this.getAttribute("data-musteri"));

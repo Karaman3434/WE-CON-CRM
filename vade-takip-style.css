@@ -20,6 +20,13 @@
   font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 11px;
   white-space: nowrap; flex-shrink: 0; cursor: pointer; user-select: none;
   transition: opacity .15s;
+  /* Tıklanabilir bilgi kuralı (23.09.2026): rengi durum anlamını taşıdığı
+     için (kırmızı=geçti, yeşil=ödendi/var vb.) MAVİYE çevrilmedi — ama
+     "buna dokununca bir şey olur" işareti olarak noktalı alt çizgi
+     eklendi; yazının sonuna da ↗ ekleniyor (bkz. vade-takip-ui.js). */
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
 }
 .vt-rozet:active { opacity: .6; }
 
