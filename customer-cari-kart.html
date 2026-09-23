@@ -122,6 +122,20 @@
     </div>
   </div>
 
+  <!-- Açık Teklif Uyarısı (22.09.2026) — "SİPARİŞ" seçilince, aynı
+       müşteride henüz siparişe dönüşmemiş bir teklif/proforma/numune
+       varsa burada uyarır. Ürün eşleştirmesi yapmaz — sadece "açık bir
+       şey var mı" kontrolü. -->
+  <div class="tip-secim-overlay" id="acikBelgeUyariOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik" style="color:#7a5c00;">⚠ Bu müşteride açık bir belge var</div>
+      <p class="ck-not-aciklama" id="acikBelgeUyariMetin" style="margin:0 0 10px;"></p>
+      <div class="ck-sil-uyari-notu" id="acikBelgeUyariKayit" style="background:#fff;border-color:#e8c368;color:#333;font-weight:700;margin-bottom:12px;"></div>
+      <button class="cari-islemedevam-buton" id="btnAcikBelgeKullan" style="width:100%;margin-bottom:8px;">📄 Bu belgeyi kullan</button>
+      <button class="tip-secim-vazgec-btn" id="btnAcikBelgeYeniSiparis">Hayır, bambaşka bir sipariş oluşturuyorum</button>
+    </div>
+  </div>
+
 </main>
 
 <!-- "Hangisini düzenlemek/silmek istiyorsun?" seçici -->
@@ -168,12 +182,12 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.130926.2010.553"></script>
 <script src="musteri-serit.js?v=WG.220926.2300.603"></script>
-<script src="reports-data.js?v=WG.210926.2044.591"></script>
+<script src="reports-data.js?v=WG.230926.2005.610"></script>
 <script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
 <script src="vade-takip-data.js?v=WG.210926.2044.591"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-cari-kart.html", "Cari Bilgi"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="cari-kart-render.js?v=WG.220926.2331.604"></script>
+<script src="cari-kart-render.js?v=WG.230926.2005.610"></script>
 </body>
 </html>

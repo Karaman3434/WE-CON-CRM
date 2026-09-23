@@ -1,33 +1,35 @@
-WE-CON-CRM — B/A kod kesilmesi düzeltildi: tek satır garantisi + renk
-kuralı (B kırmızı, A mavi)
-Sürüm: WG.230926.1452.609
+WE-CON-CRM — Açık Teklif Uyarısı: Sipariş oluştururken açık teklif/
+proforma varsa hatırlatır
+Sürüm: WG.230926.2005.610
 
-KURAL (bundan sonra geçerli, programdaki TÜM tablolar için):
-1) Tablodaki tüm rakam/harfler %10 küçüldü (LİSTE, İSK, NET, TOPLAM,
-   PRİM, ürün adı, başlıklar).
-2) B (Berta) / A (Abas) kod satırı AYRICA %20 küçüldü ve KESİNLİKLE tek
-   satırda kalır — asla 2. satıra sarmaz, asla kayma yaşanmaz. Bu net bir
-   kural olarak koda yazıldı (yorum satırlarında da belirtildi).
-3) YENİ renk kuralı: B (Berta) ile başlayan kod — harf DAHİL tüm numara —
-   artık KIRMIZI. A (Abas) ile başlayan kod — harf dahil tüm numara —
-   artık MAVİ (WEICON'un kendi lacivert tonu, #003a70). Eskiden sadece
-   tek harf (B/A) renkliydi, numaralar düz siyahtı — artık kodun TAMAMI
-   renkli, hangi kodun nereye ait olduğu tek bakışta netleşiyor.
+NASIL ÇALIŞIYOR
+İşlemler → İşlem Yap'tan "SİPARİŞ"e dokunduğunda, sistem SADECE şunu
+kontrol eder: "bu müşteride, henüz siparişe dönüşmemiş bir Teklif/
+Proforma/Numune var mı?" — ÜRÜNLERE HİÇ BAKMAZ, sadece müşteri + durum
+kontrolü (senin de haklı olarak işaret ettiğin gibi ürün eşleştirmesi
+güvenilmez olurdu).
 
-NEREYE UYGULANDI (B/A kodunun göründüğü HER yer)
-- belge-render.js: Belge Önizleme
-- hareket-tablo.js: Sepet
-- send-render.js: Gönder ekranı / müşteriye giden görsel
-- product-render.js: Ürün Bul arama sonuçları + Hit Ürünler listesi
+Varsa, devam etmeden önce durdurur:
+  "⚠ Bu müşteride açık bir belge var" — hangi belge, hangi tarih, hangi
+  tutar, gösterir. İki seçenek:
+  - "📄 Bu belgeyi kullan" → o belgenin ürünleri Sepet'e yüklenir, eski
+    belge kapanır, yeni sipariş ondan doğar (Bildirimler'deki "İlerlet"
+    ile BİREBİR AYNI, güvenilir mekanizma — hiçbir yeni kod icat
+    edilmedi, var olan altyapı çağrıldı).
+  - "Hayır, bambaşka bir sipariş oluşturuyorum" → normal akış, sıfırdan
+    devam eder.
 
-DEĞİŞEN DOSYALAR (7)
-1) belge-render.js, 2) hareket-tablo.js, 3) send-render.js,
-4) product-render.js, 5) belge-style.css, 6) product-style.css
-7) belge-onizleme.html, cart.html, customer-detail.html, product.html,
-   send.html (cache-bust)
-+ home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
+Yoksa (açık belge yoksa) hiçbir şey değişmez, akış eskisi gibi sorunsuz
+devam eder.
 
-Telefonda denenmedi. Yüklemeden sonra: 1) uzun bir Abas kodunun artık
-kesilmeden tam göründüğünü, 2) B kodunun kırmızı, A kodunun mavi
-olduğunu, 3) kod satırının hâlâ tek satırda kaldığını (2. satıra
-inmediğini) kontrol et.
+DEĞİŞEN DOSYALAR (3)
+1) reports-data.js — yeni musterininAcikBelgesi() fonksiyonu
+2) customer-cari-kart.html — uyarı penceresi eklendi
+3) cari-kart-render.js — "SİPARİŞ" seçilince kontrol + uyarı akışı
++ belge-onizleme.html, home.html, vade-takip.html, bildirimler.html
+  (reports-data.js cache-bust)
++ ayarlar-render.js, ayarlar.html (sürüm senkronu)
+
+Telefonda denenmedi. Yüklemeden sonra: bir müşteriye teklif oluştur,
+sonra AYNI müşteride İşlem Yap → SİPARİŞ'e dokun — uyarının çıktığını,
+"Bu belgeyi kullan"a basınca ürünlerin Sepet'e geldiğini kontrol et.

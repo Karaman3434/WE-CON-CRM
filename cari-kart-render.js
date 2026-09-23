@@ -30,6 +30,10 @@ function hataGoster(mesaj){
   setTimeout(function(){ kutu.remove(); }, 8000);
 }
 
+// Açık Teklif Uyarısı (22.09.2026) için küçük yardımcılar.
+function fmt(n){ return (n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+var TIP_ETIKET_B = {numune:"Numune", teklif:"Fiyat Teklifi", proforma:"Proforma Fatura", siparis:"Sipariş"};
+
 var seciliMusteriAdi = null;
 var musteriVerisi = null;
 
@@ -513,12 +517,54 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("btnTipSecimVazgec").onclick = function(){ document.getElementById("tipSecimOverlay").hidden = true; };
     document.getElementById("tipSecimOverlay").querySelectorAll(".tip-btn").forEach(function(btn2){
       btn2.onclick = function(){
-        localStorage.setItem("weiconv2_onceden_secilen_tip", this.getAttribute("data-tip"));
-        localStorage.setItem("weiconv2_secili_iletisim", JSON.stringify(secimler));
-        localStorage.removeItem("weiconv2_islem_yap_akisi");
-        window.location.href = "product.html";
+        var secilenTip = this.getAttribute("data-tip");
+        // Açık Teklif Uyarısı (22.09.2026): sadece "SİPARİŞ" seçilince ve
+        // sadece bu müşteride henüz siparişe dönüşmemiş bir teklif/
+        // proforma/numune varsa devreye girer.
+        if(secilenTip === "siparis" && typeof ReportsData !== "undefined" && musteriVerisi){
+          var acikBelge = ReportsData.musterininAcikBelgesi(musteriVerisi.ad);
+          if(acikBelge){
+            document.getElementById("tipSecimOverlay").hidden = true;
+            acikBelgeUyariGoster(acikBelge);
+            return;
+          }
+        }
+        siparisAkisinaDevamEt(secilenTip);
       };
     });
+    document.getElementById("btnAcikBelgeYeniSiparis").onclick = function(){
+      document.getElementById("acikBelgeUyariOverlay").hidden = true;
+      siparisAkisinaDevamEt("siparis");
+    };
+
+    function siparisAkisinaDevamEt(secilenTip){
+      localStorage.setItem("weiconv2_onceden_secilen_tip", secilenTip);
+      localStorage.setItem("weiconv2_secili_iletisim", JSON.stringify(secimler));
+      localStorage.removeItem("weiconv2_islem_yap_akisi");
+      window.location.href = "product.html";
+    }
+
+    function acikBelgeUyariGoster(acikBelge){
+      var etiket = TIP_ETIKET_B ? TIP_ETIKET_B[acikBelge.tip] : acikBelge.tip;
+      document.getElementById("acikBelgeUyariMetin").textContent =
+        musteriVerisi.ad + " için, henüz siparişe dönüşmemiş bir " + (etiket||acikBelge.tip) + " bulundu:";
+      document.getElementById("acikBelgeUyariKayit").textContent =
+        (acikBelge.kod||"") + " · " + (acikBelge.tarih||"") + " · " + fmt(acikBelge.tutar) + " EURO";
+      document.getElementById("btnAcikBelgeKullan").onclick = function(){
+        document.getElementById("acikBelgeUyariOverlay").hidden = true;
+        ilerletFonksiyonuCagir(acikBelge);
+      };
+      document.getElementById("acikBelgeUyariOverlay").hidden = false;
+    }
+
+    // Bildirimler sayfasındaki "İlerlet" ile BİREBİR aynı mekanizma: eski
+    // belgeyi Sepet'e yükler, kaydedilince eski belge otomatik kapanır.
+    function ilerletFonksiyonuCagir(acikBelge){
+      var tumu = ReportsData.sonIslemler();
+      var k = tumu.find(function(x){ return x.tip===acikBelge.tip && x.ts===acikBelge.ts; });
+      if(!k){ hataGoster("Kayıt bulunamadı."); return; }
+      ReportsData.revizeBaslat(k, "siparis");
+    }
   }
 
   var cariKapatBtnEl = document.getElementById("cariKapatBtn");

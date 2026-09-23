@@ -310,6 +310,29 @@ var ReportsData = (function(){
     }).sort(function(a,b){ return b.gun-a.gun; });
   }
 
+  // Bu müşteride, henüz siparişe (veya sonraki aşamaya) dönüşmemiş en son
+  // teklif/proforma/numune kaydını döndürür (yoksa null). Ürün eşleştirmesi
+  // YAPMAZ — sadece "bu müşteride açık bir şey var mı" sorusuna cevap verir
+  // (22.09.2026, "Açık Teklif Uyarısı" özelliği).
+  function musterininAcikBelgesi(musteriAdi){
+    var anahtar = (musteriAdi||"").toLocaleLowerCase("tr-TR").trim();
+    if(!anahtar) return null;
+    var tumu = sonIslemler();
+    var bekleyenTipler = ["teklif","proforma","numune"];
+    var adaylar = tumu.filter(function(k){
+      return bekleyenTipler.indexOf(k.tip)>=0 && (k.musteri||"").toLocaleLowerCase("tr-TR").trim()===anahtar;
+    });
+    if(!adaylar.length) return null;
+    adaylar.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+    var enYeni = adaylar[0];
+    var sonrasindaSiparisVar = tumu.some(function(s){
+      return s.tip==="siparis" && (s.musteri||"").toLocaleLowerCase("tr-TR").trim()===anahtar && (s.ts||0) > (enYeni.ts||0);
+    });
+    if(sonrasindaSiparisVar) return null;
+    var tutar = (enYeni.urunler||[]).reduce(function(s,u){ return s+(u.toplamEuro||0); }, 0);
+    return {tip:enYeni.tip, ts:enYeni.ts, kod:enYeni.kod, tarih:enYeni.tarih||"", tutar:tutar};
+  }
+
   function acikSurecleriHesapla(){
     var tumu = sonIslemler();
     var siparisler = tumu.filter(function(k){ return k.tip==="siparis"; });
@@ -556,6 +579,7 @@ var ReportsData = (function(){
     arsivDegistiginde: arsivDegistiginde,
     gorevDegistiginde: gorevDegistiginde,
     sonIslemler: sonIslemler,
+    musterininAcikBelgesi: musterininAcikBelgesi,
     tumSiparisler: tumSiparisler,
     gorevleriGetir: gorevleriGetir,
     gorevEkle: gorevEkle,
