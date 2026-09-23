@@ -124,7 +124,7 @@ function belgeyiCiz(kayit, musteri){
       var primHucre = item.ozelEtiket === "bedelsiz" ? "🎁 Bedelsiz" : (ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<span class='belge-td-prim-tek'>"+paraHtml(satirPrimTl.toLocaleString("tr-TR"),"TL")+"</span>")));
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
-        + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(item.berta||"-") + " - <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(item.abas||"-") + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
+        + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(item.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(item.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
         + "<td>" + paraHtml(fmt(item.listeFiyat||0),"EURO") + "</td>"
         + "<td><span class='belge-isk-metin'>" + paraHtml((item.iskonto||0), "%") + "</span></td>"

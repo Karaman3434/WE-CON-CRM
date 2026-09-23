@@ -63,7 +63,7 @@ function sonuclariCiz(){
       var eklendi = ProductData.sepetteMi(idx);
       html += "<tr>"
         + "<td class='product-cell product-cell--tikla' data-arama='" + htmlEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "'>"
-        + "<div class='tablo-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(bilgi.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(bilgi.abas||"-") + "</div>"
+        + "<div class='tablo-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(bilgi.berta||"-") + "</span> <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(bilgi.abas||"-") + "</span>" + "</div>"
         + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span></div>"
         + "</td>"
         + "<td><span class='tablo-fiyat" + (bilgi.fiyat >= 1000 ? " tablo-fiyat--buyuk" : "") + "'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
@@ -211,7 +211,7 @@ function ozelListeyiAc(baslik, liste){
   } else {
     govde.innerHTML = liste.slice(0,30).map(function(u,i){
       return "<tr data-i='" + i + "'>"
-        + "<td class='hit-urun-sira-ad'>" + (i+1) + ". " + htmlEsc(u.ad) + "<div class='hit-urun-kod'><span class='kod-harf kod-harf--b'>B</span> " + htmlEsc(u.berta||"-") + " <span class='kod-harf kod-harf--a'>A</span> " + htmlEsc(u.abas||"-") + "</div></td>"
+        + "<td class='hit-urun-sira-ad'>" + (i+1) + ". " + htmlEsc(u.ad) + "<div class='hit-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div></td>"
         + "<td class='hit-urun-adet'>" + u.adet + "</td>"
         + "<td>📊</td>"
         + "</tr>";
