@@ -1,48 +1,34 @@
-WE-CON-CRM — Bildirimler (Açık Süreçler) yeniden tasarımı + tıklanabilir
-bilgi kuralı
-Sürüm: WG.230926.0954.605
+WE-CON-CRM — GENEL TOPLAM şeridi: bitişik etiket/rakam + kur cümlesi
+Sürüm: WG.230926.1013.606
 
-1) AÇIK SÜREÇLER — tek satır, %10 küçük yazı, 6px boşluk
-   bildirimler-render.js, bildirimler-style.css: Her satır artık TEK satır
-   — müşteri kodu, firma adı (uzunsa "…" ile kısalır), işlem no, "X gün
-   önce". Sağdaki eski "33+ gün — İNCELE" rozeti KALDIRILDI — sadece "X
-   gün önce" var. Aciliyet artık sadece sol kenarın rengiyle (kırmızı/
-   turuncu) gösteriliyor. İlerlet/Sil butonları artık satırda değil.
+1) BELGE ÖNİZLEME (belge-render.js) — kaydedilmiş bir belgeye Bildirimler'
+   deki işlem no üzerinden veya İşlemler'den girildiğinde görülen ekran:
+   - "GENEL TOPLAM" etiketi ve rakamı artık bitişik, tek grup olarak
+     sağda duruyor (aralarındaki büyük boşluk kalktı).
+   - Kur bilgisi kaydedilmişse, artık "Hesaplanan Kur / 56,11 Euro" gibi
+     cılız iki satır yerine "Bu işlemde 56,11 kuru kullanıldı" tek cümlesi
+     var. Kur kaydedilmemiş eski kayıtlarda bu cümle hiç görünmez (eskisi
+     gibi).
 
-2) SATIRA DOKUNMA → DETAY PENCERESİ
-   Satırın (işlem no hariç) herhangi bir yerine dokununca: firma adı TAM
-   haliyle, işlem no (tıklanabilir), TUTAR (artık görünüyor), süre, ve
-   İlerlet/Sil butonlarının olduğu bir pencere açılıyor. "Sil" sadece en
-   acil (kritik) süreçlerde görünüyor — eskisiyle aynı kural.
+2) SEPET (hareket-tablo.js) — aynı şerit zaten bitişikti, sadece kur
+   cümlesinin ifadesi Belge Önizleme ile AYNI olsun diye güncellendi:
+   "Bu işlemde 56,11 kuru kullanıldı" (manuel kur girilmişse başına ✏️
+   ekleniyor). Tıklanabilirlik ve diğer davranışlar aynı kaldı.
 
-3) İŞLEM NO'YA DOKUNMA → DOĞRUDAN BELGE
-   Hem listedeki hem detay penceresindeki işlem numarasına dokununca,
-   Son İşlemler'deki ile aynı mekanizmayla doğrudan o kaydın gerçek
-   tablosu (Belge Önizleme) açılıyor.
+3) GÖNDER EKRANI / MÜŞTERİYE GİDEN GÖRSEL (send-render.js) — SADECE
+   bitişik etiket/rakam düzeltmesi uygulandı. Kur cümlesi BURAYA
+   EKLENMEDİ çünkü bu, müşteriye giden resmi belgenin kendisi — döviz kuru
+   metodolojisini müşteriye açıklamak ayrı bir karar, onay almadım.
+   İstersen bunu da ekleyebilirim.
 
-4) TIKLANABİLİR BİLGİ KURALI — programda ortak bir standart
-   Yeni .tiklanabilir-bilgi sınıfı: mavi renk + noktalı alt çizgi + sonunda
-   ↗. Bu, "buna dokununca bir şey açılır" demek — kart/buton değil, düz
-   metin gibi duran ama aslında tıklanabilen yerler için.
-   Şimdilik uygulandığı 2 yer: (a) yukarıdaki işlem no bağlantısı,
-   (b) Vade Takip'teki "X GÜN GECİKTİ" vb. rozet — ORADA rengi mavi
-   YAPMADIM, çünkü kırmızı/turuncu/yeşil rengi zaten önemli bir anlam
-   taşıyor (aciliyet); sadece noktalı alt çizgi + ↗ eklendi, renk aynı
-   kaldı. Programın geri kalanındaki başka tıklanabilir-ama-işaretsiz
-   yerleri bulup bu kurala bağlamak istersen ayrıca söyle — bu, ayrı bir
-   tarama/liste gerektiren büyük bir iş, bu build'e dahil değil.
-
-KAPSAM: Bu değişiklikler SADECE "Açık Süreçler" bölümünü kapsıyor;
-"Beklemede Siparişler" ve "Ziyaret Hatırlatmaları" bölümlerine
-dokunulmadı (hangisini istediğin netleşmemişti).
-
-DEĞİŞEN DOSYALAR (7)
-1) bildirimler.html, 2) bildirimler-render.js, 3) bildirimler-style.css
-4) vade-takip-ui.js, 5) vade-takip-style.css
-6) customer-detail.html, 7) vade-takip.html (cache-bust)
+DEĞİŞEN DOSYALAR (8)
+1) belge-render.js, 2) hareket-tablo.js, 3) send-render.js,
+4) belge-style.css,
+5) belge-onizleme.html, 6) cart.html, 7) send.html (cache-bust)
++ 8) customer-detail.html, product.html (belge-style.css cache-bust)
 + home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
 
-Telefonda denenmedi. Yüklemeden sonra: 1) Bildirimler'de bir Açık Süreç
-satırına dokunup detay penceresinin (tutar dahil) açıldığını, 2) işlem
-no'ya dokununca doğrudan belgeye gittiğini, 3) Vade Takip'te rozetlerin
-altı çizgili göründüğünü kontrol et.
+Telefonda denenmedi. Yüklemeden sonra kur bilgisi kayıtlı bir işlemi
+(örn. Sepet'te Kaydet ile yeni oluşturduğun bir sipariş, ya da Bildirimler
+üzerinden açtığın eski bir kayıt) açıp GENEL TOPLAM şeridinin yeni halini
+kontrol et.
