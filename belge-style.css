@@ -233,6 +233,20 @@
   white-space: normal;
   word-break: break-word;
 }
+/* KURAL (23.09.2026) — programdaki HER sayısal tablo için standart, bu üç
+   base kuraldan SONRA gelmeli ki "border: none" onu ezmesin:
+   1) ince dikey sütun çizgileri, 2) zebra (bir satır çok hafif gri, bir
+   satır beyaz), 3) sabit genişlikli rakam (tabular-nums) — sayılar yan
+   yana geldiğinde kaymaz, karıştırma ihtimali azalır. Zebra, Sepet
+   sayfasındaki HESAPLANACAK/HESAPLANDI renkli grup satırlarını (sarı/
+   yeşil) EZMEZ — o satırlar kendi anlamlı rengini korur, zebra sadece
+   düz (renksiz) satırlara uygulanır. */
+.belge-urun-tablo th, .belge-urun-tablo td { border-right: 1px solid #e2e6ec; }
+.belge-urun-tablo th:last-child, .belge-urun-tablo td:last-child { border-right: none; }
+.belge-urun-tablo td { font-variant-numeric: tabular-nums; }
+.belge-urun-tablo tbody tr:not(.hareket-satir--sari):not(.hareket-satir--yesil):nth-child(even) td {
+  background: #f7f9fc;
+}
 .belge-para-birim { display: block; font-size: 9.5px; font-weight: 700; color: #5f6b7a; line-height: 1.15; }
 .belge-para-sayi { white-space: nowrap; }
 .belge-td-sira { color: #8a96a3; font-weight: 600; }

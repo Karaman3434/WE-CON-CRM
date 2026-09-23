@@ -335,6 +335,12 @@ body {
   font-size: 13.5px;
   color: #1a1a1a;
 }
+/* KURAL (23.09.2026) — bkz. belge-style.css .belge-urun-tablo: aynı üç
+   standart burada da — dikey çizgi, zebra, sabit genişlikli rakam. */
+.data-table th, .data-table td { border-right: 1px solid #e2e6ec; }
+.data-table th:last-child, .data-table td:last-child { border-right: none; }
+.data-table td { font-variant-numeric: tabular-nums; }
+.data-table tbody tr:nth-child(even) td { background: #f7f9fc; }
 .col-urun { width: auto; }
 .col-euro { width: 90px; }
 .col-islem { width: 80px; }

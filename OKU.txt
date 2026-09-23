@@ -1,34 +1,37 @@
-WE-CON-CRM — GENEL TOPLAM şeridi: bitişik etiket/rakam + kur cümlesi
-Sürüm: WG.230926.1013.606
+WE-CON-CRM — Tablo okunabilirlik standardı (C seçeneği): dikey çizgi +
+zebra + sabit genişlikli rakam
+Sürüm: WG.230926.1031.607
 
-1) BELGE ÖNİZLEME (belge-render.js) — kaydedilmiş bir belgeye Bildirimler'
-   deki işlem no üzerinden veya İşlemler'den girildiğinde görülen ekran:
-   - "GENEL TOPLAM" etiketi ve rakamı artık bitişik, tek grup olarak
-     sağda duruyor (aralarındaki büyük boşluk kalktı).
-   - Kur bilgisi kaydedilmişse, artık "Hesaplanan Kur / 56,11 Euro" gibi
-     cılız iki satır yerine "Bu işlemde 56,11 kuru kullanıldı" tek cümlesi
-     var. Kur kaydedilmemiş eski kayıtlarda bu cümle hiç görünmez (eskisi
-     gibi).
+KURAL (bundan sonra geçerli): Programdaki her sayısal tablo şu üçünü
+birlikte kullanır:
+1) İnce, açık gri dikey sütun çizgileri.
+2) Zebra — bir satır çok hafif gri zemin, bir satır beyaz (satır satır
+   takip kolaylaşsın diye).
+3) Sabit genişlikli rakam (tabular-nums) — "1" ile "8" yan yana
+   geldiğinde kaymaz, komşu sütunlardaki sayılar (örn. NET ve PRİM)
+   birbirine karışmaz.
 
-2) SEPET (hareket-tablo.js) — aynı şerit zaten bitişikti, sadece kur
-   cümlesinin ifadesi Belge Önizleme ile AYNI olsun diye güncellendi:
-   "Bu işlemde 56,11 kuru kullanıldı" (manuel kur girilmişse başına ✏️
-   ekleniyor). Tıklanabilirlik ve diğer davranışlar aynı kaldı.
+Para birimi (EURO/TL) etiketleri HİÇBİR YERDE kaldırılmadı/dokunulmadı —
+zaten var olan kural, sadece teyit edildi.
 
-3) GÖNDER EKRANI / MÜŞTERİYE GİDEN GÖRSEL (send-render.js) — SADECE
-   bitişik etiket/rakam düzeltmesi uygulandı. Kur cümlesi BURAYA
-   EKLENMEDİ çünkü bu, müşteriye giden resmi belgenin kendisi — döviz kuru
-   metodolojisini müşteriye açıklamak ayrı bir karar, onay almadım.
-   İstersen bunu da ekleyebilirim.
+NEREYE UYGULANDI (programdaki tüm canlı/kullanılan sayısal tablolar)
+- belge-style.css → .belge-urun-tablo: Sepet, Belge Önizleme, Gönder
+  ekranı/müşteriye giden görsel — hepsi bu TEK sınıfı paylaşıyor.
+  Zebra, Sepet'teki HESAPLANACAK/HESAPLANDI (sarı/yeşil) grup renklerini
+  EZMEZ — o satırlar kendi anlamlı rengini koruyor, zebra sadece düz
+  (renksiz) satırlara uygulanıyor.
+- product-style.css → .data-table: Ürün Bul arama sonuçları ve Hit
+  Ürünler tablosu.
 
-DEĞİŞEN DOSYALAR (8)
-1) belge-render.js, 2) hareket-tablo.js, 3) send-render.js,
-4) belge-style.css,
-5) belge-onizleme.html, 6) cart.html, 7) send.html (cache-bust)
-+ 8) customer-detail.html, product.html (belge-style.css cache-bust)
+Sütun sırası, başlıklar, içerik — HİÇBİRİNE dokunulmadı, sadece görsel
+ayrım katmanı eklendi.
+
+DEĞİŞEN DOSYALAR (7)
+1) belge-style.css, 2) product-style.css
+3) belge-onizleme.html, 4) cart.html, 5) customer-detail.html,
+6) product.html, 7) send.html (cache-bust)
 + home.html, ayarlar-render.js, ayarlar.html (sürüm senkronu)
 
-Telefonda denenmedi. Yüklemeden sonra kur bilgisi kayıtlı bir işlemi
-(örn. Sepet'te Kaydet ile yeni oluşturduğun bir sipariş, ya da Bildirimler
-üzerinden açtığın eski bir kayıt) açıp GENEL TOPLAM şeridinin yeni halini
-kontrol et.
+Telefonda denenmedi. Yüklemeden sonra birden fazla ürünlü bir Sepet veya
+Belge Önizleme tablosunu açıp sütunlar arası çizgiyi, satır satır renk
+farkını ve sayıların artık daha net ayrıldığını kontrol et.
