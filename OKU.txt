@@ -1,28 +1,38 @@
-WE-CON-CRM — Araç KM Excel Renkleri + Avans Harcamalar Küçük Düzeltmeler
-Sürüm: WG.240926.1559.619
+WE-CON-CRM — KM Kayıtları Ayrı Sayfa + Düzeltme (Ana Sayfa'dan Kaldırıldı)
+(620'yi DE İÇEREN TAM PAKET)
+Sürüm: WG.240926.1959.621
 
-1) ARAÇ KM — EXCEL'E AKTARINCA TASARIM/RENKLER ARTIK KORUNUYOR
-Önemli bulgu: "Excel'e Aktar" butonu şu ana kadar hafta sonu/tatil/
-rapor/izin/bayram satırlarını SARI ile işaretlemiyordu — bu kodda hiç
-yoktu (sadece ekrandaki tabloda vardı, bej renkte). Şimdi ekledim:
-Excel çıktısında bu satırlar artık SARI zeminle otomatik işaretleniyor
-(klasik vurgu kalemi sarısı), başlık satırı da bej/turuncu temaya
-çevrildi. Artık her "Excel'e Aktar" bastığında bu tasarım OTOMATİK
-üretiliyor — koda bağlı olduğu için gelecekte bozulmayacak.
+ÖNEMLİ: Bunu yüklediğinde 620'yi ayrıca yüklemene GEREK YOK — bu paket
+620 + 621'in TAMAMINI içeriyor. (Az önceki 621 paketi TEK BAŞINA
+eksikti — km-kayitlar.html, km-kayitlar-render.js, km-style.css,
+km-data.js gibi 620'de eklenen/değişen dosyaları içermiyordu; sadece
+onu yükleseydin "Bu Ayın Kayıtları" linki çalışmaz, yeni panolar da
+stilsiz görünürdü.)
 
-2) AVANS TAKİBİ — HARCAMALAR BÖLÜMÜ
-- "+" işareti kaldırıldı, artık AVANS EKLE'deki gibi gerçek "Ekle"
-  yazan bir buton var.
-- Tarih kutusu küçültüldü (AVANS EKLE'dekiyle aynı boyut), diğer
-  alanlara (Çeşit, Tutar) biraz daha yer açıldı.
+NE VAR (620 + 621 birleşik, özet)
+- "Bu Ayın Kayıtlarını Tablo Olarak Göster" artık ayrı bir sayfa açıyor
+  (km-kayitlar.html) — üstte YILLIK TOPLAM (2026) ve AYLIK TOPLAM
+  panoları (İş/Özel KM), altında tablo + Kaydet + Excel'e Aktar.
+- Araç KM'nin GÜNLÜK TAKİP sayfasında (km.html), formun altında
+  "AYLIK TOPLAM · [ay]" panosu (İş/Özel KM) — Ana Sayfa'da DEĞİL,
+  düzeltildi.
+- Ana Sayfa eskisi gibi, KM kartı yok.
 
-DEĞİŞEN DOSYALAR (3)
-1) km-render.js — Excel'e Aktar'da sarı/bej renklendirme
-2) avans-takibi.html — Harcamalar Ekle butonu
-3) maas-hesaplama-style.css — Harcamalar giriş satırı boyutları
-+ ayarlar-render.js, ayarlar.html, home.html (sürüm senkronu)
+DEĞİŞEN / YENİ DOSYALAR (TAMAMI — 620 + 621 birleşik)
+1) km-kayitlar.html (yeni) — Yıllık/Aylık toplam + tablo + Excel
+2) km-kayitlar-render.js (yeni) — sayfanın mantığı
+3) km.html — Aylık Toplam panosu (günlük takip sayfasında)
+4) km-render.js — pano hesaplama + taşınan kod temizliği
+5) km-style.css — yeni pano stilleri
+6) km-data.js — yeni yilinKayitlari() fonksiyonu
+7) home.html — KM kartı YOK (düzeltildi, eskisi gibi)
+8) home-render.js — KM panosu kodu yok (düzeltildi)
+9) home-style.css — kullanılmayan renk kaldırıldı
++ kisisel.html, maas-hesaplama.html (km-data.js cache-bust)
++ ayarlar-render.js, ayarlar.html + home-style.css kullanan diğer ~37
+  sayfa (cache-bust)
 
-Telefonda/tablette denenmedi. Yüklemeden sonra: Araç KM'de bir ayı
-Excel'e aktarıp hafta sonu/tatil satırlarının sarı geldiğini, Avans
-Takibi'nde Harcamalar'daki "Ekle" butonunun ve küçülen tarih kutusunun
-göründüğünü kontrol et.
+Telefonda/tablette denenmedi. Yüklemeden sonra: Ana Sayfa'da KM kartı
+OLMADIĞINI, Araç KM'nin günlük sayfasında Aylık Toplam panosunu,
+"Bu Ayın Kayıtları"na basınca yeni sayfanın (Yıllık/Aylık toplamlarıyla)
+açıldığını kontrol et.

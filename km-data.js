@@ -232,6 +232,14 @@ var KmData = (function(){
       .map(function(k){ return Object.assign({anahtar:k}, kayitlar[k]); });
   }
 
+  // Belirli bir yılın (ör. "2026") TÜM aylarındaki kayıtlarını döndürür —
+  // KM Kayıtları sayfasındaki "YILLIK TOPLAM" panosu için (24.09.2026).
+  function yilinKayitlari(yil){
+    return Object.keys(kayitlar)
+      .filter(function(k){ return k.indexOf(yil+"-")===0; })
+      .map(function(k){ return Object.assign({anahtar:k}, kayitlar[k]); });
+  }
+
   // Kayıt bulunan TÜM ayları ("YYYY-MM") en yeniden en eskiye sıralı
   // döndürür — ay seçici menüsünü doldurmak için. Bu ayda hiç kayıt
   // olmasa bile mevcut ay listeye eklenir (seçenek olarak görünsün diye).
@@ -301,6 +309,7 @@ var KmData = (function(){
     tarihiDegistir: tarihiDegistir,
     buAyinKayitlari: buAyinKayitlari,
     ayinKayitlari: ayinKayitlari,
+    yilinKayitlari: yilinKayitlari,
     kayitliAylar: kayitliAylar,
     ayAdiUret: ayAdiUret,
     ayarlarOku: ayarlarOku,

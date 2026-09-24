@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST V2 — VERSİYON: WG.240926.1923.620 — km-kayitlar.html
+  =====================================================================
+  KM KAYITLARI (24.09.2026) — Araç KM sayfasındaki "Bu Ayın Kayıtlarını
+  Tablo Olarak Göster" artık burayı AÇAR (eskiden aynı sayfada aşağı
+  açılıyordu). Üstte YILLIK TOPLAM ve AYLIK TOPLAM panoları (İş/Özel
+  ayrımıyla), altında ay seçici + gerçek/düzenlenebilir tablo + Kaydet +
+  Excel'e Aktar — hepsi eskisiyle aynı mantık, sadece kendi sayfasında.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — KM Kayıtları</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.240926.1959.621">
+<link rel="stylesheet" href="km-style.css?v=WG.240926.1923.620">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="km.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+<div class="rota-etiketi">Araç KM › <b>Kayıtlar</b></div>
+
+<main class="sayfa">
+
+  <div class="km-toplam-grup-baslik">YILLIK TOPLAM · <span id="kmYilEtiket">2026</span></div>
+  <section class="km-toplam-satir">
+    <div class="km-toplam-kutu km-toplam-kutu--is-dolu">
+      <div class="km-toplam-kutu-etiket">İŞ KM</div>
+      <div class="km-toplam-kutu-deger" id="kmYilToplamIs">0 km</div>
+    </div>
+    <div class="km-toplam-kutu km-toplam-kutu--ozel-dolu">
+      <div class="km-toplam-kutu-etiket">ÖZEL KM</div>
+      <div class="km-toplam-kutu-deger" id="kmYilToplamOzel">0 km</div>
+    </div>
+  </section>
+
+  <div class="km-toplam-grup-baslik">AYLIK TOPLAM · <span id="kmAyEtiket">bu ay</span></div>
+  <section class="km-toplam-satir">
+    <div class="km-toplam-kutu km-toplam-kutu--is">
+      <div class="km-toplam-kutu-etiket">İŞ KM</div>
+      <div class="km-toplam-kutu-deger" id="kmAyToplamIs">0 km</div>
+    </div>
+    <div class="km-toplam-kutu km-toplam-kutu--ozel">
+      <div class="km-toplam-kutu-etiket">ÖZEL KM</div>
+      <div class="km-toplam-kutu-deger" id="kmAyToplamOzel">0 km</div>
+    </div>
+  </section>
+
+  <select class="km-ay-secici" id="kmAySecici"></select>
+
+  <div class="km-tablo-baslik-satir">
+    <div class="km-tablo-baslik" id="kmTabloBaslik">Bu Ayın Kayıtları</div>
+    <div class="km-tablo-baslik-butonlar">
+      <button class="km-tablo-kaydet-buton" id="btnKmTabloKaydet">✓ Kaydet</button>
+      <button class="excel-buton" id="btnExcel">📊 Excel'e Aktar</button>
+    </div>
+  </div>
+  <div class="data-table-container">
+    <table class="data-table km-veri-tablo">
+      <thead><tr>
+        <th>Tarih</th><th>Saat</th><th>Güzergah</th><th>Ziyaret</th><th>Başlangıç KM</th><th>Bitiş KM</th><th>İş KM</th><th>Özel KM</th>
+      </tr></thead>
+      <tbody id="kmTabloGovde"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.130926.2010.553"></script>
+<script src="auth.js?v=WG.220926.2331.604"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="km-data.js?v=WG.240926.1923.620"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="km-kayitlar-render.js?v=WG.240926.1923.620"></script>
+</body>
+</html>
