@@ -291,6 +291,16 @@
 .km-toplam-kutu--is { background: #eaf2fc; border: 1.5px solid #003a70; color: #003a70; }
 .km-toplam-kutu--ozel { background: #f6f0fd; border: 1.5px solid #8e44ad; color: #8e44ad; }
 
+/* KM KAYITLARI sayfası (km-kayitlar.html) — YILLIK/AYLIK TOPLAM panoları
+   arası boşluk azaltıldı, panoların kendi yüksekliği %10 küçültüldü
+   (24.09.2026). Sadece bu sayfaya özel — km.html'deki günlük panoyu
+   etkilemez. */
+.kmk-sayfa .km-toplam-grup-baslik { margin: 3px 2px 4px; }
+.kmk-sayfa .km-toplam-satir { gap: 6px; margin-bottom: 10px; }
+.kmk-sayfa .km-toplam-kutu { padding: 9px; }
+.kmk-sayfa .km-toplam-kutu-etiket { font-size: 9px; }
+.kmk-sayfa .km-toplam-kutu-deger { font-size: 15.5px; margin-top: 2px; }
+
 .km-veri-tablo td[contenteditable] {
   cursor: text;
 }
