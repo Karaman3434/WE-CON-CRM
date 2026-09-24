@@ -1,35 +1,56 @@
-WE-CON-CRM — Açık Teklif Uyarısı: Sipariş oluştururken açık teklif/
-proforma varsa hatırlatır
-Sürüm: WG.230926.2005.610
+WE-CON-CRM — Ticari İsim/Adres/Yetkili İsmi Yazım Standardı
+Sürüm: WG.240926.0752.611
 
 NASIL ÇALIŞIYOR
-İşlemler → İşlem Yap'tan "SİPARİŞ"e dokunduğunda, sistem SADECE şunu
-kontrol eder: "bu müşteride, henüz siparişe dönüşmemiş bir Teklif/
-Proforma/Numune var mı?" — ÜRÜNLERE HİÇ BAKMAZ, sadece müşteri + durum
-kontrolü (senin de haklı olarak işaret ettiğin gibi ürün eşleştirmesi
-güvenilmez olurdu).
+Artık kaydedilen her ticari isim, açık adres, fatura/teslimat adresi ve
+yetkili ismi otomatik olarak şu kurala göre yazılıyor:
 
-Varsa, devam etmeden önce durdurur:
-  "⚠ Bu müşteride açık bir belge var" — hangi belge, hangi tarih, hangi
-  tutar, gösterir. İki seçenek:
-  - "📄 Bu belgeyi kullan" → o belgenin ürünleri Sepet'e yüklenir, eski
-    belge kapanır, yeni sipariş ondan doğar (Bildirimler'deki "İlerlet"
-    ile BİREBİR AYNI, güvenilir mekanizma — hiçbir yeni kod icat
-    edilmedi, var olan altyapı çağrıldı).
-  - "Hayır, bambaşka bir sipariş oluşturuyorum" → normal akış, sıfırdan
-    devam eder.
+- Ticari isim / adres / liste isimleri: SADECE ilk kelimenin ilk harfi
+  büyük, devamı küçük.
+    DALYAN MAK. HIRD          -> Dalyan mak. hırd
+    Öz-Tür Civata             -> Öz-tür civata
+    TAMEK SAGRA GRUP GIDA...  -> Tamek sagra grup gıda...
 
-Yoksa (açık belge yoksa) hiçbir şey değişmez, akış eskisi gibi sorunsuz
-devam eder.
+- Adreste özel isim istisnası: Cad./Sok./Bulvarı/Mah./Sitesi/Apt. gibi
+  adres son eklerinden hemen önceki kelime(ler) özel isim sayılır, ilk
+  harfleri büyük kalır (rakamlı kelimede — no/kapı numarası — durur):
+    ATATÜRK CAD. NO:12        -> Atatürk Cad. no:12
+    AHMET ÜÇOK BULVARI NO:5   -> Ahmet Üçok Bulvarı no:5
+  NOT: Bu bir sezgi/yaklaşım, %100 hatasız özel isim tespiti mümkün
+  değil — ama Cad./Sok./Bulvarı/Mah. gibi yaygın son eklerin hemen
+  öncesini doğru yakalıyor.
+
+- Yetkili ismi: ad kısmı ilk harf büyük devamı küçük, SOYAD tamamen
+  büyük:
+    ABDURRAHMAN KARAMAN       -> Abdurrahman KARAMAN
+    mehmet öztürk             -> Mehmet ÖZTÜRK
+
+Bu kural hem YENİ girilen kayıtlara otomatik uygulanıyor, hem de
+Ayarlar sayfasına eklenen yeni bir butonla MEVCUT tüm kayıtlara tek
+seferlik uygulanabiliyor (Kodları Standartlaştır butonunun hemen
+altında): "🔤 İsim/Adres Yazımını Düzelt (İlk Harf Büyük)" — geri
+alınamaz, onay penceresi var, kaç alanın değiştiğini gösteriyor.
+
+Kapsam dışı: müşteri ürün isimleri, şehir alanı — bunlara dokunulmadı.
 
 DEĞİŞEN DOSYALAR (3)
-1) reports-data.js — yeni musterininAcikBelgesi() fonksiyonu
-2) customer-cari-kart.html — uyarı penceresi eklendi
-3) cari-kart-render.js — "SİPARİŞ" seçilince kontrol + uyarı akışı
-+ belge-onizleme.html, home.html, vade-takip.html, bildirimler.html
-  (reports-data.js cache-bust)
-+ ayarlar-render.js, ayarlar.html (sürüm senkronu)
+1) customer-data.js — unvanDurumuYap(), adresDurumuYap(),
+   yetkiliIsimDurumuYap() yeni yazım fonksiyonları; yeniMusteriKaydet,
+   musteriGuncelle, musteriAdresEkle/Guncelle, musteriTekAdresKaydet,
+   yetkiliEkle/Guncelle, musteriTekYetkiliKaydet bu kurala göre
+   yazıyor artık. Yeni yaziminiDuzelt() = geriye dönük tek seferlik
+   düzeltme (Ayarlar > Bakım butonuyla tetiklenir).
+2) ayarlar.html — yeni "🔤 İsim/Adres Yazımını Düzelt" butonu
+3) ayarlar-render.js — buton kablolaması + APP_VERSION senkronu
++ customer-data.js'i kullanan diğer 22 sayfa (cache-bust için sürüm
+  damgası güncellendi): ay-detay, belge-onizleme, bildirimler, calc,
+  cart, customer-add, customer-cari-kart, customer-detail,
+  customer-hub, customer-temas, customer, gecmis, gorevler, home,
+  menu, product, reports, sehir-plaka-kodlari, send, son-islemler,
+  takip-gerekenler, vade-takip, ziyaret
++ home.html — alt bilgi sürüm etiketi senkronu
 
-Telefonda denenmedi. Yüklemeden sonra: bir müşteriye teklif oluştur,
-sonra AYNI müşteride İşlem Yap → SİPARİŞ'e dokun — uyarının çıktığını,
-"Bu belgeyi kullan"a basınca ürünlerin Sepet'e geldiğini kontrol et.
+Telefonda denenmedi. Yüklemeden sonra: bir müşteri kaydında adı/adresi
+TAMAMEN BÜYÜK harfle girip kaydet, otomatik düzeldiğini gör. Sonra
+Ayarlar'daki yeni butona basıp mevcut eski kayıtların da (Bildirimler'
+deki DALYAN MAK. HIRD gibi) düzeldiğini kontrol et.

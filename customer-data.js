@@ -304,6 +304,132 @@ var CustomerData = (function(){
     return "M-" + String(maxNo+1).padStart(4, "0");
   }
 
+  // ---- YAZIM DÜZENİ (WG.240926.611): ticari isim / adres / yetkili ismi
+  // otomatik büyük-küçük harf standardı. Kural (Abdullah'ın tarifiyle):
+  //  - Ticari isim, açık adres, fatura/teslimat adresi, liste isimleri:
+  //    sadece İLK kelimenin ilk harfi büyük, devamı küçük — ADRES son eki
+  //    (Cad./Sok./Bulvarı/Mah. vb.) geçen özel isimler istisna, onların
+  //    ilk harfleri korunur (Atatürk Cad., Ahmet Üçok Bulvarı gibi).
+  //  - Yetkili ismi: ad kısmı ilk harf büyük devamı küçük, SOYAD tamamen
+  //    büyük (Abdurrahman KARAMAN gibi).
+  // Bu %100 kusursuz özel-isim tespiti YAPAMAZ (basit bir sözlük sezgisi),
+  // ama pratikte adres son eklerinin hemen öncesini doğru yakalar.
+  var ADRES_OZEL_ISIM_EKLERI = ["cad.","cad","caddesi","sok.","sok","sokak","sokağı",
+    "bulvarı","bulvar","blv.","mah.","mah","mahallesi","apt.","apt","apartmanı",
+    "sitesi","sit.","köyü","mevkii"];
+
+  function ilkHarfBuyukYap(kelime){
+    if(!kelime) return kelime;
+    return kelime.charAt(0).toLocaleUpperCase("tr-TR") + kelime.slice(1).toLocaleLowerCase("tr-TR");
+  }
+
+  // Sadece ilk kelimenin ilk harfi büyük, devamı küçük (ticari isim kuralı).
+  function unvanDurumuYap(metin){
+    var t = (metin||"").trim();
+    if(!t) return t;
+    var boslukla = t.split(/\s+/);
+    return boslukla.map(function(k, i){ return i===0 ? ilkHarfBuyukYap(k) : k.toLocaleLowerCase("tr-TR"); }).join(" ");
+  }
+
+  // unvanDurumuYap ile aynı + adres son eklerinden önceki (en fazla 2)
+  // kelimeyi "özel isim" sayıp büyük harfle bırakan istisna.
+  function adresDurumuYap(metin){
+    var t = (metin||"").trim();
+    if(!t) return t;
+    var kelimeler = t.split(/\s+/);
+    var sonuc = kelimeler.map(function(k, i){ return i===0 ? ilkHarfBuyukYap(k) : k.toLocaleLowerCase("tr-TR"); });
+    sonuc.forEach(function(k, i){
+      var temiz = k.toLocaleLowerCase("tr-TR").replace(/[.,]/g, "");
+      if(ADRES_OZEL_ISIM_EKLERI.indexOf(temiz) === -1) return;
+      // Ek kelimesinin kendisi de büyük harfle başlar (Cad., Bulvarı gibi).
+      sonuc[i] = ilkHarfBuyukYap(sonuc[i]);
+      // Ekten hemen önceki 1-2 kelimeyi büyült; rakam içeren kelimede dur
+      // (sokak/no numaraları özel isim sayılmaz).
+      for(var geri=1; geri<=2; geri++){
+        var idx = i - geri;
+        if(idx < 0) break;
+        if(/\d/.test(sonuc[idx])) break;
+        if(ADRES_OZEL_ISIM_EKLERI.indexOf(sonuc[idx].toLocaleLowerCase("tr-TR").replace(/[.,]/g,"")) > -1) break;
+        sonuc[idx] = ilkHarfBuyukYap(sonuc[idx]);
+      }
+    });
+    return sonuc.join(" ");
+  }
+
+  // Yetkili ismi kuralı: ad kısmı(word'ler) ilk harf büyük devamı küçük,
+  // SON kelime (soyad) tamamen büyük.
+  function yetkiliIsimDurumuYap(metin){
+    var t = (metin||"").trim();
+    if(!t) return t;
+    var kelimeler = t.split(/\s+/).filter(function(k){ return k; });
+    if(kelimeler.length === 0) return t;
+    if(kelimeler.length === 1) return ilkHarfBuyukYap(kelimeler[0]);
+    var soyad = kelimeler[kelimeler.length-1];
+    var adKismi = kelimeler.slice(0, -1).map(ilkHarfBuyukYap);
+    return adKismi.join(" ") + " " + soyad.toLocaleUpperCase("tr-TR");
+  }
+
+  // kisi objesindeki isim alanına yetkiliIsimDurumuYap uygulayıp kopyasını
+  // döner (orijinal objeye dokunmadan).
+  function kisiIsimDuzelt(kisi){
+    if(!kisi || !kisi.isim) return kisi;
+    var kopya = {};
+    for(var f in kisi){ if(kisi.hasOwnProperty(f)) kopya[f] = kisi[f]; }
+    kopya.isim = yetkiliIsimDurumuYap(kisi.isim);
+    return kopya;
+  }
+
+  // TEK SEFERLİK GÖÇ: mevcut tüm kayıtlardaki ticari isim/adres/yetkili
+  // ismini yukarıdaki kurala göre yeniden yazar (Ayarlar > Bakım butonu).
+  function yaziminiDuzelt(geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    try{
+      var db = firebase.database();
+      var sayac = 0;
+      var mutateHatasi = null;
+      db.ref("musteriler").transaction(function(currentData){
+        var tazeListe = currentData ? (Array.isArray(currentData) ? currentData.filter(Boolean) : Object.values(currentData)) : [];
+        try{
+          sayac = 0;
+          return tazeListe.map(function(m){
+            var kopya = {};
+            for(var k in m){ if(m.hasOwnProperty(k)) kopya[k] = m[k]; }
+            if(kopya.ad){ var yeniAd = unvanDurumuYap(kopya.ad); if(yeniAd !== kopya.ad){ kopya.ad = yeniAd; sayac++; } }
+            if(kopya.acikAdres){ var yeniAcik = adresDurumuYap(kopya.acikAdres); if(yeniAcik !== kopya.acikAdres){ kopya.acikAdres = yeniAcik; sayac++; } }
+            ["faturaAdresleri","teslimatAdresleri"].forEach(function(alan){
+              if(Array.isArray(kopya[alan])){
+                kopya[alan] = kopya[alan].map(function(a){
+                  if(!a || !a.adres) return a;
+                  var yeni = adresDurumuYap(a.adres);
+                  if(yeni === a.adres) return a;
+                  sayac++;
+                  return {etiket: a.etiket, adres: yeni};
+                });
+              }
+            });
+            if(Array.isArray(kopya.iletisimler)){
+              kopya.iletisimler = kopya.iletisimler.map(function(kisi){
+                if(!kisi || !kisi.isim) return kisi;
+                var yeniIsim = yetkiliIsimDurumuYap(kisi.isim);
+                if(yeniIsim === kisi.isim) return kisi;
+                sayac++;
+                var kisiKopya = {};
+                for(var f in kisi){ if(kisi.hasOwnProperty(f)) kisiKopya[f] = kisi[f]; }
+                kisiKopya.isim = yeniIsim;
+                return kisiKopya;
+              });
+            }
+            return kopya;
+          });
+        }catch(e){ mutateHatasi = e; return; }
+      }).then(function(result){
+        if(mutateHatasi){ cb(false, mutateHatasi); return; }
+        if(!result || !result.committed){ cb(false, new Error("Kayıt güncellenemedi — tekrar dene.")); return; }
+        cb(true, sayac);
+      }).catch(function(err){ cb(false, err); });
+    }catch(e){ cb(false, e); }
+  }
+
   // ---- TEK SEFERLİK GÖÇ (WG.100926.196): tüm müşteri kodlarını
   // "M-XXXX" standardına çevirir, geriye {eskiId: yeniId} eşleşmesi
   // döner ki arşiv kayıtları da buna göre güncellenebilsin. ----
@@ -443,9 +569,9 @@ var CustomerData = (function(){
     guvenliYaz(function(tazeListe){
       yeniKayit = {
         id: musteriIdUret(tazeListe, bilgi.sehir),
-        ad: bilgi.ad.trim(),
+        ad: unvanDurumuYap(bilgi.ad),
         sehir: (bilgi.sehir||"").trim(),
-        acikAdres: (bilgi.acikAdres||"").trim(),
+        acikAdres: adresDurumuYap(bilgi.acikAdres),
         vade: (bilgi.vade||"").trim(),
         fatura: (bilgi.fatura||"").trim(),
         telefon: (bilgi.telefon||"").trim(),
@@ -458,10 +584,10 @@ var CustomerData = (function(){
         // Adresi sayılır — "Fatura Adresi: Girilmemiş" görünüp de aslında
         // bir adres girilmiş olması durumunu önler.
         faturaAdresleri: (bilgi.acikAdres && bilgi.acikAdres.trim())
-          ? [{etiket:"Fatura Adresi", adres: bilgi.acikAdres.trim()}]
+          ? [{etiket:"Fatura Adresi", adres: adresDurumuYap(bilgi.acikAdres)}]
           : [],
         teslimatAdresleri: (bilgi.teslimatAdresi && bilgi.teslimatAdresi.trim())
-          ? [{etiket:"Teslimat Adresi", adres: bilgi.teslimatAdresi.trim()}]
+          ? [{etiket:"Teslimat Adresi", adres: adresDurumuYap(bilgi.teslimatAdresi)}]
           : []
       };
       tazeListe.unshift(yeniKayit);
@@ -478,7 +604,7 @@ var CustomerData = (function(){
       // kayıtlarının da eşzamanlı taşınması gerekir (bkz.
       // ReportsData.kayitlariBirlestir); cari-kart-render.js bu ikisini
       // birlikte, doğru sırayla çağırır.
-      if(guncelBilgi.ad !== undefined) tazeListe[idx].ad = guncelBilgi.ad;
+      if(guncelBilgi.ad !== undefined) tazeListe[idx].ad = unvanDurumuYap(guncelBilgi.ad);
       if(guncelBilgi.vade !== undefined) tazeListe[idx].vade = guncelBilgi.vade;
       if(guncelBilgi.fatura !== undefined) tazeListe[idx].fatura = guncelBilgi.fatura;
       if(guncelBilgi.kargo !== undefined) tazeListe[idx].kargo = guncelBilgi.kargo;
@@ -492,7 +618,7 @@ var CustomerData = (function(){
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       if(!tazeListe[idx][alan]) tazeListe[idx][alan] = [];
-      tazeListe[idx][alan].push({etiket: etiket || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi"), adres: adres});
+      tazeListe[idx][alan].push({etiket: etiket || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi"), adres: adresDurumuYap(adres)});
     }, geriBildir);
   }
 
@@ -512,7 +638,7 @@ var CustomerData = (function(){
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       if(!tazeListe[idx][alan] || !tazeListe[idx][alan][adresIdx]) throw new Error("Adres bulunamadı");
-      tazeListe[idx][alan][adresIdx] = {etiket: etiket, adres: adres};
+      tazeListe[idx][alan][adresIdx] = {etiket: etiket, adres: adresDurumuYap(adres)};
     }, geriBildir);
   }
 
@@ -521,7 +647,7 @@ var CustomerData = (function(){
       var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].iletisimler) tazeListe[idx].iletisimler = [];
-      tazeListe[idx].iletisimler.push(kisi);
+      tazeListe[idx].iletisimler.push(kisiIsimDuzelt(kisi));
     }, geriBildir);
   }
 
@@ -539,7 +665,7 @@ var CustomerData = (function(){
       var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       if(!tazeListe[idx].iletisimler || !tazeListe[idx].iletisimler[kisiIdx]) throw new Error("Kişi bulunamadı");
-      tazeListe[idx].iletisimler[kisiIdx] = kisi;
+      tazeListe[idx].iletisimler[kisiIdx] = kisiIsimDuzelt(kisi);
     }, geriBildir);
   }
 
@@ -553,7 +679,7 @@ var CustomerData = (function(){
       var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
-      tazeListe[idx][alan] = [{etiket: tip==="fatura"?"Fatura Adresi":"Teslimat Adresi", adres: adres||""}];
+      tazeListe[idx][alan] = [{etiket: tip==="fatura"?"Fatura Adresi":"Teslimat Adresi", adres: adresDurumuYap(adres||"")}];
     }, geriBildir);
   }
 
@@ -570,7 +696,7 @@ var CustomerData = (function(){
     guvenliYaz(function(tazeListe){
       var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
-      tazeListe[idx].iletisimler = [kisi];
+      tazeListe[idx].iletisimler = [kisiIsimDuzelt(kisi)];
     }, geriBildir);
   }
 
@@ -710,6 +836,7 @@ var CustomerData = (function(){
     ilKoduSil: ilKoduSil,
     musteriIdIleBul: musteriIdIleBul,
     idleriStandartlastir: idleriStandartlastir,
+    yaziminiDuzelt: yaziminiDuzelt,
     arsivMusteriIdGuncelle: arsivMusteriIdGuncelle,
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,

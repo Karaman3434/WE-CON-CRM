@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.230926.2005.610";
+var APP_VERSION = "WG.240926.0752.611";
 
 function hataGoster(mesaj){
   console.error(mesaj);
@@ -107,6 +107,29 @@ document.addEventListener("DOMContentLoaded", function(){
         }
         sonucEl.textContent = "✓ Tamamlandı — " + eslesmeSayisi + " müşteri kodu M-XXXX formatına çevrildi, geçmiş kayıtlar güncellendi.";
       });
+    });
+  };
+  document.getElementById("btnYaziminiDuzelt").onclick = function(){
+    var onay = confirm(
+      "⚠️ Bu işlem TÜM müşteri kayıtlarındaki ticari isim, açık adres, fatura/teslimat adresi ve yetkili ismini yeni yazım standardına (ilk harf büyük, devamı küçük — yetkili soyadı hariç) çevirir.\n\n" +
+      "Bu işlem GERİ ALINAMAZ. Devam etmek istiyor musun?"
+    );
+    if(!onay) return;
+    if(typeof CustomerData === "undefined"){ hataGoster("Müşteri veri modülü yüklenemedi."); return; }
+    var btn = this;
+    var sonucEl = document.getElementById("yazimDuzeltSonuc");
+    btn.disabled = true;
+    btn.textContent = "⏳ Kayıtlar güncelleniyor...";
+    sonucEl.textContent = "";
+    CustomerData.yaziminiDuzelt(function(basarili, sayacVeyaHata){
+      btn.disabled = false;
+      btn.textContent = "🔤 İsim/Adres Yazımını Düzelt (İlk Harf Büyük)";
+      if(!basarili){
+        sonucEl.textContent = "❌ Yazım düzeltilemedi: " + (sayacVeyaHata && sayacVeyaHata.message ? sayacVeyaHata.message : sayacVeyaHata);
+        hataGoster("Yazım düzeltme başarısız: " + (sayacVeyaHata && sayacVeyaHata.message ? sayacVeyaHata.message : sayacVeyaHata));
+        return;
+      }
+      sonucEl.textContent = "✓ Tamamlandı — " + sayacVeyaHata + " alan güncellendi.";
     });
   };
   document.getElementById("btnKurSimdiDene").onclick = function(){
