@@ -1,6 +1,13 @@
 /* pin-style.css — login-style.css'in üzerine eklenir. */
 
-.giris-kutu { text-align: center; }
+/* PIN paneli — login-style.css'teki genel .giris-kutu'nun üzerine bu
+   sayfaya özel daha kısa/dar sürümü (24.09.2026, %20 küçültme isteği). */
+.giris-kutu {
+  text-align: center;
+  max-width: 320px;
+  margin: 48px auto;
+  padding: 26px 19px;
+}
 
 .pin-bilgi {
   font-size: 13px;
@@ -14,7 +21,7 @@
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin: 24px 0;
+  margin: 19px 0;
 }
 .pin-nokta {
   width: 18px;
@@ -38,14 +45,14 @@
 .pin-tus-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin: 20px 0;
+  gap: 8px;
+  margin: 16px 0;
 }
 .pin-tus {
   background: #f5f7fa;
   border: none;
   border-radius: 10px;
-  padding: 18px;
+  padding: 14.4px;
   font-size: 22px;
   font-weight: 800;
   color: #003a70;

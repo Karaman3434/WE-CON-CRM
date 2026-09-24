@@ -1,38 +1,56 @@
-WE-CON-CRM — KM Kayıtları Ayrı Sayfa + Düzeltme (Ana Sayfa'dan Kaldırıldı)
-(620'yi DE İÇEREN TAM PAKET)
-Sürüm: WG.240926.1959.621
+WEICON ASİST — Yoğunluk / Boşluk Azaltma Güncellemesi
+Sürüm: WG.240926.2123.622
+(WG.240926.1959.621'i DE İÇEREN TAM PAKET — o zip'i henüz yüklemediysen
+sorun değil, bu paket her şeyi kapsıyor: Kişisel sayfası, Avans Takibi
+kritik veri kaybı düzeltmesi + yeniden tasarımı, Araç KM Kayıtlar sayfası,
+Türkçe yazım standardizasyonu, mail otomasyonu — hepsi bu zip'te var.)
 
-ÖNEMLİ: Bunu yüklediğinde 620'yi ayrıca yüklemene GEREK YOK — bu paket
-620 + 621'in TAMAMINI içeriyor. (Az önceki 621 paketi TEK BAŞINA
-eksikti — km-kayitlar.html, km-kayitlar-render.js, km-style.css,
-km-data.js gibi 620'de eklenen/değişen dosyaları içermiyordu; sadece
-onu yükleseydin "Bu Ayın Kayıtları" linki çalışmaz, yeni panolar da
-stilsiz görünürdü.)
+DEĞİŞEN DOSYALAR
 
-NE VAR (620 + 621 birleşik, özet)
-- "Bu Ayın Kayıtlarını Tablo Olarak Göster" artık ayrı bir sayfa açıyor
-  (km-kayitlar.html) — üstte YILLIK TOPLAM (2026) ve AYLIK TOPLAM
-  panoları (İş/Özel KM), altında tablo + Kaydet + Excel'e Aktar.
-- Araç KM'nin GÜNLÜK TAKİP sayfasında (km.html), formun altında
-  "AYLIK TOPLAM · [ay]" panosu (İş/Özel KM) — Ana Sayfa'da DEĞİL,
-  düzeltildi.
-- Ana Sayfa eskisi gibi, KM kartı yok.
+1) home-style.css
+   - Geri / Ana Sayfa / Menü nav-tuşlarının yer aldığı kutuların
+     yüksekliği ~%20 azaltıldı (dikey padding, ikon/etiket font
+     boyutları küçültüldü)
+   - Gösterge Paneli ile nav-tuş satırı arasındaki boşluk ~%20 azaltıldı
+   - Gösterge Paneli ile Hızlı İşlemler kutuları arasındaki boşluk ~%20
+     azaltıldı (ayraç ve başlık satırı boşlukları küçültüldü)
+   - "Günün Özeti" (mor) panelinin yüksekliği ~%20 azaltıldı (padding,
+     başlık boşluğu ve büyük sayı font boyutu küçültüldü)
 
-DEĞİŞEN / YENİ DOSYALAR (TAMAMI — 620 + 621 birleşik)
-1) km-kayitlar.html (yeni) — Yıllık/Aylık toplam + tablo + Excel
-2) km-kayitlar-render.js (yeni) — sayfanın mantığı
-3) km.html — Aylık Toplam panosu (günlük takip sayfasında)
-4) km-render.js — pano hesaplama + taşınan kod temizliği
-5) km-style.css — yeni pano stilleri
-6) km-data.js — yeni yilinKayitlari() fonksiyonu
-7) home.html — KM kartı YOK (düzeltildi, eskisi gibi)
-8) home-render.js — KM panosu kodu yok (düzeltildi)
-9) home-style.css — kullanılmayan renk kaldırıldı
-+ kisisel.html, maas-hesaplama.html (km-data.js cache-bust)
-+ ayarlar-render.js, ayarlar.html + home-style.css kullanan diğer ~37
-  sayfa (cache-bust)
+2) pin-style.css
+   - PIN kodu giriş panelinin (.giris-kutu) yüksekliği ve genişliği bu
+     sayfaya özel olarak ~%20 azaltıldı/daraltıldı (login.html
+     etkilenmedi — sadece PIN ekranına özel kural eklendi)
+   - PIN noktaları ve tuş takımı boşlukları/iç dolgusu orantılı küçültüldü
 
-Telefonda/tablette denenmedi. Yüklemeden sonra: Ana Sayfa'da KM kartı
-OLMADIĞINI, Araç KM'nin günlük sayfasında Aylık Toplam panosunu,
-"Bu Ayın Kayıtları"na basınca yeni sayfanın (Yıllık/Aylık toplamlarıyla)
-açıldığını kontrol et.
+3) km.html
+   - İş KM / Özel KM aylık toplam panosu, "Günü Kaydet" butonunun
+     altından alınıp Bugünün Kilometresi girişinin yapıldığı kutunun EN
+     ÜST satırına taşındı
+
+4) km-style.css
+   - km-kayitlar.html (Araç KM › Kayıtlar) sayfasına özel yeni kural
+     seti (.kmk-sayfa) eklendi: YILLIK TOPLAM / AYLIK TOPLAM panoları
+     arasındaki boşluk azaltıldı, panoların kendi yüksekliği ~%10
+     küçültüldü. km.html'deki günlük panoyu ETKİLEMEDİ (ayrı kural).
+
+5) km-kayitlar.html
+   - <main> etiketine "kmk-sayfa" sınıfı eklendi (yukarıdaki CSS
+     kuralının sadece bu sayfada geçerli olması için)
+
+DAĞITIM ÖNCESİ SÜRÜM SENKRONU (içerik değişmedi, sadece cache-bust
+damgası WG.240926.2123.622 yapıldı)
+   - home-style.css'i çeken TÜM sayfalar (yaklaşık 40 dosya)
+   - km-style.css'i çeken km.html ve km-kayitlar.html
+   - ayarlar-render.js (APP_VERSION), ayarlar.html, home.html
+     (versiyon etiketi)
+
+NOT: pin-style.css hiçbir zaman cache-bust numarası taşımamış (pin.html
+ve cihazlar.html'de sürümsüz link) — mevcut düzen korundu.
+
+DAĞITIM
+Bu paketin İÇİNDE proje kökündeki TÜM dosyalar var (kümülatif, 621'i
+DE içeriyor). Kendi GitHub Pages / proje klasörünüzün üzerine bu
+paketin tamamını kopyalayıp üzerine yazmanız yeterli.
+
+Telefonda/tablette denenmedi.
