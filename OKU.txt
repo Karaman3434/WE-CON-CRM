@@ -1,38 +1,38 @@
-WE-CON-CRM — Kişisel Kutucuğu (gizli) + Araç KM Hatırlatma Notu
-Sürüm: WG.240926.1332.615
+WE-CON-CRM — Avans Takibi: Kritik Hata Düzeltmesi + Yeniden Tasarım
+(616'yı DA İÇEREN TAM PAKET)
+Sürüm: WG.240926.1431.617
 
-1) KİŞİSEL KUTUCUĞU
-Ana Sayfa'nın Gösterge Paneli'nden "HESABA YATACAK" tamamen kaldırıldı
-— artık hiç kimse Ana Sayfa'ya bakınca bir TL rakamı görmüyor. İŞ GÜNÜ
-KALDI artık tek başına geniş bir kutu.
+ÖNEMLİ: Bunu yüklediğinde 616'yı ayrıca yüklemene GEREK YOK — bu
+paket ikisinin de TAMAMINI içeriyor. (Az önceki 617 paketi TEK
+BAŞINA eksikti — avans-kayit-data.js'i içermiyordu, ama yeni
+avans-takibi-render.js artık ona bağımlı; sadece o paketi yükleseydin
+sayfa hata verip bozulurdu. Bu yüzden tekrar, tam olarak hazırladım.)
 
-Hızlı İşlemler'in en altına, sadece "🔒 Kişisel" yazan, rakamsız bir
-kutucuk eklendi. Buna dokununca yeni bir sayfa açılıyor (kisisel.html):
-  - HESABA YATACAK göstergesi (sarı kutu, eskisiyle birebir aynı canlı
-    rakam, dokununca Maaş+Prim Hesaplama'ya gidiyor)
-  - 📁 MAAŞ klasörü (Maaş+Prim Hesaplama / Ödenebilir Komisyon / Avans
-    Takibi) — Raporlar'dan buraya taşındı, Raporlar'da artık yok
+1) KRİTİK HATA DÜZELTMESİ (616)
+Avans Takibi'ne girip "Geri" ile çıktıktan sonra sayfa yanlış aya
+(kapatılmış olan Ağustos'a) düşüp her şey boş görünüyordu. Artık
+sayfa, hem kapatılmış ayların listesi hem taslak verisi tam gelmeden
+hangi ayın açık olduğuna karar vermiyor — Eylül'e girdiğin veriler
+geri gelmeli.
 
-maas-menu.html'in "Geri" tuşu ve üst yazısı artık Raporlar yerine
-Kişisel'e dönüyor (çünkü artık oranın üst klasörü orası).
+2) YENİDEN TASARIM (617)
+- Tek "AVANS EKLE" bölümü, başında tıklanan tip düğmesi (İŞ ▾/ÖZEL ▾)
+- Küçültülmüş tarih kutusu + gerçek "Ekle" yazan buton
+- Birleşik, etiketli (İŞ/ÖZEL) tek liste
+- Kırmızı "Kalan İş Avansı" / "Alınan Özel Avans" kutusu
+- ℹ️ ile açılan bilgi popup'ı (açıklama + "ay kapalı" uyarısı artık
+  kalıcı yer kaplamıyor)
+- Başlığın yanında ay özeti rozeti
+- Her ekleme/silmeden sonra 2 saniyelik "✓ Kaydedildi" şeridi
 
-2) ARAÇ KM — HATIRLATMA NOTU
-Araç KM sayfasında, "📋 Bu Ayın Kayıtlarını Tablo Olarak Göster"
-butonunun ÜSTÜNE, aynı genişlikte turuncu çerçeveli bir panel eklendi.
-Panele dokununca bir popup açılıyor, oraya serbest metin yazıp
-"✓ Kaydet"e basıyorsun — panel o metni gösteriyor. Şu an TEK bir not
-alanı (üzerine yazılan) — istersen ileride tarihli/birikimli bir
-listeye çevirebiliriz.
+DEĞİŞEN / YENİ DOSYALAR (TAMAMI — 616 + 617 birleşik)
+1) avans-kayit-data.js — kayitlarYuklendiMi() bayrağı
+2) avans-takibi-render.js — hem hata düzeltmesi hem yeni tasarım
+3) avans-takibi.html — yeniden kurgulanan yapı
+4) avans-takibi-style.css (yeni dosya)
++ kisisel.html, maas-hesaplama.html (cache-bust)
++ ayarlar-render.js, ayarlar.html, home.html (sürüm senkronu)
 
-DEĞİŞEN / YENİ DOSYALAR
-Yeni: kisisel.html, kisisel-render.js
-Değişen (mantık): home.html, home-render.js, home-style.css,
-  detail-style.css, raporlar.html, maas-menu.html, km.html,
-  km-style.css, km-render.js, km-data.js, ayarlar-render.js, ayarlar.html
-+ home-style.css/detail-style.css'i kullanan diğer ~37 sayfa
-  (sadece cache-bust — içerikleri değişmedi)
-
-Telefonda/tablette denenmedi. Yüklemeden sonra: Ana Sayfa'da hiçbir TL
-rakamı görünmediğini, "Kişisel"e dokununca Hesaba Yatacak + Maaş'ın
-geldiğini, Raporlar'da Maaş'ın artık olmadığını, Araç KM'de yeni
-panele not yazıp kaydedebildiğini kontrol et.
+Telefonda/tablette denenmedi. Yüklemeden sonra: Eylül'deki eski
+verilerin geri geldiğini, tip düğmesinin/birleşik listenin/kaydedildi
+şeridinin çalıştığını kontrol et.

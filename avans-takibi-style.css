@@ -1,0 +1,158 @@
+/* avans-takibi-style.css — 24.09.2026 yeniden tasarım:
+   tek AVANS EKLE satırı (tip düğmesi + Ekle), birleşik liste, kırmızı
+   toplam kutusu, bilgi popup, kaydedildi rozeti. Sadece avans-takibi.html
+   kullanır. */
+
+.av-ay-ozet-rozet {
+  background: rgba(255,255,255,.22);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
+.av-bilgi-btn {
+  background: rgba(255,255,255,.22);
+  border: none;
+  color: #fff;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.av-bilgi-overlay {
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 900;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.av-bilgi-overlay[hidden] { display: none; }
+.av-bilgi-kutu {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.av-bilgi-baslik { font-size: 14px; font-weight: 900; color: #5a2d7a; margin-bottom: 8px; }
+.av-bilgi-metin { font-size: 12px; color: #5a2d7a; line-height: 1.5; margin: 0 0 10px; }
+.av-bilgi-uyari { font-size: 12px; color: #c0392b; line-height: 1.5; margin: 0 0 12px; }
+.av-bilgi-uyari a { color: #c0392b; text-decoration: underline; font-weight: 900; }
+.av-bilgi-kapat-btn {
+  width: 100%; padding: 10px; border-radius: 8px; border: none;
+  background: #8e44ad; color: #fff; font-weight: 800; font-size: 13px;
+}
+
+.av-giris-satir {
+  display: grid;
+  grid-template-columns: auto 0.6fr 1.3fr 0.85fr auto;
+  gap: 5px;
+  align-items: stretch;
+  margin: 6px 0 10px;
+}
+.av-giris-satir input {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 6px;
+  font-size: 11px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.av-tarih { padding: 6px 3px !important; font-size: 9.5px !important; }
+.av-tip-btn {
+  background: #8e44ad;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 10.5px;
+  font-weight: 900;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.av-tip-btn[data-tip="ozel"] { background: #6a3585; }
+.av-tip-ok { font-size: 8px; }
+.av-ekle-btn {
+  background: #c78a00;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 900;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.av-tip-popup {
+  position: absolute;
+  top: 52px;
+  left: 14px;
+  background: #fff;
+  border: 1px solid #d8d8e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  overflow: hidden;
+  z-index: 10;
+  width: 150px;
+}
+.av-tip-popup[hidden] { display: none; }
+.av-tip-secenek {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: none;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  color: #003a70;
+  border-bottom: 1px solid #f0f0f0;
+}
+.av-tip-secenek--ozel { color: #8e44ad; border-bottom: none; }
+
+.av-satir-etiket {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 3px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.av-satir-etiket--is { background: #e6ecf3; color: #003a70; }
+.av-satir-etiket--ozel { background: #f6f0fd; color: #8e44ad; }
+
+.av-kirmizi-toplam-kutu {
+  background: #fdf2f2;
+  border: 1.5px solid #c0392b;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+.av-kirmizi-toplam-kutu .mh-sonuc-satir { color: #c0392b; font-weight: 800; }
+.av-kirmizi-toplam-kutu .mh-sonuc-satir b { color: #c0392b; }
+
+.av-kaydedildi-rozet {
+  background: #eafaf0;
+  border: 1.5px solid #0e6b34;
+  border-radius: 10px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #0e6b34;
+  margin: 0 0 10px;
+}
+.av-kaydedildi-rozet[hidden] { display: none; }

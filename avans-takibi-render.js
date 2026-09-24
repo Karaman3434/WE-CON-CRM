@@ -74,6 +74,48 @@ function avTabloCiz(govdeId, bosId, liste, kolonEtiket){
   return govde;
 }
 
+// BİRLEŞİK AVANS LİSTESİ (24.09.2026) — İş ve Özel avans artık TEK
+// listede, tarihe göre sıralı, her satırın başında İŞ/ÖZEL etiketiyle
+// gösteriliyor. Veri modeli değişmedi (avIsListe/avOzelListe hâlâ AYRI
+// diziler — Maaş Hesaplama'nın toplam hesapları buna göre kurulu),
+// sadece EKRANDA birleştirilip çiziliyor. Silme, satırın hangi tip/
+// index'ten geldiğini data-tip/data-idx ile takip eder.
+function avListeCiz(){
+  var birlesik = avIsListe.map(function(x, i){ return Object.assign({tip:"is", idx:i}, x); })
+    .concat(avOzelListe.map(function(x, i){ return Object.assign({tip:"ozel", idx:i}, x); }));
+  birlesik.sort(function(a, b){ return (b.tarih||"").localeCompare(a.tarih||""); });
+  var govde = document.getElementById("avListeGovde");
+  govde.innerHTML = birlesik.map(function(h){
+    var etiket = h.tip==="is"
+      ? "<span class='av-satir-etiket av-satir-etiket--is'>İŞ</span>"
+      : "<span class='av-satir-etiket av-satir-etiket--ozel'>ÖZEL</span>";
+    return "<tr><td>" + etiket + "</td><td>" + fmtTarihKisa_AV(h.tarih) + "</td>"
+      + "<td>" + htmlEsc_AV(h.aciklama) + "</td><td>" + fmtTL_AV(h.tutar) + "</td>"
+      + "<td><button type='button' class='mh-harcama-sil-btn' data-tip='" + h.tip + "' data-idx='" + h.idx + "'>🗑</button></td></tr>";
+  }).join("");
+  document.getElementById("avListeBos").hidden = birlesik.length > 0;
+  govde.querySelectorAll(".mh-harcama-sil-btn").forEach(function(btn){
+    btn.onclick = function(){
+      var tip = this.getAttribute("data-tip");
+      var idx = parseInt(this.getAttribute("data-idx"), 10);
+      if(tip === "is") avIsListe.splice(idx, 1); else avOzelListe.splice(idx, 1);
+      avTaslagiKaydet(); avCiz(); avKaydedildiGoster();
+    };
+  });
+}
+
+// KAYDEDİLDİ ROZETİ (24.09.2026) — her ekleme/silmeden sonra 2 saniye
+// görünüp kendiliğinden kaybolur; Abdullah'ın "kaydettiğimi bilmiyorum,
+// geri çıkmaya korkuyorum" geri bildirimine karşılık.
+var avKaydedildiZamanlayici = null;
+function avKaydedildiGoster(){
+  var el = document.getElementById("avKaydedildiRozeti");
+  if(!el) return;
+  el.hidden = false;
+  if(avKaydedildiZamanlayici) clearTimeout(avKaydedildiZamanlayici);
+  avKaydedildiZamanlayici = setTimeout(function(){ el.hidden = true; }, 2000);
+}
+
 function avTaslagiKaydet(){
   AvansKayitData.taslakGuncelle(avSeciliAy, avSeciliYil, {
     ozelAvansGirisleri: avOzelListe,
@@ -110,21 +152,23 @@ function avDonemSeciciDoldur(){
   }).join("");
 
   // Doğal başlangıç ayı (bugün için Ağustos) hâlâ kapalıysa, sessizce
-  // atlamak yerine NEDENİNİ göster — kafa karıştırmasın.
-  var uyari = document.getElementById("avBaslangicKapaliUyari");
+  // atlamak yerine NEDENİNİ göster — kafa karıştırmasın. Bu uyarı artık
+  // ℹ️ bilgi popup'unun içinde (24.09.2026 — sayfa yer kaplamasın diye).
+  var uyari = document.getElementById("avBilgiUyariMetin");
   var kapaliKayit = AvansKayitData.kapaliKaydiBul(baslangic.ay, baslangic.yil);
   if(kapaliKayit){
-    uyari.style.display = "block";
-    uyari.innerHTML = "⚠️ " + AY_ADLARI_AV[baslangic.ay] + " " + baslangic.yil + " zaten kapatılmış (bu yüzden listede yok). Yeniden açmak için <a href='#' id='avBaslangicKapaliGit' style='color:#c0392b; text-decoration:underline; font-weight:900;'>aşağıdan Kayıt Geçmişi'nden sil</a>.";
+    uyari.hidden = false;
+    uyari.innerHTML = "⚠️ " + AY_ADLARI_AV[baslangic.ay] + " " + baslangic.yil + " zaten kapatılmış (bu yüzden listede yok). Yeniden açmak için <a href='#' id='avBaslangicKapaliGit'>aşağıdan Kayıt Geçmişi'nden sil</a>.";
     var link = document.getElementById("avBaslangicKapaliGit");
     if(link) link.onclick = function(ev){
       ev.preventDefault();
+      document.getElementById("avBilgiOverlay").hidden = true;
       document.getElementById("avGecmisAySecici").value = kapaliKayit.anahtar;
       avGecmisDetayGoster(kapaliKayit.anahtar);
       document.getElementById("avGecmisAySecici").scrollIntoView({behavior:"smooth", block:"center"});
     };
   } else {
-    uyari.style.display = "none";
+    uyari.hidden = true;
     uyari.innerHTML = "";
   }
 }
@@ -142,27 +186,27 @@ function avDonemeGec(ay, yil){
 function avCiz(){
   document.getElementById("btnAviKapatKayitEt").textContent = "✓ " + AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil + "'ı Kapat ve Kayıt Et";
 
-  var govdeOzel = avTabloCiz("avOzelTabloGovde", "avOzelBos", avOzelListe, "aciklama");
-  govdeOzel.querySelectorAll(".mh-harcama-sil-btn").forEach(function(btn){
-    btn.onclick = function(){ avOzelListe.splice(parseInt(this.getAttribute("data-idx"),10),1); avTaslagiKaydet(); avCiz(); };
-  });
-  var govdeIs = avTabloCiz("avIsTabloGovde", "avIsBos", avIsListe, "aciklama");
-  govdeIs.querySelectorAll(".mh-harcama-sil-btn").forEach(function(btn){
-    btn.onclick = function(){ avIsListe.splice(parseInt(this.getAttribute("data-idx"),10),1); avTaslagiKaydet(); avCiz(); };
-  });
+  avListeCiz();
   var govdeHarcama = avTabloCiz("avHarcamaTabloGovde", "avHarcamaBos", avHarcamaListe, "etiket");
   govdeHarcama.querySelectorAll(".mh-harcama-sil-btn").forEach(function(btn){
-    btn.onclick = function(){ avHarcamaListe.splice(parseInt(this.getAttribute("data-idx"),10),1); avTaslagiKaydet(); avCiz(); };
+    btn.onclick = function(){ avHarcamaListe.splice(parseInt(this.getAttribute("data-idx"),10),1); avTaslagiKaydet(); avCiz(); avKaydedildiGoster(); };
   });
 
   var t = avToplamlariHesapla({ozelAvansGirisleri:avOzelListe, isAvansiGirisleri:avIsListe, isAvansiHarcamalar:avHarcamaListe});
-  document.getElementById("avOzelToplam").textContent = fmtTL_AV(t.ozelToplam);
-  document.getElementById("avIsToplam").textContent = fmtTL_AV(t.isToplam);
   document.getElementById("avBelgelenenToplam").textContent = fmtTL_AV(t.belgelenenToplam);
-  document.getElementById("avIsKesilecek").textContent = fmtTL_AV(t.isKesilecek);
+  document.getElementById("avIsKesilecek2").textContent = fmtTL_AV(t.isKesilecek);
+  document.getElementById("avOzelToplam2").textContent = fmtTL_AV(t.ozelToplam);
   document.getElementById("avToplamOzel").textContent = fmtTL_AV(t.ozelToplam);
   document.getElementById("avToplamIs").textContent = fmtTL_AV(t.isKesilecek);
   document.getElementById("avToplamGenel").textContent = fmtTL_AV(t.toplamKesinti);
+
+  // AY ÖZETİ ROZETİ (24.09.2026) — başlığın yanında kısa özet.
+  var rozet = document.getElementById("avAyOzetRozeti");
+  if(rozet && avSeciliAy){
+    rozet.textContent = AY_ADLARI_AV[avSeciliAy].slice(0,3).toUpperCase()
+      + " · İş " + Math.round(t.isToplam).toLocaleString("tr-TR")
+      + " · Özel " + Math.round(t.ozelToplam).toLocaleString("tr-TR");
+  }
 }
 
 function avGecmisSeciciDoldur(){
@@ -203,37 +247,78 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_AV();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
-  var acik = AvansKayitData.acikDonem();
-  avDonemeGec(acik.ay, acik.yil);
-  avGecmisSeciciDoldur();
+  // KRİTİK HATA DÜZELTMESİ (24.09.2026): Firebase'den ilk veri paketi
+  // gelene kadar ekleme/silme butonlarını KİLİTLE — aksi halde kullanıcı
+  // veri daha gelmeden bir şey eklerse, boş listeyi Firebase'e YAZIP
+  // gerçek (henüz görünmeyen) kayıtları SİLEBİLİRDİ. Veri gelince
+  // avYuklemeKilidiniAc() kilidi kaldırır.
+  var avButonlar = ["btnAvEkle","btnHarcamaEkle","btnAviKapatKayitEt"];
+  function avYuklemeKilidiniKapat(){
+    avButonlar.forEach(function(id){ document.getElementById(id).disabled = true; });
+  }
+  function avYuklemeKilidiniAc(){
+    avButonlar.forEach(function(id){ document.getElementById(id).disabled = false; });
+  }
+  avYuklemeKilidiniKapat();
+
+  // İKİNCİ KRİTİK HATA DÜZELTMESİ (24.09.2026): İLK dönem geçişini artık
+  // burada SENKRON yapmıyoruz — kayitlar (kapalı aylar) gelmeden acikDonem()
+  // yanlış ay hesaplayabiliyordu (bkz. avans-kayit-data.js). Hem kayıtlar
+  // hem taslak gelene kadar bekleriz; gelince aşağıdaki degistiginde
+  // dinleyicisi ilk (ve sadece ilk) geçişi yapar.
+  var avIlkGecisYapildiMi = false;
+  function avIlkGecisiDeneVeYap(){
+    if(avIlkGecisYapildiMi) return;
+    if(!AvansKayitData.kayitlarYuklendiMi() || !AvansKayitData.taslakYuklendiMi()) return;
+    avIlkGecisYapildiMi = true;
+    var acik = AvansKayitData.acikDonem();
+    avDonemeGec(acik.ay, acik.yil);
+    avGecmisSeciciDoldur();
+    avYuklemeKilidiniAc();
+  }
+  avIlkGecisiDeneVeYap();
 
   document.getElementById("avDonemSecici").onchange = function(){
     var p = this.value.split("-");
     avDonemeGec(parseInt(p[0],10), parseInt(p[1],10));
   };
 
-  document.getElementById("btnOzelEkle").onclick = function(){
-    var tarih = document.getElementById("avOzelTarih").value;
-    var aciklama = document.getElementById("avOzelAciklama").value.trim();
-    var tutar = tutarParse_AV(document.getElementById("avOzelTutar").value);
-    if(!tarih || !aciklama || tutar<=0){ alert("Tarih, açıklama ve tutar (0'dan büyük) gerekli."); return; }
-    avOzelListe.push({tarih:tarih, aciklama:aciklama, tutar:tutar});
-    document.getElementById("avOzelTarih").value = "";
-    document.getElementById("avOzelAciklama").value = "";
-    document.getElementById("avOzelTutar").value = "";
-    avTaslagiKaydet(); avCiz();
+  // TİP DÜĞMESİ (24.09.2026) — ayrı bir "İş/Özel" satırı yerine, giriş
+  // satırının başındaki tek düğmeye dokununca küçük bir seçim popup'ı
+  // açılıyor (Abdullah'ın isteği: "Ekle tuşu gibi tek bir tuş").
+  var avSeciliTip = "is";
+  var avTipBtn = document.getElementById("avTipBtn");
+  var avTipPopup = document.getElementById("avTipPopup");
+  avTipBtn.onclick = function(){ avTipPopup.hidden = !avTipPopup.hidden; };
+  avTipPopup.querySelectorAll(".av-tip-secenek").forEach(function(btn){
+    btn.onclick = function(){
+      avSeciliTip = this.getAttribute("data-tip");
+      avTipBtn.setAttribute("data-tip", avSeciliTip);
+      avTipBtn.innerHTML = (avSeciliTip==="is" ? "İŞ" : "ÖZEL") + "<span class='av-tip-ok'>▾</span>";
+      avTipPopup.hidden = true;
+    };
+  });
+
+  // BİLGİ POPUP (24.09.2026) — açıklama + "ay zaten kapatılmış" uyarısı
+  // artık kalıcı yer kaplamıyor, ℹ️ düğmesiyle açılıp kapanıyor.
+  document.getElementById("btnAvBilgi").onclick = function(){
+    document.getElementById("avBilgiOverlay").hidden = false;
+  };
+  document.getElementById("btnAvBilgiKapat").onclick = function(){
+    document.getElementById("avBilgiOverlay").hidden = true;
   };
 
-  document.getElementById("btnIsEkle").onclick = function(){
-    var tarih = document.getElementById("avIsTarih").value;
-    var aciklama = document.getElementById("avIsAciklama").value.trim();
-    var tutar = tutarParse_AV(document.getElementById("avIsTutar").value);
+  document.getElementById("btnAvEkle").onclick = function(){
+    var tarih = document.getElementById("avTarih").value;
+    var aciklama = document.getElementById("avAciklama").value.trim();
+    var tutar = tutarParse_AV(document.getElementById("avTutar").value);
     if(!tarih || !aciklama || tutar<=0){ alert("Tarih, açıklama ve tutar (0'dan büyük) gerekli."); return; }
-    avIsListe.push({tarih:tarih, aciklama:aciklama, tutar:tutar});
-    document.getElementById("avIsTarih").value = "";
-    document.getElementById("avIsAciklama").value = "";
-    document.getElementById("avIsTutar").value = "";
-    avTaslagiKaydet(); avCiz();
+    if(avSeciliTip === "is"){ avIsListe.push({tarih:tarih, aciklama:aciklama, tutar:tutar}); }
+    else { avOzelListe.push({tarih:tarih, aciklama:aciklama, tutar:tutar}); }
+    document.getElementById("avTarih").value = "";
+    document.getElementById("avAciklama").value = "";
+    document.getElementById("avTutar").value = "";
+    avTaslagiKaydet(); avCiz(); avKaydedildiGoster();
   };
 
   document.getElementById("btnHarcamaEkle").onclick = function(){
@@ -245,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("avHarcamaTarih").value = "";
     document.getElementById("avHarcamaCesit").value = "";
     document.getElementById("avHarcamaTutar").value = "";
-    avTaslagiKaydet(); avCiz();
+    avTaslagiKaydet(); avCiz(); avKaydedildiGoster();
   };
 
   document.getElementById("btnAviKapatKayitEt").onclick = function(){
@@ -274,5 +359,20 @@ document.addEventListener("DOMContentLoaded", function(){
   AvansKayitData.degistiginde(function(){
     avGecmisSeciciDoldur();
     avDonemSeciciDoldur();
+    avIlkGecisiDeneVeYap();
+    // KRİTİK HATA DÜZELTMESİ (24.09.2026): Firebase'den her yeni veri
+    // paketi geldiğinde (özellikle SAYFA AÇILDIKTAN SONRA gelen İLK
+    // paket), seçili dönemin listelerini taze veriyle YENİDEN oku ve
+    // çiz — eskiden bu satır yoktu, ekran ilk boş çizdiği haliyle
+    // kalıyor, kayıtlar Firebase'de dururken sayfada "silinmiş" gibi
+    // görünüyordu.
+    if(avSeciliAy && avSeciliYil){
+      var taze = AvansKayitData.taslakOku(avSeciliAy, avSeciliYil);
+      avOzelListe = taze.ozelAvansGirisleri || [];
+      avIsListe = taze.isAvansiGirisleri || [];
+      avHarcamaListe = taze.isAvansiHarcamalar || [];
+      avCiz();
+    }
+    if(AvansKayitData.taslakYuklendiMi()) avYuklemeKilidiniAc();
   });
 });

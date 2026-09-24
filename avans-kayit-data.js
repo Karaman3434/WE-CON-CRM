@@ -23,6 +23,27 @@ var AvansKayitData = (function(){
   var kayitlar = {};   // avansKayitlari — kapalı kayıtlar
   var taslaklar = {};  // avansTaslak — açık dönem taslağı (normalde tek kayıt)
   var dinleyiciler = [];
+  // KRİTİK HATA DÜZELTMESİ (24.09.2026): sayfa ilk açıldığında
+  // avans-takibi-render.js taslağı SENKRON okuyordu (taslakOku), ama
+  // Firebase'in ilk veri paketi ASENKRON geliyor — bu yüzden sayfa
+  // TAM DA veri henüz gelmeden "boş" çiziyordu (kullanıcıya "her şeyim
+  // silinmiş" gibi görünüyordu). Firebase verisi geldiğinde de ekran
+  // kendini YENİDEN ÇİZMİYORDU. Bu bayrak, render tarafının "ilk gerçek
+  // veri geldi mi" diye sorup ona göre beklemesini/yeniden çizmesini
+  // sağlıyor — bkz. avans-takibi-render.js.
+  var taslakYuklendi = false;
+  // İKİNCİ KRİTİK HATA DÜZELTMESİ (24.09.2026): acikDonem() "kapalı
+  // kayıt var mı" diye 'kayitlar'a bakıyor — ama SAYFA AÇILIR AÇILMAZ
+  // avans-takibi-render.js acikDonem()'i SENKRON çağırıyordu, yani
+  // 'kayitlar' henüz Firebase'den gelmeden {} (boş) haldeyken. Sonuç:
+  // Ağustos kapatılmış olsa bile sistem bunu henüz bilmediği için
+  // "kapalı kayıt yok" sanıp YANLIŞLIKLA Ağustos'u (asıl kapalı ayı)
+  // açık dönem sayıyor, kullanıcı Eylül'e girdiği onca veriyi göremez
+  // hale geliyordu (veri kaybolmuyor, sadece EKRAN yanlış aya bakıyor).
+  // Bu bayrak, render tarafının "kapalı kayıtlar geldi mi" diye sorup
+  // İLK doğru dönem hesaplamasını (ve taslağa geçişi) veri gelene kadar
+  // ERTELEMESİNİ sağlıyor.
+  var kayitlarYuklendi = false;
 
   function baslat(){
     try{
@@ -30,14 +51,19 @@ var AvansKayitData = (function(){
       var db = firebase.database();
       db.ref("avansKayitlari").on("value", function(snap){
         kayitlar = snap.val() || {};
+        kayitlarYuklendi = true;
         bildir();
       }, function(err){ console.error("Avans kayıtları okunamadı:", err); });
       db.ref("avansTaslak").on("value", function(snap){
         taslaklar = snap.val() || {};
+        taslakYuklendi = true;
         bildir();
       }, function(err){ console.error("Avans taslağı okunamadı:", err); });
     }catch(e){ console.error("AvansKayitData başlatılamadı:", e); }
   }
+
+  function taslakYuklendiMi(){ return taslakYuklendi; }
+  function kayitlarYuklendiMi(){ return kayitlarYuklendi; }
 
   function bildir(){
     dinleyiciler.forEach(function(fn){
@@ -132,6 +158,8 @@ var AvansKayitData = (function(){
     tumKayitlar: tumKayitlar,
     acikDonem: acikDonem,
     taslakOku: taslakOku,
+    taslakYuklendiMi: taslakYuklendiMi,
+    kayitlarYuklendiMi: kayitlarYuklendiMi,
     taslakGuncelle: taslakGuncelle,
     kapaliKaydiBul: kapaliKaydiBul,
     kaydet: kaydet,

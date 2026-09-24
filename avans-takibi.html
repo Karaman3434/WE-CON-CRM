@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.240926.1332.615">
 <link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.140926.1213.555">
 <link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="avans-takibi-style.css?v=WG.240926.1431.617">
 </head>
 <body>
 
@@ -37,55 +38,56 @@
 
 <main class="sayfa">
 
-  <div class="ok-baslik-serit" style="background:#8e44ad;">
-    <span>🧾 Avans Takibi</span>
+  <div class="ok-baslik-serit" style="background:#8e44ad; display:flex; align-items:center; gap:8px;">
+    <span style="flex:1;">🧾 Avans Takibi</span>
+    <span class="av-ay-ozet-rozet" id="avAyOzetRozeti"></span>
+    <button type="button" id="btnAvBilgi" class="av-bilgi-btn">ℹ️</button>
   </div>
-  <p class="ok-aciklama" style="background:#f5eafc; border-color:#e0c9f0; color:#5a2d7a;">Her satır eklediğinde anında kaydedilir. "Kapat ve Kayıt Et" dediğinde Maaş Hesaplama'daki dönem de otomatik kapanır.</p>
+
+  <div class="av-bilgi-overlay" id="avBilgiOverlay" hidden>
+    <div class="av-bilgi-kutu">
+      <div class="av-bilgi-baslik">Bilgi</div>
+      <p class="av-bilgi-metin">Her satır eklediğinde anında kaydedilir. "Kapat ve Kayıt Et" dediğinde Maaş Hesaplama'daki dönem de otomatik kapanır.</p>
+      <p class="av-bilgi-uyari" id="avBilgiUyariMetin" hidden></p>
+      <button type="button" id="btnAvBilgiKapat" class="av-bilgi-kapat-btn">Kapat</button>
+    </div>
+  </div>
 
   <div class="mh-donem-secici-satir">
     <label class="mh-etiket" style="margin:0 0 4px;">DÖNEM (istediğin ayı seçebilirsin)</label>
     <select id="avDonemSecici" class="mh-donem-select"></select>
-    <div id="avBaslangicKapaliUyari" class="mh-avans-durum-satir" style="color:#c0392b; display:none;"></div>
   </div>
 
-  <section class="ok-kutu">
-    <div class="mh-kutu-baslik-satir">ÖZEL AVANS</div>
-    <div class="mh-harcama-giris-satir" style="grid-template-columns:1fr 1.4fr 1fr auto;">
-      <input type="date" id="avOzelTarih" class="mh-harcama-tarih">
-      <input type="text" id="avOzelAciklama" class="mh-harcama-cesit" placeholder="Açıklama">
-      <input type="text" inputmode="decimal" id="avOzelTutar" class="mh-harcama-tutar" placeholder="Tutar">
-      <button type="button" id="btnOzelEkle" class="mh-harcama-ekle-btn">+</button>
+  <section class="ok-kutu" style="position:relative;">
+    <div class="mh-kutu-baslik-satir">AVANS EKLE</div>
+    <div class="av-giris-satir">
+      <button type="button" id="avTipBtn" class="av-tip-btn" data-tip="is">İŞ<span class="av-tip-ok">▾</span></button>
+      <input type="date" id="avTarih" class="av-tarih">
+      <input type="text" id="avAciklama" class="mh-harcama-cesit" placeholder="Açıklama">
+      <input type="text" inputmode="decimal" id="avTutar" class="mh-harcama-tutar" placeholder="Tutar">
+      <button type="button" id="btnAvEkle" class="av-ekle-btn">Ekle</button>
     </div>
+    <div class="av-tip-popup" id="avTipPopup" hidden>
+      <button type="button" class="av-tip-secenek" data-tip="is">💼 İş Avansı</button>
+      <button type="button" class="av-tip-secenek av-tip-secenek--ozel" data-tip="ozel">🎁 Özel Avans</button>
+    </div>
+
+    <div class="av-kaydedildi-rozet" id="avKaydedildiRozeti" hidden>✓ Kaydedildi</div>
+
     <table class="mh-harcama-tablo">
-      <thead><tr><th>TARİH</th><th>AÇIKLAMA</th><th>TUTAR</th><th></th></tr></thead>
-      <tbody id="avOzelTabloGovde"></tbody>
+      <thead><tr><th></th><th>TARİH</th><th>AÇIKLAMA</th><th>TUTAR</th><th></th></tr></thead>
+      <tbody id="avListeGovde"></tbody>
     </table>
-    <p class="bos-mesaj" id="avOzelBos">Henüz özel avans girilmedi.</p>
-    <div class="mh-sonuc-satir mh-sonuc-satir--toplam">
-      <span>ÖZEL AVANS TOPLAMI</span>
-      <b id="avOzelToplam">0,00 TL</b>
+    <p class="bos-mesaj" id="avListeBos">Henüz avans girilmedi.</p>
+
+    <div class="av-kirmizi-toplam-kutu">
+      <div class="mh-sonuc-satir"><span>KALAN İŞ AVANSI (belgesiz)</span><b id="avIsKesilecek2">0,00 TL</b></div>
+      <div class="mh-sonuc-satir"><span>ALINAN ÖZEL AVANS</span><b id="avOzelToplam2">0,00 TL</b></div>
     </div>
   </section>
 
   <section class="ok-kutu">
-    <div class="mh-kutu-baslik-satir">İŞ AVANSI (aldıkların)</div>
-    <div class="mh-harcama-giris-satir" style="grid-template-columns:1fr 1.4fr 1fr auto;">
-      <input type="date" id="avIsTarih" class="mh-harcama-tarih">
-      <input type="text" id="avIsAciklama" class="mh-harcama-cesit" placeholder="Açıklama">
-      <input type="text" inputmode="decimal" id="avIsTutar" class="mh-harcama-tutar" placeholder="Tutar">
-      <button type="button" id="btnIsEkle" class="mh-harcama-ekle-btn">+</button>
-    </div>
-    <table class="mh-harcama-tablo">
-      <thead><tr><th>TARİH</th><th>AÇIKLAMA</th><th>TUTAR</th><th></th></tr></thead>
-      <tbody id="avIsTabloGovde"></tbody>
-    </table>
-    <p class="bos-mesaj" id="avIsBos">Henüz iş avansı girilmedi.</p>
-    <div class="mh-sonuc-satir">
-      <span>Alınan İş Avansı Toplamı</span>
-      <b id="avIsToplam">0,00 TL</b>
-    </div>
-
-    <span class="mh-etiket">HARCAMALAR (belgelediklerin)</span>
+    <div class="mh-kutu-baslik-satir">HARCAMALAR (belgelediklerin)</div>
     <div class="mh-harcama-giris-satir">
       <input type="date" id="avHarcamaTarih" class="mh-harcama-tarih">
       <input type="text" id="avHarcamaCesit" class="mh-harcama-cesit" placeholder="Otel, Yemek, Yıkama..." list="avCesitListesi">
@@ -104,10 +106,6 @@
     <div class="mh-sonuc-satir">
       <span>Belgelenen toplam</span>
       <b id="avBelgelenenToplam">0,00 TL</b>
-    </div>
-    <div class="mh-sonuc-satir mh-sonuc-satir--vurgu">
-      <span>Kalan İş Avansı (belgesiz — maaştan kesilecek)</span>
-      <b id="avIsKesilecek">0,00 TL</b>
     </div>
   </section>
 
@@ -136,7 +134,7 @@
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.220926.2331.604"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="avans-kayit-data.js?v=WG.130926.2010.553"></script>
-<script src="avans-takibi-render.js?v=WG.020926.1927.93"></script>
+<script src="avans-kayit-data.js?v=WG.240926.1424.616"></script>
+<script src="avans-takibi-render.js?v=WG.240926.1431.617"></script>
 </body>
 </html>
