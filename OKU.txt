@@ -1,38 +1,42 @@
-WE-CON-CRM — Avans Takibi: Kritik Hata Düzeltmesi + Yeniden Tasarım
-(616'yı DA İÇEREN TAM PAKET)
-Sürüm: WG.240926.1431.617
+WE-CON-CRM — Avans Takibi: Toplam Etiketleri, Kaydet Butonu, Yeni Dönem
+Seçici + Maaş Menüsünde Avans Göstergesi
+Sürüm: WG.240926.1452.618
 
-ÖNEMLİ: Bunu yüklediğinde 616'yı ayrıca yüklemene GEREK YOK — bu
-paket ikisinin de TAMAMINI içeriyor. (Az önceki 617 paketi TEK
-BAŞINA eksikti — avans-kayit-data.js'i içermiyordu, ama yeni
-avans-takibi-render.js artık ona bağımlı; sadece o paketi yükleseydin
-sayfa hata verip bozulurdu. Bu yüzden tekrar, tam olarak hazırladım.)
+NE DEĞİŞTİ
 
-1) KRİTİK HATA DÜZELTMESİ (616)
-Avans Takibi'ne girip "Geri" ile çıktıktan sonra sayfa yanlış aya
-(kapatılmış olan Ağustos'a) düşüp her şey boş görünüyordu. Artık
-sayfa, hem kapatılmış ayların listesi hem taslak verisi tam gelmeden
-hangi ayın açık olduğuna karar vermiyor — Eylül'e girdiğin veriler
-geri gelmeli.
+1) Toplam etiketleri artık çakışmıyor
+   - AVANS EKLE altındaki kırmızı kutu: "ALINAN İŞ AVANSI TOPLAMI" +
+     "ALINAN ÖZEL AVANS" (ne kadar çektiğin)
+   - HARCAMALAR altındaki kırmızı kutu: "KALAN İŞ AVANSI (belgesiz)" +
+     "İŞ AVANSI BELGELENEN HARCAMA" (ne kadarını belgelediğin)
 
-2) YENİDEN TASARIM (617)
-- Tek "AVANS EKLE" bölümü, başında tıklanan tip düğmesi (İŞ ▾/ÖZEL ▾)
-- Küçültülmüş tarih kutusu + gerçek "Ekle" yazan buton
-- Birleşik, etiketli (İŞ/ÖZEL) tek liste
-- Kırmızı "Kalan İş Avansı" / "Alınan Özel Avans" kutusu
-- ℹ️ ile açılan bilgi popup'ı (açıklama + "ay kapalı" uyarısı artık
-  kalıcı yer kaplamıyor)
-- Başlığın yanında ay özeti rozeti
-- Her ekleme/silmeden sonra 2 saniyelik "✓ Kaydedildi" şeridi
+2) Manuel Kaydet butonu
+   AVANS EKLE bölümünün altına yeşil (#16a085) "💾 Bilgileri Kaydet"
+   butonu eklendi. Sistem zaten her satırda otomatik kaydediyor, ama
+   bu butona basınca da net bir "✓ Kaydedildi" onayı görüyorsun.
 
-DEĞİŞEN / YENİ DOSYALAR (TAMAMI — 616 + 617 birleşik)
-1) avans-kayit-data.js — kayitlarYuklendiMi() bayrağı
-2) avans-takibi-render.js — hem hata düzeltmesi hem yeni tasarım
-3) avans-takibi.html — yeniden kurgulanan yapı
-4) avans-takibi-style.css (yeni dosya)
-+ kisisel.html, maas-hesaplama.html (cache-bust)
-+ ayarlar-render.js, ayarlar.html, home.html (sürüm senkronu)
+3) Dönem seçici tamamen yenilendi
+   Telefonun çirkin sistem listesi yerine artık uygulamanın kendi
+   tasarımıyla alttan açılan bir liste: yıllara göre gruplu, seçili ay
+   işaretli, "Vazgeç" ile kapatılabilir.
 
-Telefonda/tablette denenmedi. Yüklemeden sonra: Eylül'deki eski
-verilerin geri geldiğini, tip düğmesinin/birleşik listenin/kaydedildi
-şeridinin çalıştığını kontrol et.
+4) Kişisel › Maaş menüsünde "AVANS TAKİBİ" artık bir gösterge de
+   Kutucuğun altına küçük bir satır eklendi: hangi ay açıksa o ayın
+   İş ve Özel avans toplamlarını gösteriyor (örn. "EYL · İş 15.000 ·
+   Özel 0"). Kutucuk hâlâ tıklanabilir, aynı zamanda artık bilgi de
+   veriyor.
+
+DEĞİŞEN / YENİ DOSYALAR
+1) avans-takibi.html — toplam kutuları, dönem seçici, Kaydet butonu
+2) avans-takibi-render.js — yeni mantık
+3) avans-takibi-style.css — yeni görünümler
+4) maas-menu.html — Avans Takibi kutucuğuna gösterge eklendi
+5) hareketler-style.css — kutucuk alt-etiket stili (.hareketler-tile-alt)
++ avans-kayit-data.js, hareketler.html, raporlar.html, kisisel.html,
+  maas-hesaplama.html (cache-bust) + ayarlar-render.js, ayarlar.html,
+  home.html (sürüm senkronu)
+
+Telefonda/tablette denenmedi. Yüklemeden sonra: toplam etiketlerinin
+doğru yerde olduğunu, Kaydet butonunun çalıştığını, yeni dönem
+seçicinin açılıp kapandığını, Kişisel › Maaş'taki Avans Takibi
+kutucuğunun altında güncel ay toplamlarını gördüğünü kontrol et.

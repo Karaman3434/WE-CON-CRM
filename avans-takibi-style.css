@@ -156,3 +156,80 @@
   margin: 0 0 10px;
 }
 .av-kaydedildi-rozet[hidden] { display: none; }
+
+/* DÖNEM SEÇİCİ — 24.09.2026: çirkin sistem <select> listesi yerine
+   uygulamanın kendi tasarımıyla alttan açılan bir liste. */
+.av-donem-btn {
+  width: 100%;
+  background: #8e44ad;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.av-donem-overlay {
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 900;
+}
+.av-donem-overlay[hidden] { display: none; }
+.av-donem-sheet {
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.av-donem-sheet-baslik { font-size: 15px; font-weight: 900; color: #123b63; margin-bottom: 10px; }
+.av-donem-yil-baslik { font-size: 11px; font-weight: 900; color: #8a96a3; letter-spacing: .4px; margin: 12px 0 4px; }
+.av-donem-yil-baslik:first-child { margin-top: 0; }
+.av-donem-satir {
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: #2d3540;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+.av-donem-satir--secili { background: #f6f0fd; color: #8e44ad; font-weight: 900; }
+.av-donem-vazgec-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  color: #556170;
+  margin-top: 8px;
+}
+
+.av-manuel-kaydet-btn {
+  width: 100%;
+  background: #16a085;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-weight: 900;
+  font-size: 14px;
+  margin-top: 10px;
+}

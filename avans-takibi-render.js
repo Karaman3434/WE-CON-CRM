@@ -147,9 +147,31 @@ function avDonemSeciciDoldur(){
     if(!AvansKayitData.kapaliKaydiBul(ay, yil)) secenekler.push({ay:ay, yil:yil});
     ay++; if(ay>12){ ay=1; yil++; }
   }
+  // Gizli <select> hâlâ duruyor (JS içinde değer okuma alışkanlığı için),
+  // ama görünen arayüz artık DÖNEM SEÇ alttan açılan liste (24.09.2026 —
+  // sistemin çirkin varsayılan menüsü yerine).
   sel.innerHTML = secenekler.map(function(s){
     return "<option value='" + s.ay + "-" + s.yil + "'" + (s.ay===avSeciliAy && s.yil===avSeciliYil ? " selected" : "") + ">" + AY_ADLARI_AV[s.ay] + " " + s.yil + "</option>";
   }).join("");
+
+  var buton = document.getElementById("avDonemBtnMetin");
+  if(buton && avSeciliAy && avSeciliYil) buton.textContent = AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil;
+
+  var liste = document.getElementById("avDonemListe");
+  var soncekiYil = null;
+  liste.innerHTML = secenekler.map(function(s){
+    var yilBasligi = "";
+    if(s.yil !== soncekiYil){ yilBasligi = "<div class='av-donem-yil-baslik'>" + s.yil + "</div>"; soncekiYil = s.yil; }
+    var secili = (s.ay===avSeciliAy && s.yil===avSeciliYil);
+    return yilBasligi + "<button type='button' class='av-donem-satir" + (secili ? " av-donem-satir--secili" : "") + "' data-ay='" + s.ay + "' data-yil='" + s.yil + "'>"
+      + AY_ADLARI_AV[s.ay] + " " + s.yil + (secili ? " <span>✓</span>" : "") + "</button>";
+  }).join("");
+  liste.querySelectorAll(".av-donem-satir").forEach(function(btn){
+    btn.onclick = function(){
+      document.getElementById("avDonemOverlay").hidden = true;
+      avDonemeGec(parseInt(this.getAttribute("data-ay"),10), parseInt(this.getAttribute("data-yil"),10));
+    };
+  });
 
   // Doğal başlangıç ayı (bugün için Ağustos) hâlâ kapalıysa, sessizce
   // atlamak yerine NEDENİNİ göster — kafa karıştırmasın. Bu uyarı artık
@@ -195,6 +217,7 @@ function avCiz(){
   var t = avToplamlariHesapla({ozelAvansGirisleri:avOzelListe, isAvansiGirisleri:avIsListe, isAvansiHarcamalar:avHarcamaListe});
   document.getElementById("avBelgelenenToplam").textContent = fmtTL_AV(t.belgelenenToplam);
   document.getElementById("avIsKesilecek2").textContent = fmtTL_AV(t.isKesilecek);
+  document.getElementById("avIsToplam2").textContent = fmtTL_AV(t.isToplam);
   document.getElementById("avOzelToplam2").textContent = fmtTL_AV(t.ozelToplam);
   document.getElementById("avToplamOzel").textContent = fmtTL_AV(t.ozelToplam);
   document.getElementById("avToplamIs").textContent = fmtTL_AV(t.isKesilecek);
@@ -278,9 +301,11 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   avIlkGecisiDeneVeYap();
 
-  document.getElementById("avDonemSecici").onchange = function(){
-    var p = this.value.split("-");
-    avDonemeGec(parseInt(p[0],10), parseInt(p[1],10));
+  document.getElementById("avDonemBtn").onclick = function(){
+    document.getElementById("avDonemOverlay").hidden = false;
+  };
+  document.getElementById("btnAvDonemVazgec").onclick = function(){
+    document.getElementById("avDonemOverlay").hidden = true;
   };
 
   // TİP DÜĞMESİ (24.09.2026) — ayrı bir "İş/Özel" satırı yerine, giriş
@@ -298,6 +323,23 @@ document.addEventListener("DOMContentLoaded", function(){
       avTipPopup.hidden = true;
     };
   });
+
+  // MANUEL KAYDET (24.09.2026) — sistem zaten her satırda otomatik
+  // kaydediyor, ama Abdullah'a ek güven vermesi için elle basılabilen bir
+  // düğme de eklendi; bastığında aynı taslağı tekrar yazar ve büyük/net
+  // bir "✓ Kaydedildi" onayı gösterir.
+  document.getElementById("btnAvManuelKaydet").onclick = function(){
+    var btn = this;
+    var eskiMetin = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    avTaslagiKaydet();
+    setTimeout(function(){
+      btn.disabled = false;
+      btn.textContent = eskiMetin;
+      avKaydedildiGoster();
+    }, 400);
+  };
 
   // BİLGİ POPUP (24.09.2026) — açıklama + "ay zaten kapatılmış" uyarısı
   // artık kalıcı yer kaplamıyor, ℹ️ düğmesiyle açılıp kapanıyor.

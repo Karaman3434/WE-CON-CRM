@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.240926.1332.615">
 <link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.140926.1213.555">
 <link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="avans-takibi-style.css?v=WG.240926.1431.617">
+<link rel="stylesheet" href="avans-takibi-style.css?v=WG.240926.1452.618">
 </head>
 <body>
 
@@ -55,7 +55,16 @@
 
   <div class="mh-donem-secici-satir">
     <label class="mh-etiket" style="margin:0 0 4px;">DÖNEM (istediğin ayı seçebilirsin)</label>
-    <select id="avDonemSecici" class="mh-donem-select"></select>
+    <button type="button" id="avDonemBtn" class="av-donem-btn"><span id="avDonemBtnMetin">Yükleniyor…</span><span>▾</span></button>
+    <select id="avDonemSecici" hidden></select>
+  </div>
+
+  <div class="av-donem-overlay" id="avDonemOverlay" hidden>
+    <div class="av-donem-sheet">
+      <div class="av-donem-sheet-baslik">Dönem Seç</div>
+      <div class="av-donem-liste" id="avDonemListe"></div>
+      <button type="button" id="btnAvDonemVazgec" class="av-donem-vazgec-btn">Vazgeç</button>
+    </div>
   </div>
 
   <section class="ok-kutu" style="position:relative;">
@@ -81,9 +90,11 @@
     <p class="bos-mesaj" id="avListeBos">Henüz avans girilmedi.</p>
 
     <div class="av-kirmizi-toplam-kutu">
-      <div class="mh-sonuc-satir"><span>KALAN İŞ AVANSI (belgesiz)</span><b id="avIsKesilecek2">0,00 TL</b></div>
+      <div class="mh-sonuc-satir"><span>ALINAN İŞ AVANSI TOPLAMI</span><b id="avIsToplam2">0,00 TL</b></div>
       <div class="mh-sonuc-satir"><span>ALINAN ÖZEL AVANS</span><b id="avOzelToplam2">0,00 TL</b></div>
     </div>
+
+    <button type="button" id="btnAvManuelKaydet" class="av-manuel-kaydet-btn">💾 Bilgileri Kaydet</button>
   </section>
 
   <section class="ok-kutu">
@@ -103,9 +114,9 @@
     </table>
     <p class="bos-mesaj" id="avHarcamaBos">Henüz harcama eklenmedi.</p>
 
-    <div class="mh-sonuc-satir">
-      <span>Belgelenen toplam</span>
-      <b id="avBelgelenenToplam">0,00 TL</b>
+    <div class="av-kirmizi-toplam-kutu">
+      <div class="mh-sonuc-satir"><span>KALAN İŞ AVANSI (belgesiz)</span><b id="avIsKesilecek2">0,00 TL</b></div>
+      <div class="mh-sonuc-satir"><span>İŞ AVANSI BELGELENEN HARCAMA</span><b id="avBelgelenenToplam">0,00 TL</b></div>
     </div>
   </section>
 
@@ -134,7 +145,7 @@
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.220926.2331.604"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="avans-kayit-data.js?v=WG.240926.1424.616"></script>
-<script src="avans-takibi-render.js?v=WG.240926.1431.617"></script>
+<script src="avans-kayit-data.js?v=WG.240926.1452.618"></script>
+<script src="avans-takibi-render.js?v=WG.240926.1452.618"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@
 <title>WEICON ASİST — Maaş</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.240926.1332.615">
-<link rel="stylesheet" href="hareketler-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="hareketler-style.css?v=WG.240926.1452.618">
 </head>
 <body>
 
@@ -46,16 +46,19 @@
     <a class="hareketler-tile hareketler-tile--avans" href="avans-takibi.html">
       <span class="hareketler-tile-ikon">🧾</span>
       <span class="hareketler-tile-baslik">AVANS TAKİBİ</span>
+      <span class="hareketler-tile-alt" id="avansTileAlt">Yükleniyor…</span>
     </a>
   </div>
 
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.220926.2331.604"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="avans-kayit-data.js?v=WG.240926.1452.618"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function(){
   var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
@@ -63,6 +66,24 @@ document.addEventListener("DOMContentLoaded", function(){
   var d = new Date();
   document.getElementById("gunTarihi").textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+
+  // AVANS TAKİBİ GÖSTERGESİ (24.09.2026) — kutucuk artık aynı zamanda
+  // bir gösterge paneli: hangi ay açıksa o ayın İş/Özel avans
+  // toplamlarını gösterir. Kapalı ayların listesi tam gelmeden
+  // acikDonem() yanlış ay hesaplayabildiği için (bkz. avans-kayit-data.js),
+  // ikisi de gelene kadar bekleyip öyle yazıyoruz.
+  function avansTileGuncelle(){
+    var el = document.getElementById("avansTileAlt");
+    if(!el || typeof AvansKayitData === "undefined") return;
+    if(!AvansKayitData.kayitlarYuklendiMi() || !AvansKayitData.taslakYuklendiMi()) return;
+    var acik = AvansKayitData.acikDonem();
+    var taslak = AvansKayitData.taslakOku(acik.ay, acik.yil);
+    var isToplam = (taslak.isAvansiGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+    var ozelToplam = (taslak.ozelAvansGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+    el.textContent = aylar[acik.ay-1].slice(0,3).toUpperCase() + " · İş " + Math.round(isToplam).toLocaleString("tr-TR") + " · Özel " + Math.round(ozelToplam).toLocaleString("tr-TR");
+  }
+  AvansKayitData.degistiginde(avansTileGuncelle);
+  avansTileGuncelle();
 });
 </script>
 </body>
