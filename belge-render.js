@@ -180,7 +180,7 @@ function belgeyiCiz(kayit, musteri){
       + "<div class='belge-kart'>"
       + "<div class='belge-belge-baslik-serit'><span class='belge-belge-baslik-serit-metin'>" + htmlEsc(belgeBaslikMetni) + "</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='data-table-container'><table class='belge-urun-tablo'>"
-      + "<thead><tr><th style='width:4%;'>SR</th><th style='width:26%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:14%;'>PRİM</th></tr></thead>"
+      + "<thead><tr><th style='width:3.6%;'>SR</th><th style='width:29.2%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:11.2%;'>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
       + "<div class='belge-genel-toplam-serit'>"

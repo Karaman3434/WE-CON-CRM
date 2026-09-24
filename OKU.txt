@@ -1,56 +1,39 @@
-WE-CON-CRM — Ticari İsim/Adres/Yetkili İsmi Yazım Standardı
-Sürüm: WG.240926.0752.611
+WE-CON-CRM — Ürün Tablosu: SR/PRİM Küçültme + ÜRÜN BİLGİSİ Genişletme
+Sürüm: WG.240926.1024.612
 
-NASIL ÇALIŞIYOR
-Artık kaydedilen her ticari isim, açık adres, fatura/teslimat adresi ve
-yetkili ismi otomatik olarak şu kurala göre yazılıyor:
+NEDEN DAHA ÖNCE TAM ÇÖZÜLMEMİŞTİ
+B/A kod yazısı daha önce de küçültülmüştü (8.4px) ama sütun genişliği
+hâlâ dardı — kod metni küçülse bile sütuna sığmayınca kesiliyordu.
+Bu sefer HEM sütunu genişlettik HEM yazıyı bir tık daha küçülttük.
 
-- Ticari isim / adres / liste isimleri: SADECE ilk kelimenin ilk harfi
-  büyük, devamı küçük.
-    DALYAN MAK. HIRD          -> Dalyan mak. hırd
-    Öz-Tür Civata             -> Öz-tür civata
-    TAMEK SAGRA GRUP GIDA...  -> Tamek sagra grup gıda...
+NE DEĞİŞTİ (SR + PRİM sütunlarından alan çalıp ÜRÜN BİLGİSİ'ne verdik)
+- SR sütunu: genişlik %4 -> %3.6 (%10 küçültme), rakam yazısı da %10
+  küçüldü (11.25px -> 10.125px)
+- PRİM sütunu: genişlik %14 -> %11.2 (%20 küçültme), hücre yazısı/
+  rakamı/birimi (TL) de %20 küçüldü (rakam 12.15px -> 9.72px, TL
+  birimi 8.55px -> 6.84px, "Ö.F"/"Yok"/"Bedelsiz" yazısı 9.9px -> 7.92px)
+- ÜRÜN BİLGİSİ sütunu: genişlik %26 -> %29.2 (kazanılan tüm alan
+  buraya verildi, ~%12 büyüdü)
+- B/A kod yazısı AYRICA %10 daha küçültüldü: 8.4px -> 7.56px
+- ADET / LİSTE / İSK / NET / TOPLAM sütunlarına DOKUNULMADI — aynı
+  boyutta tam çıkmaya devam ediyor
 
-- Adreste özel isim istisnası: Cad./Sok./Bulvarı/Mah./Sitesi/Apt. gibi
-  adres son eklerinden hemen önceki kelime(ler) özel isim sayılır, ilk
-  harfleri büyük kalır (rakamlı kelimede — no/kapı numarası — durur):
-    ATATÜRK CAD. NO:12        -> Atatürk Cad. no:12
-    AHMET ÜÇOK BULVARI NO:5   -> Ahmet Üçok Bulvarı no:5
-  NOT: Bu bir sezgi/yaklaşım, %100 hatasız özel isim tespiti mümkün
-  değil — ama Cad./Sok./Bulvarı/Mah. gibi yaygın son eklerin hemen
-  öncesini doğru yakalıyor.
-
-- Yetkili ismi: ad kısmı ilk harf büyük devamı küçük, SOYAD tamamen
-  büyük:
-    ABDURRAHMAN KARAMAN       -> Abdurrahman KARAMAN
-    mehmet öztürk             -> Mehmet ÖZTÜRK
-
-Bu kural hem YENİ girilen kayıtlara otomatik uygulanıyor, hem de
-Ayarlar sayfasına eklenen yeni bir butonla MEVCUT tüm kayıtlara tek
-seferlik uygulanabiliyor (Kodları Standartlaştır butonunun hemen
-altında): "🔤 İsim/Adres Yazımını Düzelt (İlk Harf Büyük)" — geri
-alınamaz, onay penceresi var, kaç alanın değiştiğini gösteriyor.
-
-Kapsam dışı: müşteri ürün isimleri, şehir alanı — bunlara dokunulmadı.
+Bu oranlar Sepet (HESAPLANACAK/HESAPLANDI) ve Formu Görüntüle/Belge
+Önizleme tablolarının İKİSİNDE de aynı (aynı tasarım paylaşılıyor).
 
 DEĞİŞEN DOSYALAR (3)
-1) customer-data.js — unvanDurumuYap(), adresDurumuYap(),
-   yetkiliIsimDurumuYap() yeni yazım fonksiyonları; yeniMusteriKaydet,
-   musteriGuncelle, musteriAdresEkle/Guncelle, musteriTekAdresKaydet,
-   yetkiliEkle/Guncelle, musteriTekYetkiliKaydet bu kurala göre
-   yazıyor artık. Yeni yaziminiDuzelt() = geriye dönük tek seferlik
-   düzeltme (Ayarlar > Bakım butonuyla tetiklenir).
-2) ayarlar.html — yeni "🔤 İsim/Adres Yazımını Düzelt" butonu
-3) ayarlar-render.js — buton kablolaması + APP_VERSION senkronu
-+ customer-data.js'i kullanan diğer 22 sayfa (cache-bust için sürüm
-  damgası güncellendi): ay-detay, belge-onizleme, bildirimler, calc,
-  cart, customer-add, customer-cari-kart, customer-detail,
-  customer-hub, customer-temas, customer, gecmis, gorevler, home,
-  menu, product, reports, sehir-plaka-kodlari, send, son-islemler,
-  takip-gerekenler, vade-takip, ziyaret
-+ home.html — alt bilgi sürüm etiketi senkronu
+1) belge-style.css — .belge-td-sira, .belge-td-prim, .belge-td-prim-tek,
+   .belge-td-urun-kod font-size'ları; PRİM hücresi içindeki rakam/birim
+   için yeni özel kural (.belge-td-prim .belge-para-sayi/.belge-para-birim)
+2) hareket-tablo.js — Sepet'teki HESAPLANACAK/HESAPLANDI tablosunun
+   sütun genişlikleri
+3) belge-render.js — Formu Görüntüle / Belge Önizleme tablosunun
+   sütun genişlikleri
++ cart.html, belge-onizleme.html, customer-detail.html, product.html,
+  send.html (cache-bust) + ayarlar-render.js, ayarlar.html (sürüm
+  senkronu)
 
-Telefonda denenmedi. Yüklemeden sonra: bir müşteri kaydında adı/adresi
-TAMAMEN BÜYÜK harfle girip kaydet, otomatik düzeldiğini gör. Sonra
-Ayarlar'daki yeni butona basıp mevcut eski kayıtların da (Bildirimler'
-deki DALYAN MAK. HIRD gibi) düzeldiğini kontrol et.
+Telefonda/tablette denenmedi. Yüklemeden sonra: Sepet'e uzun B/A
+kodlu bir ürün ekle, HESAPLANACAK tablosunda kodun artık tam
+göründüğünü, PRİM ve SR sütunlarının belirgin şekilde daraldığını
+kontrol et. Hâlâ kesiliyorsa söyle, oranı daha da agresif yaparız.
