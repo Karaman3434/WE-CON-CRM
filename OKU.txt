@@ -1,39 +1,28 @@
-WE-CON-CRM — Ürün Tablosu: SR/PRİM Küçültme + ÜRÜN BİLGİSİ Genişletme
-Sürüm: WG.240926.1024.612
+WE-CON-CRM — Mail: KİME Otomatik + Konu'da Şehir + Ek Mekanizması
+(613'ü DE İÇEREN TAM PAKET)
+Sürüm: WG.240926.1152.614
 
-NEDEN DAHA ÖNCE TAM ÇÖZÜLMEMİŞTİ
-B/A kod yazısı daha önce de küçültülmüştü (8.4px) ama sütun genişliği
-hâlâ dardı — kod metni küçülse bile sütuna sığmayınca kesiliyordu.
-Bu sefer HEM sütunu genişlettik HEM yazıyı bir tık daha küçülttük.
+ÖNEMLİ: Bunu YÜKLEDİĞİNDE 613'ü ayrıca yüklemene GEREK YOK — bu
+paket 613 + 614'ün TAMAMINI içeriyor (613'te değişen ama önceki
+pakete eklenmemiş send-style.css ve 3 sayfa da şimdi burada).
 
-NE DEĞİŞTİ (SR + PRİM sütunlarından alan çalıp ÜRÜN BİLGİSİ'ne verdik)
-- SR sütunu: genişlik %4 -> %3.6 (%10 küçültme), rakam yazısı da %10
-  küçüldü (11.25px -> 10.125px)
-- PRİM sütunu: genişlik %14 -> %11.2 (%20 küçültme), hücre yazısı/
-  rakamı/birimi (TL) de %20 küçüldü (rakam 12.15px -> 9.72px, TL
-  birimi 8.55px -> 6.84px, "Ö.F"/"Yok"/"Bedelsiz" yazısı 9.9px -> 7.92px)
-- ÜRÜN BİLGİSİ sütunu: genişlik %26 -> %29.2 (kazanılan tüm alan
-  buraya verildi, ~%12 büyüdü)
-- B/A kod yazısı AYRICA %10 daha küçültüldü: 8.4px -> 7.56px
-- ADET / LİSTE / İSK / NET / TOPLAM sütunlarına DOKUNULMADI — aynı
-  boyutta tam çıkmaya devam ediyor
+NE DEĞİŞTİ (özet — az önceki mesajla aynı)
+- KİME: otomatik "ofis@weicon.com.tr" dolu geliyor (değiştirilebilir)
+- KONU: otomatik "*** SİPARİŞ *** Müşteri Adı - Şehir" formatında
+- MESAJ: zaten otomatik doluyordu (HAREKET kelimesi hâlâ geçerli)
+- Belge görseli: "✓ Gönder"e basınca otomatik panoya kopyalanıyor,
+  Mail açılınca gövdeye dokunup yapıştırman yeterli
 
-Bu oranlar Sepet (HESAPLANACAK/HESAPLANDI) ve Formu Görüntüle/Belge
-Önizleme tablolarının İKİSİNDE de aynı (aynı tasarım paylaşılıyor).
+DEĞİŞEN DOSYALAR (TAMAMI — 613 + 614 birleşik)
+1) send-render.js — mailGonder(), KİME/KONU otomatik doldurma
+2) send.html — yeni KİME alanı + not metni
+3) send-style.css — notun küçük gri stili (.mail-onizleme-konu-not)
++ customer-cari-kart.html, customer-detail.html, gonderim-basarili.html
+  (send-style.css cache-bust)
++ ayarlar-render.js, ayarlar.html, home.html (sürüm senkronu)
 
-DEĞİŞEN DOSYALAR (3)
-1) belge-style.css — .belge-td-sira, .belge-td-prim, .belge-td-prim-tek,
-   .belge-td-urun-kod font-size'ları; PRİM hücresi içindeki rakam/birim
-   için yeni özel kural (.belge-td-prim .belge-para-sayi/.belge-para-birim)
-2) hareket-tablo.js — Sepet'teki HESAPLANACAK/HESAPLANDI tablosunun
-   sütun genişlikleri
-3) belge-render.js — Formu Görüntüle / Belge Önizleme tablosunun
-   sütun genişlikleri
-+ cart.html, belge-onizleme.html, customer-detail.html, product.html,
-  send.html (cache-bust) + ayarlar-render.js, ayarlar.html (sürüm
-  senkronu)
-
-Telefonda/tablette denenmedi. Yüklemeden sonra: Sepet'e uzun B/A
-kodlu bir ürün ekle, HESAPLANACAK tablosunda kodun artık tam
-göründüğünü, PRİM ve SR sütunlarının belirgin şekilde daraldığını
-kontrol et. Hâlâ kesiliyorsa söyle, oranı daha da agresif yaparız.
+Telefonda/tablette denenmedi. Yüklemeden sonra: bir işlemde Mail'e
+bas, Önizleme'de KİME'nin ofis@weicon.com.tr, KONU'nun "*** TÜR ***
+Müşteri - Şehir" olarak geldiğini gör, Gönder'e bas — Mail açılınca
+KİME/KONU/MESAJ'ın dolu geldiğini, gövdeye yapıştırınca görselin
+indiğini kontrol et.

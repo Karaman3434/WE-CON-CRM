@@ -269,6 +269,9 @@
   font-family: inherit;
   font-weight: 700;
 }
+/* KURAL (24.09.2026): Mail Önizleme'de KONU alanının altındaki uyarı
+   notu — bkz. send-render.js gonderTiklandi() panoya kopyalama. */
+.mail-onizleme-konu-not { font-size: 10px; color: #8a96a3; margin: 4px 0 0; line-height: 1.35; }
 .mail-onizleme-metin {
   background: #f8fafc;
   border: 1px solid #e8ecf1;
