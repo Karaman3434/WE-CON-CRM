@@ -306,13 +306,22 @@ function excelAktar(){
       var basAdr = XLSX.utils.encode_cell({r:BAS_SATIR-1, c:hc});
       if(!ws[basAdr]) ws[basAdr] = {t:"s", v:""};
       ws[basAdr].s = {
-        fill: {patternType:"solid", fgColor:{rgb:"CFE2F3"}, bgColor:{rgb:"CFE2F3"}},
-        font: {bold:true, color:{rgb:"3569B8"}},
+        fill: {patternType:"solid", fgColor:{rgb:"FAEEDA"}, bgColor:{rgb:"FAEEDA"}},
+        font: {bold:true, color:{rgb:"003A70"}},
         alignment: {horizontal:"center", vertical:"center"},
         border: TUM_KENAR
       };
     }
+    // ÖZEL GÜN (hafta sonu/tatil/rapor/izin/bayram) SATIRLARI (24.09.2026)
+    // — ekrandaki tabloda bu satırlar zaten bej zeminle işaretleniyor
+    // (bkz. .km-satir--ozelgun); Excel çıktısında da aynı satırlar fark
+    // edilsin diye SARI zeminle vurgulanıyor (klasik "vurgu kalemi"
+    // rengi — Abdullah'ın kendi Excel'inde kullandığı tasarımla aynı).
+    var OZEL_GUN_ANAHTAR_KELIMELER_XL = ["HAFTA SONU","TATİL","TATIL","RAPOR","İZİN","IZIN","BAYRAM","RESMİ TATİL","RESMI TATIL"];
     for(var vr=0; vr<veriSatirlari.length; vr++){
+      var kRow = kayitlar[vr];
+      var satirMetniBuyukXl = ((kRow.guzergah||"") + " " + (kRow.ziyaretYerleri||"")).toLocaleUpperCase("tr-TR");
+      var ozelGunMuXl = OZEL_GUN_ANAHTAR_KELIMELER_XL.some(function(kelime){ return satirMetniBuyukXl.indexOf(kelime) !== -1; });
       for(var vc=0; vc<basliklar.length; vc++){
         var vAdr = XLSX.utils.encode_cell({r:BAS_SATIR+vr, c:vc});
         if(!ws[vAdr]) ws[vAdr] = {t:"s", v:""};
@@ -320,6 +329,9 @@ function excelAktar(){
           alignment: {horizontal: (vc===0||vc===1?"center":(vc===4||vc===5?"left":"center")), vertical:"center", wrapText: (vc===0||vc===1)},
           border: TUM_KENAR
         };
+        if(ozelGunMuXl){
+          ws[vAdr].s.fill = {patternType:"solid", fgColor:{rgb:"FFFF00"}, bgColor:{rgb:"FFFF00"}};
+        }
       }
     }
 

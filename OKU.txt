@@ -1,42 +1,28 @@
-WE-CON-CRM — Avans Takibi: Toplam Etiketleri, Kaydet Butonu, Yeni Dönem
-Seçici + Maaş Menüsünde Avans Göstergesi
-Sürüm: WG.240926.1452.618
+WE-CON-CRM — Araç KM Excel Renkleri + Avans Harcamalar Küçük Düzeltmeler
+Sürüm: WG.240926.1559.619
 
-NE DEĞİŞTİ
+1) ARAÇ KM — EXCEL'E AKTARINCA TASARIM/RENKLER ARTIK KORUNUYOR
+Önemli bulgu: "Excel'e Aktar" butonu şu ana kadar hafta sonu/tatil/
+rapor/izin/bayram satırlarını SARI ile işaretlemiyordu — bu kodda hiç
+yoktu (sadece ekrandaki tabloda vardı, bej renkte). Şimdi ekledim:
+Excel çıktısında bu satırlar artık SARI zeminle otomatik işaretleniyor
+(klasik vurgu kalemi sarısı), başlık satırı da bej/turuncu temaya
+çevrildi. Artık her "Excel'e Aktar" bastığında bu tasarım OTOMATİK
+üretiliyor — koda bağlı olduğu için gelecekte bozulmayacak.
 
-1) Toplam etiketleri artık çakışmıyor
-   - AVANS EKLE altındaki kırmızı kutu: "ALINAN İŞ AVANSI TOPLAMI" +
-     "ALINAN ÖZEL AVANS" (ne kadar çektiğin)
-   - HARCAMALAR altındaki kırmızı kutu: "KALAN İŞ AVANSI (belgesiz)" +
-     "İŞ AVANSI BELGELENEN HARCAMA" (ne kadarını belgelediğin)
+2) AVANS TAKİBİ — HARCAMALAR BÖLÜMÜ
+- "+" işareti kaldırıldı, artık AVANS EKLE'deki gibi gerçek "Ekle"
+  yazan bir buton var.
+- Tarih kutusu küçültüldü (AVANS EKLE'dekiyle aynı boyut), diğer
+  alanlara (Çeşit, Tutar) biraz daha yer açıldı.
 
-2) Manuel Kaydet butonu
-   AVANS EKLE bölümünün altına yeşil (#16a085) "💾 Bilgileri Kaydet"
-   butonu eklendi. Sistem zaten her satırda otomatik kaydediyor, ama
-   bu butona basınca da net bir "✓ Kaydedildi" onayı görüyorsun.
+DEĞİŞEN DOSYALAR (3)
+1) km-render.js — Excel'e Aktar'da sarı/bej renklendirme
+2) avans-takibi.html — Harcamalar Ekle butonu
+3) maas-hesaplama-style.css — Harcamalar giriş satırı boyutları
++ ayarlar-render.js, ayarlar.html, home.html (sürüm senkronu)
 
-3) Dönem seçici tamamen yenilendi
-   Telefonun çirkin sistem listesi yerine artık uygulamanın kendi
-   tasarımıyla alttan açılan bir liste: yıllara göre gruplu, seçili ay
-   işaretli, "Vazgeç" ile kapatılabilir.
-
-4) Kişisel › Maaş menüsünde "AVANS TAKİBİ" artık bir gösterge de
-   Kutucuğun altına küçük bir satır eklendi: hangi ay açıksa o ayın
-   İş ve Özel avans toplamlarını gösteriyor (örn. "EYL · İş 15.000 ·
-   Özel 0"). Kutucuk hâlâ tıklanabilir, aynı zamanda artık bilgi de
-   veriyor.
-
-DEĞİŞEN / YENİ DOSYALAR
-1) avans-takibi.html — toplam kutuları, dönem seçici, Kaydet butonu
-2) avans-takibi-render.js — yeni mantık
-3) avans-takibi-style.css — yeni görünümler
-4) maas-menu.html — Avans Takibi kutucuğuna gösterge eklendi
-5) hareketler-style.css — kutucuk alt-etiket stili (.hareketler-tile-alt)
-+ avans-kayit-data.js, hareketler.html, raporlar.html, kisisel.html,
-  maas-hesaplama.html (cache-bust) + ayarlar-render.js, ayarlar.html,
-  home.html (sürüm senkronu)
-
-Telefonda/tablette denenmedi. Yüklemeden sonra: toplam etiketlerinin
-doğru yerde olduğunu, Kaydet butonunun çalıştığını, yeni dönem
-seçicinin açılıp kapandığını, Kişisel › Maaş'taki Avans Takibi
-kutucuğunun altında güncel ay toplamlarını gördüğünü kontrol et.
+Telefonda/tablette denenmedi. Yüklemeden sonra: Araç KM'de bir ayı
+Excel'e aktarıp hafta sonu/tatil satırlarının sarı geldiğini, Avans
+Takibi'nde Harcamalar'daki "Ekle" butonunun ve küçülen tarih kutusunun
+göründüğünü kontrol et.
