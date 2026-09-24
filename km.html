@@ -12,8 +12,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Araç KM</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.220926.1030.595">
-<link rel="stylesheet" href="km-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="home-style.css?v=WG.240926.1332.615">
+<link rel="stylesheet" href="km-style.css?v=WG.240926.1332.615">
 </head>
 <body>
 
@@ -72,6 +72,17 @@
     <button class="km-kaydet-buton" id="btnKmKaydet">✓ Günü Kaydet</button>
   </section>
 
+  <!-- HATIRLATMA NOTU (24.09.2026) — Abdullah'ın elle yazdığı serbest
+       metin notu, "Bu Ayın Kayıtları" butonunun üstünde. -->
+  <div class="km-hatirlatma-kutu" id="kmHatirlatmaKutu">
+    <span class="km-hatirlatma-ikon">🗒️</span>
+    <div class="km-hatirlatma-govde">
+      <div class="km-hatirlatma-baslik">HATIRLATMA NOTU</div>
+      <div class="km-hatirlatma-metin" id="kmHatirlatmaMetin">Dokun, bir not yaz.</div>
+    </div>
+    <span class="km-hatirlatma-ok">✎</span>
+  </div>
+
   <button class="km-tablo-goster-buton" id="btnTabloGoster">📋 Bu Ayın Kayıtlarını Tablo Olarak Göster</button>
 
   <section class="km-tablo-bolum" id="kmTabloBolum" hidden>
@@ -113,6 +124,18 @@
   </div>
 </div>
 
+<!-- HATIRLATMA NOTU popup — km-hatirlatma-kutu'ya dokununca açılır. -->
+<div class="km-hatirlatma-overlay" id="kmHatirlatmaOverlay" hidden>
+  <div class="km-hatirlatma-popup-kutu">
+    <div class="km-hatirlatma-popup-baslik">🗒️ Hatırlatma Notu</div>
+    <textarea id="kmHatirlatmaInput" placeholder="örn. 16-23 Eylül arası km bilgilerini merkeze gönderdim."></textarea>
+    <div class="km-hatirlatma-popup-butonlar">
+      <button class="km-hatirlatma-vazgec-btn" id="btnKmHatirlatmaVazgec">Vazgeç</button>
+      <button class="km-hatirlatma-kaydet-btn" id="btnKmHatirlatmaKaydet">✓ Kaydet</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -120,8 +143,8 @@
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.220926.2331.604"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="km-data.js?v=WG.130926.2010.553"></script>
+<script src="km-data.js?v=WG.240926.1332.615"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="km-render.js?v=WG.100926.0009.423"></script>
+<script src="km-render.js?v=WG.240926.1332.615"></script>
 </body>
 </html>

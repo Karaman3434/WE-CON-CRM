@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.240926.1332.615 — kisisel.html -->
+<!--
+  KİŞİSEL (24.09.2026) — Ana Sayfa'daki "🔒 Kişisel" kutucuğu buraya
+  açılır. Hesaba Yatacak göstergesi (eskiden Ana Sayfa'nın Gösterge
+  Paneli'nde açıktaydı, herkes görebilirdi) ve Maaş klasörü (eskiden
+  Raporlar'daydı) kasıtlı olarak buraya taşındı — Abdullah'ın isteği:
+  Ana Sayfa'ya bakan biri hiçbir TL rakamı/kişisel kazanç bilgisi
+  görmesin, önce bu ekrana girmesi gereksin.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEICON ASİST — Kişisel</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.240926.1332.615">
+<link rel="stylesheet" href="detail-style.css?v=WG.240926.1332.615">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+
+<main class="sayfa">
+
+  <a class="anasayfa-yatacak-kutu" id="kisiselYatacakKutu" href="maas-hesaplama.html">
+    <div class="anasayfa-yatacak-etiket">HESABA YATACAK</div>
+    <div class="anasayfa-yatacak-deger-satir">
+      <span class="anasayfa-yatacak-ikon">💰</span>
+      <span class="anasayfa-yatacak-deger" id="kisiselYatacakDeger">0,00 TL</span>
+    </div>
+  </a>
+
+  <a class="islemler-tile" id="kisiselMaasBtn" href="maas-menu.html">
+    <div class="islemler-tile-icerik">
+      <div class="islemler-tile-baslik islemler-tile-baslik--mavi">📁 MAAŞ</div>
+      <div class="islemler-tile-alt">Maaş + Prim · Komisyon · Avans</div>
+    </div>
+    <div class="islemler-tile-sag">
+      <span class="islemler-ok islemler-ok--mavi">›</span>
+    </div>
+  </a>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.130926.2010.553"></script>
+<script src="auth.js?v=WG.240926.1332.615"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="hata-log.js?v=WG.140926.1412.560"></script>
+<script src="odenebilir-komisyon-data.js?v=WG.140926.1412.560"></script>
+<script src="avans-kayit-data.js?v=WG.140926.1412.560"></script>
+<script src="maas-kayit-data.js?v=WG.140926.1412.560"></script>
+<script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
+<script src="maas-ozet-veri.js?v=WG.030926.0020.96"></script>
+<script src="rota-takip.js?v=WG.150926.1300.573"></script>
+<script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("kisisel.html", "🔒 Kişisel"); });</script>
+<script src="kisisel-render.js?v=WG.240926.1332.615"></script>
+</body>
+</html>

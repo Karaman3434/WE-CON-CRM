@@ -359,3 +359,60 @@
   text-transform: uppercase;
   cursor: pointer;
 }
+
+/* ---------- HATIRLATMA NOTU (24.09.2026) ---------- */
+.km-hatirlatma-kutu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #b7601f;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fafbfc;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+.km-hatirlatma-ikon { font-size: 20px; flex-shrink: 0; }
+.km-hatirlatma-govde { flex: 1; min-width: 0; }
+.km-hatirlatma-baslik { font-size: 11px; font-weight: 900; color: #b7601f; letter-spacing: .3px; }
+.km-hatirlatma-metin {
+  font-size: 13px; font-weight: 700; color: #3a3f45; margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.km-hatirlatma-metin--bos { color: #8a96a3; font-weight: 600; font-style: italic; }
+.km-hatirlatma-ok { font-size: 15px; color: #b7601f; flex-shrink: 0; }
+
+.km-hatirlatma-overlay {
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 900;
+}
+.km-hatirlatma-overlay[hidden] { display: none; }
+.km-hatirlatma-popup-kutu {
+  background: #ffffff;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.km-hatirlatma-popup-baslik { font-size: 16px; font-weight: 900; color: #123b63; margin-bottom: 10px; }
+.km-hatirlatma-popup-kutu textarea {
+  width: 100%; box-sizing: border-box;
+  border: 1px solid #cbd5e1; border-radius: 8px;
+  padding: 10px; font-size: 13px; font-family: inherit;
+  min-height: 100px;
+}
+.km-hatirlatma-popup-butonlar { display: flex; gap: 8px; margin-top: 12px; }
+.km-hatirlatma-vazgec-btn {
+  flex: 1; padding: 12px; border-radius: 8px; border: 1.5px solid #cbd5e1;
+  background: #fff; font-weight: 800; font-size: 13px; color: #44494f; cursor: pointer;
+}
+.km-hatirlatma-kaydet-btn {
+  flex: 1; padding: 12px; border-radius: 8px; border: none;
+  background: #b7601f; color: #fff; font-weight: 800; font-size: 13px; cursor: pointer;
+}

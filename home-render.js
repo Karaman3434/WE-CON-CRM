@@ -149,15 +149,6 @@ function kmDurumuGuncelle(){
   }catch(e){ hataGoster("KM durumu güncellenemedi: " + e.message); }
 }
 
-function hesabaYatacakGuncelle(){
-  try{
-    var el = document.getElementById("anasayfaYatacakDeger");
-    if(!el || typeof MaasOzetVeri === "undefined") return;
-    var ozet = MaasOzetVeri.acikDonemHesapla();
-    el.textContent = ozet.hesabaYatacak.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " TL";
-  }catch(e){ hataGoster("Hesaba yatacak güncellenemedi: " + e.message); }
-}
-
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -221,13 +212,6 @@ document.addEventListener("DOMContentLoaded", function(){
   kartlariGuncelle();
   gununOzetiniGuncelle();
   if(typeof KmData !== "undefined"){ KmData.degistiginde(kmDurumuGuncelle); kmDurumuGuncelle(); }
-
-  // Ana Sayfa'daki "HESABA YATACAK" kutusu — Maaş + Prim Hesaplama
-  // sayfasındaki açık dönem kartıyla aynı canlı rakamı gösterir.
-  hesabaYatacakGuncelle();
-  try{ KomisyonData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
-  try{ AvansKayitData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
-  try{ MaasKayitData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
 
   // Döviz kuru artık global header'da gösteriliyor; Ana Sayfa'nın kendi
   // ayrı kur şeridi ve yenile butonu kaldırıldı (Ayarlar'daki "Şimdi Dene"

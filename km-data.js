@@ -18,6 +18,8 @@ var KmData = (function(){
 
   var kayitlar = {};
   var dinleyiciler = [];
+  var hatirlatmaNotu = "";
+  var hatirlatmaDinleyicileri = [];
 
   function baslat(){
     try{
@@ -29,12 +31,34 @@ var KmData = (function(){
       }, function(err){
         console.error("KM okuma hatası:", err);
       });
+      // HATIRLATMA NOTU (24.09.2026) — Araç KM sayfasında, "Bu Ayın
+      // Kayıtları" butonunun üstünde duran, Abdullah'ın elle yazdığı tek
+      // serbest metin notu (örn. "16-23 Eylül arası km bilgilerini
+      // merkeze gönderdim"). Tarihe göre değil, TEK bir alanda tutulur —
+      // her kaydettiğinde üzerine yazılır.
+      db.ref("kmHatirlatmaNotu").on("value", function(snap){
+        hatirlatmaNotu = snap.val() || "";
+        hatirlatmaDinleyicileri.forEach(function(fn){ fn(); });
+      }, function(err){
+        console.error("KM hatırlatma notu okuma hatası:", err);
+      });
     }catch(e){
       console.error("Firebase başlatma hatası:", e);
     }
   }
 
   function degistiginde(fn){ dinleyiciler.push(fn); }
+
+  function hatirlatmaNotunuOku(){ return hatirlatmaNotu; }
+  function hatirlatmaNotuDegistiginde(fn){ hatirlatmaDinleyicileri.push(fn); }
+  function hatirlatmaNotunuKaydet(metin, geriBildir){
+    try{
+      firebase.database().ref("kmHatirlatmaNotu").set((metin||"").trim()).then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
 
   function tarihAnahtari(d){
     return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
@@ -282,7 +306,10 @@ var KmData = (function(){
     ayarlarOku: ayarlarOku,
     ayarlarKaydet: ayarlarKaydet,
     baslangicGerekliMi: baslangicGerekliMi,
-    baslangicKaydet: baslangicKaydet
+    baslangicKaydet: baslangicKaydet,
+    hatirlatmaNotunuOku: hatirlatmaNotunuOku,
+    hatirlatmaNotuDegistiginde: hatirlatmaNotuDegistiginde,
+    hatirlatmaNotunuKaydet: hatirlatmaNotunuKaydet
   };
 
 })();

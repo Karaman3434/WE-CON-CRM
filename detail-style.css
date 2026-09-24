@@ -50,6 +50,9 @@
 #tileUrunBul { background: #f0f7ff; border: 2.5px solid #3569b8; }
 #tileUrunBul .islemler-tile-alt { color: #6a8fc9; }
 #tileGecmis, #tileGorevler { background: #f4f5f6; border: 2.5px solid #2d3540; }
+/* KİŞİSEL (24.09.2026) — kisisel.html'deki Maaş klasörü kutucuğu. */
+#kisiselMaasBtn { background: #eaf2fc; border: 2.5px solid #3569b8; }
+#kisiselMaasBtn .islemler-tile-alt { color: #6a8fc9; }
 #tileGecmis .islemler-tile-alt, #tileGorevler .islemler-tile-alt { color: #44494f; }
 #tileUrunGecmisi { background: #f6f0fd; border: 2.5px solid #8e44ad; }
 #tileUrunGecmisi .islemler-tile-alt { color: #8e44ad; }

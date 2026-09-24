@@ -393,6 +393,44 @@ document.addEventListener("DOMContentLoaded", function(){
   // hiç kapanmıyordu (zaten dolu olan güne rağmen). Artık hiçbir koşulda
   // gösterilmiyor; kmBaslangicOverlay HTML'de duruyor ama hiç açılmıyor.
 
+  // HATIRLATMA NOTU (24.09.2026) — panele dokununca popup açılır, serbest
+  // metin yazılır, Kaydet ile KmData.hatirlatmaNotunuKaydet() çağrılır.
+  function hatirlatmaPanelineYaz(){
+    var metinEl = document.getElementById("kmHatirlatmaMetin");
+    var not = KmData.hatirlatmaNotunuOku();
+    if(not){
+      metinEl.textContent = not;
+      metinEl.classList.remove("km-hatirlatma-metin--bos");
+    } else {
+      metinEl.textContent = "Dokun, bir not yaz.";
+      metinEl.classList.add("km-hatirlatma-metin--bos");
+    }
+  }
+  document.getElementById("kmHatirlatmaKutu").onclick = function(){
+    document.getElementById("kmHatirlatmaInput").value = KmData.hatirlatmaNotunuOku();
+    document.getElementById("kmHatirlatmaOverlay").hidden = false;
+  };
+  document.getElementById("btnKmHatirlatmaVazgec").onclick = function(){
+    document.getElementById("kmHatirlatmaOverlay").hidden = true;
+  };
+  document.getElementById("btnKmHatirlatmaKaydet").onclick = function(){
+    var btn = this;
+    var metin = document.getElementById("kmHatirlatmaInput").value;
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    KmData.hatirlatmaNotunuKaydet(metin, function(basarili, err){
+      btn.disabled = false;
+      btn.textContent = "✓ Kaydet";
+      if(basarili){
+        document.getElementById("kmHatirlatmaOverlay").hidden = true;
+      } else {
+        hataGoster("Not kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      }
+    });
+  };
+  KmData.hatirlatmaNotuDegistiginde(hatirlatmaPanelineYaz);
+  hatirlatmaPanelineYaz();
+
   KmData.ayarlarOku(function(ayarlar){
     kmAyarlarOnbellek = ayarlar || {};
   });
