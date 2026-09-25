@@ -15,7 +15,7 @@
 <title>WEICON ASİST — KM Kayıtları</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.240926.2123.622">
-<link rel="stylesheet" href="km-style.css?v=WG.250926.1850.627">
+<link rel="stylesheet" href="km-style.css?v=WG.250926.1925.628">
 </head>
 <body>
 
@@ -68,6 +68,14 @@
       <button class="excel-buton" id="btnExcel">📊 Excel'e Aktar</button>
     </div>
   </div>
+  <!-- Bilgi şeridi + Toplamlar şeridi (25.09.2026) — Abdullah'ın elle
+       biçimlendirdiği örnek Excel dosyasıyla BİREBİR: AD SOYAD/DÖNEM/PLAKA
+       üstte, İş KM/Özel KM toplamı altta kırmızı "TOPLAMLAR" şeridinde. -->
+  <div class="km-bilgi-serit" id="kmBilgiSerit">
+    <div class="km-bilgi-hucre"><div class="km-bilgi-etiket">AD SOYAD</div><div class="km-bilgi-deger" id="kmBilgiAdSoyad">-</div></div>
+    <div class="km-bilgi-hucre"><div class="km-bilgi-etiket">DÖNEM</div><div class="km-bilgi-deger" id="kmBilgiDonem">-</div></div>
+    <div class="km-bilgi-hucre"><div class="km-bilgi-etiket">PLAKA</div><div class="km-bilgi-deger" id="kmBilgiPlaka">-</div></div>
+  </div>
   <div class="data-table-container">
     <table class="data-table km-veri-tablo">
       <thead><tr>
@@ -75,6 +83,11 @@
       </tr></thead>
       <tbody id="kmTabloGovde"></tbody>
     </table>
+  </div>
+  <div class="km-toplamlar-serit">
+    <span class="km-toplamlar-etiket">TOPLAMLAR —</span>
+    <span class="km-toplamlar-deger" id="kmToplamlarIs">İş KM: 0</span>
+    <span class="km-toplamlar-deger" id="kmToplamlarOzel">Özel KM: 0</span>
   </div>
 
 </main>
@@ -93,6 +106,6 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="km-data.js?v=WG.240926.1923.620"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="km-kayitlar-render.js?v=WG.250926.1850.627"></script>
+<script src="km-kayitlar-render.js?v=WG.250926.1925.628"></script>
 </body>
 </html>

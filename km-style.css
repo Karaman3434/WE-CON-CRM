@@ -198,26 +198,48 @@
   background: #fafbfc;
 }
 
-/* Gerçek KM tablosu — Ürün Bul'daki data-table ile aynı desen */
+/* Gerçek KM tablosu — Excel'e aktarılan tasarımla BİREBİR (25.09.2026).
+   Abdullah'ın kendi elle biçimlendirdiği örnek Excel dosyasından alınan
+   TEK doğru kaynak: dış çerçeve orta-kalın gri (#505050), hücre ızgarası
+   ince gri (#333), başlık amber (#faeeda / #003a70 lacivert yazı). Excel
+   tarafı (excelAktar()) BU RENKLERDEN besleniyor — biri değişirse ikisi
+   de burada güncellenmeli. */
+.km-bilgi-serit {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  background: #eaf2fc;
+  border: 2px solid #505050;
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+.km-bilgi-hucre {
+  padding: 7px 6px;
+  text-align: center;
+  border-right: 1px solid #333;
+  min-width: 0;
+}
+.km-bilgi-hucre:last-child { border-right: none; }
+.km-bilgi-etiket { font-size: 8.5px; font-weight: 900; color: #003a70; letter-spacing: .2px; }
+.km-bilgi-deger { font-size: 12px; font-weight: 900; color: #003a70; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .data-table-container {
   overflow-x: auto;
   width: 100%;
-  border: 1px solid #b7601f;
-  border-radius: 8px;
+  border: 2px solid #505050;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
 }
 .km-veri-tablo {
   width: 100%;
   border-collapse: collapse;
   font-size: 10px;
 }
-/* Hücre ızgarası (25.09.2026) — Abdullah'ın isteği: her hücre Excel'de
-   olduğu gibi ince siyah çizgiyle belirgin olsun. Excel'e aktarınca da
-   BİREBİR aynı ızgara görünsün diye km-kayitlar-render.js'teki
-   excelAktar() kenar rengini de bu SATIR ile aynı tona (#333) sabitler —
-   biri değişirse diğeri de burada güncellenmeli. */
 .km-veri-tablo th {
   background: #faeeda;
-  color: #b7601f;
+  color: #003a70;
   font-weight: 900;
   padding: 6px 3px;
   text-align: center;
@@ -233,12 +255,27 @@
   color: #1a1a1a;
 }
 .km-veri-tablo td.km-td-metin {
-  text-align: left;
+  text-align: center;
   white-space: normal;
   max-width: 70px;
 }
 .km-veri-tablo .km-td-ozel { color: #b7601f; font-weight: 800; }
 .km-veri-tablo .km-td-is { color: #b7601f; font-weight: 800; }
+
+.km-toplamlar-serit {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 2px solid #505050;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 8px 10px;
+  margin-top: -1px;
+}
+.km-toplamlar-etiket { font-size: 11px; font-weight: 900; color: #e02020; }
+.km-toplamlar-deger { font-size: 12px; font-weight: 900; color: #e02020; }
 
 .km-td-tarih {
   white-space: normal !important;

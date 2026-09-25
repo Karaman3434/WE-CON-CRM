@@ -87,6 +87,9 @@ function tabloyuCiz(){
       govde.innerHTML = "<tr><td colspan='8' style='text-align:center;color:#44494f;padding:16px 0;'>Bu ayda hiç kayıt yok.</td></tr>";
       document.getElementById("kmAyToplamIs").textContent = "0 km";
       document.getElementById("kmAyToplamOzel").textContent = "0 km";
+      document.getElementById("kmToplamlarIs").textContent = "İş KM: 0";
+      document.getElementById("kmToplamlarOzel").textContent = "Özel KM: 0";
+      bilgiSeridiniGuncelle(goruntulenenAy);
       return;
     }
 
@@ -121,6 +124,9 @@ function tabloyuCiz(){
 
     document.getElementById("kmAyToplamIs").textContent = toplamIs + " km";
     document.getElementById("kmAyToplamOzel").textContent = toplamOzel + " km";
+    document.getElementById("kmToplamlarIs").textContent = "İş KM: " + toplamIs;
+    document.getElementById("kmToplamlarOzel").textContent = "Özel KM: " + toplamOzel;
+    bilgiSeridiniGuncelle(goruntulenenAy);
 
     govde.querySelectorAll("[contenteditable]").forEach(function(td){
       td.addEventListener("blur", function(){
@@ -159,6 +165,25 @@ function tabloyuCiz(){
 
 var kmAyarlarOnbellek = {};
 
+// Bilgi şeridi (25.09.2026) — programdaki AD SOYAD/DÖNEM/PLAKA şeridi,
+// excelAktar()'ın aynı bilgiyi yazdığı üst satırla BİREBİR kaynak
+// (kmAyarlarOnbellek + o an görüntülenen ay) kullanır.
+function bilgiSeridiniGuncelle(goruntulenenAy){
+  var ay = kmAyarlarOnbellek || {};
+  document.getElementById("kmBilgiAdSoyad").textContent = ay.adSoyad || "-";
+  document.getElementById("kmBilgiDonem").textContent = KmData.ayAdiUret(goruntulenenAy);
+  document.getElementById("kmBilgiPlaka").textContent = ay.plaka || "-";
+}
+
+// excelAktar() (25.09.2026, TAM YENİDEN YAZILDI) — Abdullah'ın kendi elle
+// biçimlendirdiği örnek dosyayla (06 HNC 135_Eylül 2026.xlsx) BİREBİR:
+// A sütunu boş kenar payı, B'de başlayan AD SOYAD/DÖNEM/PLAKA bilgi
+// kutusu (orta-kalın #505050 çerçeve + #EAF2FC zemin + 14pt kalın lacivert
+// yazı), bej başlık satırı, ince #333 hücre ızgarası, özel gün satırlarında
+// sarı zemin, ve en altta kırmızı kalın "TOPLAMLAR" satırı. TEK KAYNAK
+// KURALI: bu renk/kenar değerleri km-style.css'teki .km-bilgi-serit /
+// .km-veri-tablo / .km-toplamlar-serit ile AYNI tutulmalı — biri
+// değişince diğeri de burada güncellenmeli.
 function excelAktar(){
   try{
     if(typeof XLSX === "undefined"){
@@ -177,6 +202,7 @@ function excelAktar(){
     var donemEtiket = KmData.ayAdiUret(goruntulenenAy2);
 
     var basliklar = ["Tarih","Saat","Seyir Güzergahı","Ziyaret Edilen Yerler","Başlangıç KM","Bitiş KM","İş KM","Özel KM"];
+    var toplamIsXl = 0, toplamOzelXl = 0;
     var veriSatirlari = kayitlar.map(function(k){
       var parca = k.anahtar.split("-");
       var d = new Date(parseInt(parca[0]), parseInt(parca[1])-1, parseInt(parca[2]));
@@ -201,71 +227,114 @@ function excelAktar(){
         if(k.kmKategori === "ozel") ozelKmDeger = fark;
         else isKmDeger = fark; // varsayılan/"is" kategorisi
       }
+      if(typeof isKmDeger === "number") toplamIsXl += isKmDeger;
+      if(typeof ozelKmDeger === "number") toplamOzelXl += ozelKmDeger;
       return [tarihStr, saatStr, k.guzergah||"", k.ziyaretYerleri||"", k.km!=null?k.km:"", k.bitisKm!=null?k.bitisKm:"", isKmDeger, ozelKmDeger];
     });
 
-    var aoa = [
-      ["AD SOYAD", adSoyad, "", "DÖNEM", donemEtiket, "PLAKA", plaka],
-      [],
-      basliklar
-    ].concat(veriSatirlari);
+    var n = veriSatirlari.length;
+    // Satır haritası (0-indeksli): 0=boş kenar, 1=BİLGİ satırı, 2=boş ara,
+    // 3=BAŞLIK satırı, 4..(4+n-1)=veri satırları, sonra 1 boş satır, sonra
+    // TOPLAMLAR satırı — örnek dosyadaki 22 veri satırlı düzenle birebir.
+    var R_BILGI = 1, R_BASLIK = 3, R_VERI0 = 4, R_TOPLAM = R_VERI0 + n + 1;
+
+    var aoa = [];
+    aoa[0] = [];
+    aoa[R_BILGI] = ["", "AD SOYAD", adSoyad, "", "DÖNEM", donemEtiket, "PLAKA", plaka, ""];
+    aoa[2] = [];
+    aoa[R_BASLIK] = [""].concat(basliklar);
+    for(var i=0; i<n; i++){ aoa[R_VERI0+i] = [""].concat(veriSatirlari[i]); }
+    aoa[R_TOPLAM] = [];
+    aoa[R_TOPLAM][5] = "TOPLAMLAR";
+    aoa[R_TOPLAM][7] = toplamIsXl;
+    aoa[R_TOPLAM][8] = toplamOzelXl;
 
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = [{wch:20},{wch:10},{wch:12},{wch:12},{wch:22},{wch:26},{wch:9},{wch:9}];
-    // Tarih/Saat hücreleri iki satırlı olduğu için veri satırlarını daha
-    // yüksek yapıyoruz (başlık ve boş satırlar normal kalsın).
-    var satirYukseklikleri = [{},{},{}];
-    for(var ry=0; ry<veriSatirlari.length; ry++){ satirYukseklikleri.push({hpt:32}); }
+    // A boş kenar payı, B..I veri sütunları (örnek dosyayla birebir genişlik).
+    ws["!cols"] = [{wch:1.7},{wch:20.8},{wch:10.9},{wch:15.7},{wch:12.8},{wch:12.6},{wch:11.7},{wch:10.6},{wch:11.4}];
+    var satirYukseklikleri = [];
+    satirYukseklikleri[R_BILGI] = {hpt:27};
+    satirYukseklikleri[R_BASLIK] = {hpt:27};
+    for(var ry=0; ry<n; ry++){ satirYukseklikleri[R_VERI0+ry] = {hpt:32}; }
+    satirYukseklikleri[R_TOPLAM] = {hpt:19.5};
     ws["!rows"] = satirYukseklikleri;
 
-    // Kenar rengi programdaki tabloyla (km-style.css .km-veri-tablo th/td)
-    // BİREBİR aynı ton (#333) — "kodlayınca tekrar düzenlemek istemiyorum"
-    // isteği gereği ikisi burada kasıtlı olarak eşleştirilmiştir.
-    var INCE_KENAR = { style:"thin", color:{rgb:"333333"} };
-    var TUM_KENAR = { top:INCE_KENAR, bottom:INCE_KENAR, left:INCE_KENAR, right:INCE_KENAR };
-    var BAS_SATIR = 3;
+    ws["!merges"] = [
+      {s:{r:R_BILGI,c:7}, e:{r:R_BILGI,c:8}},   // PLAKA değeri (H:I)
+      {s:{r:R_TOPLAM,c:5}, e:{r:R_TOPLAM,c:6}}   // "TOPLAMLAR" etiketi (F:G)
+    ];
 
-    // AD SOYAD / DÖNEM / PLAKA üst bilgi satırı (25.09.2026) — eskiden
-    // hiç biçimlendirilmiyordu, artık tablonun geri kalanıyla aynı ızgara +
-    // vurgulu (kalın/fill) görünüme sahip.
-    for(var ic=0; ic<7; ic++){
-      var infoAdr = XLSX.utils.encode_cell({r:0, c:ic});
-      if(!ws[infoAdr]) ws[infoAdr] = {t:"s", v:""};
-      ws[infoAdr].s = {
-        fill: {patternType:"solid", fgColor:{rgb:"EAF2FC"}, bgColor:{rgb:"EAF2FC"}},
-        font: {bold:true, color:{rgb:"003A70"}},
-        alignment: {horizontal:(ic%2===1?"left":"center"), vertical:"center"},
-        border: TUM_KENAR
-      };
+    // Programdaki tabloyla (km-style.css) BİREBİR aynı tonlar.
+    var KENAR_ORTA = { style:"medium", color:{rgb:"505050"} };
+    var KENAR_INCE = { style:"thin", color:{rgb:"333333"} };
+    var SUTUN_ILK = 1, SUTUN_SON = 8; // B..I
+
+    function hucreAyarla(r, c, style){
+      var adr = XLSX.utils.encode_cell({r:r, c:c});
+      if(!ws[adr]) ws[adr] = {t:"s", v:""};
+      ws[adr].s = style;
     }
 
+    // BİLGİ satırı — tüm hücreler medium top/bottom, medium sadece dış
+    // kenarlarda (sol B, sağ I), aradaki hücreler ince ayraç. Hizalama,
+    // örnek dosyadaki elle ayarlanmış düzenle birebir (etiket/değer
+    // sütununa göre değişiyor, tek kalıba uymuyor).
+    var BILGI_HIZA = {1:"right", 2:"left", 3:"center", 4:"right", 5:"center", 6:"center", 7:"left", 8:"center"};
+    for(var ic=SUTUN_ILK; ic<=SUTUN_SON; ic++){
+      hucreAyarla(R_BILGI, ic, {
+        fill: {patternType:"solid", fgColor:{rgb:"EAF2FC"}, bgColor:{rgb:"EAF2FC"}},
+        font: {bold:true, sz:14, color:{rgb:"003A70"}},
+        alignment: {horizontal:BILGI_HIZA[ic], vertical:"center"},
+        border: {
+          top:KENAR_ORTA, bottom:KENAR_ORTA,
+          left:(ic===SUTUN_ILK?KENAR_ORTA:KENAR_INCE),
+          right:(ic===SUTUN_SON?KENAR_ORTA:KENAR_INCE)
+        }
+      });
+    }
+
+    // BAŞLIK satırı — bej zemin, ince ızgara, sadece dış sol/sağ kenar medium.
     for(var hc=0; hc<basliklar.length; hc++){
-      var basAdr = XLSX.utils.encode_cell({r:BAS_SATIR-1, c:hc});
-      if(!ws[basAdr]) ws[basAdr] = {t:"s", v:""};
-      ws[basAdr].s = {
+      var col = SUTUN_ILK + hc;
+      hucreAyarla(R_BASLIK, col, {
         fill: {patternType:"solid", fgColor:{rgb:"FAEEDA"}, bgColor:{rgb:"FAEEDA"}},
         font: {bold:true, color:{rgb:"003A70"}},
         alignment: {horizontal:"center", vertical:"center"},
-        border: TUM_KENAR
-      };
+        border: {
+          top:KENAR_INCE, bottom:KENAR_INCE,
+          left:(col===SUTUN_ILK?KENAR_ORTA:KENAR_INCE),
+          right:(col===SUTUN_SON?KENAR_ORTA:KENAR_INCE)
+        }
+      });
     }
-    // ÖZEL GÜN (hafta sonu/tatil/rapor/izin/bayram) SATIRLARI — ekrandaki
-    // tabloda bu satırlar zaten bej zeminle işaretleniyor, Excel çıktısında
-    // da fark edilsin diye SARI zeminle vurgulanıyor.
-    for(var vr=0; vr<veriSatirlari.length; vr++){
+
+    // VERİ satırları — ince ızgara, sol/sağ dış kenar medium; özel gün
+    // (hafta sonu/tatil/rapor/izin/bayram) satırları sarı zeminle vurgulu.
+    for(var vr=0; vr<n; vr++){
       var ozelGunMuXl = ozelGunMuHesapla(kayitlar[vr]);
       for(var vc=0; vc<basliklar.length; vc++){
-        var vAdr = XLSX.utils.encode_cell({r:BAS_SATIR+vr, c:vc});
-        if(!ws[vAdr]) ws[vAdr] = {t:"s", v:""};
-        ws[vAdr].s = {
-          alignment: {horizontal: (vc===0||vc===1?"center":(vc===4||vc===5?"left":"center")), vertical:"center", wrapText: (vc===0||vc===1)},
-          border: TUM_KENAR
+        var col2 = SUTUN_ILK + vc;
+        var stil = {
+          alignment: {horizontal:"center", vertical:"center", wrapText: (vc===0||vc===1)},
+          border: {
+            top:KENAR_INCE, bottom:KENAR_INCE,
+            left:(col2===SUTUN_ILK?KENAR_ORTA:KENAR_INCE),
+            right:(col2===SUTUN_SON?KENAR_ORTA:KENAR_INCE)
+          }
         };
         if(ozelGunMuXl){
-          ws[vAdr].s.fill = {patternType:"solid", fgColor:{rgb:"FFFF00"}, bgColor:{rgb:"FFFF00"}};
+          stil.fill = {patternType:"solid", fgColor:{rgb:"FFFF00"}, bgColor:{rgb:"FFFF00"}};
         }
+        hucreAyarla(R_VERI0+vr, col2, stil);
       }
     }
+
+    // TOPLAMLAR satırı — "TOPLAMLAR" etiketi (F:G, sağa yaslı) + İş KM/
+    // Özel KM toplamları (H, I), kalın kırmızı 14pt, alt kenar medium.
+    hucreAyarla(R_TOPLAM, 5, { font:{bold:true, sz:14, color:{rgb:"FF0000"}}, alignment:{horizontal:"right"}, border:{bottom:KENAR_ORTA} });
+    hucreAyarla(R_TOPLAM, 6, { font:{bold:true, sz:14, color:{rgb:"FF0000"}}, border:{bottom:KENAR_ORTA} });
+    hucreAyarla(R_TOPLAM, 7, { font:{bold:true, sz:14, color:{rgb:"FF0000"}}, alignment:{horizontal:"center"}, border:{bottom:KENAR_ORTA} });
+    hucreAyarla(R_TOPLAM, 8, { font:{bold:true, sz:14, color:{rgb:"FF0000"}}, alignment:{horizontal:"center"}, border:{bottom:KENAR_ORTA, right:KENAR_ORTA} });
 
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "KM Takip");
@@ -304,6 +373,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
   KmData.ayarlarOku(function(ayarlar){
     kmAyarlarOnbellek = ayarlar || {};
+    // Ayarlar Firebase'den ASENKRON geldiği için ilk çizimde AD SOYAD/
+    // PLAKA boş görünebilir — geldiği an şeridi yeniden doldur.
+    var simdiB = new Date();
+    var buAyAnahtariB = simdiB.getFullYear()+"-"+("0"+(simdiB.getMonth()+1)).slice(-2);
+    bilgiSeridiniGuncelle(seciliYilAy || buAyAnahtariB);
   });
 
   aySeciciyiDoldur();
