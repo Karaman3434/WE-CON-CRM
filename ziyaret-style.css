@@ -165,9 +165,33 @@
   align-items: stretch;
   margin-bottom: 6px;
 }
-.ziy-arama-temas-satir .arama-kutusu { flex: 1; margin-bottom: 0; }
+/* Arama kutusu %100 genişlik + tek satırlık yükseklik — büyüteç ikonu artık
+   girdinin İÇİNDE, sağa yaslı (position:absolute), eskiden input'un ALTINDA
+   ayrı satıra düşüp kutuyu Temas tuşundan daha uzun gösteriyordu (25.09.2026). */
+.ziy-arama-temas-satir .arama-kutusu {
+  flex: 1;
+  margin-bottom: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.ziy-arama-temas-satir .arama-kutusu input {
+  margin-bottom: 0 !important;
+  padding-right: 32px !important;
+}
+.ziy-arama-temas-satir .arama-ikon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  pointer-events: none;
+}
 .ziy-temas-ac-btn {
   flex: 0 0 33%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1.5px solid #003a70;
   background: #eaf2fc;
   color: #003a70;
@@ -177,6 +201,7 @@
   cursor: pointer;
   white-space: nowrap;
   padding: 0 6px;
+  box-sizing: border-box;
 }
 
 .ziy-tur-secim {
