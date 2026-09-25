@@ -15,7 +15,7 @@
 <title>WEICON ASİST — KM Kayıtları</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.240926.2123.622">
-<link rel="stylesheet" href="km-style.css?v=WG.240926.2123.622">
+<link rel="stylesheet" href="km-style.css?v=WG.250926.1850.627">
 </head>
 <body>
 
@@ -79,7 +79,12 @@
 
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- xlsx-js-style (25.09.2026): standart "xlsx" kütüphanesinin ÜCRETSİZ
+     sürümü tarayıcıda hücre biçimlendirmesini (kenar/fill/font) YAZARKEN
+     SESSİZCE YOK SAYIYOR — Excel'de hiç görünmemesinin sebebi buydu.
+     xlsx-js-style aynı XLSX API'sini kullanır, tek fark stil yazma
+     desteğinin gerçekten çalışması. -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -88,6 +93,6 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="km-data.js?v=WG.240926.1923.620"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="km-kayitlar-render.js?v=WG.240926.1923.620"></script>
+<script src="km-kayitlar-render.js?v=WG.250926.1850.627"></script>
 </body>
 </html>

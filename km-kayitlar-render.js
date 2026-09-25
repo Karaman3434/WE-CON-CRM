@@ -218,9 +218,27 @@ function excelAktar(){
     for(var ry=0; ry<veriSatirlari.length; ry++){ satirYukseklikleri.push({hpt:32}); }
     ws["!rows"] = satirYukseklikleri;
 
-    var INCE_KENAR = { style:"thin", color:{rgb:"3569B8"} };
+    // Kenar rengi programdaki tabloyla (km-style.css .km-veri-tablo th/td)
+    // BİREBİR aynı ton (#333) — "kodlayınca tekrar düzenlemek istemiyorum"
+    // isteği gereği ikisi burada kasıtlı olarak eşleştirilmiştir.
+    var INCE_KENAR = { style:"thin", color:{rgb:"333333"} };
     var TUM_KENAR = { top:INCE_KENAR, bottom:INCE_KENAR, left:INCE_KENAR, right:INCE_KENAR };
     var BAS_SATIR = 3;
+
+    // AD SOYAD / DÖNEM / PLAKA üst bilgi satırı (25.09.2026) — eskiden
+    // hiç biçimlendirilmiyordu, artık tablonun geri kalanıyla aynı ızgara +
+    // vurgulu (kalın/fill) görünüme sahip.
+    for(var ic=0; ic<7; ic++){
+      var infoAdr = XLSX.utils.encode_cell({r:0, c:ic});
+      if(!ws[infoAdr]) ws[infoAdr] = {t:"s", v:""};
+      ws[infoAdr].s = {
+        fill: {patternType:"solid", fgColor:{rgb:"EAF2FC"}, bgColor:{rgb:"EAF2FC"}},
+        font: {bold:true, color:{rgb:"003A70"}},
+        alignment: {horizontal:(ic%2===1?"left":"center"), vertical:"center"},
+        border: TUM_KENAR
+      };
+    }
+
     for(var hc=0; hc<basliklar.length; hc++){
       var basAdr = XLSX.utils.encode_cell({r:BAS_SATIR-1, c:hc});
       if(!ws[basAdr]) ws[basAdr] = {t:"s", v:""};

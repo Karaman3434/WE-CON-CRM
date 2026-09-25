@@ -210,18 +210,23 @@
   border-collapse: collapse;
   font-size: 10px;
 }
+/* Hücre ızgarası (25.09.2026) — Abdullah'ın isteği: her hücre Excel'de
+   olduğu gibi ince siyah çizgiyle belirgin olsun. Excel'e aktarınca da
+   BİREBİR aynı ızgara görünsün diye km-kayitlar-render.js'teki
+   excelAktar() kenar rengini de bu SATIR ile aynı tona (#333) sabitler —
+   biri değişirse diğeri de burada güncellenmeli. */
 .km-veri-tablo th {
   background: #faeeda;
   color: #b7601f;
   font-weight: 900;
   padding: 6px 3px;
   text-align: center;
-  border-bottom: 2px solid #ef9f27;
+  border: 1px solid #333;
   white-space: nowrap;
 }
 .km-veri-tablo td {
   padding: 6px 3px;
-  border-bottom: 1px solid #e2e6ec;
+  border: 1px solid #333;
   text-align: center;
   white-space: nowrap;
   font-weight: 500;
