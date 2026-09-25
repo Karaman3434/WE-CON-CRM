@@ -182,6 +182,13 @@ function turSecimGuncelle(){
     var btn = document.getElementById("btnTur" + t.charAt(0).toUpperCase() + t.slice(1));
     if(btn) btn.classList.toggle("ziy-tur-btn--secili", seciliTur===t);
   });
+  // "Temas" tuşu artık seçili türün ikonunu gösterir — 4'lü tuş grubu
+  // pop-up'a taşındığı için tek görünür geri bildirim burası (25.09.2026).
+  var acBtn = document.getElementById("btnZiyTemasAc");
+  if(acBtn){
+    var m = TUR_META[seciliTur] || TUR_META.ziyaret;
+    acBtn.textContent = m.ikon + " Temas";
+  }
 }
 
 function firmaAramaCiz(){
@@ -260,8 +267,21 @@ document.addEventListener("DOMContentLoaded", function(){
   };
 
   document.getElementById("ziyFirmaAra").addEventListener("input", firmaAramaCiz);
+
+  // Temas pop-up (25.09.2026) — "Temas" tuşu açar, tür seçilince ya da
+  // "Kapat" ile kapanır.
+  document.getElementById("btnZiyTemasAc").onclick = function(){
+    document.getElementById("ziyTemasOverlay").hidden = false;
+  };
+  document.getElementById("btnZiyTemasKapat").onclick = function(){
+    document.getElementById("ziyTemasOverlay").hidden = true;
+  };
   document.querySelectorAll(".ziy-tur-btn[data-tur]").forEach(function(btn){
-    btn.onclick = function(){ seciliTur = this.getAttribute("data-tur"); turSecimGuncelle(); };
+    btn.onclick = function(){
+      seciliTur = this.getAttribute("data-tur");
+      turSecimGuncelle();
+      document.getElementById("ziyTemasOverlay").hidden = true;
+    };
   });
   document.getElementById("ziyHatirlatmaCheck").addEventListener("change", function(){
     document.getElementById("ziyHatirlatmaTarih").hidden = !this.checked;

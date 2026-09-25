@@ -67,6 +67,25 @@ body {
   z-index: 1000;
   background: #ffffff;
 }
+/* SAYFA ROZETİ (25.09.2026) — tüm sayfalarda AYNI yerde (sabit şeridin
+   hemen altında, .rota-etiketi/.rota-serit'in konumunda) tekrar eden,
+   küçük ikon+isim etiketi. TEK KURAL: bu bileşenin stili SADECE burada
+   tanımlanır, sayfa-özel CSS dosyalarında yeniden tanımlanmaz — her
+   sayfa sadece kendi ikon+isim metnini HTML'de değiştirir. Kutu
+   yüksekliği eski .rota-etiketi ile aynı (padding 7px), etiket yazısı
+   iki kademede toplam ~%44 büyütüldü (Abdullah'ın isteği). */
+.sayfa-rozeti-serit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: #f4f6f9;
+  border-bottom: 1px solid #e8ecf1;
+}
+.sayfa-rozeti-ikon { font-size: 13px; line-height: 1; }
+.sayfa-rozeti-ad { font-size: 11.5px; font-weight: 900; color: #003a70; letter-spacing: .2px; }
+
 /* Rota etiketi — hangi sayfada olduğunu gösteren küçük, tek satırlık iz.
    Tüm sayfalarda aynı yerde (sabit şeridin hemen altında), aynı küçük
    boyutta — büyük başlık şeritlerinin (örn. eski "⚡ İŞLEMLER") yerini alır. */

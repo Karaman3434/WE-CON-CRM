@@ -13,8 +13,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WEICON ASİST — Ziyaret Takvimi</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.240926.2123.622">
-<link rel="stylesheet" href="ziyaret-style.css?v=WG.150926.1503.575">
+<link rel="stylesheet" href="home-style.css?v=WG.250926.2150.629">
+<link rel="stylesheet" href="ziyaret-style.css?v=WG.250926.2150.629">
 </head>
 <body>
 
@@ -30,7 +30,7 @@
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 </div>
-<div class="rota-etiketi">Raporlar › <b>Ziyaret Takvimi</b></div>
+<div class="sayfa-rozeti-serit"><span class="sayfa-rozeti-ikon">📅</span><span class="sayfa-rozeti-ad">ZİYARET TAKVİMİ</span></div>
 
 <main class="sayfa">
 
@@ -67,19 +67,15 @@
     <p class="bos-mesaj" id="ziyGunKayitBos" hidden>Bu günde kayıt yok.</p>
 
     <div class="ziy-yeni-kayit-baslik">+ Yeni kayıt ekle</div>
-    <div class="arama-kutusu">
-      <input type="text" id="ziyFirmaAra" placeholder="Firma ara..." autocomplete="off">
-      <span class="arama-ikon">🔍</span>
+    <div class="ziy-arama-temas-satir">
+      <div class="arama-kutusu">
+        <input type="text" id="ziyFirmaAra" placeholder="Firma ara..." autocomplete="off">
+        <span class="arama-ikon">🔍</span>
+      </div>
+      <button type="button" class="ziy-temas-ac-btn" id="btnZiyTemasAc">Temas</button>
     </div>
     <div id="ziyFirmaSonuclari"></div>
     <div class="ziy-secili-firma" id="ziySeciliFirma" hidden></div>
-
-    <div class="ziy-tur-secim">
-      <button class="ziy-tur-btn ziy-tur-btn--ziyaret" id="btnTurZiyaret" data-tur="ziyaret">📍 Ziyaret</button>
-      <button class="ziy-tur-btn ziy-tur-btn--telefon" id="btnTurTelefon" data-tur="telefon">📞 Telefon</button>
-      <button class="ziy-tur-btn ziy-tur-btn--mail" id="btnTurMail" data-tur="mail">✉️ Mail</button>
-      <button class="ziy-tur-btn ziy-tur-btn--whatsapp" id="btnTurWhatsapp" data-tur="whatsapp">💬 WhatsApp</button>
-    </div>
 
     <input type="text" id="ziyNot" placeholder="Not (opsiyonel)">
 
@@ -90,11 +86,30 @@
     <input type="date" id="ziyHatirlatmaTarih" hidden>
     <p class="ziy-hatirlatma-not">Bu tarihin sabahı, uygulamayı açtığında hatırlatma bildirimi gösterilir.</p>
 
-    <button class="ziy-kaydet-btn" id="btnZiyKaydet">✓ Kaydet</button>
-    <button class="ziy-panel-kapat-btn" id="btnZiyGunKapat">Kapat</button>
+    <div class="ziy-alt-buton-satir">
+      <button class="ziy-panel-kapat-btn" id="btnZiyGunKapat">Kapat</button>
+      <button class="ziy-kaydet-btn" id="btnZiyKaydet">✓ Kaydet</button>
+    </div>
   </section>
 
 </main>
+
+<!-- Temas pop-up (25.09.2026) — eskiden her zaman görünen 2x2 tuş grubu
+     artık burada, arama kutusunun yanındaki "Temas" tuşuna basınca açılır.
+     Kutu içinde kutu OLMASIN diye .ziy-hatirlatma-overlay/-kutu ile AYNI
+     düz (tek panel) desen kullanıldı. -->
+<div class="ziy-hatirlatma-overlay" id="ziyTemasOverlay" hidden>
+  <div class="ziy-hatirlatma-kutu">
+    <div class="ziy-hatirlatma-baslik" style="text-align:center;">Temas türü seç</div>
+    <div class="ziy-tur-secim">
+      <button class="ziy-tur-btn ziy-tur-btn--ziyaret" id="btnTurZiyaret" data-tur="ziyaret">📍 Ziyaret</button>
+      <button class="ziy-tur-btn ziy-tur-btn--telefon" id="btnTurTelefon" data-tur="telefon">📞 Telefon</button>
+      <button class="ziy-tur-btn ziy-tur-btn--mail" id="btnTurMail" data-tur="mail">✉️ Mail</button>
+      <button class="ziy-tur-btn ziy-tur-btn--whatsapp" id="btnTurWhatsapp" data-tur="whatsapp">💬 WhatsApp</button>
+    </div>
+    <button class="ziy-hatirlatma-kapat-btn" id="btnZiyTemasKapat">Kapat</button>
+  </div>
+</div>
 
 <div class="ziy-hatirlatma-overlay" id="ziyHatirlatmaOverlay" hidden>
   <div class="ziy-hatirlatma-kutu">
@@ -113,6 +128,6 @@
 <script src="customer-data.js?v=WG.240926.0752.611"></script>
 <script src="reports-data.js?v=WG.150926.1224.571"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="ziyaret-render.js?v=WG.150926.1606.576"></script>
+<script src="ziyaret-render.js?v=WG.250926.2150.629"></script>
 </body>
 </html>
