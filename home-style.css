@@ -440,6 +440,11 @@ body {
 .menu-kart--pembe { background: #fbeaf0; border-color: #d4537e; border: 1.5px solid #eb99b6;}
 .menu-kart--pembe .menu-baslik { color: #993556; }
 
+/* Kişisel kutucuğu (25.09.2026) — Araç KM/Raporlar satırının altında,
+   TEK BAŞINA tüm satırı kaplasın ve diğer kutucuklarla aynı yükseklikte
+   görünsün (bu yüzden onlar gibi bir alt başlık satırı da aldı). */
+.menu-kart--tam-satir { grid-column: 1 / -1; }
+
 .menu-grid--tek { grid-template-columns: 1fr; }
 .menu-kart--genis { flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; }
 .menu-kart--genis .menu-baslik { margin-right: 8px; }
