@@ -53,6 +53,36 @@ var TUR_META = {
   whatsapp: {etiket:"WhatsApp", ikon:"💬", renk:"#0e6b58"}
 };
 
+// Ay Seç pop-up (25.09.2026) — bugünden 12 ay geri / 12 ay ileriye kadar
+// tek satırda yan yana, yatay kaydırılabilir ay seçenekleri. Açılışta
+// otomatik olarak o an görüntülenen aya kaydırılır.
+function aySecPopupDoldur(){
+  try{
+    var kapsayici = document.getElementById("ziyAySecSatir");
+    var bugun = new Date();
+    var html = "";
+    for(var i=-12; i<=12; i++){
+      var d = new Date(bugun.getFullYear(), bugun.getMonth()+i, 1);
+      var y = d.getFullYear(), a = d.getMonth();
+      var seciliMi = (y===goruntulenenYil && a===goruntulenenAy);
+      html += "<div class='ziy-ay-secenek" + (seciliMi?" ziy-ay-secenek--secili":"") + "' data-yil='" + y + "' data-ay='" + a + "'>" + AY_ADLARI[a].slice(0,3) + " " + y + "</div>";
+    }
+    kapsayici.innerHTML = html;
+    kapsayici.querySelectorAll(".ziy-ay-secenek").forEach(function(el){
+      el.onclick = function(){
+        goruntulenenYil = parseInt(this.getAttribute("data-yil"), 10);
+        goruntulenenAy = parseInt(this.getAttribute("data-ay"), 10);
+        seciliGunAnahtari = null;
+        document.getElementById("ziyGunPanel").hidden = true;
+        takvimiCiz();
+        document.getElementById("ziyAySecOverlay").hidden = true;
+      };
+    });
+    var seciliEl = kapsayici.querySelector(".ziy-ay-secenek--secili");
+    if(seciliEl) seciliEl.scrollIntoView({inline:"center", block:"nearest"});
+  }catch(e){ hataGoster("Ay listesi açılamadı: " + e.message); }
+}
+
 function takvimiCiz(){
   try{
     document.getElementById("ziyAyBaslik").textContent = AY_ADLARI[goruntulenenAy] + " " + goruntulenenYil;
@@ -236,19 +266,14 @@ document.addEventListener("DOMContentLoaded", function(){
   goruntulenenAy = simdi.getMonth();
 
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-  document.getElementById("btnOncekiAy").onclick = function(){
-    goruntulenenAy--;
-    if(goruntulenenAy<0){ goruntulenenAy=11; goruntulenenYil--; }
-    seciliGunAnahtari = null;
-    document.getElementById("ziyGunPanel").hidden = true;
-    takvimiCiz();
+
+  // Ay seç pop-up (25.09.2026) — ◀ Eylül 2026 ▶ ok gezinmesinin yerini aldı.
+  document.getElementById("btnAySecAc").onclick = function(){
+    aySecPopupDoldur();
+    document.getElementById("ziyAySecOverlay").hidden = false;
   };
-  document.getElementById("btnSonrakiAy").onclick = function(){
-    goruntulenenAy++;
-    if(goruntulenenAy>11){ goruntulenenAy=0; goruntulenenYil++; }
-    seciliGunAnahtari = null;
-    document.getElementById("ziyGunPanel").hidden = true;
-    takvimiCiz();
+  document.getElementById("btnZiyAySecKapat").onclick = function(){
+    document.getElementById("ziyAySecOverlay").hidden = true;
   };
   document.getElementById("ziyGunFiltre").onchange = function(){
     var deger = this.value; // "YYYY-MM-DD"

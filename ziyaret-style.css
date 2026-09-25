@@ -1,5 +1,7 @@
 .sayfa { padding: 4px 4px 16px; }
 
+/* Boşluk daraltıldı (25.09.2026, Abdullah'ın isteği: nav ile Gün Filtrele
+   arası çok boşluktu) — padding/margin küçültüldü. */
 .ziy-takip-btn {
   display: block;
   text-align: center;
@@ -7,34 +9,11 @@
   border: 1.5px solid #b7601f;
   color: #b7601f;
   border-radius: 10px;
-  padding: 12px;
-  font-size: 14px;
+  padding: 8px;
+  font-size: 13px;
   font-weight: 800;
   text-decoration: none;
-  margin-bottom: 14px;
-}
-
-.ziy-ay-gezinme {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.ziy-ay-ok {
-  background: #eaf2fc;
-  border: 2px solid #3569b8;
-  color: #003a70;
-  border-radius: 8px;
-  width: 40px;
-  height: 40px;
-  font-size: 16px;
-  font-weight: 900;
-  cursor: pointer;
-}
-.ziy-ay-baslik {
-  font-size: 16px;
-  font-weight: 900;
-  color: #003a70;
+  margin-bottom: 8px;
 }
 
 .ziy-takvim-kutu {
@@ -97,10 +76,10 @@
   padding: 14px;
 }
 .ziy-gun-panel-baslik {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
   color: #003a70;
-  margin-bottom: 10px;
+  margin: 0;
 }
 .ziy-kayit-karti {
   background: #ffffff;
@@ -324,27 +303,77 @@
   font-style: italic;
 }
 
-/* Gün Filtrele (WG.100926.196) — takvimde ay ay gezmeden direkt bir güne atlamak için */
-.ziy-gun-filtre-satir {
+/* Gün Filtrele + Ay seç — tek satır, yarı yarıya, aynı boy (25.09.2026,
+   WG.100926.196'daki eski tek başlı satırın ve ◀ Eylül 2026 ▶ ok
+   gezinmesinin yerine). */
+.ziy-filtre-satir {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.ziy-gun-filtre-yari,
+.ziy-ay-sec-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 5px;
   background: #fff;
   border: 1.5px solid #cbd5e1;
   border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
+  padding: 9px 6px;
+  font-size: 11.5px;
+  box-sizing: border-box;
 }
-.ziy-gun-filtre-etiket { font-size: 12px; font-weight: 800; color: #2d3540; }
+.ziy-filtre-ikon { font-size: 13px; line-height: 1; }
 .ziy-gun-filtre-input {
-  border: 1.5px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 6px 8px;
-  font-size: 13px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 11.5px;
+  color: #2d3540;
+  min-width: 0;
+}
+.ziy-ay-sec-btn {
+  border-color: #003a70;
+  background: #eaf2fc;
+  color: #003a70;
+  font-weight: 800;
+  cursor: pointer;
+}
+/* Ay seç pop-up — aylar tek satırda yan yana, yatay kaydırılabilir. */
+.ziy-ay-sec-satir {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.ziy-ay-secenek {
+  flex: 0 0 auto;
+  background: #eaf2fc;
+  color: #003a70;
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ziy-ay-secenek--secili { background: #003a70; color: #fff; }
+
+/* İşlemler başlığı + seçili gün etiketi — tek satırda (25.09.2026,
+   eskiden seçili gün başlığı ayrı bir satırdı). */
+.ziy-ust-bilgi-satir {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 /* Bugünkü işlemler tablosu (15.09.2026) */
-.ziy-islem-baslik { font-size: 13px; font-weight: 800; color: #123b63; margin: 14px 0 6px; }
+.ziy-islem-baslik { font-size: 13px; font-weight: 800; color: #123b63; margin: 0; }
 .ziy-islem-tablo { width: 100%; border-collapse: collapse; font-size: 11.5px; }
 .ziy-islem-tablo th, .ziy-islem-tablo td { border: 1px solid #e8ecf1; padding: 6px; text-align: left; }
 .ziy-islem-tablo th { background: #f4f6f9; color: #556170; font-weight: 700; }
