@@ -85,19 +85,16 @@
     <div class="sheet mail-onizleme-sheet">
       <div class="sheet-baslik">📧 Mail Önizleme</div>
 
-      <div class="form-etiket">KİME</div>
-      <input type="email" class="form-input" id="mailOnizlemeKime">
-
       <div class="form-etiket">KONU</div>
       <input type="text" class="form-input" id="mailOnizlemeKonu">
-      <div class="mail-onizleme-konu-not">ℹ️ Belge görseli otomatik panoya kopyalanacak — Mail açılınca gövdenin (mesajın) altına dokunup yapıştır.</div>
+      <div class="mail-onizleme-konu-not">ℹ️ Gönder'e basınca Mail uygulaması açılır; konu, mesaj ve sipariş tablosu (ek olarak) otomatik dolar — sadece KİME adresini kendin yazarsın.</div>
 
       <div class="form-etiket">MESAJ</div>
       <div class="mail-onizleme-metin" id="mailOnizlemeMetin"></div>
 
-      <div class="form-etiket">SİPARİŞ TABLOSU (ekte / görsel olarak gidecek)</div>
+      <div class="form-etiket">SİPARİŞ TABLOSU (otomatik ek olarak gidecek)</div>
       <div id="mailOnizlemeTablo"></div>
-      <button type="button" class="tablo-kopyala-btn" id="mailTabloKopyalaBtn">📷 Kopyala ve Kaydet</button>
+      <button type="button" class="tablo-kopyala-btn" id="mailTabloKopyalaBtn">📷 Ayrıca Panoya da Kopyala</button>
 
       <div class="sheet-buton-satir">
         <button class="btn-vazgec" id="mailOnizlemeVazgecBtn">Kapat</button>
@@ -155,7 +152,7 @@
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("send.html", "Gönder"); RotaTakip.ciz("rotaSeridi"); });</script>
 <script src="mesaj-data.js?v=WG.210926.1603.585"></script>
-<script src="send-render.js?v=WG.240926.1152.614"></script>
+<script src="send-render.js?v=WG.250926.1507.623"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

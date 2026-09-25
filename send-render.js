@@ -362,7 +362,6 @@ function mailOnizlemeAc(){
     var TIP_ETIKET5 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
     var sehirEk = (g.musteri.sehir && g.musteri.sehir.trim()) ? (" - " + g.musteri.sehir.trim()) : "";
     var konu = "*** " + TIP_ETIKET5[g.tip] + " *** " + g.musteri.ad + sehirEk;
-    document.getElementById("mailOnizlemeKime").value = VARSAYILAN_OFIS_EPOSTA;
     document.getElementById("mailOnizlemeKonu").value = konu;
     document.getElementById("mailOnizlemeMetin").textContent = document.getElementById("gonderMetin").value;
     document.getElementById("mailOnizlemeTablo").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, null);
@@ -491,40 +490,17 @@ function basariEkraninaGit(kanal){
   window.location.href = "gonderim-basarili.html";
 }
 
-// KURAL (24.09.2026): Mail için artık navigator.share (dosya paylaşımı)
-// DEĞİL, doğrudan mailto: kullanılıyor. Sebep: paylaşım sayfasında KİME
-// alanı hiç yok (Web Share API'de recipient parametresi YOK — bu bir
-// tarayıcı/OS kısıtı, JS'ten eklenemez) ve KONU da güvenilir geçmiyordu.
-// mailto: ise KİME + KONU + METİN'i HER ZAMAN doğru dolduruyor — bunun
-// karşılığında (mailto: hiçbir istemcide dosya EKİ desteklemediği için,
-// bu evrensel bir e-posta kısıtı) belge görseli otomatik olarak panoya
-// kopyalanıyor, Abdullah Mail'de gövdeye tek dokunuşla yapıştırıyor
-// (kendisinin de kabul ettiği "veya gövdeye resim olarak yapıştırsın"
-// alternatifi).
+// KURAL (25.09.2026, Abdullah'in istegiyle ESKI DUZENE DONULDU): Mail
+// artik mailto: DEGIL, tekrar navigator.share (dosya paylasimi)
+// kullaniyor — gonderTiklandi("mail", konu) WhatsApp ile birebir ayni
+// yolu izliyor. Sebep: mailto hicbir istemcide gercek dosya EKI
+// desteklemiyordu (sadece panoya kopyala + elle yapistir), Abdullah
+// bunu istemedi. navigator.share ile belge gorseli GERCEK EK olarak
+// gidiyor, konu (title) ve mesaj (text) otomatik doluyor — tek elle
+// yapilan sey KIME adresini Mail uygulamasinda yazmak (Web Share
+// API'de zaten hicbir zaman bir "kime" alani yoktu, bu JS'ten
+// doldurulamaz — platform kisiti, oncesinde de hep elle giriliyordu).
 var VARSAYILAN_OFIS_EPOSTA = "ofis@weicon.com.tr";
-
-function mailGonder(kime, konu){
-  try{
-    gonderimKanaliniKaydet("mail");
-    var metin = document.getElementById("gonderMetin").value;
-    function mailAc(){
-      var govde = metin.replace(/\n/g, "\u2028");
-      var url = "mailto:" + encodeURIComponent(kime) + "?subject=" + encodeURIComponent(konu) + "&body=" + encodeURIComponent(govde);
-      window.open(url, "_blank");
-      basariEkraninaGit("mail");
-    }
-    belgeGorseliniOlustur("mail", function(canvas){
-      if(!canvas){ mailAc(); return; }
-      canvas.toBlob(function(blob){
-        if(blob && navigator.clipboard && typeof window.ClipboardItem !== "undefined"){
-          navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(mailAc, mailAc);
-        } else {
-          mailAc();
-        }
-      }, "image/png");
-    });
-  }catch(e){ hataGoster("Mail gönderimi başlatılamadı: " + e.message); }
-}
 
 function metinTabanliGonder(kanal, ozelKonu){
   var metin = document.getElementById("gonderMetin").value;
@@ -609,10 +585,9 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
   document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
-    var kime = document.getElementById("mailOnizlemeKime").value.trim() || VARSAYILAN_OFIS_EPOSTA;
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
     document.getElementById("mailOnizlemeOverlay").hidden = true;
-    mailGonder(kime, konu);
+    gonderTiklandi("mail", konu);
   };
   document.getElementById("mailOnizlemeOverlay").addEventListener("click", function(ev){
     if(ev.target === this) this.hidden = true;
