@@ -154,10 +154,27 @@ function gecmisAlimIpucunuGuncelle(bilgi){
     if(!kayitlar.length){ kutu.hidden = true; return; }
     gecmisAlimKayitlari = kayitlar;
     var son = kayitlar[0];
-    kutu.innerHTML = "🕓 Bu müşteri bu ürünü daha önce almış: <b>" + (son.tarih||"-") + " · " + CartData.fmt(son.adet) + " adet · " + CartData.fmt(son.netFiyat) + " EUR net</b>"
-      + (kayitlar.length > 1 ? " — tümünü görmek için dokun" : "");
+    // 25.09.2026 (Abdullah'ın isteği): iskonto artık dokunmadan, tek
+    // bakışta görünsün — önceden sadece tarih/adet/net fiyat vardı,
+    // iskontoyu görmek için "tümünü gör" popup'ına gitmek gerekiyordu.
+    kutu.innerHTML = "🕓 Bu müşteriye en son: <b>" + (son.tarih||"-") + " · %" + CartData.fmt(son.iskonto) + " isk. · " + CartData.fmt(son.netFiyat) + " EUR net · " + CartData.fmt(son.adet) + " adet</b>"
+      + (kayitlar.length > 1 ? " — diğer kayıtlar için dokun" : "");
     kutu.hidden = false;
   }catch(e){ kutu.hidden = true; }
+}
+
+// Müşteri şeridi (25.09.2026) — TEK KURAL: müşteri adının göründüğü
+// hiçbir sayfa kendi HTML'ini elle yazmaz, MusteriSeridi.html() kullanır
+// (bkz. musteri-serit.js). Sadece bir müşteri bağlamı varsa (İşlem Yap
+// akışından gelindiyse) görünür.
+function cariBilgiSatiriniGuncelle(){
+  var kutu = document.getElementById("hesaplaCariBilgi");
+  if(!kutu) return;
+  if(typeof CustomerData === "undefined"){ kutu.hidden = true; return; }
+  var musteri = CustomerData.seciliyiOku();
+  if(!musteri){ kutu.hidden = true; return; }
+  MusteriSeridi.uygula("hesaplaCariBilgi", musteri);
+  kutu.hidden = false;
 }
 function gecmisAlimTumunuGoster(){
   if(!gecmisAlimKayitlari || !gecmisAlimKayitlari.length) return;
@@ -284,6 +301,7 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
+  cariBilgiSatiriniGuncelle();
   document.getElementById("searchInput").addEventListener("input", aramaSonuclariniCiz);
   document.getElementById("btnUrunTemizle").onclick = function(){
     document.getElementById("seciliUrunKutu").hidden = true;

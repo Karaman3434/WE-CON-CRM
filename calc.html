@@ -15,7 +15,8 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.240926.2123.622">
 <link rel="stylesheet" href="product-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="calc-style.css?v=WG.150926.1140.570">
+<link rel="stylesheet" href="musteri-serit.css?v=WG.220926.2300.603">
+<link rel="stylesheet" href="calc-style.css?v=WG.250926.1805.625">
 </head>
 <body>
 
@@ -34,6 +35,12 @@
 <div class="rota-etiketi"><b>Hızlı Hesapla</b></div>
 
 <main class="sayfa">
+
+  <!-- Müşteri şeridi (25.09.2026) — Hesapla sayfası bir müşteri
+       bağlamında açıldıysa (İşlem Yap → Sepete Git → Hesapla), kimin
+       için hesaplandığı her zaman görünsün. Sadece "Hızlı Hesapla"
+       tek başına kullanılıyorsa (müşteri seçili değilse) hiç görünmez. -->
+  <div id="hesaplaCariBilgi" hidden></div>
 
   <div class="arama-kutusu">
     <input type="text" id="searchInput" placeholder="Ürün Bul — katalogda ara..." autocomplete="off">
@@ -173,7 +180,8 @@
 <script src="customer-data.js?v=WG.240926.0752.611"></script>
 <script src="reports-data.js?v=WG.150926.1224.571"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="calc-render.js?v=WG.220926.2331.604"></script>
+<script src="musteri-serit.js?v=WG.220926.2300.603"></script>
+<script src="calc-render.js?v=WG.250926.1756.624"></script>
 <!-- yarim-kalan-uyari.js (22.09.2026): Bu sayfadan kaldırıldı — artık Geri/
      Ana Sayfa/Menü/Kapat'ta SORMADAN sessizce temizleniyor (bkz.
      calc-render.js sepetiSessizceTemizle). -->

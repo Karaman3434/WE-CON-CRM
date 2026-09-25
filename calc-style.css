@@ -2,16 +2,16 @@
    (turuncu iskonto kutuları hariç — onlar kasıtlı olarak biraz daha
    büyük, sayı boyu %20 daha büyük). */
 
-.sayfa { padding: 4px 4px 16px; background: #f4f6f9; }
+.sayfa { padding: 4px 4px 14px; background: #f4f6f9; }
 
-.arama-kutusu { position: relative; margin-bottom: 8px; }
-.arama-kutusu input { width: 100%; border: 2px solid #0e6b34; border-radius: 999px; padding: 12px 40px 12px 16px; font-size: 14px; background: #fff; }
-.arama-ikon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; }
-.sonuc-listesi { max-height: 220px; overflow-y: auto; margin-bottom: 8px; }
+.arama-kutusu { position: relative; margin-bottom: 7px; }
+.arama-kutusu input { width: 100%; border: 2px solid #0e6b34; border-radius: 999px; padding: 10.8px 36px 10.8px 14.4px; font-size: 13px; background: #fff; }
+.arama-ikon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; }
+.sonuc-listesi { max-height: 220px; overflow-y: auto; margin-bottom: 7px; }
 .hesapla-arama-karti {
-  display: flex; align-items: center; gap: 10px;
-  border: 1px solid #e2e6ec; border-radius: 10px; padding: 10px 12px;
-  margin-bottom: 6px; background: #fff; cursor: pointer;
+  display: flex; align-items: center; gap: 9px;
+  border: 1px solid #e2e6ec; border-radius: 9px; padding: 9px 10.8px;
+  margin-bottom: 5px; background: #fff; cursor: pointer;
 }
 .hesapla-arama-bilgi { flex: 1; min-width: 0; }
 .hesapla-arama-kod { font-size: 11px; color: #44494f; }
@@ -21,42 +21,42 @@
   background: #fdeaea; padding: 4px 8px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; border: 1.5px solid #c0392b;}
 
 .hc-secili-urun-kutu {
-  background: #eef2f8; border-radius: 10px; padding: 9.6px; margin-bottom: 12px; border: 1.5px solid #a9bddc;}
-.hc-secili-urun-baslik { font-size: 11px; font-weight: 800; color: #44494f; margin-bottom: 4px; }
+  background: #eef2f8; border-radius: 9px; padding: 8.6px; margin-bottom: 11px; border: 1.5px solid #a9bddc;}
+.hc-secili-urun-baslik { font-size: 10px; font-weight: 800; color: #44494f; margin-bottom: 4px; }
 .hc-secili-urun-ad-satir { display: flex; justify-content: space-between; align-items: center; }
-.hc-secili-urun-ad-satir span { font-size: 15px; font-weight: 800; color: #222; }
-.hc-secili-urun-ad-satir button { background: none; border: none; color: #c0392b; font-size: 18px; font-weight: 900; cursor: pointer; }
+.hc-secili-urun-ad-satir span { font-size: 13.5px; font-weight: 800; color: #222; }
+.hc-secili-urun-ad-satir button { background: none; border: none; color: #c0392b; font-size: 16px; font-weight: 900; cursor: pointer; }
 
 .hc-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 9px;
+  margin-bottom: 9px;
 }
 
 /* Tek tip kutu — etiket solda, sayı sağda (yan yana), kutu boyu sabit,
    etiket boyu sabit, sayı %50 büyüdü (17px→26px). */
 .hc-kutu {
   background: #f7f9fb;
-  border-radius: 10px;
+  border-radius: 9px;
   border: 1.5px solid #000000;
-  padding: 12px;
+  padding: 10.8px;
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 .hc-kutu-etiket {
-  font-size: 11px; font-weight: 700; letter-spacing: .2px;
+  font-size: 10px; font-weight: 700; letter-spacing: .2px;
   color: #667085; flex-shrink: 0; line-height: 1.3;
 }
 .hc-kutu input {
   border: none; background: transparent;
-  font-size: 26px; font-weight: 800; color: #0f4fc0; padding: 0;
+  font-size: 23px; font-weight: 800; color: #0f4fc0; padding: 0;
   outline: none; text-align: right; width: 100%; min-width: 0;
 }
-.hc-kutu-deger { font-size: 26px; font-weight: 800; color: #101828; text-align: right; }
+.hc-kutu-deger { font-size: 23px; font-weight: 800; color: #101828; text-align: right; }
 
 /* Toplam (EUR) / Fatura Toplam — aynı kutu boyutu, sadece farklı ton
    (açık mavi-gri, koyu değil) ve etiket rengi. */
@@ -76,32 +76,32 @@
    yükseklikte kalır. Sayı 32px, sonundaki € / TL harf boyunda (16px). */
 .hc-turuncu-kart {
   background: #b7601f;
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: 9px;
+  padding: 10.8px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center; border: 1.5px solid #854f0b;}
 .hc-turuncu-etiket {
-  font-size: 10px; font-weight: 700; color: #ffffff;
-  margin-bottom: 4px; white-space: nowrap;
+  font-size: 9px; font-weight: 700; color: #ffffff;
+  margin-bottom: 3px; white-space: nowrap;
 }
-.hc-turuncu-deger { font-size: 32px; font-weight: 800; color: #ffffff; line-height: 1.05; }
-.hc-turuncu-birim { font-size: 16px; font-weight: 700; }
+.hc-turuncu-deger { font-size: 29px; font-weight: 800; color: #ffffff; line-height: 1.05; }
+.hc-turuncu-birim { font-size: 14.5px; font-weight: 700; }
 
 .hc-alt-buton-satir {
-  display: flex; gap: 8px; margin-top: 4px;
+  display: flex; gap: 7px; margin-top: 4px;
 }
 .hc-kapat-buton {
   flex: 1; display: flex; align-items: center; justify-content: center;
   background: #c0392b; color: #fff; border: none;
-  padding: 12px; min-height: 44px; font-size: 13px; font-weight: 900; border-radius: 12px;
+  padding: 10.8px; min-height: 40px; font-size: 12px; font-weight: 900; border-radius: 11px;
   text-decoration: none; cursor: pointer;
 }
 .hc-listeye-ekle-buton {
   flex: 2; background: #0e6b34; color: #fff; border: none;
-  padding: 12px; min-height: 44px; font-size: 14px; font-weight: 900; border-radius: 12px; cursor: pointer;
+  padding: 10.8px; min-height: 40px; font-size: 12.6px; font-weight: 900; border-radius: 11px; cursor: pointer;
 }
 
 /* İşlemi İptal Onay Popup — Geri/Kapat basınca (WG.080926.196) */
@@ -175,22 +175,28 @@
   cursor: pointer;
 }
 
-/* Geçmiş alım ipucu (15.09.2026) — engelleyici olmayan otomatik şerit */
+/* Geçmiş alım ipucu (15.09.2026, kenardan kenara tasarım 25.09.2026) —
+   engelleyici olmayan otomatik şerit. Abdullah'ın isteği: yuvarlak
+   köşe/kenar boşluğu YOK, ekranın kenarından kenarına uzanan, üstte/
+   altta ince birer çizgiyle sınırlı DÜZ bir bant; bu iki çizgi arasında
+   fazla boşluk (yükseklik) olmasın. Negatif kenar boşluğu .sayfa'nın
+   4px yan dolgusunu iptal edip gerçek ekran kenarına kadar uzatıyor. */
 .gecmis-alim-ipucu {
   background: #eaf2fc;
-  border: 1.5px solid #3569b8;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 11.5px;
+  border-top: 1.5px solid #3569b8;
+  border-bottom: 1.5px solid #3569b8;
+  border-radius: 0;
+  padding: 5px 8px;
+  font-size: 11px;
   color: #003a70;
-  line-height: 1.4;
-  margin-bottom: 10px;
+  line-height: 1.3;
+  margin: 0 -4px 8px;
   cursor: pointer;
 }
 .gecmis-alim-satir {
-  font-size: 12.5px;
+  font-size: 11.5px;
   color: #2d3540;
-  padding: 8px 0;
+  padding: 7px 0;
   border-bottom: 1px solid #eef1f5;
 }
 .gecmis-alim-satir:last-child { border-bottom: none; }
