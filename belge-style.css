@@ -86,13 +86,14 @@
 }
 .belge-logo-satir { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
 .belge-logo-mini {
-  background: #f4f6f9;
-  color: #556170;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 2px;
-  padding: 6px 14px;
-  border-radius: 6px;
+  background: #003a70;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1.5px solid #004f99;
   flex-shrink: 0;
 }
 .belge-tur-baslik { font-size: 12px; font-weight: 700; color: #556170; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -114,15 +115,9 @@
   background: #f4f8fc;
   border-bottom: 1px solid #e2ecf6;
 }
-.belge-musteri-baslik--logolu .belge-logo-mini {
-  background: #003a70;
-  color: #ffffff;
-  font-weight: 900;
-  font-size: 9px;
-  letter-spacing: 1px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  flex-shrink: 0; border: 1.5px solid #004f99;}
+/* Tek rozet modeli (26.09.2026): artık .belge-logo-mini'nin kendisi
+   standart lacivert stili taşıyor, bu modifikatöre gerek kalmadı — TEK
+   KURAL, iki farklı görünüm yerine tek bir WEICON rozeti tüm belgede. */
 .belge-musteri-govde { padding: 7px 8px; }
 .belge-musteri-ad { font-size: 14px; font-weight: 700; color: #1a2a3a; margin-bottom: 8px; }
 .belge-musteri-ad--sade { margin-bottom: 2px; }

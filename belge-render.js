@@ -191,7 +191,7 @@ function belgeyiCiz(kayit, musteri){
       + "</span>"
       + "</div>"
       + "<div class='belge-prim-serit'>"
-      + "<span class='belge-prim-etiket'>MÜDÜR PRİMİ (TOPLAM)</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":Math.round(toplamPrimTl).toLocaleString("tr-TR")+" TL") + "</span>"
+      + "<span class='belge-prim-etiket'>PRİM</span><span class='belge-prim-deger'>" + (toplamPrim<0?"Prim yok":Math.round(toplamPrimTl).toLocaleString("tr-TR")+" TL") + "</span>"
       + "</div>"
       + "</div>";
 

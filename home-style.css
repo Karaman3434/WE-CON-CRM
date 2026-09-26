@@ -86,6 +86,37 @@ body {
 .sayfa-rozeti-ikon { font-size: 13px; line-height: 1; }
 .sayfa-rozeti-ad { font-size: 11.5px; font-weight: 900; color: #003a70; letter-spacing: .2px; }
 
+/* SAYFA + ROTA ŞERİDİ (26.09.2026) — sayfa ismi ve rota (nereden gelindiği)
+   artık AYRI iki şerit değil, TEK satırda: solda sayfa ismi, sağda rota.
+   TEK KURAL: bu bileşenin stili SADECE burada tanımlanır. */
+.sayfa-rota-serit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 14px;
+  background: #f4f6f9;
+  border-bottom: 1px solid #e8ecf1;
+}
+.sayfa-rota-serit-isim {
+  font-size: 11.5px;
+  font-weight: 900;
+  color: #003a70;
+  letter-spacing: .2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sayfa-rota-serit-rota {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6b7684;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  min-width: 0;
+}
+
 /* Rota etiketi — hangi sayfada olduğunu gösteren küçük, tek satırlık iz.
    Tüm sayfalarda aynı yerde (sabit şeridin hemen altında), aynı küçük
    boyutta — büyük başlık şeritlerinin (örn. eski "⚡ İŞLEMLER") yerini alır. */
@@ -159,8 +190,14 @@ body {
   gap: 1.6px;
   text-decoration: none;
 }
-.nav-btn--geri { color: #c0392b; }
-.nav-btn--geri .nav-ikon { font-size: 45px; }
+.nav-btn--geri {
+  color: #c0392b;
+  flex-direction: row;
+  gap: 2px;
+}
+.nav-btn--geri .nav-ikon--geri-kucuk { font-size: 45px; line-height: 1; }
+.nav-btn--geri .nav-ikon--geri-buyuk { font-size: 58.5px; line-height: 1; margin-left: -6px; }
+.nav-btn--geri .nav-etiket { margin-left: 2px; }
 .nav-btn--ana { color: #003a70; }
 .nav-ikon {
   font-size: 22.5px;
@@ -215,9 +252,14 @@ body {
 .anasayfa-ust-satir {
   display: flex;
   align-items: stretch;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 8px;
 }
+.anasayfa-ust-satir .is-gunu-kutu { flex: 0 0 32%; }
+.anasayfa-ust-satir .gunun-ozeti-kutu { flex: 1; min-width: 0; margin: 0; }
+.anasayfa-ust-satir .gunun-ozeti-baslik { font-size: 9.5px; }
+.anasayfa-ust-satir .gunun-ozeti-sayi { font-size: 15px; }
+.anasayfa-ust-satir .gunun-ozeti-etiket { font-size: 8.5px; }
 .banner {
   border-radius: 10px;
   padding: 8px 12px;

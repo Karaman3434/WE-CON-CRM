@@ -29,7 +29,7 @@
 <meta name="apple-mobile-web-app-title" content="WEICON ASİST">
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.250926.2331.633">
+<link rel="stylesheet" href="home-style.css?v=WG.260926.0430.634">
 </head>
 <body>
 
@@ -47,7 +47,7 @@
 </header>
 
 <nav class="app-nav">
-  <button class="nav-btn nav-btn--geri" id="btnGeri"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></button>
+  <button class="nav-btn nav-btn--geri" id="btnGeri"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></button>
   <button class="nav-btn nav-btn--ana" id="btnAnaSayfa"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></button>
   <button class="nav-btn nav-btn--menu" id="btnMenu" onclick="window.location.href='menu.html'"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
@@ -62,6 +62,14 @@
       <div class="is-gunu-etiket">İŞ GÜNÜ KALDI</div>
       <div class="is-gunu-deger" id="isGunuDeger">-</div>
     </div>
+    <a class="gunun-ozeti-kutu" id="gununOzetiKutu" href="ziyaret.html">
+      <div class="gunun-ozeti-baslik">📊 GÜNÜN ÖZETİ</div>
+      <div class="gunun-ozeti-satir-3">
+        <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">🔄 <span id="gununOzetiIslemSayi">0</span></div><div class="gunun-ozeti-etiket">İşlem</div></div>
+        <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">📦 <span id="gununOzetiSiparisSayi">0</span></div><div class="gunun-ozeti-etiket">Sipariş</div></div>
+        <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">📍 <span id="gununOzetiTemasSayi">0</span></div><div class="gunun-ozeti-etiket">Temas</div></div>
+      </div>
+    </a>
   </div>
 
   <section class="kart-grid">
@@ -75,15 +83,6 @@
       <div class="kart-deger" id="anaSayfaPrimToplam">0,00 TL</div>
     </div>
   </section>
-
-  <a class="gunun-ozeti-kutu" id="gununOzetiKutu" href="ziyaret.html">
-    <div class="gunun-ozeti-baslik">📊 GÜNÜN ÖZETİ</div>
-    <div class="gunun-ozeti-satir-3">
-      <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">🔄 <span id="gununOzetiIslemSayi">0</span></div><div class="gunun-ozeti-etiket">İşlem</div></div>
-      <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">📦 <span id="gununOzetiSiparisSayi">0</span></div><div class="gunun-ozeti-etiket">Sipariş</div></div>
-      <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">📍 <span id="gununOzetiTemasSayi">0</span></div><div class="gunun-ozeti-etiket">Temas</div></div>
-    </div>
-  </a>
 
   <section class="kart-grid">
     <div class="kart kart--acik-mavi" onclick="window.location.href='satis-listesi.html?kapsam=bugun'" style="cursor:pointer;">
@@ -156,7 +155,7 @@
   </section>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.250926.2331.633 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.260926.0430.634 ***</span>
   </footer>
 
 </main>

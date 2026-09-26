@@ -20,7 +20,7 @@
 <meta name="apple-mobile-web-app-title" content="WEICON ASİST">
 <title>WEICON ASİST — Ay Detayı</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.250926.2331.633">
+<link rel="stylesheet" href="home-style.css?v=WG.260926.0430.634">
 <link rel="stylesheet" href="reports-style.css?v=WG.210926.1958.590">
 </head>
 <body>
@@ -32,16 +32,18 @@
 </header>
 
 <nav class="app-nav">
-  <button class="nav-btn nav-btn--geri" id="btnGeriAkilli"><span class='nav-ikon'>‹</span><span class='nav-etiket'>Geri</span></button>
+  <button class="nav-btn nav-btn--geri" id="btnGeriAkilli"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></button>
   <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
   <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
 </nav>
 </div>
-<div class="rota-etiketi">Raporlar › İstatistikler › <b id="rotaAyEtiketi">Ay Detayı</b></div>
+<div class="sayfa-rota-serit">
+  <span class="sayfa-rota-serit-isim" id="ayDetayBaslik"></span>
+  <span class="sayfa-rota-serit-rota">Raporlar › İstatistikler<b id="rotaAyEtiketi" style="display:none;"></b></span>
+</div>
 
 <main class="sayfa">
 
-  <div class="ay-detay-baslik" id="ayDetayBaslik"></div>
   <label class="ay-detay-beklemede-satir">
     <input type="checkbox" id="ayDetayBeklemedeToggle">
     <span>⏳ Beklemede siparişleri dahil et</span>
