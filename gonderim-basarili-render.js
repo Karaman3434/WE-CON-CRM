@@ -12,9 +12,10 @@ document.addEventListener("DOMContentLoaded", function(){
     : (bilgi.musteriAd
       ? (bilgi.musteriAd + " için sipariş/teklif formu paylaşım uygulamasına gönderildi.")
       : "Form paylaşım uygulamasına gönderildi.");
+  altMetin += " 3 sn içinde Ana Sayfa'ya yönlendiriliyorsun.";
   document.getElementById("gbAltMetin").textContent = altMetin;
 
-  document.getElementById("btnGbAnaSayfa").onclick = function(){
+  function anaSayfayaDonVeTemizle(){
     try{ localStorage.setItem("weiconv2_sepet", "[]"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_sepet_kur_override"); }catch(e){}
     try{ localStorage.removeItem("weicon_secili_musteri"); }catch(e){}
@@ -23,5 +24,11 @@ document.addEventListener("DOMContentLoaded", function(){
     try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_gonderim_kanali"); }catch(e){}
     window.location.href = "home.html";
-  };
+  }
+
+  document.getElementById("btnGbAnaSayfa").onclick = anaSayfayaDonVeTemizle;
+
+  // Ekran 3 saniye görünüp kendiliğinden Ana Sayfa'ya döner (26.09.2026,
+  // Abdullah'ın isteğiyle — butona basmaya gerek kalmadan).
+  setTimeout(anaSayfayaDonVeTemizle, 3000);
 });

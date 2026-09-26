@@ -10,6 +10,11 @@
   gönderirken işleme göre SİPARİŞ / FİYAT TEKLİFİ / PROFORMA FATURA / NUMUNE
   olarak değişir. Başka hiçbir kelime/işaret değiştirilmez.
 
+  GÜNCELLEME (26.09.2026, Abdullah'ın isteğiyle): HAREKET artık çıplak isim
+  değil, "-in" hâli ekiyle (siparişin / fiyat teklifinin / numunenin /
+  proforma faturanın) değişiyor — "HAREKET işleme alınmasını rica ederim"
+  gibi kalıplarda cümle eksik/anlamsız kalmasın diye.
+
   Saklama: localStorage + Firebase (mesajSablonlari/metinler — mevcut
   Firebase kuralı zaten bu yolu kapsıyor, kural değişikliği gerekmez).
   Eski sistemin {FIRMA}/{BELGE} yer tutuculu kayıtları KULLANILMAZ (temiz
@@ -41,7 +46,7 @@ var MesajData = (function(){
     return firebase.apps.length ? firebase.database() : null;
   }
 
-  var HAREKET_ADLARI = {siparis:"SİPARİŞ", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", numune:"NUMUNE"};
+  var HAREKET_ADLARI = {siparis:"siparişin", teklif:"fiyat teklifinin", proforma:"proforma faturanın", numune:"numunenin"};
 
   // Metindeki (büyük harf, birebir) HAREKET kelimesini işlem adıyla değiştirir.
   function uygula(metin, tip){
