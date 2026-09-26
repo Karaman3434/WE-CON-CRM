@@ -44,16 +44,11 @@ var RotaTakip = (function(){
     var yigin = yiginiOku();
     var el = document.getElementById(konteynerId);
     if(!el || yigin.length === 0) return;
-    var parcalar = yigin.map(function(durak, i){
-      var sonMu = (i === yigin.length-1);
-      var stil = sonMu
-        ? "background:#eaf2fc;border:1.5px solid #3569b8;color:#003a70;font-weight:800;"
-        : "background:#f4f6f9;border:1.5px solid #cbd5e1;color:#2d3540;font-weight:600;";
-      var kapsul = "<span style='flex-shrink:0;border-radius:20px;padding:6px 12px;font-size:11.5px;white-space:nowrap;" + stil + "'>" + durak.etiket + "</span>";
-      return sonMu ? kapsul : ("<a href='" + durak.href + "' style='text-decoration:none;display:inline-flex;flex-shrink:0;'>" + kapsul + "</a>");
-    });
-    var ayrac = "<span style='flex-shrink:0;align-self:center;color:#8b95a1;padding:0 1px;font-size:11px;'>›</span>";
-    el.innerHTML = parcalar.join(ayrac);
+    var mevcut = yigin[yigin.length-1];
+    var rota = yigin.slice(0, -1).map(function(durak){ return durak.etiket; }).join(" › ");
+    var html = "<span class='sayfa-rota-serit-isim'>" + mevcut.etiket + "</span>";
+    if(rota){ html += "<span class='sayfa-rota-serit-rota'>" + rota + "</span>"; }
+    el.innerHTML = html;
   }
 
   return { kaydet: kaydet, ciz: ciz, sifirla: sifirla };

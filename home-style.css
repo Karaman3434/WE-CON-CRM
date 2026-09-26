@@ -86,9 +86,10 @@ body {
 .sayfa-rozeti-ikon { font-size: 13px; line-height: 1; }
 .sayfa-rozeti-ad { font-size: 11.5px; font-weight: 900; color: #003a70; letter-spacing: .2px; }
 
-/* SAYFA + ROTA ŞERİDİ (26.09.2026) — TÜM sayfalarda kullanılan TEK standart:
-   sayfa ismi ve rota (nereden gelindiği) tek satırda, solda sayfa ismi,
-   sağda rota. Zemin turuncu (kartela rengi), yazı siyah (kontrast ~9:1).
+/* SAYFA + ROTA ŞERİDİ (26.09.2026) — TÜM sayfalarda (istisnasız, giriş/PIN/
+   durum ekranları dahil) kullanılan TEK standart: sayfa ismi solda (beyaz,
+   %10 büyütülmüş), rota sağda beyaz kapsül (pill) içinde turuncu yazıyla.
+   Zemin turuncu (kartela rengi), panel boyu/genişliği sabit.
    TEK KURAL: bu bileşenin stili SADECE burada tanımlanır, başka hiçbir
    sayfada kendi başlık/breadcrumb düzeni kullanılmaz. */
 .sayfa-rota-serit {
@@ -101,9 +102,9 @@ body {
   border-bottom: none;
 }
 .sayfa-rota-serit-isim {
-  font-size: 12.5px;
+  font-size: 13.75px;
   font-weight: 900;
-  color: #000000;
+  color: #ffffff;
   letter-spacing: .2px;
   white-space: nowrap;
   flex-shrink: 0;
@@ -111,13 +112,16 @@ body {
 .sayfa-rota-serit-rota {
   font-size: 10.5px;
   font-weight: 700;
-  color: #000000;
-  opacity: .7;
+  color: #fc8d33;
+  background: #ffffff;
+  padding: 3px 9px;
+  border-radius: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: right;
   min-width: 0;
+  flex-shrink: 1;
 }
 
 /* Rota etiketi — hangi sayfada olduğunu gösteren küçük, tek satırlık iz.

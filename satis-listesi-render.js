@@ -173,8 +173,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
   var params = new URLSearchParams(window.location.search);
   var kapsam = params.get("kapsam") === "ay" ? "ay" : "bugun";
-  var baslikMetni = kapsam === "ay" ? "📅 Bu Ayın Satışları" : "📅 Bugünün Satışları";
-  document.getElementById("slBaslik").textContent = baslikMetni;
   document.getElementById("rotaBaslik").textContent = kapsam === "ay" ? "Bu Ayın Satışları" : "Bugünün Satışları";
 
   ReportsData.arsivDegistiginde(function(){ listeyiCiz(kapsam); });
