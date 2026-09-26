@@ -286,11 +286,11 @@ body {
 .is-gunu-kutu {
   flex: 1;
   min-width: 0;
-  background: #d9584f;
+  background: #fe4c4c;
   border-radius: 10px;
   padding: 8px 12px;
-  color: #ffffff;
-  text-align: center; border: 1.5px solid #c3342a;}
+  color: #000000;
+  text-align: center; border: none;}
 .is-gunu-kutu--esit {
   display: flex;
   flex-direction: column;
@@ -366,27 +366,29 @@ body {
   opacity: .8;
 }
 
-.kart--koyu-mavi { background: #003a70; border-color: #003a70; border: 1.5px solid #004f99;}
-.kart--koyu-mavi .kart-baslik { color: #a9c6e4; }
-.kart--koyu-mavi .kart-deger { color: #fff; }
-.kart--koyu-mavi .kart-etiket { color: #a9c6e4; }
-.kart--koyu-mavi .kart-tl-alt { color: #a9c6e4; }
+/* TEK PALET (26.09.2026) — dashboard kartları da 6 sabit renk sistemine
+   geçti: düz dolgu + kenarlıksız + SİYAH yazı, başka ton yok. */
+.kart--koyu-mavi { background: #4ca6ff; border: none; }
+.kart--koyu-mavi .kart-baslik { color: #000; }
+.kart--koyu-mavi .kart-deger { color: #000; }
+.kart--koyu-mavi .kart-etiket { color: #000; }
+.kart--koyu-mavi .kart-tl-alt { color: #000; }
 
-.kart--koyu-yesil { background: #0e6b58; border-color: #0e6b58; border: 1.5px solid #0e6b58;}
-.kart--koyu-yesil .kart-baslik { color: #a8e6d4; }
-.kart--koyu-yesil .kart-deger { color: #fff; }
-.kart--koyu-yesil .kart-etiket { color: #a8e6d4; }
-.kart--koyu-yesil .kart-tl-alt { color: #a8e6d4; }
+.kart--koyu-yesil { background: #4cffa5; border: none; }
+.kart--koyu-yesil .kart-baslik { color: #000; }
+.kart--koyu-yesil .kart-deger { color: #000; }
+.kart--koyu-yesil .kart-etiket { color: #000; }
+.kart--koyu-yesil .kart-tl-alt { color: #000; }
 
-.kart--acik-mavi { background: #eaf2fc; border-color: #dce8f7; border: 1.5px solid #95bdf0;}
-.kart--acik-mavi .kart-baslik { color: #3569b8; }
-.kart--acik-mavi .kart-deger { color: #003a70; }
-.kart--acik-mavi .kart-etiket { color: #3569b8; }
+.kart--acik-mavi { background: #4ca6ff; border: none; }
+.kart--acik-mavi .kart-baslik { color: #000; }
+.kart--acik-mavi .kart-deger { color: #000; }
+.kart--acik-mavi .kart-etiket { color: #000; }
 
-.kart--acik-yesil { background: #eafaf0; border-color: #0e6b34; border: 1.5px solid #0e6b34;}
-.kart--acik-yesil .kart-baslik { color: #0e6b58; }
-.kart--acik-yesil .kart-deger { color: #0e6b58; }
-.kart--acik-yesil .kart-etiket { color: #0e6b58; }
+.kart--acik-yesil { background: #4cffa5; border: none; }
+.kart--acik-yesil .kart-baslik { color: #000; }
+.kart--acik-yesil .kart-deger { color: #000; }
+.kart--acik-yesil .kart-etiket { color: #000; }
 
 /* ---------- Günün Özeti ---------- */
 /* FATURA · VADE · ÖDEME TAKİP kutusu (21.09.2026). Vadesi geçen fatura
@@ -408,8 +410,8 @@ body {
 
 .gunun-ozeti-kutu {
   display: block;
-  background: #f3e8fb;
-  border: 1.5px solid #8e44ad;
+  background: #4ca6ff;
+  border: none;
   border-radius: 10px;
   padding: 6.4px 14px;
   margin: 6.4px 4px 6.4px;
@@ -468,40 +470,40 @@ body {
   min-width: 0;
 }
 .menu-baslik {
-  font-size: 15px;
+  font-size: 23px;
   font-weight: 900;
 }
 .menu-alt {
-  font-size: 11px;
+  font-size: 17px;
   font-weight: 800;
-  color: #44494f;
+  color: #111111;
   letter-spacing: .3px;
   margin-top: 2px;
 }
 .menu-alt--basarili {
-  color: #0e6b34;
+  color: #111111;
 }
 
-.menu-kart--mavi { background: #eaf2fc; border-color: #3569b8; border: 1.5px solid #95bdf0;}
-.menu-kart--mavi .menu-baslik { color: #2563eb; }
+/* TEK PALET (26.09.2026) — 6 sabit renk (kırmızı/mavi/yeşil/sarı/turuncu/gri),
+   hepsi düz (kenarlıksız) dolgu + SİYAH yazı. TEK KURAL: başka ton eklenmez,
+   turuncu SADECE Hızlı Hesapla tuşunda ve calc.html sayfasında kullanılır. */
+.menu-kart--mavi { background: #4ca6ff; border: none; }
+.menu-kart--mavi .menu-baslik { color: #000; }
 
-.menu-kart--yesil { background: #eafaf0; border-color: #0e6b34; border: 1.5px solid #0e6b34;}
-.menu-kart--yesil .menu-baslik { color: #0e6b34; }
+.menu-kart--yesil { background: #4cffa5; border: none; }
+.menu-kart--yesil .menu-baslik { color: #000; }
 
-.menu-kart--lacivert { background: #e6ecf3; border-color: #003a70; border: 1.5px solid #a6bbd4;}
-.menu-kart--lacivert .menu-baslik { color: #003a70; }
+.menu-kart--kirmizi { background: #fe4c4c; border: none; }
+.menu-kart--kirmizi .menu-baslik { color: #000; }
 
-.menu-kart--gri { background: #f1f3f6; border-color: #8b95a1; border: 1.5px solid #b6c0d0;}
-.menu-kart--gri .menu-baslik { color: #2d3540; }
+.menu-kart--sari { background: #ffe85a; border: none; }
+.menu-kart--sari .menu-baslik { color: #000; }
 
-.menu-kart--mor { background: #f6f0fd; border-color: #8e44ad; border: 1.5px solid #8e44ad;}
-.menu-kart--mor .menu-baslik { color: #8e44ad; }
+.menu-kart--turuncu { background: #fdaf70; border: none; }
+.menu-kart--turuncu .menu-baslik { color: #000; }
 
-.menu-kart--turuncu { background: #faeeda; border-color: #b7601f; border: 1.5px solid #b7601f;}
-.menu-kart--turuncu .menu-baslik { color: #b7601f; }
-
-.menu-kart--pembe { background: #fbeaf0; border-color: #d4537e; border: 1.5px solid #eb99b6;}
-.menu-kart--pembe .menu-baslik { color: #993556; }
+.menu-kart--gri { background: #d8dbe0; border: none; }
+.menu-kart--gri .menu-baslik { color: #000; }
 
 /* Kişisel kutucuğu (25.09.2026) — Araç KM/Raporlar satırının altında,
    TEK BAŞINA tüm satırı kaplasın ve diğer kutucuklarla aynı yükseklikte

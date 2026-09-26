@@ -202,7 +202,6 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("islemAra").addEventListener("input", islemleriCiz);
   document.getElementById("islemTipFiltre").addEventListener("change", islemleriCiz);
-  document.getElementById("btnIslemlerExcel").onclick = islemlerExcelAktar;
   ReportsData.arsivDegistiginde(islemleriCiz);
   islemleriCiz();
 });

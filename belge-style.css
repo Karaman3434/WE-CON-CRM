@@ -85,14 +85,17 @@
   border-bottom: 1px solid #f0f2f5;
 }
 .belge-logo-satir { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
+/* TEK BOY (26.09.2026) — tüm WEICON rozetleri (bu ve
+   .hareket-grup-etiket-rozet--weicon) artık aynı, daha büyük tek ölçüde;
+   başka boy kullanılmaz. */
 .belge-logo-mini {
   background: #003a70;
   color: #ffffff;
   font-weight: 900;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1px;
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  border-radius: 5px;
   border: 1.5px solid #004f99;
   flex-shrink: 0;
 }
@@ -334,6 +337,8 @@
   background: #003a70;
   border: 1.5px solid #004f99;
   color: #ffffff;
+  font-size: 11px;
+  padding: 6px 14px;
 }
 .hareket-satir--sari { background: #ffe066; }
 .hareket-satir--yesil { background: #eafaf0; }
