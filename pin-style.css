@@ -4,9 +4,9 @@
    sayfaya özel daha kısa/dar sürümü (24.09.2026, %20 küçültme isteği). */
 .giris-kutu {
   text-align: center;
-  max-width: 320px;
-  margin: 48px auto;
-  padding: 26px 19px;
+  max-width: 400px;
+  margin: 28px auto;
+  padding: 16px 30px;
 }
 
 .pin-bilgi {
@@ -21,7 +21,7 @@
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin: 19px 0;
+  margin: 12px 0;
 }
 .pin-nokta {
   width: 18px;
@@ -46,13 +46,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
-  margin: 16px 0;
+  margin: 10px 0;
 }
 .pin-tus {
   background: #f5f7fa;
   border: none;
   border-radius: 10px;
-  padding: 14.4px;
+  padding: 8px 14px;
   font-size: 22px;
   font-weight: 800;
   color: #003a70;

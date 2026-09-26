@@ -30,5 +30,31 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // Ekran 3 saniye görünüp kendiliğinden Ana Sayfa'ya döner (26.09.2026,
   // Abdullah'ın isteğiyle — butona basmaya gerek kalmadan).
-  setTimeout(anaSayfayaDonVeTemizle, 3000);
+  //
+  // KÖK NEDEN DÜZELTMESİ (27.09.2026): Mail/WhatsApp paylaşımı seçilince
+  // telefon başka bir uygulamaya (Outlook/Gmail/WhatsApp) geçiyor, bu
+  // sekme ARKA PLANA düşüyor — tarayıcılar arka plandaki sekmelerde
+  // setTimeout'u durdurur/geciktirir, bu yüzden 3 sn dolsa bile kullanıcı
+  // geri dönmeden yönlendirme hiç tetiklenmiyordu. Artık gerçek geçen
+  // süre BAŞLANGIÇ zamanına göre hesaplanıyor; sekme tekrar görünür
+  // olduğunda (visibilitychange) süre dolmuşsa hemen, dolmamışsa kalan
+  // süre kadar bekleyip yönlendiriyor.
+  var baslangicZamani = Date.now();
+  var GECIKME_MS = 3000;
+  var yonlendirildiMi = false;
+
+  function zamanindaYonlendir(){
+    if(yonlendirildiMi || document.hidden) return;
+    var kalanSure = GECIKME_MS - (Date.now() - baslangicZamani);
+    if(kalanSure <= 0){
+      yonlendirildiMi = true;
+      anaSayfayaDonVeTemizle();
+    } else {
+      setTimeout(zamanindaYonlendir, kalanSure);
+    }
+  }
+  zamanindaYonlendir();
+  document.addEventListener("visibilitychange", function(){
+    if(!document.hidden) zamanindaYonlendir();
+  });
 });

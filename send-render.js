@@ -132,12 +132,14 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
       "<div class='belge-musteri-ad belge-musteri-ad--sade'>" + htmlEsc(musteri.ad) + "</div>"
       + (musteri.sehir ? "<div class='belge-musteri-sehir'>" + htmlEsc(musteri.sehir) + "</div>" : "");
   } else {
+    // SIRALAMA (27.09.2026, Abdullah'ın isteğiyle): VADE/FATURA/KARGO
+    // satırı artık en ÜSTTE değil, Yetkili Bilgisi'nin ALTINDA, en sonda.
     musteriBlokHtml =
       "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "")
       + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
       + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
-      + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "");
+      + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
+      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "");
   }
 
   var html = "<div class='belge-kart'>" + formBaslikHtml(tip)
@@ -159,17 +161,26 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   return html;
 }
 
+// Mail/WhatsApp metin kutusu artık sabit yükseklikte değil — içeriği
+// kadar büyüyüp küçülüyor (27.09.2026, Abdullah'ın isteğiyle).
+function metinKutusuBoyutlandir(el){
+  if(!el) return;
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
 function gonderKutusunuGoster(musteri, sepet, tip, kur, kdv){
   try{
     gonderBaglam = {musteri:musteri, sepet:sepet, tip:tip, kur:kur, kdv:kdv};
     var metinKutusu = document.getElementById("gonderMetin");
     metinKutusu.value = mesajMetniOlustur(musteri, sepet, tip, null);
+    metinKutusuBoyutlandir(metinKutusu);
     // Başka cihazda (S22/iPhone/iPad) Mesaj Ayarları'nda yapılan son kayıt
     // varsa getir — ama bu ekranda elle yazmaya başlanmışsa metne dokunma.
     var elleDegisti = false;
-    metinKutusu.addEventListener("input", function(){ elleDegisti = true; });
+    metinKutusu.addEventListener("input", function(){ elleDegisti = true; metinKutusuBoyutlandir(this); });
     MesajData.tazele(function(){
-      if(!elleDegisti) metinKutusu.value = mesajMetniOlustur(musteri, sepet, tip, null);
+      if(!elleDegisti){ metinKutusu.value = mesajMetniOlustur(musteri, sepet, tip, null); metinKutusuBoyutlandir(metinKutusu); }
     });
 
     // İŞLEM İÇİN SEÇİM (WG.090926.196): Yetkili kişi artık burada
@@ -279,10 +290,10 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
       formBaslikHtml(tip)
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "")
       + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
       + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
       + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
+      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "")
       + "</div>";
   }
 
@@ -583,7 +594,28 @@ document.addEventListener("DOMContentLoaded", function(){
   })();
 
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
-  document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
+  // KONU alanı bazı mail uygulamalarında (Outlook Android vb.) resim ekiyle
+  // birlikte otomatik dolmuyor — platform kısıtı, koddan düzeltilemiyor.
+  // Bu buton en azından tek dokunuşla metni panoya alıp elle yapıştırmayı
+  // kolaylaştırıyor (27.09.2026, Abdullah'ın isteğiyle).
+  document.getElementById("mailKonuKopyalaBtn").onclick = function(){
+    var girdi = document.getElementById("mailOnizlemeKonu");
+    var btn = this;
+    var eskiMetin = btn.textContent;
+    function eskiHaleDon(){ btn.textContent = eskiMetin; }
+    function basarili(){ btn.textContent = "✓ Kopyalandı"; setTimeout(eskiHaleDon, 1500); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(girdi.value).then(basarili).catch(function(){
+        alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin.");
+      });
+    } else {
+      try{
+        girdi.select(); girdi.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        basarili();
+      }catch(e){ alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin."); }
+    }
+  };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
     document.getElementById("mailOnizlemeOverlay").hidden = true;
@@ -595,7 +627,9 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("whatsappOnizlemeVazgecBtn").onclick = function(){ document.getElementById("whatsappOnizlemeOverlay").hidden = true; };
   document.getElementById("whatsappTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("whatsapp", this); };
   document.getElementById("whatsappOnizlemeGonderBtn").onclick = function(){
-    document.getElementById("gonderMetin").value = document.getElementById("whatsappOnizlemeMetin").value;
+    var mk = document.getElementById("gonderMetin");
+    mk.value = document.getElementById("whatsappOnizlemeMetin").value;
+    metinKutusuBoyutlandir(mk);
     document.getElementById("whatsappOnizlemeOverlay").hidden = true;
     gonderTiklandi("whatsapp");
   };

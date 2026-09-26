@@ -74,7 +74,7 @@ var HareketTablo = (function(){
     // bir sarı — hem başlık şeridi hem satır zemini aynı ton.
     var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#7a5c00" : "#0e6b34";
     var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#ffe066" : "#eafaf0";
-    var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "") + "'>" + opts.etiketRozet + "</span>") : "";
+    var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozetSinifi ? " hareket-grup-etiket-rozet--" + opts.etiketRozetSinifi : (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "")) + "'>" + opts.etiketRozet + "</span>") : "";
     var html = opts.etiket ? ("<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
     var basHucreler = basit
       ? "<th style='width:46%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:19%;'>NET</th><th style='width:23%;'>TOPLAM</th>"
@@ -90,15 +90,37 @@ var HareketTablo = (function(){
       // girilmiş özel bir kur kullanıldığı tek bakışta anlaşılır (13.09.2026).
       // opts.kurTiklanabilir sadece Sepet'te true geçilir; oraya dokununca
       // manuel kur girme popup'ı açılır (bkz. cart-render.js).
-      var kurSinifi = "belge-gt-kur" + (opts.kurManuelMi ? " belge-gt-kur--manuel" : "") + (opts.kurTiklanabilir ? " belge-gt-kur--tiklanabilir" : "");
+      // DÜZENLEME (27.09.2026): kur bilgisi artık GENEL TOPLAM kutusunun
+      // İÇİNDE değil, üstünde ayrı, ince bir şerit — ve altına (primGizli
+      // değilse) bir TOPLAM PRİM satırı ekleniyor.
+      var primSatiriVarMi = !primGizli;
+      var kurSinifi = "belge-kur-serit" + (opts.kurManuelMi ? " belge-kur-serit--manuel" : "") + (opts.kurTiklanabilir ? " belge-kur-serit--tiklanabilir" : "");
       var kurEtiketMetni = (opts.kurManuelMi ? "✏️ Bu işlemde " : "Bu işlemde ") + fmt(opts.kur) + " kuru kullanıldı";
-      html += "<div class='belge-genel-toplam-serit'>"
-        + (opts.kur ? "<span class='" + kurSinifi + "'>" + kurEtiketMetni + "</span>" : "")
+      html += (opts.kur ? "<div class='" + kurSinifi + "'>" + kurEtiketMetni + "</div>" : "");
+      html += "<div class='belge-genel-toplam-serit"
+        + (opts.kur ? " belge-genel-toplam-serit--ustduz" : "")
+        + (primSatiriVarMi ? " belge-genel-toplam-serit--altduz" : "")
+        + "'>"
         + "<span class='belge-gt-etiket-deger-grup'>"
         + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
         + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " EURO" + (opts.kur ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(opts.genelToplam*opts.kur).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"
         + "</span>"
         + "</div>";
+
+      if(primSatiriVarMi){
+        var primToplamTL = 0;
+        (opts.urunler||[]).forEach(function(u){
+          var h = opts.hesapla ? opts.hesapla(u) : null;
+          var toplamVarMi = h && h.toplamEuro != null;
+          if(toplamVarMi && u.ozelEtiket !== "bedelsiz" && !(u.iskonto>60)){
+            primToplamTL += h.mudurPrimTL || 0;
+          }
+        });
+        html += "<div class='belge-prim-toplam-serit'>"
+          + "<span class='belge-pt-etiket'>TOPLAM PRİM</span>"
+          + "<span class='belge-pt-deger'>" + Math.round(primToplamTL).toLocaleString("tr-TR") + " TL</span>"
+          + "</div>";
+      }
     }
     return html;
   }

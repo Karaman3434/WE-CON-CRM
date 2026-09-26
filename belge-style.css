@@ -134,9 +134,9 @@
   padding-bottom: 4px;
   border-top: 1px solid #f0f2f5;
 }
-.belge-adres-etiket-fatura { color: #0e5ba0; font-size: 10px; display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3px; }
+.belge-adres-etiket-fatura { color: #003a70; font-size: 10px; display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3px; }
 .belge-adres-bos { color: #a8b0ba; font-style: italic; font-weight: 500; }
-.belge-adres-etiket-teslimat { color: #0e5ba0; font-size: 10px; display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3px; }
+.belge-adres-etiket-teslimat { color: #003a70; font-size: 10px; display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3px; }
 .belge-adres-blok-teslimat {
   font-size: 12px;
   color: #111827;
@@ -146,7 +146,7 @@
   padding-top: 10px;
   border-top: 1px solid #f0f2f5;
 }
-.belge-adres-etiket-yetkili { color: #0e5ba0; font-size: 10px; display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3px; }
+.belge-adres-etiket-yetkili { color: #003a70; font-size: 10px; display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3px; }
 .belge-yetkili-blok {
   font-size: 12px;
   color: #111827;
@@ -340,6 +340,15 @@
   font-size: 11px;
   padding: 6px 14px;
 }
+/* Sepet HESAPLANDI satırının sonundaki işlem türü rozeti (SİPARİŞ/FİYAT
+   TEKLİFİ/vb) — eskiden müşteri adı satırındaydı, artık burada
+   (27.09.2026, Abdullah'ın isteğiyle) — beyaz, kalın yazı. */
+.hareket-grup-etiket-rozet--islem-tipi {
+  background: #0e9f6e;
+  border: 1.5px solid #0b8059;
+  color: #ffffff;
+  font-weight: 900;
+}
 .hareket-satir--sari { background: #ffe066; }
 .hareket-satir--yesil { background: #eafaf0; }
 
@@ -391,23 +400,29 @@
   border-top: none;
   border-radius: 10px;
 }
-.belge-gt-kur {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #a9c6e4;
-  line-height: 1.35;
-  white-space: normal;
-  max-width: 150px;
-  flex-shrink: 1;
+.belge-genel-toplam-serit--ustduz { border-top-left-radius: 0; border-top-right-radius: 0; }
+.belge-genel-toplam-serit--altduz { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+/* DÜZENLEME (27.09.2026): kur bilgisi artık GENEL TOPLAM kutusunun içinde
+   değil, üstünde kendi ince şeridinde — harfler %50 büyütülüp kırmızı
+   yapıldı (Abdullah'ın isteğiyle). Manuel kur girildiğinde (bkz.
+   --manuel) mevcut amber vurgusu korunuyor. */
+.belge-kur-serit {
+  background: #eef2f6;
+  text-align: center;
+  padding: 6px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #c0392b;
+  border-radius: 10px 10px 0 0;
 }
-/* Sepet'te bu rozete dokunup o işleme özel kur girilebilir (13.09.2026) —
+/* Sepet'te bu şeride dokunup o işleme özel kur girilebilir (13.09.2026) —
    tıklanabilir olduğunu belli etmek için noktalı alt çizgi; belge-render.js
    (Belge Önizleme, salt-okunur geçmiş kayıt) bu sınıfı EKLEMEZ, o yüzden
    orada tıklanamaz görünür — doğru, çünkü orada zaten tıklanamaz. */
-.belge-gt-kur--tiklanabilir { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
+.belge-kur-serit--tiklanabilir { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
 /* Manuel kur girildiğinde etiket rengi mevcut "sarı" tonuyla (uygulamada
    zaten kullanılan #ffe285) vurgulanır — yeni bir renk eklenmedi. */
-.belge-gt-kur--manuel { color: #b7601f; }
+.belge-kur-serit--manuel { color: #b7601f; }
 .belge-gt-etiket-deger-grup { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
 .belge-gt-etiket { font-size: 12px; font-weight: 700; letter-spacing: .3px; color: #ffffff; }
 .belge-gt-deger { font-size: 18px; font-weight: 800; flex-shrink: 0; text-align: right; white-space: nowrap; color: #ffffff; }
@@ -419,6 +434,19 @@
   display: block;
   margin-top: 1px;
 }
+/* TOPLAM PRİM satırı (27.09.2026) — GENEL TOPLAM'ın hemen altında, sadece
+   primGizli olmayan (yani Abdullah'ın kendi ekranları — Sepet, Tablo
+   önizleme) tablolarda görünür; mail/WhatsApp'a giden görsele KARIŞMAZ. */
+.belge-prim-toplam-serit {
+  background: #eafaf0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 0 0 10px 10px;
+}
+.belge-pt-etiket { font-size: 11px; font-weight: 800; color: #0e6b34; letter-spacing: .3px; }
+.belge-pt-deger { font-size: 13px; font-weight: 900; color: #0e6b34; }
 
 .belge-prim-serit {
   background: #16a085;

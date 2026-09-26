@@ -126,13 +126,11 @@ function urunuHesaplamayaGonder(idx){
   window.location.href = "calc.html";
 }
 
-// Cari Bilgi bilgisi artık ayrı bir üst kutuda değil, HESAPLANDI grubunun
-// etiket satırında (firma+şehir solda, işlem türü rozeti sağda) gösterilir
-// — mobilde yer kazanmak için. Bu yüzden grup HTML'ini kendimiz üretip
-// HareketTablo.grupHtml'in ürettiği hücreleri içine alıyoruz.
+// Cari Bilgi bilgisi artık standart .musteri-serit — işlem türü rozeti
+// artık burada DEĞİL, HESAPLANDI grubunun etiket satırının sonunda
+// gösteriliyor (27.09.2026, Abdullah'ın isteğiyle — bkz. sayfayiCiz()).
 function cariBilgiOzetiHtml(musteri){
-  var rozet = "<span class='sepet-cari-bilgi-tip-rozet'>" + (TIP_ETIKET_ROZET[secilenTip]||"") + "</span>";
-  return MusteriSeridi.html(musteri).replace("</div>", rozet + "</div>");
+  return MusteriSeridi.html(musteri);
 }
 
 function sayfayiCiz(){
@@ -184,6 +182,8 @@ function sayfayiCiz(){
     hesaplananlar.forEach(function(u){ hesaplananToplam += hesapla(u).toplamEuro; });
     grupYesilAlani.innerHTML = hesaplananlar.length === 0 ? "" : HareketTablo.grupHtml({
       etiket: "🟢 HESAPLANDI",
+      etiketRozet: TIP_ETIKET_ROZET[secilenTip],
+      etiketRozetSinifi: "islem-tipi",
       urunler: hesaplananlar,
       hesapla: hesapla,
       zeminSinifi: "hareket-satir--yesil",
