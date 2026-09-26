@@ -108,6 +108,41 @@ function kosulSatirlariniSigdir(kok){
   }catch(e){}
 }
 
+// BİRLEŞİK CARİ BİLGİ KUTUSU (27.09.2026, Abdullah'ın isteğiyle): Sepet'in
+// "Formu Görüntüle"si ile Mail/WhatsApp önizlemesi/gönderilen görseli artık
+// Cari Bilgi sayfasındaki (cari-kart-style.css) AYNI renkli-kutu tasarımını
+// kullanıyor — tüm başlıklar TEK bir açık mavi tonda, TEMEL BİLGİLER
+// kutusunun ilk satırında müşteri ticari/cari ismi, Vade/Fatura/Kargo
+// ikonlu üç hücre halinde. Fatura/Teslimat/Yetkili seçim mantığı
+// (adresleriBelirle/seciliAdresler, weiconv2_secili_iletisim) DEĞİŞMEDİ —
+// sadece görünüm bu ortak fonksiyonda üretiliyor.
+function cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatAdr, seciliYetkili){
+  var sehirEk = musteri.sehir ? ", " + htmlEsc(musteri.sehir) : "";
+  var html = "<div class='ck-blok-etiket ck-blok-etiket--temel'><span>🏢 TEMEL BİLGİLER</span></div>"
+    + "<div class='ck-isim-satir'>" + htmlEsc(musteri.ad) + "</div>"
+    + "<div class='ozet-satir-3 ozet-satir-3--birlesik'>"
+    +   "<div class='ozet-alan'><span class='ozet-ikon'>📅</span><div class='ozet-metin'><div class='ozet-baslik'>VADE</div><div class='ozet-deger'>" + htmlEsc(vade||"-") + "</div></div></div>"
+    +   "<div class='ozet-alan'><span class='ozet-ikon'>📄</span><div class='ozet-metin'><div class='ozet-baslik'>FATURA</div><div class='ozet-deger'>" + htmlEsc(faturaTuru||"-") + "</div></div></div>"
+    +   "<div class='ozet-alan'><span class='ozet-ikon'>🚚</span><div class='ozet-metin'><div class='ozet-baslik'>KARGO</div><div class='ozet-deger'>" + htmlEsc(kargo||"-") + "</div></div></div>"
+    + "</div>"
+    + "<div class='ck-blok-etiket ck-blok-etiket--fatura'><span>🧾 FATURA ADRESİ</span></div>"
+    + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart'>"
+    +   (faturaAdr ? htmlEsc(faturaAdr) + sehirEk : "<span class='belge-adres-bos'>Girilmemiş</span>")
+    + "</div></div></div>";
+  if(teslimatAdr){
+    html += "<div class='ck-blok-etiket ck-blok-etiket--teslimat'><span>🚚 TESLİMAT ADRESİ</span></div>"
+      + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart'>" + htmlEsc(teslimatAdr) + sehirEk + "</div></div></div>";
+  }
+  if(seciliYetkili){
+    html += "<div class='ck-blok-etiket ck-blok-etiket--yetkili'><span>👤 YETKİLİ BİLGİSİ</span></div>"
+      + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart ck-kart--secilebilir ck-kart--secili'>"
+      +   "<span class='ck-tik ck-tik--secili'>✓</span>"
+      +   "<div class='ck-kart-govde'>" + HareketTablo.yetkiliSatiriHtml(seciliYetkili.isim, seciliYetkili.telefon, seciliYetkili.eposta) + "</div>"
+      + "</div></div></div>";
+  }
+  return html;
+}
+
 function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   var basit = kanal === "whatsapp";
   var vade = vadeGosterimMetni(musteri.vade);
@@ -127,25 +162,25 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   (sepet||[]).forEach(function(u){ var h = CartData.hesapla(u, kur, kdv); if(h && h.toplamEuro!=null) tToplamEuro += h.toplamEuro; });
 
   var musteriBlokHtml;
+  var html;
   if(basit){
     musteriBlokHtml =
       "<div class='belge-musteri-ad belge-musteri-ad--sade'>" + htmlEsc(musteri.ad) + "</div>"
       + (musteri.sehir ? "<div class='belge-musteri-sehir'>" + htmlEsc(musteri.sehir) + "</div>" : "");
+    html = "<div class='belge-kart'>" + formBaslikHtml(tip)
+      + "<div class='belge-musteri-govde'>"
+      + musteriBlokHtml
+      + "</div></div><div class='belge-kart-ayrac'></div><div class='belge-kart'>";
   } else {
-    // SIRALAMA (27.09.2026, Abdullah'ın isteğiyle): VADE/FATURA/KARGO
-    // satırı artık en ÜSTTE değil, Yetkili Bilgisi'nin ALTINDA, en sonda.
-    musteriBlokHtml =
-      "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-      + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
-      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
-      + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
-      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "");
+    // BİRLEŞİK CARİ KUTUSU (27.09.2026): artık Cari Bilgi sayfasıyla aynı
+    // renkli-kutu tasarımı — bkz. cariKutulariHtml().
+    musteriBlokHtml = cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatAdr, seciliYetkili);
+    html = "<div class='belge-kart'>" + formBaslikHtml(tip) + "</div>"
+      + "<div class='belge-kart-ayrac'></div>"
+      + musteriBlokHtml
+      + "<div class='belge-kart-ayrac'></div>"
+      + "<div class='belge-kart'>";
   }
-
-  var html = "<div class='belge-kart'>" + formBaslikHtml(tip)
-    + "<div class='belge-musteri-govde'>"
-    + musteriBlokHtml
-    + "</div></div><div class='belge-kart-ayrac'></div><div class='belge-kart'>";
 
   html += HareketTablo.grupHtml({
     etiket: (TIP_ETIKET_ROZET[tip]||""),
@@ -277,29 +312,23 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
   // (vade, fatura, kargo, adresler, yetkili bilgisi YOK). Mail'de hâlâ TAM
   // gösterilir. Ürün tablosunun sütun sayısı ("basit" modda LİSTE/İSK
   // olmadan) ayrı bir tercih, aynı "basit" bayrağını paylaşıyor.
-  var cariBilgiHtml;
+  var cariBaslikHtml, cariGovdeHtml;
   if(basit){
-    cariBilgiHtml =
-      formBaslikHtml(tip)
+    cariBaslikHtml = "<div class='belge-kart' style='margin:0;'>" + formBaslikHtml(tip)
       + "<div class='belge-musteri-govde'>"
       + "<div class='belge-musteri-ad belge-musteri-ad--sade'>" + htmlEsc(musteri.ad) + "</div>"
       + (musteri.sehir ? "<div class='belge-musteri-sehir'>" + htmlEsc(musteri.sehir) + "</div>" : "")
-      + "</div>";
+      + "</div></div>";
+    cariGovdeHtml = "";
   } else {
-    cariBilgiHtml =
-      formBaslikHtml(tip)
-      + "<div class='belge-musteri-govde'>"
-      + "<div class='belge-musteri-ad'>" + htmlEsc(musteri.ad) + "</div>"
-      + "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + (faturaAdr ? htmlEsc(faturaAdr) : "<span class='belge-adres-bos'>Girilmemiş</span>") + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>"
-      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (musteri.sehir?", "+htmlEsc(musteri.sehir):"") + "</div>" : "")
-      + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
-      + ((vade||faturaTuru||kargo) ? kosulSatiriHtml(vade,faturaTuru,kargo) : "")
-      + "</div>";
+    // BİRLEŞİK CARİ KUTUSU (27.09.2026): giden görsel de artık Cari Bilgi
+    // sayfasıyla aynı renkli-kutu tasarımını kullanıyor — bkz. cariKutulariHtml().
+    cariBaslikHtml = "<div class='belge-kart' style='margin:0;'>" + formBaslikHtml(tip) + "</div>";
+    cariGovdeHtml = "<div class='belge-kart-ayrac'></div>" + cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatAdr, seciliYetkili);
   }
 
-  return "<div class='belge-kart' style='margin:0;'>"
-    + cariBilgiHtml
-    + "</div>"
+  return cariBaslikHtml
+    + cariGovdeHtml
     + "<div class='belge-kart-ayrac'></div>"
     + "<div class='belge-kart' style='margin:0;'>"
     + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"

@@ -20,14 +20,14 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  background: #6a1b9a;
-  color: #fff;
+  background: #00fe81;
+  color: #04402a;
   border-radius: 8px;
   padding: 10px 14px;
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
-  white-space: nowrap; border: 1.5px solid #5a1782;}
+  white-space: nowrap; border: 1.5px solid #00b368;}
 .arama-kutusu input {
   width: 100%;
   border: 2px solid #8e44ad;
@@ -100,9 +100,10 @@
   white-space: nowrap;
 }
 .musteri-rozet--temas { background: #eef1f5; color: #556170; }
-.musteri-rozet--islem { background: #e6f1fb; color: #0c447c; }
+.musteri-rozet--islem { background: #eafaf0; color: #0e6b34; }
 .musteri-rozet--beklemede { background: #faeeda; color: #b7601f; }
 .musteri-rozet--yok { background: #fdeaea; color: #c0392b; }
+.musteri-rozet--temas-yok { background: #e6f1fb; color: #0c447c; }
 
 .musteri-alt-satir {
   display: flex;

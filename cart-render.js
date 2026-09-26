@@ -193,7 +193,7 @@ function sayfayiCiz(){
       kurTiklanabilir: true
     });
 
-    var kurRozeti = document.querySelector(".belge-kur-serit--tiklanabilir");
+    var kurRozeti = document.querySelector(".belge-gt-kur-ic--tiklanabilir");
     if(kurRozeti) kurRozeti.onclick = kurManuelOverlayAc;
 
     function siraHucresineSilTiklamasiEkle(tr, urun){

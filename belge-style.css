@@ -313,7 +313,7 @@
   font-size: 11px;
   font-weight: 900;
   letter-spacing: .3px;
-  padding: 8px 10px;
+  padding: 6px 10px;
   border-radius: 8px 8px 0 0;
   display: flex;
   align-items: center;
@@ -349,7 +349,7 @@
   color: #ffffff;
   font-weight: 900;
 }
-.hareket-satir--sari { background: #ffe066; }
+.hareket-satir--sari { background: #ffeca3; }
 .hareket-satir--yesil { background: #eafaf0; }
 
 /* Sepet ekranındaki kompakt Cari Bilgi başlığı — firma adı+şehir tek
@@ -400,29 +400,39 @@
   border-top: none;
   border-radius: 10px;
 }
-.belge-genel-toplam-serit--ustduz { border-top-left-radius: 0; border-top-right-radius: 0; }
 .belge-genel-toplam-serit--altduz { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-/* DÜZENLEME (27.09.2026): kur bilgisi artık GENEL TOPLAM kutusunun içinde
-   değil, üstünde kendi ince şeridinde — harfler %50 büyütülüp kırmızı
-   yapıldı (Abdullah'ın isteğiyle). Manuel kur girildiğinde (bkz.
-   --manuel) mevcut amber vurgusu korunuyor. */
-.belge-kur-serit {
-  background: #eef2f6;
+/* DÜZENLEME (27.09.2026, Abdullah'ın isteğiyle): kur bilgisi tekrar GENEL
+   TOPLAM kutusunun İÇİNE, en üst satırına taşındı — kırmızı zemin, beyaz
+   yazı. .belge-gt-kutu SADECE hareket-tablo.js'in (Sepet/Gönder ürün
+   tablosu) kullandığı dıştaki kutu; içindeki GENEL TOPLAM satırı
+   .belge-gt-satir ile aynı görünümü (renk/hizalama) üretir. */
+.belge-gt-kutu {
+  background: #003a70;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.belge-gt-kutu--altduz { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.belge-gt-kur-ic {
+  background: #c0392b;
+  color: #ffffff;
   text-align: center;
-  padding: 6px 16px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #c0392b;
-  border-radius: 10px 10px 0 0;
+  padding: 5px 16px;
+  font-size: 12.5px;
+  font-weight: 800;
 }
 /* Sepet'te bu şeride dokunup o işleme özel kur girilebilir (13.09.2026) —
-   tıklanabilir olduğunu belli etmek için noktalı alt çizgi; belge-render.js
-   (Belge Önizleme, salt-okunur geçmiş kayıt) bu sınıfı EKLEMEZ, o yüzden
-   orada tıklanamaz görünür — doğru, çünkü orada zaten tıklanamaz. */
-.belge-kur-serit--tiklanabilir { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
-/* Manuel kur girildiğinde etiket rengi mevcut "sarı" tonuyla (uygulamada
-   zaten kullanılan #ffe285) vurgulanır — yeni bir renk eklenmedi. */
-.belge-kur-serit--manuel { color: #b7601f; }
+   tıklanabilir olduğunu belli etmek için noktalı alt çizgi. */
+.belge-gt-kur-ic--tiklanabilir { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
+/* Manuel kur girildiğinde amber vurgusu (mevcut #b7601f rengi). */
+.belge-gt-kur-ic--manuel { background: #b7601f; }
+.belge-gt-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 10px;
+  color: #ffffff;
+}
 .belge-gt-etiket-deger-grup { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
 .belge-gt-etiket { font-size: 12px; font-weight: 700; letter-spacing: .3px; color: #ffffff; }
 .belge-gt-deger { font-size: 18px; font-weight: 800; flex-shrink: 0; text-align: right; white-space: nowrap; color: #ffffff; }
@@ -578,7 +588,7 @@
 /* Gönder ekranı yeniden düzeni (WG.210926.1512.583) — sadece send-render.js kullanır */
 .belge-form-baslik {
   text-align: center;
-  padding: 9px 8px;
+  padding: 7px 8px;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 1.5px;

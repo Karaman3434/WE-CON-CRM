@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function(){
     : (bilgi.musteriAd
       ? (bilgi.musteriAd + " için sipariş/teklif formu paylaşım uygulamasına gönderildi.")
       : "Form paylaşım uygulamasına gönderildi.");
-  altMetin += " 3 sn içinde Ana Sayfa'ya yönlendiriliyorsun.";
+  altMetin += " 6 sn içinde Ana Sayfa'ya yönlendiriliyorsun.";
   document.getElementById("gbAltMetin").textContent = altMetin;
 
   function anaSayfayaDonVeTemizle(){
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function(){
   // olduğunda (visibilitychange) süre dolmuşsa hemen, dolmamışsa kalan
   // süre kadar bekleyip yönlendiriyor.
   var baslangicZamani = Date.now();
-  var GECIKME_MS = 3000;
+  var GECIKME_MS = 6000;
   var yonlendirildiMi = false;
 
   function zamanindaYonlendir(){

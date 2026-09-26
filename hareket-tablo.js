@@ -73,7 +73,7 @@ var HareketTablo = (function(){
     // (eskiden #fff9e6 şerit / #faeeda satır) yerine daha canlı, doygun
     // bir sarı — hem başlık şeridi hem satır zemini aynı ton.
     var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#7a5c00" : "#0e6b34";
-    var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#ffe066" : "#eafaf0";
+    var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#ffeca3" : "#eafaf0";
     var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozetSinifi ? " hareket-grup-etiket-rozet--" + opts.etiketRozetSinifi : (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "")) + "'>" + opts.etiketRozet + "</span>") : "";
     var html = opts.etiket ? ("<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
     var basHucreler = basit
@@ -90,21 +90,21 @@ var HareketTablo = (function(){
       // girilmiş özel bir kur kullanıldığı tek bakışta anlaşılır (13.09.2026).
       // opts.kurTiklanabilir sadece Sepet'te true geçilir; oraya dokununca
       // manuel kur girme popup'ı açılır (bkz. cart-render.js).
-      // DÜZENLEME (27.09.2026): kur bilgisi artık GENEL TOPLAM kutusunun
-      // İÇİNDE değil, üstünde ayrı, ince bir şerit — ve altına (primGizli
-      // değilse) bir TOPLAM PRİM satırı ekleniyor.
+      // DÜZENLEME (27.09.2026, Abdullah'ın isteğiyle): kur bilgisi tekrar
+      // GENEL TOPLAM kutusunun İÇİNE, en üst satırına taşındı — kırmızı
+      // zemin, beyaz yazı. Altına (primGizli değilse) bir TOPLAM PRİM
+      // satırı ekleniyor.
       var primSatiriVarMi = !primGizli;
-      var kurSinifi = "belge-kur-serit" + (opts.kurManuelMi ? " belge-kur-serit--manuel" : "") + (opts.kurTiklanabilir ? " belge-kur-serit--tiklanabilir" : "");
+      var kurIcSinifi = "belge-gt-kur-ic" + (opts.kurManuelMi ? " belge-gt-kur-ic--manuel" : "") + (opts.kurTiklanabilir ? " belge-gt-kur-ic--tiklanabilir" : "");
       var kurEtiketMetni = (opts.kurManuelMi ? "✏️ Bu işlemde " : "Bu işlemde ") + fmt(opts.kur) + " kuru kullanıldı";
-      html += (opts.kur ? "<div class='" + kurSinifi + "'>" + kurEtiketMetni + "</div>" : "");
-      html += "<div class='belge-genel-toplam-serit"
-        + (opts.kur ? " belge-genel-toplam-serit--ustduz" : "")
-        + (primSatiriVarMi ? " belge-genel-toplam-serit--altduz" : "")
-        + "'>"
+      html += "<div class='belge-gt-kutu" + (primSatiriVarMi ? " belge-gt-kutu--altduz" : "") + "'>"
+        + (opts.kur ? "<div class='" + kurIcSinifi + "'>" + kurEtiketMetni + "</div>" : "")
+        + "<div class='belge-gt-satir'>"
         + "<span class='belge-gt-etiket-deger-grup'>"
         + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
         + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " EURO" + (opts.kur ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(opts.genelToplam*opts.kur).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"
         + "</span>"
+        + "</div>"
         + "</div>";
 
       if(primSatiriVarMi){

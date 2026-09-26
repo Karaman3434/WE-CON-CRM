@@ -41,7 +41,7 @@
   background: #f4f7fb;
   border: 1px solid #e2e6ec;
   border-radius: 10px;
-  padding: 10px 8px;
+  padding: 8px 8px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -71,13 +71,30 @@
   letter-spacing: .3px;
   padding: 8px 10px;
   border-radius: 8px 8px 0 0;
-  margin-top: 16px;
+  margin-top: 8px;
 }
-.ck-blok-etiket--fatura { background: #faeeda; color: #b7601f; border: 1.5px solid #b7601f;}
-.ck-blok-etiket--yetkili { background: #eaf2fc; color: #1a5276; border: 1.5px solid #95bdf0;}
-.ck-blok-etiket--teslimat { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
-.ck-blok-etiket--not { background: #f6f0fd; color: #8e44ad; border: 1.5px solid #8e44ad; }
-.ck-blok-etiket--temel { background: #f6f0fd; color: #8e44ad; margin-bottom: 0; border: 1.5px solid #8e44ad;}
+/* TEK RENK KURALI (27.09.2026, Abdullah'ın isteğiyle): tüm bilgi kutusu
+   başlıkları (Temel Bilgiler/Fatura/Teslimat/Yetkili/Not) artık ayrı ayrı
+   turuncu/yeşil/mavi/mor değil, HEPSİ tek bir açık mavi ton — paylaşılan
+   mavi rengin %90 açık tonu (Seçenek A). */
+.ck-blok-etiket--fatura,
+.ck-blok-etiket--yetkili,
+.ck-blok-etiket--teslimat,
+.ck-blok-etiket--not,
+.ck-blok-etiket--temel { background: #e6f2ff; color: #0c447c; border: 1.5px solid #95bdf0; }
+.ck-blok-etiket--temel { margin-bottom: 0; }
+/* Temel Bilgiler kutusunun ilk satırı — müşteri ticari/cari ismi
+   (27.09.2026) — sadece isim ayrı bir şerit olarak görünmeyen sayfalarda
+   (Sepet önizleme, Mail/WhatsApp gönderim) kullanılır. */
+.ck-isim-satir {
+  background: #ffffff;
+  border: 1px solid #e2e6ec;
+  border-top: none;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 900;
+  color: #003a70;
+}
 
 .ck-tiklanabilir-alan { cursor: pointer; }
 .ck-tiklanabilir-alan:active { background: #f4f6f9; }
@@ -302,7 +319,7 @@
 
 .ck-kart-liste { display: flex; flex-direction: column; }
 .ck-kart {
-  padding: 10px 12px;
+  padding: 8px 12px;
 }
 .ck-kart + .ck-kart { border-top: 1px solid #eef1f5; }
 .ck-kart--secilebilir + .ck-kart--secilebilir { border-top: none; }
@@ -317,7 +334,7 @@
   align-items: flex-start;
   gap: 10px;
   cursor: pointer;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: #fdeaea;
   border: 1.5px solid #c0392b;
   border-radius: 8px;

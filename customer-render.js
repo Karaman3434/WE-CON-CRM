@@ -142,7 +142,7 @@ function temasIslemRozetleriHTML(m){
   var islem = sonIslemBilgisi(m);
   var temasHTML = temas
     ? "<span class='musteri-rozet musteri-rozet--temas'>Temas: " + temas.harf + " " + tarihFormatlaKisa(temas.ts) + "</span>"
-    : "<span class='musteri-rozet musteri-rozet--yok'>Temas yok</span>";
+    : "<span class='musteri-rozet musteri-rozet--temas-yok'>Temas yok</span>";
   var islemHTML = islem
     ? "<span class='musteri-rozet musteri-rozet--islem" + (islem.harf==="⏳ SP" ? " musteri-rozet--beklemede" : "") + "'>İşlem: " + islem.harf + " " + tarihFormatlaKisa(islem.ts) + "</span>"
     : "<span class='musteri-rozet musteri-rozet--yok'>İşlem yok</span>";
@@ -196,8 +196,6 @@ function listeyiCiz(){
       var toplamSayi = sonuclar.length;
       sonuclar = sonuclar.slice(0, 12);
       if(toplamSayi > 12){
-        bilgiNotuEl.hidden = false;
-        bilgiNotuEl.textContent = "En son kayıt edilen 12 müşteri gösteriliyor · toplam " + toplamSayi + " müşteri sistemde kayıtlı.";
         tumBtn.hidden = false;
       } else {
         tumBtn.hidden = true;
