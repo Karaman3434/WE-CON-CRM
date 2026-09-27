@@ -1,55 +1,62 @@
-/* avans-takibi-style.css — 24.09.2026 yeniden tasarım:
+/* avans-takibi-style.css — 27.09.2026 yeniden tasarım:
    tek AVANS EKLE satırı (tip düğmesi + Ekle), birleşik liste, kırmızı
-   toplam kutusu, bilgi popup, kaydedildi rozeti. Sadece avans-takibi.html
-   kullanır. */
+   toplam kutusu, ‹›/kaydırmalı dönem barı, kaydedildi rozeti. Sadece
+   avans-takibi.html kullanır. Bu sayfa home-style/odenebilir-komisyon-style/
+   maas-hesaplama-style'tan SONRA yüklendiği için, aşağıdaki paylaşılan sınıf
+   isimlerinin (.ok-kutu, .mh-sonuc-satir, .mh-kutu-baslik-satir,
+   .mh-avans-toplam-kutu) yeniden tanımlanması SADECE bu sayfayı etkiler,
+   diğer sayfalardaki (örn. maas-hesaplama.html) görünümü değiştirmez. */
 
-.av-ay-ozet-rozet {
-  background: rgba(255,255,255,.22);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #fff;
-  white-space: nowrap;
+/* DÖNEM BARI — eski "DÖNEM (istediğin ayı seçebilirsin)" etiketi + uzun
+   alttan açılan liste yerine (27.09.2026). */
+.av-donem-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #8e44ad;
+  border-radius: 10px;
+  padding: 6px 8px;
+  margin-bottom: 10px;
 }
-.av-bilgi-btn {
+.av-donem-ok-btn {
   background: rgba(255,255,255,.22);
   border: none;
   color: #fff;
-  width: 26px; height: 26px;
-  border-radius: 50%;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.av-donem-bar-orta {
+  flex: 1;
+  text-align: center;
   font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.av-donem-yeniay-btn {
+  background: #c78a00;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 30px;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.av-bilgi-overlay {
-  position: fixed;
-  top: var(--ust-sabit-yukseklik, 100px);
-  left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.45);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  z-index: 900;
-  padding: 16px;
-  box-sizing: border-box;
-}
-.av-bilgi-overlay[hidden] { display: none; }
-.av-bilgi-kutu {
-  background: #fff;
-  border-radius: 12px;
-  padding: 18px;
-  width: 100%;
-  box-sizing: border-box;
-}
-.av-bilgi-baslik { font-size: 14px; font-weight: 900; color: #5a2d7a; margin-bottom: 8px; }
-.av-bilgi-metin { font-size: 12px; color: #5a2d7a; line-height: 1.5; margin: 0 0 10px; }
-.av-bilgi-uyari { font-size: 12px; color: #c0392b; line-height: 1.5; margin: 0 0 12px; }
-.av-bilgi-uyari a { color: #c0392b; text-decoration: underline; font-weight: 900; }
-.av-bilgi-kapat-btn {
-  width: 100%; padding: 10px; border-radius: 8px; border: none;
-  background: #8e44ad; color: #fff; font-weight: 800; font-size: 13px;
-}
+/* SATIR ARALIKLARI DARALTILDI (27.09.2026) — yazı boyutları AYNI kalır,
+   sadece dikey boşluklar azaltıldı. Sadece bu sayfa için geçerli. */
+.ok-kutu { padding: 10px 12px; margin-bottom: 10px; }
+.mh-kutu-baslik-satir { margin-bottom: 6px; }
+.mh-sonuc-satir { padding: 4px 0; }
+.mh-avans-toplam-kutu { padding: 8px 12px; }
 
 .av-giris-satir {
   display: grid;
@@ -136,8 +143,8 @@
   background: #fdf2f2;
   border: 1.5px solid #c0392b;
   border-radius: 10px;
-  padding: 10px 14px;
-  margin-top: 10px;
+  padding: 6px 14px;
+  margin-top: 6px;
 }
 .av-kirmizi-toplam-kutu .mh-sonuc-satir { color: #c0392b; font-weight: 800; }
 .av-kirmizi-toplam-kutu .mh-sonuc-satir b { color: #c0392b; }
@@ -157,79 +164,14 @@
 }
 .av-kaydedildi-rozet[hidden] { display: none; }
 
-/* DÖNEM SEÇİCİ — 24.09.2026: çirkin sistem <select> listesi yerine
-   uygulamanın kendi tasarımıyla alttan açılan bir liste. */
-.av-donem-btn {
-  width: 100%;
-  background: #8e44ad;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  font-weight: 800;
-  font-size: 13px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.av-donem-overlay {
-  position: fixed;
-  top: var(--ust-sabit-yukseklik, 100px);
-  left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 900;
-}
-.av-donem-overlay[hidden] { display: none; }
-.av-donem-sheet {
-  background: #fff;
-  border-radius: 16px 16px 0 0;
-  padding: 16px;
-  width: 100%;
-  box-sizing: border-box;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-.av-donem-sheet-baslik { font-size: 15px; font-weight: 900; color: #123b63; margin-bottom: 10px; }
-.av-donem-yil-baslik { font-size: 11px; font-weight: 900; color: #8a96a3; letter-spacing: .4px; margin: 12px 0 4px; }
-.av-donem-yil-baslik:first-child { margin-top: 0; }
-.av-donem-satir {
-  width: 100%;
-  text-align: left;
-  padding: 11px 12px;
-  border-radius: 8px;
-  border: none;
-  background: #fff;
-  color: #2d3540;
-  font-weight: 700;
-  font-size: 13px;
-  margin-bottom: 4px;
-  display: flex;
-  justify-content: space-between;
-}
-.av-donem-satir--secili { background: #f6f0fd; color: #8e44ad; font-weight: 900; }
-.av-donem-vazgec-btn {
-  width: 100%;
-  padding: 11px;
-  border-radius: 8px;
-  border: 1.5px solid #cbd5e1;
-  background: #fff;
-  font-weight: 800;
-  font-size: 13px;
-  color: #556170;
-  margin-top: 8px;
-}
-
 .av-manuel-kaydet-btn {
   width: 100%;
   background: #16a085;
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 13px;
+  padding: 11px;
   font-weight: 900;
   font-size: 14px;
-  margin-top: 10px;
+  margin-top: 6px;
 }

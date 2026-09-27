@@ -2,10 +2,10 @@
   avans-takibi-render.js
   ========================
   Özel Avans / İş Avansı / İş Avansı Harcamaları listelerini yönetir.
-  Dönem artık ELLE SEÇİLEBİLİR (avDonemSecici) — otomatik hesaplanan açık
-  dönem sadece başlangıç önerisi ve "kapat"tan sonraki öneridir, kapatılmamış
-  herhangi bir aya geçip orada da giriş yapılabilir. Her ekleme/silme ANINDA
-  AvansKayitData.taslakGuncelle() ile seçili dönemin taslağına yazılır.
+  Dönem artık ‹ › okları (veya kaydırarak) tek tek ay adımıyla değişir
+  (27.09.2026) — kapatılmamış herhangi bir aya (geçmiş dahil) gidip orada
+  da giriş yapılabilir. Her ekleme/silme ANINDA AvansKayitData.taslakGuncelle()
+  ile seçili dönemin taslağına yazılır.
 */
 
 var AY_ADLARI_AV = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
@@ -138,61 +138,37 @@ function avBaslangicNoktasi(){
   return {ay:ay, yil:yil};
 }
 
-function avDonemSeciciDoldur(){
-  var sel = document.getElementById("avDonemSecici");
-  var baslangic = avBaslangicNoktasi();
-  var secenekler = [];
-  var ay = baslangic.ay, yil = baslangic.yil;
-  for(var i=0; i<18; i++){
-    if(!AvansKayitData.kapaliKaydiBul(ay, yil)) secenekler.push({ay:ay, yil:yil});
-    ay++; if(ay>12){ ay=1; yil++; }
-  }
-  // Gizli <select> hâlâ duruyor (JS içinde değer okuma alışkanlığı için),
-  // ama görünen arayüz artık DÖNEM SEÇ alttan açılan liste (24.09.2026 —
-  // sistemin çirkin varsayılan menüsü yerine).
-  sel.innerHTML = secenekler.map(function(s){
-    return "<option value='" + s.ay + "-" + s.yil + "'" + (s.ay===avSeciliAy && s.yil===avSeciliYil ? " selected" : "") + ">" + AY_ADLARI_AV[s.ay] + " " + s.yil + "</option>";
-  }).join("");
+// AY ADIMLAMA (27.09.2026, Abdullah'ın isteğiyle yeniden tasarım) — dönem
+// artık uzun bir listeden değil, ‹ › okları (veya kaydırarak) tek tek ay
+// adımıyla değişiyor. Zaten KAPATILMIŞ aylar atlanır (onlar Kayıt
+// Geçmişi'nde), tıpkı eskiden listeden de çıkarıldıkları gibi.
+function avSonrakiAy(ay, yil){ ay++; if(ay>12){ ay=1; yil++; } return {ay:ay, yil:yil}; }
+function avOncekiAy(ay, yil){ ay--; if(ay<1){ ay=12; yil--; } return {ay:ay, yil:yil}; }
+function avOncekiAcikAy(ay, yil){
+  var g = avOncekiAy(ay, yil), guvenlik = 0;
+  while(AvansKayitData.kapaliKaydiBul(g.ay, g.yil) && guvenlik < 240){ g = avOncekiAy(g.ay, g.yil); guvenlik++; }
+  return g;
+}
+function avSonrakiAcikAy(ay, yil){
+  var g = avSonrakiAy(ay, yil), guvenlik = 0;
+  while(AvansKayitData.kapaliKaydiBul(g.ay, g.yil) && guvenlik < 240){ g = avSonrakiAy(g.ay, g.yil); guvenlik++; }
+  return g;
+}
 
-  var buton = document.getElementById("avDonemBtnMetin");
-  if(buton && avSeciliAy && avSeciliYil) buton.textContent = AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil;
-
-  var liste = document.getElementById("avDonemListe");
-  var soncekiYil = null;
-  liste.innerHTML = secenekler.map(function(s){
-    var yilBasligi = "";
-    if(s.yil !== soncekiYil){ yilBasligi = "<div class='av-donem-yil-baslik'>" + s.yil + "</div>"; soncekiYil = s.yil; }
-    var secili = (s.ay===avSeciliAy && s.yil===avSeciliYil);
-    return yilBasligi + "<button type='button' class='av-donem-satir" + (secili ? " av-donem-satir--secili" : "") + "' data-ay='" + s.ay + "' data-yil='" + s.yil + "'>"
-      + AY_ADLARI_AV[s.ay] + " " + s.yil + (secili ? " <span>✓</span>" : "") + "</button>";
-  }).join("");
-  liste.querySelectorAll(".av-donem-satir").forEach(function(btn){
-    btn.onclick = function(){
-      document.getElementById("avDonemOverlay").hidden = true;
-      avDonemeGec(parseInt(this.getAttribute("data-ay"),10), parseInt(this.getAttribute("data-yil"),10));
-    };
-  });
-
-  // Doğal başlangıç ayı (bugün için Ağustos) hâlâ kapalıysa, sessizce
-  // atlamak yerine NEDENİNİ göster — kafa karıştırmasın. Bu uyarı artık
-  // ℹ️ bilgi popup'unun içinde (24.09.2026 — sayfa yer kaplamasın diye).
-  var uyari = document.getElementById("avBilgiUyariMetin");
-  var kapaliKayit = AvansKayitData.kapaliKaydiBul(baslangic.ay, baslangic.yil);
-  if(kapaliKayit){
-    uyari.hidden = false;
-    uyari.innerHTML = "⚠️ " + AY_ADLARI_AV[baslangic.ay] + " " + baslangic.yil + " zaten kapatılmış (bu yüzden listede yok). Yeniden açmak için <a href='#' id='avBaslangicKapaliGit'>aşağıdan Kayıt Geçmişi'nden sil</a>.";
-    var link = document.getElementById("avBaslangicKapaliGit");
-    if(link) link.onclick = function(ev){
-      ev.preventDefault();
-      document.getElementById("avBilgiOverlay").hidden = true;
-      document.getElementById("avGecmisAySecici").value = kapaliKayit.anahtar;
-      avGecmisDetayGoster(kapaliKayit.anahtar);
-      document.getElementById("avGecmisAySecici").scrollIntoView({behavior:"smooth", block:"center"});
-    };
-  } else {
-    uyari.hidden = true;
-    uyari.innerHTML = "";
-  }
+// Dönem barını çizer: ay/yıl etiketi + sağdaki "›" / "+ Yeni Ay" geçişi.
+// Doğal referans noktasına (avBaslangicNoktasi — "bugün"e göre bir önceki
+// ay) ULAŞMIŞ veya GEÇMİŞSEK sağda artık "+ Yeni Ay" gösterilir — ileri
+// gitmek burada yeni bir dönem AÇMAK demektir; hâlâ gerisindeysek normal
+// "›" ile var olan (henüz kapatılmamış) sonraki aya geçilir.
+function avDonemBariCiz(){
+  var etiket = document.getElementById("avDonemBtnMetin");
+  if(etiket && avSeciliAy && avSeciliYil) etiket.textContent = AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil;
+  var b = avBaslangicNoktasi();
+  var referansaUlasildiMi = (avSeciliYil > b.yil) || (avSeciliYil === b.yil && avSeciliAy >= b.ay);
+  var btnSonraki = document.getElementById("avDonemSonrakiBtn");
+  var btnYeniAy = document.getElementById("avDonemYeniAyBtn");
+  if(btnSonraki) btnSonraki.hidden = referansaUlasildiMi;
+  if(btnYeniAy) btnYeniAy.hidden = !referansaUlasildiMi;
 }
 
 function avDonemeGec(ay, yil){
@@ -201,7 +177,7 @@ function avDonemeGec(ay, yil){
   avOzelListe = taslak.ozelAvansGirisleri || [];
   avIsListe = taslak.isAvansiGirisleri || [];
   avHarcamaListe = taslak.isAvansiHarcamalar || [];
-  avDonemSeciciDoldur();
+  avDonemBariCiz();
   avCiz();
 }
 
@@ -222,14 +198,6 @@ function avCiz(){
   document.getElementById("avToplamOzel").textContent = fmtTL_AV(t.ozelToplam);
   document.getElementById("avToplamIs").textContent = fmtTL_AV(t.isKesilecek);
   document.getElementById("avToplamGenel").textContent = fmtTL_AV(t.toplamKesinti);
-
-  // AY ÖZETİ ROZETİ (24.09.2026) — başlığın yanında kısa özet.
-  var rozet = document.getElementById("avAyOzetRozeti");
-  if(rozet && avSeciliAy){
-    rozet.textContent = AY_ADLARI_AV[avSeciliAy].slice(0,3).toUpperCase()
-      + " · İş " + Math.round(t.isToplam).toLocaleString("tr-TR")
-      + " · Özel " + Math.round(t.ozelToplam).toLocaleString("tr-TR");
-  }
 }
 
 function avGecmisSeciciDoldur(){
@@ -261,7 +229,7 @@ function avGecmisDetayGoster(anahtar){
       detay.innerHTML = "";
       document.getElementById("avGecmisAySecici").value = "";
       avGecmisSeciciDoldur();
-      avDonemSeciciDoldur();
+      avDonemBariCiz();
     });
   };
 }
@@ -301,12 +269,37 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   avIlkGecisiDeneVeYap();
 
-  document.getElementById("avDonemBtn").onclick = function(){
-    document.getElementById("avDonemOverlay").hidden = false;
+  // DÖNEM BARI (27.09.2026) — ‹ › okları + kaydırma (swipe). "+ Yeni Ay"
+  // her zaman İLERİ gitmenin karşılığı, sadece etiketi farklı (bkz.
+  // avDonemBariCiz — hangisinin görüneceğine o karar verir).
+  document.getElementById("avDonemOncekiBtn").onclick = function(){
+    var g = avOncekiAcikAy(avSeciliAy, avSeciliYil);
+    avDonemeGec(g.ay, g.yil);
   };
-  document.getElementById("btnAvDonemVazgec").onclick = function(){
-    document.getElementById("avDonemOverlay").hidden = true;
-  };
+  function avSonrakiAyaGec(){
+    var g = avSonrakiAcikAy(avSeciliAy, avSeciliYil);
+    avDonemeGec(g.ay, g.yil);
+  }
+  document.getElementById("avDonemSonrakiBtn").onclick = avSonrakiAyaGec;
+  document.getElementById("avDonemYeniAyBtn").onclick = avSonrakiAyaGec;
+
+  (function(){
+    var bar = document.getElementById("avDonemBar");
+    var baslangicX = null, baslangicY = null;
+    bar.addEventListener("touchstart", function(ev){
+      var t = ev.touches[0];
+      baslangicX = t.clientX; baslangicY = t.clientY;
+    }, {passive:true});
+    bar.addEventListener("touchend", function(ev){
+      if(baslangicX == null) return;
+      var t = ev.changedTouches[0];
+      var dx = t.clientX - baslangicX, dy = t.clientY - baslangicY;
+      baslangicX = null; baslangicY = null;
+      if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)*1.5) return; // yatay kaydırma değilse yoksay
+      if(dx > 0){ document.getElementById("avDonemOncekiBtn").onclick(); }
+      else { avSonrakiAyaGec(); }
+    }, {passive:true});
+  })();
 
   // TİP DÜĞMESİ (24.09.2026) — ayrı bir "İş/Özel" satırı yerine, giriş
   // satırının başındaki tek düğmeye dokununca küçük bir seçim popup'ı
@@ -328,7 +321,10 @@ document.addEventListener("DOMContentLoaded", function(){
   // kaydediyor, ama Abdullah'a ek güven vermesi için elle basılabilen bir
   // düğme de eklendi; bastığında aynı taslağı tekrar yazar ve büyük/net
   // bir "✓ Kaydedildi" onayı gösterir.
-  document.getElementById("btnAvManuelKaydet").onclick = function(){
+  // HARCAMALAR bölümünün altına da aynı "Bilgileri Kaydet" düğmesi
+  // eklendi (27.09.2026, Abdullah'ın isteğiyle) — ikisi de aynı taslağı
+  // kaydeder, hangisine basılırsa basılsın davranış birebir aynı.
+  function avManuelKaydetTiklandi(){
     var btn = this;
     var eskiMetin = btn.textContent;
     btn.disabled = true;
@@ -339,16 +335,9 @@ document.addEventListener("DOMContentLoaded", function(){
       btn.textContent = eskiMetin;
       avKaydedildiGoster();
     }, 400);
-  };
-
-  // BİLGİ POPUP (24.09.2026) — açıklama + "ay zaten kapatılmış" uyarısı
-  // artık kalıcı yer kaplamıyor, ℹ️ düğmesiyle açılıp kapanıyor.
-  document.getElementById("btnAvBilgi").onclick = function(){
-    document.getElementById("avBilgiOverlay").hidden = false;
-  };
-  document.getElementById("btnAvBilgiKapat").onclick = function(){
-    document.getElementById("avBilgiOverlay").hidden = true;
-  };
+  }
+  document.getElementById("btnAvManuelKaydet").onclick = avManuelKaydetTiklandi;
+  document.getElementById("btnAvManuelKaydet2").onclick = avManuelKaydetTiklandi;
 
   document.getElementById("btnAvEkle").onclick = function(){
     var tarih = document.getElementById("avTarih").value;
@@ -400,7 +389,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   AvansKayitData.degistiginde(function(){
     avGecmisSeciciDoldur();
-    avDonemSeciciDoldur();
+    avDonemBariCiz();
     avIlkGecisiDeneVeYap();
     // KRİTİK HATA DÜZELTMESİ (24.09.2026): Firebase'den her yeni veri
     // paketi geldiğinde (özellikle SAYFA AÇILDIKTAN SONRA gelen İLK

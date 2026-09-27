@@ -16,11 +16,11 @@
 
   if(!firebase.apps.length){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
 
-  // PIN KİLİDİ (WG.210926.1613.587): 1 dakika kullanılmazsa PIN istenir.
+  // PIN KİLİDİ (WG.270926.güncelleme): 5 dakika kullanılmazsa PIN istenir.
   // "Kullanılmama" = ekrana son dokunuş/kaydırma/tuş vuruşundan beri geçen
   // süre (aşağıdaki etkileşim dinleyicileri zaman damgasını taze tutar).
-  var PIN_KILIT_ESIK_MS = 60*1000;
-  var TAM_GIRIS_ESIK_MS = 3*60*60*1000; // 3 saat hareketsizlik -> tam e-posta/şifre girişi
+  var PIN_KILIT_ESIK_MS = 5*60*1000;
+  var TAM_GIRIS_ESIK_MS = 2*60*60*1000; // 2 saat hareketsizlik -> tam e-posta/şifre girişi
 
   // ---- CİHAZ ENGELLEME (bkz. cihaz-data.js / cihazlar.html) ----
   // Bu bölüm KASITLI OLARAK cihaz-data.js'e bağımlı değil — auth.js zaten

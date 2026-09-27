@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
 <link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.140926.1213.555">
 <link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.240926.1559.619">
-<link rel="stylesheet" href="avans-takibi-style.css?v=WG.240926.1452.618">
+<link rel="stylesheet" href="avans-takibi-style.css?v=WG.270926.1940.646">
 </head>
 <body>
 
@@ -47,32 +47,17 @@
 
 <main class="sayfa">
 
-  <div class="ok-baslik-serit" style="background:#8e44ad; display:flex; align-items:center; gap:8px; justify-content:flex-end;">
-    <span class="av-ay-ozet-rozet" id="avAyOzetRozeti"></span>
-    <button type="button" id="btnAvBilgi" class="av-bilgi-btn">ℹ️</button>
-  </div>
-
-  <div class="av-bilgi-overlay" id="avBilgiOverlay" hidden>
-    <div class="av-bilgi-kutu">
-      <div class="av-bilgi-baslik">Bilgi</div>
-      <p class="av-bilgi-metin">Her satır eklediğinde anında kaydedilir. "Kapat ve Kayıt Et" dediğinde Maaş Hesaplama'daki dönem de otomatik kapanır.</p>
-      <p class="av-bilgi-uyari" id="avBilgiUyariMetin" hidden></p>
-      <button type="button" id="btnAvBilgiKapat" class="av-bilgi-kapat-btn">Kapat</button>
-    </div>
-  </div>
-
-  <div class="mh-donem-secici-satir">
-    <label class="mh-etiket" style="margin:0 0 4px;">DÖNEM (istediğin ayı seçebilirsin)</label>
-    <button type="button" id="avDonemBtn" class="av-donem-btn"><span id="avDonemBtnMetin">Yükleniyor…</span><span>▾</span></button>
-    <select id="avDonemSecici" hidden></select>
-  </div>
-
-  <div class="av-donem-overlay" id="avDonemOverlay" hidden>
-    <div class="av-donem-sheet">
-      <div class="av-donem-sheet-baslik">Dönem Seç</div>
-      <div class="av-donem-liste" id="avDonemListe"></div>
-      <button type="button" id="btnAvDonemVazgec" class="av-donem-vazgec-btn">Vazgeç</button>
-    </div>
+  <!-- DÖNEM BARI (27.09.2026, Abdullah'ın isteğiyle yeniden tasarım): eski
+       "DÖNEM (istediğin ayı seçebilirsin)" etiketi + uzun alttan açılan ay
+       listesi kaldırıldı. Artık sadece ‹ › okları (veya kaydırarak) ile
+       aya geçilir; en güncel (doğal) döneme gelindiğinde sağ taraf
+       "+ Yeni Ay" düğmesine dönüşür — ileri gitmek artık yeni bir dönem
+       AÇMAK anlamına gelir, geriye gitmek geçmiş açık aylara göz atmaktır. -->
+  <div class="av-donem-bar" id="avDonemBar">
+    <button type="button" id="avDonemOncekiBtn" class="av-donem-ok-btn" aria-label="Önceki ay">‹</button>
+    <div class="av-donem-bar-orta"><span id="avDonemBtnMetin">Yükleniyor…</span></div>
+    <button type="button" id="avDonemSonrakiBtn" class="av-donem-ok-btn" aria-label="Sonraki ay">›</button>
+    <button type="button" id="avDonemYeniAyBtn" class="av-donem-yeniay-btn" hidden>+ Yeni Ay</button>
   </div>
 
   <section class="ok-kutu" style="position:relative;">
@@ -126,6 +111,8 @@
       <div class="mh-sonuc-satir"><span>KALAN İŞ AVANSI (belgesiz)</span><b id="avIsKesilecek2">0,00 TL</b></div>
       <div class="mh-sonuc-satir"><span>İŞ AVANSI BELGELENEN HARCAMA</span><b id="avBelgelenenToplam">0,00 TL</b></div>
     </div>
+
+    <button type="button" id="btnAvManuelKaydet2" class="av-manuel-kaydet-btn">💾 Bilgileri Kaydet</button>
   </section>
 
   <div class="mh-avans-toplam-kutu">
@@ -151,9 +138,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
-<script src="auth.js?v=WG.220926.2331.604"></script>
+<script src="auth.js?v=WG.270926.1940.646"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="avans-kayit-data.js?v=WG.240926.1452.618"></script>
-<script src="avans-takibi-render.js?v=WG.240926.1452.618"></script>
+<script src="avans-takibi-render.js?v=WG.270926.1940.646"></script>
 </body>
 </html>
