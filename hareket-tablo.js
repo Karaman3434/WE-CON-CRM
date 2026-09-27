@@ -72,10 +72,14 @@ var HareketTablo = (function(){
     // Madde 5 (22.09.2026): HESAPLANACAK grubunun soluk/kirli sarısı
     // (eskiden #fff9e6 şerit / #faeeda satır) yerine daha canlı, doygun
     // bir sarı — hem başlık şeridi hem satır zemini aynı ton.
-    var etiketRenk = opts.zeminSinifi === "hareket-satir--sari" ? "#7a5c00" : "#0e6b34";
-    var etiketBg = opts.zeminSinifi === "hareket-satir--sari" ? "#ffeca3" : "#eafaf0";
+    // ÖZEL RENK (27.09.2026, standart cari kart tasarımıyla renk uyumu):
+    // opts.etiketBgOzel/etiketRenkOzel verilirse sarı/yeşil zemin mantığı
+    // ezilir — SADECE send-render.js'in Gönder ekranı önizlemesi kullanır,
+    // cart-render.js'in HESAPLANACAK/HESAPLANDI şeridi ETKİLENMEZ.
+    var etiketRenk = opts.etiketRenkOzel || (opts.zeminSinifi === "hareket-satir--sari" ? "#7a5c00" : "#0e6b34");
+    var etiketBg = opts.etiketBgOzel || (opts.zeminSinifi === "hareket-satir--sari" ? "#ffeca3" : "#eafaf0");
     var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozetSinifi ? " hareket-grup-etiket-rozet--" + opts.etiketRozetSinifi : (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "")) + "'>" + opts.etiketRozet + "</span>") : "";
-    var html = opts.etiket ? ("<div class='hareket-grup-etiket' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
+    var html = opts.etiket ? ("<div class='hareket-grup-etiket" + (opts.etiketOrtali ? " hareket-grup-etiket--ortali" : "") + "' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
     var basHucreler = basit
       ? "<th style='width:46%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:19%;'>NET</th><th style='width:23%;'>TOPLAM</th>"
       : (primGizli

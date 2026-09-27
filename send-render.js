@@ -34,7 +34,6 @@ function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-var TIP_ETIKET_ROZET = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
 var seciliAdresler = {};
 var gonderBaglam = null;
 var sonKaydedilenBelge = null;
@@ -108,24 +107,25 @@ function kosulSatirlariniSigdir(kok){
   }catch(e){}
 }
 
-// BİRLEŞİK CARİ BİLGİ KUTUSU (27.09.2026, Abdullah'ın isteğiyle): Sepet'in
-// "Formu Görüntüle"si ile Mail/WhatsApp önizlemesi/gönderilen görseli artık
-// Cari Bilgi sayfasındaki (cari-kart-style.css) AYNI renkli-kutu tasarımını
-// kullanıyor — tüm başlıklar TEK bir açık mavi tonda, TEMEL BİLGİLER
-// kutusunun ilk satırında müşteri ticari/cari ismi, Vade/Fatura/Kargo
-// ikonlu üç hücre halinde. Fatura/Teslimat/Yetkili seçim mantığı
-// (adresleriBelirle/seciliAdresler, weiconv2_secili_iletisim) DEĞİŞMEDİ —
-// sadece görünüm bu ortak fonksiyonda üretiliyor.
+// STANDART CARİ KART (27.09.2026, Abdullah'ın isteğiyle — minimal/kurumsal
+// tasarım): Cari Bilgi sayfası, Sepet'in "Formu Görüntüle"si ve Mail/
+// WhatsApp önizlemesi/gönderilen görseli artık BİREBİR AYNI tasarımı
+// kullanıyor — dolgu renkli kutular yok, sadece kalın mavi etiket + ince
+// alt çizgi ayraçlar (bkz. cari-kart-style.css). Mailde/gönderimde tek bir
+// seçili yetkili gösterilir; program içindeki seçim tiki (yeşil ✓) SADECE
+// Cari Kart'ın kendi "İşlem Yap" akışında (birden fazla kayıt arasından
+// seçim yaparken) görünür — bu yüzden burada artık DÜZ satır, tik yok.
+// Fatura/Teslimat/Yetkili seçim mantığı (adresleriBelirle/seciliAdresler,
+// weiconv2_secili_iletisim) DEĞİŞMEDİ — sadece görünüm burada üretiliyor.
 function cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatAdr, seciliYetkili){
   var sehirEk = musteri.sehir ? ", " + htmlEsc(musteri.sehir) : "";
-  var html = "<div class='ck-blok-etiket ck-blok-etiket--temel'><span>🏢 TEMEL BİLGİLER</span></div>"
-    + "<div class='ck-isim-satir'>" + htmlEsc(musteri.ad) + "</div>"
+  var html = "<div class='ck-isim-satir'>" + htmlEsc(musteri.ad) + "</div>"
     + "<div class='ozet-satir-3 ozet-satir-3--birlesik'>"
     +   "<div class='ozet-alan'><span class='ozet-ikon'>📅</span><div class='ozet-metin'><div class='ozet-baslik'>VADE</div><div class='ozet-deger'>" + htmlEsc(vade||"-") + "</div></div></div>"
-    +   "<div class='ozet-alan'><span class='ozet-ikon'>📄</span><div class='ozet-metin'><div class='ozet-baslik'>FATURA</div><div class='ozet-deger'>" + htmlEsc(faturaTuru||"-") + "</div></div></div>"
+    +   "<div class='ozet-alan'><span class='ozet-ikon'>🧾</span><div class='ozet-metin'><div class='ozet-baslik'>FATURA</div><div class='ozet-deger'>" + htmlEsc(faturaTuru||"-") + "</div></div></div>"
     +   "<div class='ozet-alan'><span class='ozet-ikon'>🚚</span><div class='ozet-metin'><div class='ozet-baslik'>KARGO</div><div class='ozet-deger'>" + htmlEsc(kargo||"-") + "</div></div></div>"
     + "</div>"
-    + "<div class='ck-blok-etiket ck-blok-etiket--fatura'><span>🧾 FATURA ADRESİ</span></div>"
+    + "<div class='ck-blok-etiket ck-blok-etiket--fatura'><span>📄 FATURA ADRESİ</span></div>"
     + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart'>"
     +   (faturaAdr ? htmlEsc(faturaAdr) + sehirEk : "<span class='belge-adres-bos'>Girilmemiş</span>")
     + "</div></div></div>";
@@ -134,13 +134,23 @@ function cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatA
       + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart'>" + htmlEsc(teslimatAdr) + sehirEk + "</div></div></div>";
   }
   if(seciliYetkili){
-    html += "<div class='ck-blok-etiket ck-blok-etiket--yetkili'><span>👤 YETKİLİ BİLGİSİ</span></div>"
-      + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart ck-kart--secilebilir ck-kart--secili'>"
-      +   "<span class='ck-tik ck-tik--secili'>✓</span>"
-      +   "<div class='ck-kart-govde'>" + HareketTablo.yetkiliSatiriHtml(seciliYetkili.isim, seciliYetkili.telefon, seciliYetkili.eposta) + "</div>"
+    html += "<div class='ck-blok-etiket ck-blok-etiket--yetkili'><span>👤 YETKİLİ</span></div>"
+      + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart'>"
+      +   HareketTablo.yetkiliSatiriHtml(seciliYetkili.isim, seciliYetkili.telefon, seciliYetkili.eposta)
       + "</div></div></div>";
   }
   return html;
+}
+
+// Belge tipi + tarih/saat metni (27.09.2026) — hem Gönder ekranının canlı
+// önizlemesi (tamOnizlemeHtmlOlustur) hem de gönderilen gerçek görsel
+// (belgeGorselHtmlOlustur) AYNI biçimi kullanır. orijinalTarih verilirse
+// (Geçmişten tekrar paylaşım) o kullanılır — verilmezse "şu an" hesaplanır.
+function tarihSaatStr(orijinalTarih){
+  if(orijinalTarih) return orijinalTarih;
+  var simdi = new Date();
+  var aylarKisa = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+  return simdi.getDate() + " " + aylarKisa[simdi.getMonth()] + " " + simdi.getFullYear() + " " + ("0"+simdi.getHours()).slice(-2) + ":" + ("0"+simdi.getMinutes()).slice(-2);
 }
 
 function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
@@ -183,11 +193,12 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
   }
 
   html += HareketTablo.grupHtml({
-    etiket: (TIP_ETIKET_ROZET[tip]||""),
-    etiketRozet: "WEICON",
+    etiket: (TIP_ETIKET_BELGE_G[tip]||"SİPARİŞ") + " · " + tarihSaatStr(),
+    etiketBgOzel: "#eaf2fc",
+    etiketRenkOzel: "#0c447c",
+    etiketOrtali: true,
     urunler: sepet,
     hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
-    zeminSinifi: "hareket-satir--yesil",
     genelToplam: tToplamEuro,
     kanal: kanal,
     primGizli: true
@@ -280,14 +291,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
   // önce oluşturuldu). Ama Geçmişten "Gönder" ile tekrar paylaşılıyorsa,
   // orijinalTarih (kaydın kendi tarihi) gönderilir — görsel her seferinde
   // "şu an" göstermez, kaydın GERÇEK tarih/saatini gösterir.
-  var tarihStr;
-  if(orijinalTarih){
-    tarihStr = orijinalTarih;
-  } else {
-    var simdi = new Date();
-    var aylarKisa = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
-    tarihStr = simdi.getDate() + " " + aylarKisa[simdi.getMonth()] + " " + simdi.getFullYear() + " " + ("0"+simdi.getHours()).slice(-2) + ":" + ("0"+simdi.getMinutes()).slice(-2);
-  }
+  var tarihStr = tarihSaatStr(orijinalTarih);
 
   var vade = vadeGosterimMetni(musteri.vade);
   var faturaTuru = musteri.fatura || "";
@@ -331,7 +335,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     + cariGovdeHtml
     + "<div class='belge-kart-ayrac'></div>"
     + "<div class='belge-kart' style='margin:0;'>"
-    + "<div class='belge-belge-baslik-serit'>" + tabloBasligi + "</div>"
+    + "<div class='belge-belge-baslik-serit belge-belge-baslik-serit--mavi'>" + tabloBasligi + "</div>"
     + "<div class='data-table-container'><table class='belge-urun-tablo belge-urun-tablo--giden'>"
     + "<thead><tr>" + (basit
         ? "<th style='width:38%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>AD</th><th style='width:24%;'>NET</th><th style='width:24%;'>TOPLAM</th>"

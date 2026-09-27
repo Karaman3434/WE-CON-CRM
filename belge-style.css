@@ -204,6 +204,16 @@
   gap: 8px;
 }
 .belge-belge-baslik-serit-metin { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Gönder ekranının kendi tablo başlığı (27.09.2026, standart cari kart
+   tasarımıyla renk uyumu) — SADECE send-render.js'in belgeGorselHtmlOlustur
+   çıktısında kullanılır; belge-render.js'in (Belge Önizleme) kendi WEICON
+   rozetli yeşil şeridi DEĞİŞMEDİ. */
+.belge-belge-baslik-serit--mavi {
+  background: #0c447c;
+  color: #eaf2fc;
+  border-bottom: none;
+  justify-content: center;
+}
 
 
 .data-table-container { overflow-x: auto; width: 100%; }
@@ -349,6 +359,9 @@
   color: #ffffff;
   font-weight: 900;
 }
+/* Gönder ekranının tablo etiketi artık ortalı + belge tipi/tarih birlikte
+   (27.09.2026) — rozet yok, bkz. send-render.js tamOnizlemeHtmlOlustur. */
+.hareket-grup-etiket--ortali { justify-content: center; }
 .hareket-satir--sari { background: #ffeca3; }
 .hareket-satir--yesil { background: #eafaf0; }
 
@@ -588,13 +601,13 @@
 /* Gönder ekranı yeniden düzeni (WG.210926.1512.583) — sadece send-render.js kullanır */
 .belge-form-baslik {
   text-align: center;
-  padding: 7px 8px;
-  font-size: 14px;
+  padding: 8px 8px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1.5px;
-  color: #2563a8;
-  background: #f4f8fc;
-  border-bottom: 1px solid #e2ecf6;
+  letter-spacing: 1px;
+  color: #0c447c;
+  background: #eaf2fc;
+  border-bottom: 1px solid #cfe0f5;
 }
 .belge-kosul-satir {
   white-space: nowrap;

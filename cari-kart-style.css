@@ -34,66 +34,72 @@
 .ozet-satir-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
+/* MİNİMAL/KURUMSAL TASARIM (27.09.2026, Abdullah'ın isteğiyle): dolgu renkli
+   kutular kaldırıldı — artık sadece ince bir alt çizgiyle ayrılan, kalın
+   renkli etiket + normal ağırlıklı değer düzeni. Bu tasarım hem Cari Kart
+   ekranında hem de Mail/WhatsApp gönderiminde (send-render.js'in
+   cariKutulariHtml'i) BİREBİR AYNI — artık standart cari kart görünümü. */
 .ozet-alan {
-  background: #f4f7fb;
-  border: 1px solid #e2e6ec;
-  border-radius: 10px;
-  padding: 8px 8px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   text-align: left;
-  gap: 8px;
+  gap: 6px;
 }
-.ozet-ikon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+.ozet-ikon { font-size: 14px; line-height: 1.3; flex-shrink: 0; }
 .ozet-metin { min-width: 0; width: 100%; }
 .ozet-baslik {
-  font-size: 9px;
-  font-weight: 900;
-  color: #44494f;
-  letter-spacing: .4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0c447c;
+  letter-spacing: .2px;
 }
 .ozet-deger {
-  font-size: 12px;
-  font-weight: 800;
-  color: #1a2a3a;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #1a2733;
   margin-top: 2px;
   overflow-wrap: break-word;
 }
 
-/* ---------- Yeni Cari Kart blok tasarımı (v3 — her zaman düzenlenebilir) ---------- */
+/* ---------- Cari Kart blok tasarımı (v4 — minimal/kurumsal, 27.09.2026) ---------- */
 .ck-blok-etiket {
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .3px;
-  padding: 8px 10px;
-  border-radius: 8px 8px 0 0;
-  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  padding: 0;
+  margin-top: 14px;
+  margin-bottom: 6px;
 }
-/* TEK RENK KURALI (27.09.2026, Abdullah'ın isteğiyle): tüm bilgi kutusu
-   başlıkları (Temel Bilgiler/Fatura/Teslimat/Yetkili/Not) artık ayrı ayrı
-   turuncu/yeşil/mavi/mor değil, HEPSİ tek bir açık mavi ton — paylaşılan
-   mavi rengin %90 açık tonu (Seçenek A). */
+/* TEK RENK KURALI: tüm bilgi bloğu etiketleri (Temel Bilgiler/Fatura/
+   Teslimat/Yetkili/Not) artık dolgu kutusu değil, düz zeminde kalın mavi
+   yazı — ince bir alt çizgi (bkz. .ck-blok / .ozet-satir-3--birlesik)
+   bölümleri birbirinden ayırıyor. */
 .ck-blok-etiket--fatura,
 .ck-blok-etiket--yetkili,
 .ck-blok-etiket--teslimat,
 .ck-blok-etiket--not,
-.ck-blok-etiket--temel { background: #e6f2ff; color: #0c447c; border: 1.5px solid #95bdf0; }
-.ck-blok-etiket--temel { margin-bottom: 0; }
-/* Temel Bilgiler kutusunun ilk satırı — müşteri ticari/cari ismi
+.ck-blok-etiket--temel { background: none; border: none; color: #0c447c; }
+.ck-blok-etiket--temel { margin-top: 0; margin-bottom: 8px; }
+/* Temel Bilgiler bloğunun ilk satırı — müşteri ticari/cari ismi
    (27.09.2026) — sadece isim ayrı bir şerit olarak görünmeyen sayfalarda
    (Sepet önizleme, Mail/WhatsApp gönderim) kullanılır. */
 .ck-isim-satir {
-  background: #ffffff;
-  border: 1px solid #e2e6ec;
-  border-top: none;
-  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #e1e6ea;
+  padding: 0 0 10px;
+  margin-bottom: 12px;
   font-size: 14px;
-  font-weight: 900;
-  color: #003a70;
+  font-weight: 700;
+  color: #1a2733;
 }
 
 .ck-tiklanabilir-alan { cursor: pointer; }
@@ -119,19 +125,19 @@
 .bolum-eylem-btn--sil { background: #fdeaea; color: #c0392b; border: 1.5px solid #c0392b;}
 .bolum-eylem-btn--kapat { background: #fdeaea; color: #c0392b; border: 1.5px solid #c0392b;}
 
-/* HATA/TASARIM DÜZELTME (WG.090926.196): dış kutunun 14px iç boşluğu ve
-   içindeki .ck-kart'ın kendi kenarlığı kaldırıldı — etiket satırı ile
-   içerik artık tek, kenardan kenara uzanan birleşik kutu gibi görünüyor. */
+/* MİNİMAL/KURUMSAL TASARIM (27.09.2026): kutu/kenarlık kaldırıldı — her
+   blok artık düz zeminde, altında ince bir çizgiyle bir sonraki bloktan
+   ayrılıyor (tam genişlik ayraç). */
 .ck-blok {
-  background: #ffffff;
-  border: 1px solid #e2e6ec;
-  border-top: none;
-  border-radius: 0 0 10px 10px;
-  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0 0 10px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid #e1e6ea;
 }
-.ozet-satir-3--birlesik { border-radius: 0 0 10px 10px; overflow: hidden; margin-top: 0; }
+.ozet-satir-3--birlesik { border-radius: 0; overflow: visible; margin-top: 0; padding-bottom: 10px; border-bottom: 1px solid #e1e6ea; }
 .ozet-satir-3--birlesik .ozet-alan { border-radius: 0; border-top: none; }
-.ozet-satir-3--birlesik .ozet-alan:first-child { border-left: none; }
 
 .ck-mini-input {
   width: 100%;
@@ -319,7 +325,9 @@
 
 .ck-kart-liste { display: flex; flex-direction: column; }
 .ck-kart {
-  padding: 8px 12px;
+  padding: 4px 0;
+  font-size: 12.5px;
+  color: #1a2733;
 }
 .ck-kart + .ck-kart { border-top: 1px solid #eef1f5; }
 .ck-kart--secilebilir + .ck-kart--secilebilir { border-top: none; }
