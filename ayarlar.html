@@ -60,6 +60,20 @@
     <p class="kur-son-guncelleme">Müşteri ismi/adres/yetkili ismi geçmişte TAMAMEN BÜYÜK ya da karışık girilmiş olabilir (örn. "DALYAN MAK. HIRD"). Bu araç HEPSİNİ tek standarda çevirir: ticari isim, açık adres, fatura/teslimat adresi ve yetkili ismi.</p>
     <button class="kur-simdi-dene-btn" id="btnYaziminiDuzelt">🔤 İsim/Adres Yazımını Düzelt (İlk Harf Büyük)</button>
     <p class="kur-son-guncelleme" id="yazimDuzeltSonuc"></p>
+
+    <!-- AVANS DÖNEMİ TAŞI (28.09.2026) — Avans Takibi'ne yanlış aya
+         (eski senkron hatasından kalma) kaydedilmiş bir taslak/kapalı
+         kaydı bulup DOĞRU aya taşımak için. -->
+    <p class="kur-son-guncelleme">Avans Takibi'nde bir dönemin verisi (taslak veya kapalı kayıt) yanlış ay/yıla kaydedilmiş olabilir — bu araç seçtiğin kaydı, seçtiğin hedef aya AÇIK (düzenlenebilir) taslak olarak taşır ve kaynaktan siler.</p>
+    <select id="bakimAvansKaynakSecici" style="width:100%; padding:10px; border-radius:8px; border:1.5px solid #ccc; margin-bottom:8px;">
+      <option value="">Kaynak dönem seç…</option>
+    </select>
+    <div style="display:flex; gap:8px; margin-bottom:8px;">
+      <input type="number" id="bakimAvansHedefAy" placeholder="Hedef Ay (1-12)" min="1" max="12" style="flex:1; padding:10px; border-radius:8px; border:1.5px solid #ccc;">
+      <input type="number" id="bakimAvansHedefYil" placeholder="Hedef Yıl" style="flex:1; padding:10px; border-radius:8px; border:1.5px solid #ccc;">
+    </div>
+    <button class="kur-simdi-dene-btn" id="btnBakimAvansTasi">📦 Seçili Kaydı Hedef Döneme Taşı</button>
+    <p class="kur-son-guncelleme" id="bakimAvansSonuc"></p>
   </section>
 
   <p class="surum-bilgisi" id="surumBilgisi"></p>
@@ -74,6 +88,8 @@
 <script src="ayarlar-sync.js?v=WG.130926.2010.553"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="customer-data.js?v=WG.240926.0752.611"></script>
-<script src="ayarlar-render.js?v=WG.270926.2350.654"></script>
+<script src="maas-kayit-data.js?v=WG.270926.2340.653"></script>
+<script src="avans-kayit-data.js?v=WG.270926.2350.654"></script>
+<script src="ayarlar-render.js?v=WG.280926.0020.655"></script>
 </body>
 </html>

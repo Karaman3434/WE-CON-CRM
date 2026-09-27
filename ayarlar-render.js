@@ -1,6 +1,8 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.270926.2350.654";
+var APP_VERSION = "WG.280926.0020.655";
+
+var AY_ADLARI_AYARLAR = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 
 function hataGoster(mesaj){
   console.error(mesaj);
@@ -156,4 +158,111 @@ document.addEventListener("DOMContentLoaded", function(){
   if(typeof AyarlarSync !== "undefined") AyarlarSync.degistiginde(ayarlariDoldur);
   var surumEl = document.getElementById("surumBilgisi");
   if(surumEl) surumEl.textContent = "Sürüm " + APP_VERSION;
+
+  // AVANS DÖNEMİ TAŞI (28.09.2026) — bkz. avans-takibi.html/js. Yanlış aya
+  // kaydedilmiş bir taslak/kapalı avans kaydını, seçilen hedef aya AÇIK
+  // taslak olarak taşır ve kaynaktan siler (hem taslak hem kapalı kaydı).
+  function bakimAvansDoluMu(t){
+    if(!t) return false;
+    return (t.ozelAvansGirisleri||[]).length>0 || (t.isAvansiGirisleri||[]).length>0 || (t.isAvansiHarcamalar||[]).length>0;
+  }
+  function bakimAvansSeciciDoldur(){
+    var sel = document.getElementById("bakimAvansKaynakSecici");
+    if(!sel || typeof AvansKayitData === "undefined") return;
+    var girdiler = {}; // anahtar -> {ay,yil,taslakVarMi,kapaliVarMi}
+    AvansKayitData.tumTaslaklar().forEach(function(t){
+      if(!bakimAvansDoluMu(t)) return;
+      girdiler[t.anahtar] = girdiler[t.anahtar] || {ay:t.ay, yil:t.yil};
+      girdiler[t.anahtar].taslakVarMi = true;
+    });
+    AvansKayitData.tumKayitlar().forEach(function(k){
+      girdiler[k.anahtar] = girdiler[k.anahtar] || {ay:k.ay, yil:k.yil};
+      girdiler[k.anahtar].kapaliVarMi = true;
+    });
+    var anahtarlar = Object.keys(girdiler).sort().reverse();
+    var seciliDeger = sel.value;
+    sel.innerHTML = "<option value=''>Kaynak dönem seç…</option>" + anahtarlar.map(function(a){
+      var g = girdiler[a];
+      var etiket = AY_ADLARI_AYARLAR[g.ay] + " " + g.yil + " ("
+        + [g.taslakVarMi ? "taslak" : null, g.kapaliVarMi ? "kapalı kayıt" : null].filter(Boolean).join(" + ") + ")";
+      return "<option value='" + a + "'>" + etiket + "</option>";
+    }).join("");
+    sel.value = seciliDeger;
+  }
+  try{
+    if(typeof AvansKayitData !== "undefined") AvansKayitData.degistiginde(bakimAvansSeciciDoldur);
+    bakimAvansSeciciDoldur();
+  }catch(e){}
+  try{
+    if(typeof MaasKayitData !== "undefined"){
+      MaasKayitData.degistiginde(function(){
+        if(!MaasKayitData.kayitlarYuklendiMi()) return;
+        var hedefAyEl = document.getElementById("bakimAvansHedefAy");
+        var hedefYilEl = document.getElementById("bakimAvansHedefYil");
+        if(hedefAyEl && !hedefAyEl.value && hedefYilEl && !hedefYilEl.value){
+          var acik = MaasKayitData.acikDonem();
+          hedefAyEl.value = acik.ay;
+          hedefYilEl.value = acik.yil;
+        }
+      });
+    }
+  }catch(e){}
+
+  document.getElementById("btnBakimAvansTasi").onclick = function(){
+    var sonucEl = document.getElementById("bakimAvansSonuc");
+    var kaynakAnahtar = document.getElementById("bakimAvansKaynakSecici").value;
+    var hedefAy = parseInt(document.getElementById("bakimAvansHedefAy").value, 10);
+    var hedefYil = parseInt(document.getElementById("bakimAvansHedefYil").value, 10);
+    if(!kaynakAnahtar){ alert("Önce bir kaynak dönem seç."); return; }
+    if(!hedefAy || hedefAy<1 || hedefAy>12 || !hedefYil){ alert("Geçerli bir hedef Ay (1-12) ve Yıl gir."); return; }
+    if(typeof AvansKayitData === "undefined"){ hataGoster("Avans veri modülü yüklenemedi."); return; }
+
+    var p = kaynakAnahtar.split("-");
+    var kaynakYil = parseInt(p[0], 10), kaynakAy = parseInt(p[1], 10);
+    var kapali = AvansKayitData.kapaliKaydiBul(kaynakAy, kaynakYil);
+    var taslak = AvansKayitData.taslakOku(kaynakAy, kaynakYil);
+    // Kapalı kayıt varsa onun satırları esas alınır (resmi son kayıt);
+    // yoksa açık taslağın satırları taşınır.
+    var kaynakVeri = kapali || taslak;
+    var tasinacak = {
+      ozelAvansGirisleri: kaynakVeri.ozelAvansGirisleri || [],
+      isAvansiGirisleri: kaynakVeri.isAvansiGirisleri || [],
+      isAvansiHarcamalar: kaynakVeri.isAvansiHarcamalar || []
+    };
+
+    if(!confirm(
+      AY_ADLARI_AYARLAR[kaynakAy] + " " + kaynakYil + " döneminin avans kaydını "
+      + AY_ADLARI_AYARLAR[hedefAy] + " " + hedefYil + " döneminin AÇIK taslağına taşımak istediğine emin misin?\n\n"
+      + "Kaynaktaki taslak/kapalı kayıt SİLİNECEK, hedefteki mevcut taslak (varsa) bu satırlarla DEĞİŞTİRİLECEK.\n\nBu işlem geri alınamaz."
+    )) return;
+
+    var btn = this;
+    btn.disabled = true; btn.textContent = "⏳ Taşınıyor...";
+    sonucEl.textContent = "";
+
+    AvansKayitData.taslakGuncelle(hedefAy, hedefYil, tasinacak, function(basarili, err){
+      if(!basarili){
+        btn.disabled = false; btn.textContent = "📦 Seçili Kaydı Hedef Döneme Taşı";
+        sonucEl.textContent = "❌ Hedefe yazılamadı: " + (err && err.message ? err.message : err);
+        hataGoster("Avans taşıma başarısız (hedef yazma): " + (err && err.message ? err.message : err));
+        return;
+      }
+      function kaynagiTemizle(cb){
+        // Kaynak taslağı boşalt (silinmiş sayılsın diye).
+        AvansKayitData.taslakGuncelle(kaynakAy, kaynakYil, {ozelAvansGirisleri:[], isAvansiGirisleri:[], isAvansiHarcamalar:[]}, function(basarili2){
+          if(!kapali){ cb(basarili2); return; }
+          AvansKayitData.kaydiSil(kaynakAnahtar, function(basarili3){ cb(basarili2 && basarili3); });
+        });
+      }
+      kaynagiTemizle(function(basariliTemizlik){
+        btn.disabled = false; btn.textContent = "📦 Seçili Kaydı Hedef Döneme Taşı";
+        if(!basariliTemizlik){
+          sonucEl.textContent = "⚠️ Hedefe yazıldı ama kaynak tam temizlenemedi — Avans Takibi'nde kaynak dönemi kontrol et.";
+          return;
+        }
+        sonucEl.textContent = "✓ Taşındı — " + AY_ADLARI_AYARLAR[kaynakAy] + " " + kaynakYil + " → " + AY_ADLARI_AYARLAR[hedefAy] + " " + hedefYil + ". Maaş Hesaplama ve Avans Takibi'nde kontrol edebilirsin.";
+        document.getElementById("bakimAvansKaynakSecici").value = "";
+      });
+    });
+  };
 });
