@@ -144,14 +144,28 @@ function avBaslangicNoktasi(){
 // Geçmişi'nde), tıpkı eskiden listeden de çıkarıldıkları gibi.
 function avSonrakiAy(ay, yil){ ay++; if(ay>12){ ay=1; yil++; } return {ay:ay, yil:yil}; }
 function avOncekiAy(ay, yil){ ay--; if(ay<1){ ay=12; yil--; } return {ay:ay, yil:yil}; }
+
+// TEK KAYNAK (27.09.2026 senkron düzeltmesi) — "bu ay kapalı mı?" sorusunun
+// cevabı artık AvansKayitData'nın KENDİ (bağımsız, şaşabilen) zincirinden
+// değil, doğrudan MaasKayitData'dan gelir: bir ay ancak Maaş Hesaplama
+// sayfasında GEÇERLİ AYIN HESABI KAPANDI ile kapatıldığında "kapalı"
+// sayılır — Avans Takibi ve Maaş Hesaplama böylece HER ZAMAN aynı ayı
+// "açık dönem" kabul eder.
+function avMaasKapaliMi(ay, yil){
+  var kayitlar = MaasKayitData.tumKayitlar();
+  for(var i=0; i<kayitlar.length; i++){
+    if(kayitlar[i].ay === ay && kayitlar[i].yil === yil) return true;
+  }
+  return false;
+}
 function avOncekiAcikAy(ay, yil){
   var g = avOncekiAy(ay, yil), guvenlik = 0;
-  while(AvansKayitData.kapaliKaydiBul(g.ay, g.yil) && guvenlik < 240){ g = avOncekiAy(g.ay, g.yil); guvenlik++; }
+  while(avMaasKapaliMi(g.ay, g.yil) && guvenlik < 240){ g = avOncekiAy(g.ay, g.yil); guvenlik++; }
   return g;
 }
 function avSonrakiAcikAy(ay, yil){
   var g = avSonrakiAy(ay, yil), guvenlik = 0;
-  while(AvansKayitData.kapaliKaydiBul(g.ay, g.yil) && guvenlik < 240){ g = avSonrakiAy(g.ay, g.yil); guvenlik++; }
+  while(avMaasKapaliMi(g.ay, g.yil) && guvenlik < 240){ g = avSonrakiAy(g.ay, g.yil); guvenlik++; }
   return g;
 }
 
@@ -258,9 +272,11 @@ document.addEventListener("DOMContentLoaded", function(){
   var avIlkGecisYapildiMi = false;
   function avIlkGecisiDeneVeYap(){
     if(avIlkGecisYapildiMi) return;
-    if(!AvansKayitData.kayitlarYuklendiMi() || !AvansKayitData.taslakYuklendiMi()) return;
+    // TEK KAYNAK (27.09.2026): açık dönem artık MaasKayitData'dan okunur —
+    // Maaş Hesaplama hangi ayı açık görüyorsa Avans Takibi de aynısını görür.
+    if(!MaasKayitData.kayitlarYuklendiMi() || !AvansKayitData.taslakYuklendiMi()) return;
     avIlkGecisYapildiMi = true;
-    var acik = AvansKayitData.acikDonem();
+    var acik = MaasKayitData.acikDonem();
     avDonemeGec(acik.ay, acik.yil);
     avGecmisSeciciDoldur();
     avYuklemeKilidiniAc();
@@ -383,4 +399,15 @@ document.addEventListener("DOMContentLoaded", function(){
     }
     if(AvansKayitData.taslakYuklendiMi()) avYuklemeKilidiniAc();
   });
+
+  // MaasKayitData artık açık/kapalı dönem belirlemede TEK KAYNAK — o
+  // yüklenince (veya bir dönem Maaş Hesaplama'dan kapatılınca) burada da
+  // ilk geçiş denenir ve dönem barı (‹ › oklarının görünürlüğü) yeniden
+  // çizilir, böylece iki sayfa hep aynı ayı "açık" görür.
+  try{
+    MaasKayitData.degistiginde(function(){
+      avIlkGecisiDeneVeYap();
+      if(avSeciliAy && avSeciliYil) avDonemBariCiz();
+    });
+  }catch(e){}
 });

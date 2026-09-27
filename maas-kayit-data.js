@@ -12,12 +12,14 @@ var MaasKayitData = (function(){
 
   var kayitlar = {}; // anahtar: "YYYY-AA" -> kayıt
   var dinleyiciler = [];
+  var kayitlarYuklendi = false;
 
   function baslat(){
     try{
       if(!firebase.apps.length){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
       firebase.database().ref("maasKayitlari").on("value", function(snap){
         kayitlar = snap.val() || {};
+        kayitlarYuklendi = true;
         dinleyiciler.forEach(function(fn){
           try{ fn(); }catch(e){ console.error("Maaş kayıt dinleyici hatası:", e); }
         });
@@ -30,6 +32,8 @@ var MaasKayitData = (function(){
   function degistiginde(fn){
     if(typeof fn === "function" && dinleyiciler.indexOf(fn)===-1) dinleyiciler.push(fn);
   }
+
+  function kayitlarYuklendiMi(){ return kayitlarYuklendi; }
 
   // Kayıtları YENİDEN ESKİYE sıralı döndürür (anahtar "YYYY-AA" formatında
   // olduğu için string sort = kronolojik sort).
@@ -89,6 +93,7 @@ var MaasKayitData = (function(){
 
   return {
     degistiginde: degistiginde,
+    kayitlarYuklendiMi: kayitlarYuklendiMi,
     tumKayitlar: tumKayitlar,
     acikDonem: acikDonem,
     sonReferansKomisyonToplami: sonReferansKomisyonToplami,

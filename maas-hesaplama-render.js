@@ -48,24 +48,22 @@ function mhDuzenlemeGorunurlugunuAyarla(gorunurMu){
   document.getElementById("mhKapaliSerit").hidden = gorunurMu;
 }
 
-// Avans Takibi'nden bu ay/yıl için toplamları okur: önce KAPALI kayda bakar
-// (kesin), yoksa AÇIK TASLAĞA (henüz kapatılmadı notuyla).
-function mhAvansToplamlariniOku(ay, yil){
-  var kapali = null;
-  try{ kapali = AvansKayitData.kapaliKaydiBul(ay, yil); }catch(e){}
-  var veri, taslakMi = false;
-  if(kapali){
-    veri = kapali;
-  } else {
-    taslakMi = true;
-    try{ veri = AvansKayitData.taslakOku(ay, yil); }catch(e){ veri = {ozelAvansGirisleri:[], isAvansiGirisleri:[], isAvansiHarcamalar:[]}; }
-  }
-  var ozelToplam = (veri.ozelAvansGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
-  var isToplam = (veri.isAvansiGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
-  var belgelenenToplam = (veri.isAvansiHarcamalar||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+// CANLI (açık) dönem için avans toplamlarını HER ZAMAN Avans Takibi'nin
+// açık taslağından okur (27.09.2026 senkron düzeltmesi) — eski kod önce
+// AvansKayitData.kapaliKaydiBul'a bakıyordu; Avans Takibi kendi bağımsız
+// zincirinde o ay için eski/kalıntı bir "kapalı" kayıt varsa (örn. bu ay
+// Maaş Hesaplama'da hâlâ açıkken), burada yanlışlıkla "kapatıldı, 0,00 TL"
+// gösteriliyor ve iki sayfa birbirini tutmuyordu. Açık dönem için TEK
+// doğru kaynak her zaman canlı taslaktır.
+function mhAvansCanliOku(ay, yil){
+  var taslak;
+  try{ taslak = AvansKayitData.taslakOku(ay, yil); }catch(e){ taslak = {ozelAvansGirisleri:[], isAvansiGirisleri:[], isAvansiHarcamalar:[]}; }
+  var ozelToplam = (taslak.ozelAvansGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+  var isToplam = (taslak.isAvansiGirisleri||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
+  var belgelenenToplam = (taslak.isAvansiHarcamalar||[]).reduce(function(s,x){ return s+(x.tutar||0); }, 0);
   var isKesilecek = Math.max(0, isToplam - belgelenenToplam);
   var toplamKesinti = ozelToplam + isKesilecek;
-  return {ozelToplam:ozelToplam, isKesilecek:isKesilecek, toplamKesinti:toplamKesinti, taslakMi:taslakMi, kapaliVarMi: !!kapali};
+  return {ozelToplam:ozelToplam, isKesilecek:isKesilecek, toplamKesinti:toplamKesinti};
 }
 
 function mhKapaliKaydiGoster(k){
@@ -79,9 +77,11 @@ function mhKapaliKaydiGoster(k){
   document.getElementById("mhOzetNetPrim").textContent = fmtTL_MH(k.netPrim);
   document.getElementById("mhKartNetToplam").textContent = fmtTL_MH(k.netToplam);
   document.getElementById("mhKartHesabaYatacak").textContent = fmtTL_MH(k.hesabaYatacak);
-  var av = mhAvansToplamlariniOku(k.ay, k.yil);
-  document.getElementById("mhOzetAvansToplam").textContent = fmtTL_MH(av.toplamKesinti);
-  document.getElementById("mhOzetAvansDurum").textContent = av.kapaliVarMi ? "✓ Kapatıldı." : "Kayıt yok.";
+  // Kapanmış dönem: rakam artık bu kayıtta SAKLI (o an kapatılırken
+  // hesaplanmış toplamKesinti) — Avans Takibi'nin bugünkü/güncel taslağına
+  // hiç bakılmaz, çünkü o taslak zaten kapatılırken sıfırlandı/silindi.
+  document.getElementById("mhOzetAvansToplam").textContent = fmtTL_MH(k.toplamKesinti);
+  document.getElementById("mhOzetAvansDurum").textContent = "✓ Kapatıldı.";
   document.getElementById("btnMhKapaliKaydiSil").setAttribute("data-anahtar", k.anahtar);
 }
 
@@ -114,11 +114,13 @@ function mhHesaplaVeCiz(){
   document.getElementById("mhOzetNetPrim").textContent = fmtTL_MH(sonuc.netPrim);
   document.getElementById("mhKartNetToplam").textContent = fmtTL_MH(sonuc.netToplam);
 
-  var av = mhAvansToplamlariniOku(acik.ay, acik.yil);
+  // Açık dönem her zaman CANLI taslaktan okunur — bkz. mhAvansCanliOku
+  // yorumu. Bu değer "kapatıldı" diyemez, çünkü dönem henüz açık.
+  var av = mhAvansCanliOku(acik.ay, acik.yil);
   document.getElementById("mhOzetAvansToplam").textContent = fmtTL_MH(av.toplamKesinti);
-  document.getElementById("mhOzetAvansDurum").textContent = av.kapaliVarMi
-    ? "✓ Avans Takibi bu dönem için kapatıldı."
-    : (av.taslakMi && (av.ozelToplam||av.isKesilecek) ? "⏳ Taslak var, henüz kapatılmadı." : "Kayıt yok.");
+  document.getElementById("mhOzetAvansDurum").textContent = (av.ozelToplam || av.isKesilecek)
+    ? "⏳ Taslak var, henüz kapatılmadı."
+    : "Kayıt yok.";
 
   var hesabaYatacak = sonuc.netToplam - av.toplamKesinti;
   document.getElementById("mhKartHesabaYatacak").textContent = fmtTL_MH(hesabaYatacak);
@@ -170,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function(){
     if(mhGezinmeOfset !== 0) return; // sadece açık/canlı dönem kapatılabilir
     if(!mhGuncelHesap) return;
     var h = mhGuncelHesap;
-    var avansUyari = h.avans.kapaliVarMi ? "" : "\n\nNot: Avans Takibi bu dönem için henüz kapatılmadı — onu da otomatik kapatacağım.";
+    var avansUyari = "\n\nNot: Avans Takibi bu dönem için de otomatik kapatılacak.";
     if(!confirm(AY_ADLARI_MH[h.acik.ay] + " " + h.acik.yil + " dönemini kapatmak istediğine emin misin?\n\nHesaba Yatacak: " + fmtTL_MH(h.hesabaYatacak) + avansUyari)) return;
     if(!confirm("Kesin olarak kapatılsın mı? Bu işlem geri alınamaz.\n\nKayıt edildikten sonra sistem otomatik bir sonraki aya geçer.")) return;
 
@@ -202,27 +204,26 @@ document.addEventListener("DOMContentLoaded", function(){
       });
     }
 
-    // Avans Takibi aynı ay için hâlâ açıksa (kapalı kaydı yoksa), önce onu
-    // senkron kapatıp SONRA Maaş kaydını yazıyoruz.
-    if(!h.avans.kapaliVarMi){
-      var taslak = AvansKayitData.taslakOku(h.acik.ay, h.acik.yil);
-      var avansKayitObj = {
-        ay: h.acik.ay, yil: h.acik.yil,
-        ozelAvansGirisleri: taslak.ozelAvansGirisleri||[],
-        isAvansiGirisleri: taslak.isAvansiGirisleri||[],
-        isAvansiHarcamalar: taslak.isAvansiHarcamalar||[],
-        ozelAvansToplam: h.avans.ozelToplam,
-        isAvansiBelgesizKalan: h.avans.isKesilecek,
-        toplamKesinti: h.avans.toplamKesinti,
-        kayitZamani: Date.now()
-      };
-      AvansKayitData.kaydet(avansKayitObj, function(basariliAv, errAv){
-        if(!basariliAv){ document.getElementById("btnAyiKayitEt").disabled=false; alert("Avans Takibi kapatılamadı: " + (errAv && errAv.message)); return; }
-        maasiKaydet();
-      });
-    } else {
+    // Avans Takibi'ni HER ZAMAN, o an ekranda görünen canlı taslaktan
+    // TAZE bir kapalı kayıt olarak (yeniden) yazıyoruz — önceki kod bunu
+    // sadece "kapalı kaydı yoksa" yapıyordu; eğer o ay için eski/kalıntı
+    // bir kapalı kayıt varsa hiç dokunmuyordu ve stale veri kalabiliyordu.
+    // Bu şekilde her kapatma kendi kendini onarır (self-healing).
+    var taslak = AvansKayitData.taslakOku(h.acik.ay, h.acik.yil);
+    var avansKayitObj = {
+      ay: h.acik.ay, yil: h.acik.yil,
+      ozelAvansGirisleri: taslak.ozelAvansGirisleri||[],
+      isAvansiGirisleri: taslak.isAvansiGirisleri||[],
+      isAvansiHarcamalar: taslak.isAvansiHarcamalar||[],
+      ozelAvansToplam: h.avans.ozelToplam,
+      isAvansiBelgesizKalan: h.avans.isKesilecek,
+      toplamKesinti: h.avans.toplamKesinti,
+      kayitZamani: Date.now()
+    };
+    AvansKayitData.kaydet(avansKayitObj, function(basariliAv, errAv){
+      if(!basariliAv){ document.getElementById("btnAyiKayitEt").disabled=false; alert("Avans Takibi kapatılamadı: " + (errAv && errAv.message)); return; }
       maasiKaydet();
-    }
+    });
   };
 
   try{ KomisyonDonemData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
