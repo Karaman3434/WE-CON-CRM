@@ -1,5 +1,5 @@
 /*
-  maas-hesaplama-render.js — VERSİYON: WG.270926.2200.650
+  maas-hesaplama-render.js — VERSİYON: WG.270926.2245.651
   ==========================================================
   MAAŞ HESAPLAMA (ÖZET) sayfası — 27.09.2026 mimari bölünmesi. Bu sayfa
   artık kendi Brüt Sabit Maaş / Brüt Prim hesaplamasını yapmıyor; Net
@@ -124,7 +124,7 @@ function mhHesaplaVeCiz(){
   document.getElementById("mhKartHesabaYatacak").textContent = fmtTL_MH(hesabaYatacak);
 
   mhGuncelHesap = {
-    acik: acik, brutSabit: h.brutSabit, komisyonToplam: h.komisyonToplam, brutPrim: h.brutPrim,
+    acik: acik, brutSabit: h.brutSabit, birinciToplam: h.birinciToplam, brutPrim: h.brutPrim,
     sonuc: sonuc, avans: av, hesabaYatacak: hesabaYatacak
   };
 }
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function(){
         ay: h.acik.ay, yil: h.acik.yil,
         brutSabitAylik: h.brutSabit,
         brutPrim: h.brutPrim,
-        komisyonReferansToplam: h.komisyonToplam,
+        komisyonReferansToplam: h.birinciToplam,
         toplamKesinti: h.avans.toplamKesinti,
         netSabitMaas: h.sonuc.netSabitMaas,
         netPrim: h.sonuc.netPrim,
@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   };
 
-  try{ KomisyonData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
+  try{ KomisyonDonemData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
   try{ MaasKayitData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
   try{ AvansKayitData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
 });

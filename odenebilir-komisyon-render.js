@@ -1,16 +1,16 @@
 /*
-  odenebilir-komisyon-render.js
-  ===============================
-  1) Fotoğraf/ekran görüntüsü seçildiğinde Tesseract.js (cihaz üzerinde,
-     sunucuya/hesaba bağımlı olmayan OCR) ile metni okur.
-  2) Ham metinden "Ay" (1-12) + o satırdaki SON parasal sayıyı (tablo
-     düzeninde en sağdaki sütun = Ödenebilir Komisyon) ayıklar.
-  3) Sonucu düzenlenebilir bir forma doldurur — kullanıcı onaylamadan
-     HİÇBİR ŞEY kaydedilmez (OCR asla %100 güvenilmez, özellikle eksi
-     işaretini kaçırabilir).
-  4) İki kayıt arasında ay ay fark hesaplayıp karşılaştırma gösterir.
-  5) (27.09.2026, YENİ) "Brüt Prim → Net Prim" bölümü — MaasOrtakHesap
-     üzerinden açık maaş dönemine ait Brüt Prim'i alır, Net Prim'e çevirir.
+  odenebilir-komisyon-render.js — VERSİYON: WG.270926.2245.651
+  ================================================================
+  27.09.2026 yeniden tasarım:
+  1) "1. Fotoğraf" ve "2. Fotoğraf" — açık maaş dönemi için sabit iki
+     slot. Kutuya dokununca dosya seçilir, Tesseract.js (cihaz üzerinde)
+     ile OCR yapılır, düzenlenebilir tabloya doldurulur — onaylamadan
+     HİÇBİR ŞEY kaydedilmez. Fotoğrafın kendisi de (küçültülüp
+     sıkıştırılarak) kaydedilir, kutucukta görünsün diye.
+  2) Brüt Prim, 2. Fotoğraf toplamı ile 1. Fotoğraf toplamı arasındaki
+     farktan otomatik hesaplanır (maas-ortak-hesap.js üzerinden) — ikisi
+     de AYNI açık dönem için olduğundan ay karışıklığı imkansız.
+  3) Ay kapanınca (Maaş Hesaplama'dan) bu iki slot otomatik sıfırlanır.
 */
 
 function hataGoster(mesaj){
@@ -51,12 +51,10 @@ function tarihAnahtariniOku(anahtar){
 }
 
 // Tesseract'ın ham metninden Ay -> Ödenebilir Komisyon eşleşmesini çıkarır.
-// Kural: satırın İLK BİRKAÇ kelimesi içinde (OCR bazen satır başına "aa",
-// "ra", "@" gibi gürültü ekleyebiliyor — bu yüzden SADECE satırın tam
-// başına bakmak yetersiz) 1-12 arası TEK BAŞINA bir sayı varsa, ondan
-// SONRAKİ tüm parasal görünümlü sayılardan (1.234,56 kalıbı) SONUNCUSU
-// alınır — merkez tablosunda "Ödenebilir Komisyon" her zaman EN SAĞDAKİ
-// (dolayısıyla satırda en son geçen) sütundur.
+// Kural: satırın İLK BİRKAÇ kelimesi içinde 1-12 arası TEK BAŞINA bir sayı
+// varsa, ondan SONRAKİ tüm parasal görünümlü sayılardan (1.234,56 kalıbı)
+// SONUNCUSU alınır — merkez tablosunda "Ödenebilir Komisyon" her zaman EN
+// SAĞDAKİ (dolayısıyla satırda en son geçen) sütundur.
 function ocrMetniniAyristir(metin){
   var sonuc = {};
   var sayiKalibi = /-?\d{1,3}(?:\.\d{3})*,\d{2}/g;
@@ -81,6 +79,33 @@ function ocrMetniniAyristir(metin){
   return sonuc;
 }
 
+// Seçilen fotoğrafı kutucukta göstermek için küçültüp JPEG olarak
+// sıkıştırır (maks. 900px genişlik, %60 kalite) — Firebase'e hafif gitsin.
+function resimSikistir(file, geriBildir){
+  try{
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        try{
+          var maxGenislik = 900;
+          var olcek = Math.min(1, maxGenislik / img.width);
+          var canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.width * olcek));
+          canvas.height = Math.max(1, Math.round(img.height * olcek));
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          geriBildir(canvas.toDataURL("image/jpeg", 0.6));
+        }catch(e){ geriBildir(null); }
+      };
+      img.onerror = function(){ geriBildir(null); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){ geriBildir(null); };
+    reader.readAsDataURL(file);
+  }catch(e){ geriBildir(null); }
+}
+
 function girisTablosunuDoldur(aylar){
   var govde = document.getElementById("okGirisTabloGovde");
   govde.innerHTML = "";
@@ -91,7 +116,7 @@ function girisTablosunuDoldur(aylar){
       + "<td><input type='text' inputmode='decimal' data-ay='" + ay + "' value='" + (deger===""?"":fmtTL(deger)) + "' placeholder='0,00'></td>";
     govde.appendChild(tr);
   }
-  document.getElementById("okFormAlani").hidden = false;
+  document.getElementById("okDuzenlemeAlani").hidden = false;
   document.getElementById("okTarihGiris").value = bugununTarihAnahtari();
 }
 
@@ -128,8 +153,34 @@ function ocrCalistir(dosya){
     });
 }
 
+// AKTİF DÜZENLEME — hangi slot ("birinci"/"ikinci") üzerinde çalışıldığı
+// ve o slota ait sıkıştırılmış fotoğraf (henüz kaydedilmedi).
+var okAktifSlot = null;
+var okAktifResim = null;
+
+function slotEtiketiUret(slot){ return slot === "birinci" ? "1. Fotoğraf" : "2. Fotoğraf"; }
+function slotInputId(slot){ return slot === "birinci" ? "okFotoSeciciBirinci" : "okFotoSeciciIkinci"; }
+
+function fotoKutusunaTiklandi(slot){
+  var d = typeof KomisyonDonemData !== "undefined" ? KomisyonDonemData.gecerliDonem() : null;
+  var mevcut = d && d[slot];
+  if(mevcut){
+    if(!confirm(slotEtiketiUret(slot) + "'ı değiştirmek istediğine emin misin? Mevcut fotoğraf ve rakamlar yerine yenisi kaydedilecek.")) return;
+  }
+  document.getElementById(slotInputId(slot)).click();
+}
+
+function fotoSecildi(slot, file){
+  okAktifSlot = slot;
+  okAktifResim = null;
+  document.getElementById("okDuzenlemeSlotEtiket").textContent = slotEtiketiUret(slot) + " olarak kaydedilecek";
+  resimSikistir(file, function(dataUrl){ okAktifResim = dataUrl; });
+  ocrCalistir(file);
+}
+
 function onaylaTiklandi(){
   try{
+    if(!okAktifSlot){ alert("Önce bir fotoğraf seç."); return; }
     var tarihAnahtari = document.getElementById("okTarihGiris").value;
     if(!tarihAnahtari){ alert("Lütfen bir tarih seç."); return; }
     var aylar = {};
@@ -138,106 +189,61 @@ function onaylaTiklandi(){
       var deger = parseFloat((inp.value||"0").replace(/\./g,"").replace(",","."));
       aylar[ay] = isNaN(deger) ? 0 : deger;
     });
+    var acik = MaasKayitData.acikDonem();
+    var donemAnahtari = KomisyonDonemData.donemAnahtariUret(acik.ay, acik.yil);
+    var kayit = {tarih: tarihAnahtari, aylar: aylar, resim: okAktifResim || null, kayitZamani: Date.now()};
     var btn = document.getElementById("btnOkOnayla");
     btn.disabled = true; btn.textContent = "Kaydediliyor...";
-    KomisyonData.kaydet(tarihAnahtari, aylar, function(basarili, err){
+    KomisyonDonemData.slotKaydet(donemAnahtari, okAktifSlot, kayit, function(basarili, err){
       btn.disabled = false; btn.textContent = "✓ Bu Kaydı Onayla ve Kaydet";
       if(!basarili){ hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata")); return; }
-      document.getElementById("okFormAlani").hidden = true;
+      document.getElementById(slotInputId(okAktifSlot)).value = "";
+      document.getElementById("okDuzenlemeAlani").hidden = true;
       document.getElementById("okOcrDurum").hidden = true;
-      document.getElementById("okDosyaSecici").value = "";
-      alert("✓ Kaydedildi.");
+      okAktifSlot = null; okAktifResim = null;
     });
   }catch(e){ hataGoster("Onaylama başarısız: " + e.message); }
 }
 
-function secicileriDoldur(){
-  var kayitlar = KomisyonData.tumKayitlar();
-  var oncekiSecim = document.getElementById("okOncekiSecim");
-  var sonrakiSecim = document.getElementById("okSonrakiSecim");
-  if(kayitlar.length < 2){
-    document.getElementById("okKarsilastirmaBos").hidden = false;
-    document.getElementById("okKarsilastirmaSonuc").innerHTML = "";
-    oncekiSecim.innerHTML = ""; sonrakiSecim.innerHTML = "";
-    return;
-  }
-  document.getElementById("okKarsilastirmaBos").hidden = true;
-  var secenekler = kayitlar.map(function(k){ return "<option value='" + k.anahtar + "'>" + tarihAnahtariniOku(k.anahtar) + "</option>"; }).join("");
-  oncekiSecim.innerHTML = secenekler;
-  sonrakiSecim.innerHTML = secenekler;
-  // Varsayılan: en son iki kayıt (kayitlar[0]=en yeni, kayitlar[1]=ondan önceki)
-  sonrakiSecim.value = kayitlar[0].anahtar;
-  oncekiSecim.value = kayitlar[1].anahtar;
-  karsilastirmayiCiz();
+function iptalTiklandi(){
+  if(okAktifSlot) document.getElementById(slotInputId(okAktifSlot)).value = "";
+  document.getElementById("okDuzenlemeAlani").hidden = true;
+  document.getElementById("okOcrDurum").hidden = true;
+  okAktifSlot = null; okAktifResim = null;
 }
 
-function karsilastirmayiCiz(){
+// 1./2. FOTOĞRAF KUTULARINI ÇİZ
+function kutulariCiz(){
   try{
-    var oncekiAnahtar = document.getElementById("okOncekiSecim").value;
-    var sonrakiAnahtar = document.getElementById("okSonrakiSecim").value;
-    var sonucEl = document.getElementById("okKarsilastirmaSonuc");
-    if(!oncekiAnahtar || !sonrakiAnahtar){ sonucEl.innerHTML = ""; return; }
-    var onceki = KomisyonData.kaydiOku(oncekiAnahtar);
-    var sonraki = KomisyonData.kaydiOku(sonrakiAnahtar);
-    if(!onceki || !sonraki){ sonucEl.innerHTML = ""; return; }
-
-    var gunFarki = Math.round((new Date(sonrakiAnahtar) - new Date(oncekiAnahtar)) / 86400000);
-    var satirlar = "";
-    var toplamFark = 0;
-    for(var ay=1; ay<=12; ay++){
-      var oncekiDeger = (onceki.aylar && onceki.aylar[ay]) || 0;
-      var sonrakiDeger = (sonraki.aylar && sonraki.aylar[ay]) || 0;
-      var fark = sonrakiDeger - oncekiDeger;
-      toplamFark += fark;
-      if(Math.abs(fark) < 0.01) continue; // değişmeyen aylar gösterilmez
-      var farkSinif = fark >= 0 ? "ok-fark-pozitif" : "ok-fark-negatif";
-      var farkIsareti = fark >= 0 ? "+" : "";
-      satirlar += "<tr><td>" + ay + " · " + AY_ADLARI[ay] + "</td><td>" + fmtTL(oncekiDeger) + "</td><td>" + fmtTL(sonrakiDeger) + "</td><td class='" + farkSinif + "'>" + farkIsareti + fmtTL(fark) + "</td></tr>";
-    }
-
-    if(!satirlar){
-      sonucEl.innerHTML = "<p class='bos-mesaj'>Bu iki tarih arasında hiçbir ayda değişiklik yok.</p>";
-      return;
-    }
-
-    sonucEl.innerHTML = "<div class='ok-fark-tarih-araligi'>" + tarihAnahtariniOku(oncekiAnahtar) + " → " + tarihAnahtariniOku(sonrakiAnahtar) + " (" + gunFarki + " gün)</div>"
-      + "<table class='ok-fark-tablo'><thead><tr><th>AY</th><th>ÖNCE</th><th>SONRA</th><th>FARK</th></tr></thead><tbody>" + satirlar + "</tbody></table>"
-      + "<div class='ok-fark-toplam-serit'><span>TOPLAM FARK</span><span>" + (toplamFark>=0?"+":"") + fmtTL(toplamFark) + " TL</span></div>";
-  }catch(e){ hataGoster("Karşılaştırma çizilemedi: " + e.message); }
+    if(typeof KomisyonDonemData === "undefined") return;
+    var d = KomisyonDonemData.gecerliDonem();
+    ["birinci","ikinci"].forEach(function(slot){
+      var kayit = d && d[slot];
+      var idOnEk = slot === "birinci" ? "Birinci" : "Ikinci";
+      var resimEl = document.getElementById("okFotoResim" + idOnEk);
+      var tarihEl = document.getElementById("okFotoTarih" + idOnEk);
+      var kutuEl = document.getElementById("okFotoKutu" + idOnEk);
+      if(kayit){
+        kutuEl.classList.add("ok-foto-kutu--dolu");
+        if(kayit.resim){
+          resimEl.innerHTML = "";
+          resimEl.style.backgroundImage = "url('" + kayit.resim + "')";
+        } else {
+          resimEl.style.backgroundImage = "";
+          resimEl.innerHTML = "<span class='ok-foto-kutu-ikon'>🖼️</span>";
+        }
+        tarihEl.textContent = tarihAnahtariniOku(kayit.tarih);
+      } else {
+        kutuEl.classList.remove("ok-foto-kutu--dolu");
+        resimEl.style.backgroundImage = "";
+        resimEl.innerHTML = "<span class='ok-foto-kutu-ikon'>📷</span>";
+        tarihEl.textContent = "Yüklenmedi";
+      }
+    });
+  }catch(e){ hataGoster("Fotoğraf kutuları çizilemedi: " + e.message); }
 }
 
-// KAYIT GEÇMİŞİ BARI (27.09.2026) — eski düz liste yerine avans/maaş
-// sayfalarındaki gibi ‹ › ile tek tek gezilen bir bar. 0 = en yeni kayıt.
-var okGecmisIndex = 0;
-
-function gecmisiCiz(){
-  try{
-    var kayitlar = KomisyonData.tumKayitlar();
-    var bar = document.getElementById("okGecmisBar");
-    var detay = document.getElementById("okGecmisDetay");
-    var bos = document.getElementById("okGecmisBos");
-    var silBtn = document.getElementById("btnOkGecmisSil");
-    if(kayitlar.length === 0){
-      bar.hidden = true; detay.innerHTML = ""; silBtn.hidden = true; bos.hidden = false;
-      return;
-    }
-    bos.hidden = true; bar.hidden = false; silBtn.hidden = false;
-    if(okGecmisIndex > kayitlar.length-1) okGecmisIndex = kayitlar.length-1;
-    if(okGecmisIndex < 0) okGecmisIndex = 0;
-    var k = kayitlar[okGecmisIndex];
-    document.getElementById("okGecmisBarMetin").textContent = tarihAnahtariniOku(k.anahtar);
-    document.getElementById("okGecmisOncekiBtn").hidden = (okGecmisIndex >= kayitlar.length-1);
-    document.getElementById("okGecmisSonrakiBtn").hidden = (okGecmisIndex <= 0);
-    var toplam = 0;
-    for(var ay=1; ay<=12; ay++){ toplam += (k.aylar && k.aylar[ay]) || 0; }
-    detay.innerHTML = "<div class='ok-gecmis-toplam'>Toplam: " + fmtTL(toplam) + " TL</div>";
-    silBtn.setAttribute("data-anahtar", k.anahtar);
-  }catch(e){ hataGoster("Geçmiş çizilemedi: " + e.message); }
-}
-
-// BRÜT PRİM → NET PRİM (27.09.2026, YENİ) — açık maaş dönemi için
-// MaasOrtakHesap.hesapla() çağırır; Net Maaş sayfası ve Maaş Hesaplama
-// özeti de AYNI çağrıyı yapıyor, bu yüzden rakamlar hep tutarlı kalır.
+// BRÜT PRİM → NET PRİM (27.09.2026, revize) — 1./2. Fotoğraf farkından.
 function fmtTL_BN(n){
   return (n||0).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " TL";
 }
@@ -246,19 +252,63 @@ function fmtOranSadece_BN(brut, net){
   var oran = (brut-net)/brut*100;
   return "%" + oran.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " kesinti";
 }
-function brutNetPrimGoster(){
+
+function farkGoster(){
   try{
     if(typeof MaasKayitData === "undefined" || typeof MaasOrtakHesap === "undefined") return;
     var acik = MaasKayitData.acikDonem();
-    document.getElementById("bnDonemEtiket").textContent = AY_ADLARI[acik.ay] + " " + acik.yil;
+    var etiketMetni = AY_ADLARI[acik.ay] + " " + acik.yil;
+    document.getElementById("okDonemEtiket").textContent = etiketMetni;
+    document.getElementById("bnDonemEtiket").textContent = etiketMetni;
+
     var h = MaasOrtakHesap.hesapla(acik.ay, acik.yil);
-    document.getElementById("bnBrutPrimDeger").textContent = fmtTL_BN(h.brutPrim);
-    document.getElementById("bnPrimKaynak").textContent =
-      "Komisyon toplamı " + fmtTL_BN(h.komisyonToplam) + " − referans " + fmtTL_BN(h.referans);
+    var bekle = document.getElementById("bnBekleBanner");
+    var tablo = document.getElementById("bnFarkTablo");
+    var toplamSerit = document.getElementById("bnToplamFarkSerit");
+    var netAlt = document.getElementById("bnNetAlt");
+
+    if(!h.komisyonTamMi){
+      bekle.hidden = false; tablo.hidden = true; toplamSerit.hidden = true; netAlt.hidden = true;
+      return;
+    }
+    bekle.hidden = true;
+
+    var d = KomisyonDonemData.gecerliDonem();
+    var satirlar = "";
+    for(var ay=1; ay<=12; ay++){
+      var b = (d.birinci.aylar && d.birinci.aylar[ay]) || 0;
+      var i = (d.ikinci.aylar && d.ikinci.aylar[ay]) || 0;
+      var fark = i - b;
+      if(Math.abs(fark) < 0.01) continue;
+      var sinif = fark >= 0 ? "ok-fark-pozitif" : "ok-fark-negatif";
+      var isaret = fark >= 0 ? "+" : "";
+      satirlar += "<tr><td>" + ay + " · " + AY_ADLARI[ay] + "</td><td>" + fmtTL(b) + "</td><td>" + fmtTL(i) + "</td><td class='" + sinif + "'>" + isaret + fmtTL(fark) + "</td></tr>";
+    }
+    document.getElementById("bnFarkTabloGovde").innerHTML = satirlar || "<tr><td colspan='4' style='text-align:center;color:#8a8f98;'>Değişiklik yok.</td></tr>";
+    tablo.hidden = false;
+
+    var toplamFark = h.brutPrimHam;
+    document.getElementById("bnToplamFarkDeger").textContent = (toplamFark>=0?"+":"") + fmtTL(toplamFark) + " TL";
+    toplamSerit.hidden = false;
+
     document.getElementById("bnPrimKesintiOran").textContent = fmtOranSadece_BN(h.sonuc.brutPrim, h.sonuc.netPrim);
     document.getElementById("bnNetPrimDeger").textContent = fmtTL_BN(h.sonuc.netPrim);
-    document.getElementById("bnUyariBanner").hidden = !h.komisyonAyUyumsuz;
+    netAlt.hidden = false;
   }catch(e){ hataGoster("Brüt/Net Prim gösterilemedi: " + e.message); }
+}
+
+// AÇIK DÖNEM KONTROLÜ — bir önceki ay kapatıldıysa (Maaş Hesaplama'dan)
+// 1./2. Fotoğraf'ı otomatik sıfırlar; MaasKayitData/KomisyonDonemData
+// değiştiğinde de ekranı yeniden çizer.
+function donemKontrolVeCiz(){
+  try{
+    if(typeof MaasKayitData === "undefined" || typeof KomisyonDonemData === "undefined") return;
+    var acik = MaasKayitData.acikDonem();
+    KomisyonDonemData.acikDonemleSenkronizeEt(acik.ay, acik.yil, function(){
+      kutulariCiz();
+      farkGoster();
+    });
+  }catch(e){ hataGoster("Dönem kontrolü başarısız: " + e.message); }
 }
 
 window.addEventListener("error", function(ev){
@@ -269,28 +319,18 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
-  document.getElementById("okDosyaSecici").addEventListener("change", function(){
-    if(this.files && this.files[0]) ocrCalistir(this.files[0]);
+  document.getElementById("okFotoKutuBirinci").onclick = function(){ fotoKutusunaTiklandi("birinci"); };
+  document.getElementById("okFotoKutuIkinci").onclick = function(){ fotoKutusunaTiklandi("ikinci"); };
+  document.getElementById("okFotoSeciciBirinci").addEventListener("change", function(){
+    if(this.files && this.files[0]) fotoSecildi("birinci", this.files[0]);
+  });
+  document.getElementById("okFotoSeciciIkinci").addEventListener("change", function(){
+    if(this.files && this.files[0]) fotoSecildi("ikinci", this.files[0]);
   });
   document.getElementById("btnOkOnayla").onclick = onaylaTiklandi;
-  document.getElementById("okOncekiSecim").onchange = karsilastirmayiCiz;
-  document.getElementById("okSonrakiSecim").onchange = karsilastirmayiCiz;
+  document.getElementById("btnOkIptal").onclick = iptalTiklandi;
 
-  document.getElementById("okGecmisOncekiBtn").onclick = function(){ okGecmisIndex++; gecmisiCiz(); };
-  document.getElementById("okGecmisSonrakiBtn").onclick = function(){ okGecmisIndex--; gecmisiCiz(); };
-  document.getElementById("btnOkGecmisSil").onclick = function(){
-    var anahtar = this.getAttribute("data-anahtar");
-    if(!anahtar) return;
-    if(!confirm(tarihAnahtariniOku(anahtar) + " tarihli kayıt silinsin mi?")) return;
-    KomisyonData.kaydiSil(anahtar, function(basarili, err){
-      if(!basarili){ hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata")); return; }
-      okGecmisIndex = 0;
-    });
-  };
-
-  KomisyonData.degistiginde(function(){ secicileriDoldur(); gecmisiCiz(); brutNetPrimGoster(); });
-  try{ MaasKayitData.degistiginde(function(){ brutNetPrimGoster(); }); }catch(e){}
-  secicileriDoldur();
-  gecmisiCiz();
-  brutNetPrimGoster();
+  try{ KomisyonDonemData.degistiginde(function(){ kutulariCiz(); farkGoster(); }); }catch(e){}
+  try{ MaasKayitData.degistiginde(function(){ donemKontrolVeCiz(); }); }catch(e){}
+  donemKontrolVeCiz();
 });

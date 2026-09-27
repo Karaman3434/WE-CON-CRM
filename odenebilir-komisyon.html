@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.270926.2200.650 — odenebilir-komisyon.html
+  WEICON ASİST V2 — VERSİYON: WG.270926.2245.651 — odenebilir-komisyon.html
   =================================================================================
-  ÖDENEBİLİR KOMİSYON TAKİBİ — merkez ofisin programındaki (engomoweb) "Ödenebilir
-  Komisyon" tablosunun anlık görüntülerini (fotoğraf/ekran görüntüsü → OCR ile
-  cihaz üzerinde, sunucu/abonelik GEREKTİRMEDEN okunur) haftalık/istediğin
-  sıklıkta kaydeder; iki tarih arasındaki farkı ay ay gösterir. Kaynak
-  fotoğraf/görüntü ASLA saklanmaz, sadece OCR'dan geçip kullanıcının onayladığı
-  12 sayı + tarih Firebase'e kaydedilir.
-
-  27.09.2026 mimari bölünme: "Brüt Prim → Net Prim" bölümü eklendi (Yeni
-  Kayıt Ekle / Karşılaştırma / Kayıt Geçmişi hiç değişmedi). Bu bölüm,
-  Karşılaştırma'nın TOPLAM FARK'ından Brüt Prim'i otomatik alır ve
-  maas-ortak-hesap.js üzerinden aynı ayın Net Prim'ini hesaplar.
+  ÖDENEBİLİR KOMİSYON TAKİBİ — 27.09.2026 yeniden tasarım. Merkez ofisin
+  programındaki (engomoweb) "Ödenebilir Komisyon" tablosunun SADECE açık
+  maaş dönemi için "1. Fotoğraf" ve "2. Fotoğraf" adında iki sabit fotoğrafı
+  tutulur (OCR ile cihaz üzerinde, sunucu/abonelik GEREKTİRMEDEN okunur,
+  fotoğrafın kendisi de sıkıştırılıp saklanır — kutucuklarda görünsün diye).
+  Brüt Prim, 2. Fotoğraf toplamı ile 1. Fotoğraf toplamı arasındaki farktan
+  otomatik hesaplanır (ikisi de AYNI açık dönem için olduğundan ay
+  karışıklığı yapısal olarak imkansız). Ay kapanınca bu iki slot otomatik
+  sıfırlanır, yeni dönem boş kutularla başlar.
 -->
 <html lang="tr">
 <head>
@@ -27,7 +25,7 @@
 <title>WEICON ASİST — Ödenebilir Komisyon</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
-<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2100.648">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2245.651">
 <link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2200.650">
 </head>
 <body>
@@ -51,19 +49,29 @@
 
 <main class="sayfa">
 
-  <p class="ok-aciklama" style="border-radius:10px; border-top:1px solid #0e6b34;">Merkez programındaki "Ödenebilir Komisyon" tablosunun fotoğrafını/ekran görüntüsünü yükle — cihazın kendi içinde (internete/sunucuya göndermeden) okunur. Sen gözden geçirip onaylamadan hiçbir şey kaydedilmez.</p>
+  <p class="ok-aciklama" style="border-radius:10px; border-top:1px solid #0e6b34;">Ay başında 1. Fotoğraf'ı, sonra istediğin kadar sıklıkta 2. Fotoğraf'ı güncelle — merkez programındaki "Ödenebilir Komisyon" tablosunun fotoğrafı cihazın kendi içinde (internete/sunucuya göndermeden) okunur. Sen gözden geçirip onaylamadan hiçbir şey kaydedilmez.</p>
 
   <section class="ok-kutu">
-    <div class="ok-kutu-baslik">➕ Yeni Kayıt Ekle</div>
+    <div class="ok-kutu-baslik">📷 1. ve 2. Fotoğraf — <span id="okDonemEtiket">—</span></div>
+    <div class="ok-foto-satir">
+      <div class="ok-foto-kutu" id="okFotoKutuBirinci" data-slot="birinci">
+        <div class="ok-foto-kutu-baslik">1. FOTOĞRAF</div>
+        <div class="ok-foto-kutu-resim" id="okFotoResimBirinci"><span class="ok-foto-kutu-ikon">📷</span></div>
+        <div class="ok-foto-kutu-tarih" id="okFotoTarihBirinci">Yüklenmedi</div>
+        <input type="file" accept="image/*" id="okFotoSeciciBirinci" hidden>
+      </div>
+      <div class="ok-foto-kutu" id="okFotoKutuIkinci" data-slot="ikinci">
+        <div class="ok-foto-kutu-baslik">2. FOTOĞRAF</div>
+        <div class="ok-foto-kutu-resim" id="okFotoResimIkinci"><span class="ok-foto-kutu-ikon">📷</span></div>
+        <div class="ok-foto-kutu-tarih" id="okFotoTarihIkinci">Yüklenmedi</div>
+        <input type="file" accept="image/*" id="okFotoSeciciIkinci" hidden>
+      </div>
+    </div>
 
-    <label class="ok-yukle-alan" id="okYukleAlan">
-      <span class="ok-yukle-ikon">📷</span>
-      <span class="ok-yukle-metin">Fotoğraf çek / Ekran görüntüsü yükle</span>
-      <input type="file" accept="image/*" id="okDosyaSecici" hidden>
-    </label>
     <div class="ok-ocr-durum" id="okOcrDurum" hidden></div>
 
-    <div id="okFormAlani" hidden>
+    <div id="okDuzenlemeAlani" hidden>
+      <div class="ok-duzenleme-slot-etiket" id="okDuzenlemeSlotEtiket">—</div>
       <div class="ok-tarih-satir">
         <label>TARİH</label>
         <input type="date" id="okTarihGiris">
@@ -73,47 +81,25 @@
         <tbody id="okGirisTabloGovde"></tbody>
       </table>
       <button class="ok-onayla-btn" id="btnOkOnayla">✓ Bu Kaydı Onayla ve Kaydet</button>
+      <button class="ok-iptal-btn" id="btnOkIptal">İptal</button>
     </div>
   </section>
 
-  <!-- BRÜT PRİM → NET PRİM (27.09.2026, YENİ) — Yeni Kayıt Ekle / Karşılaştırma /
-       Kayıt Geçmişi bölümleri hiç değişmedi, bu sadece TOPLAM FARK'ı okuyup
-       ay eşleştirmesiyle Net Prim'e çeviren ek bir bölüm. -->
+  <!-- BRÜT PRİM → NET PRİM (27.09.2026, revize) — TOPLAM FARK doğrudan
+       1. ve 2. Fotoğraf'ın toplamları arasındaki farktan gelir; ikisi de
+       AYNI açık dönem için tutulduğundan ay karışıklığı imkansız. -->
   <section class="ok-kutu" id="okBrutNetPrimKutu">
     <div class="ok-kutu-baslik">🎯 Brüt Prim → Net Prim — <span id="bnDonemEtiket">—</span></div>
-    <div id="bnUyariBanner" hidden style="background:#fff8e6; border:1.5px solid #f0dca0; color:#7a5b00; border-radius:8px; padding:8px 10px; font-size:11px; font-weight:800; margin-bottom:8px;">⚠️ Bu ay için henüz güncel fotoğraf yüklenmedi — aşağıdaki rakam eski referansa göre hesaplanıyor.</div>
-    <div class="mh-tutar-kart" style="margin-bottom:0;">
-      <span class="mh-etiket" style="margin-top:0;">BRÜT PRİM (otomatik)</span>
-      <div class="mh-tutar-kart-deger mh-tutar-kart-deger--vurgu" id="bnBrutPrimDeger">0,00 TL</div>
-      <div class="mh-ust-bilgi-not" id="bnPrimKaynak">—</div>
-      <div class="mh-tutar-kart-alt">
-        <span class="mh-kesinti-oran" id="bnPrimKesintiOran">%0,00 kesinti</span>
-        <span class="mh-net-deger">Net Prim: <b id="bnNetPrimDeger">0,00 TL</b></span>
-      </div>
+    <p class="bos-mesaj" id="bnBekleBanner" hidden>2. Fotoğraf yüklenince otomatik hesaplanır.</p>
+    <table class="ok-fark-tablo" id="bnFarkTablo" hidden>
+      <thead><tr><th>AY</th><th>1. FOT.</th><th>2. FOT.</th><th>FARK</th></tr></thead>
+      <tbody id="bnFarkTabloGovde"></tbody>
+    </table>
+    <div class="ok-fark-toplam-serit" id="bnToplamFarkSerit" hidden><span>TOPLAM FARK (BRÜT PRİM)</span><span id="bnToplamFarkDeger">+0,00 TL</span></div>
+    <div class="mh-tutar-kart-alt" id="bnNetAlt" hidden>
+      <span class="mh-kesinti-oran" id="bnPrimKesintiOran">%0,00 kesinti</span>
+      <span class="mh-net-deger">Net Prim: <b id="bnNetPrimDeger">0,00 TL</b></span>
     </div>
-  </section>
-
-  <section class="ok-kutu">
-    <div class="ok-kutu-baslik">📊 Karşılaştırma</div>
-    <div class="ok-karsilastir-secim-satir">
-      <select id="okOncekiSecim"></select>
-      <span class="ok-karsilastir-ok">→</span>
-      <select id="okSonrakiSecim"></select>
-    </div>
-    <div id="okKarsilastirmaSonuc"></div>
-    <p class="bos-mesaj" id="okKarsilastirmaBos" hidden>Karşılaştırma için en az 2 kayıt gerekiyor.</p>
-  </section>
-
-  <section class="ok-kutu">
-    <div class="ok-kutu-baslik">🕘 Kayıt Geçmişi</div>
-    <div class="ok-donem-bar" id="okGecmisBar" hidden>
-      <button type="button" id="okGecmisOncekiBtn" class="ok-donem-ok-btn" aria-label="Önceki kayıt">‹</button>
-      <div class="ok-donem-bar-orta"><span id="okGecmisBarMetin">—</span></div>
-      <button type="button" id="okGecmisSonrakiBtn" class="ok-donem-ok-btn" aria-label="Sonraki kayıt">›</button>
-    </div>
-    <div id="okGecmisDetay"></div>
-    <button type="button" id="btnOkGecmisSil" class="ok-gecmis-sil-tam-btn" hidden>🗑 Bu Kaydı Sil</button>
-    <p class="bos-mesaj" id="okGecmisBos" hidden>Henüz kayıt yok.</p>
   </section>
 
 </main>
@@ -126,10 +112,10 @@
 <script src="auth.js?v=WG.270926.1940.646"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="odenebilir-komisyon-data.js?v=WG.130926.2010.553"></script>
+<script src="komisyon-donem-data.js?v=WG.270926.2245.651"></script>
 <script src="maas-kayit-data.js?v=WG.130926.2010.553"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
-<script src="maas-ortak-hesap.js?v=WG.270926.2200.650"></script>
-<script src="odenebilir-komisyon-render.js?v=WG.270926.2200.650"></script>
+<script src="maas-ortak-hesap.js?v=WG.270926.2245.651"></script>
+<script src="odenebilir-komisyon-render.js?v=WG.270926.2245.651"></script>
 </body>
 </html>

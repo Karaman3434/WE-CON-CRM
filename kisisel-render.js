@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
   hesabaYatacakGuncelle();
-  try{ KomisyonData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
+  try{ KomisyonDonemData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
   try{ AvansKayitData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
   try{ MaasKayitData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
 });

@@ -1,5 +1,5 @@
 /*
-  maas-ortak-hesap.js — VERSİYON: WG.270926.2200.650
+  maas-ortak-hesap.js — VERSİYON: WG.270926.2245.651
   ======================================================
   27.09.2026 mimari bölünmesi: Maaş Hesaplama tek sayfaydı, artık üç
   bağımsız sayfaya bölündü (Brüt Maaş→Net Maaş / Ödenebilir Komisyon'daki
@@ -17,6 +17,13 @@
   maas-hesaplama-render.js (özet sayfası) AYNI MaasOrtakHesap.hesapla()
   çağrısını kullanır — sonuç nesnesi aynıdır, her sayfa sadece kendi
   ilgilendiği alanı (netSabitMaas veya netPrim) ekrana yazar.
+
+  27.09.2026 (revize) — Brüt Prim artık eski "güncel komisyon toplamı −
+  referans nokta" zincirinden DEĞİL, doğrudan KomisyonDonemData'daki
+  "1. Fotoğraf" ve "2. Fotoğraf" toplamları arasındaki farktan hesaplanır.
+  İkisi de AYNI açık dönem için tutulduğundan ay karışıklığı yapısal
+  olarak imkansız — eski "referans/güncel ay uyumsuzluğu" riski ortadan
+  kalktı.
 */
 
 var MaasOrtakHesap = (function(){
@@ -25,29 +32,6 @@ var MaasOrtakHesap = (function(){
     var toplam = 0;
     for(var ay=1; ay<=12; ay++) toplam += parseFloat(aylar && aylar[ay]) || 0;
     return toplam;
-  }
-
-  // Ödenebilir Komisyon'un EN GÜNCEL kaydındaki 12 ayın toplamı + o kaydın
-  // tarih anahtarı (ay eşleşme uyarısı için gerekli).
-  function guncelKomisyonToplami(){
-    try{
-      var kayitlar = KomisyonData.tumKayitlar();
-      if(!kayitlar || !kayitlar.length) return {toplam:0, tarih:null};
-      return {toplam: aylarToplamiHesapla(kayitlar[0].aylar), tarih: kayitlar[0].anahtar};
-    }catch(e){ return {toplam:0, tarih:null}; }
-  }
-
-  // Brüt Prim'in referans noktası: son kapatılan maaş döneminde geçerli olan
-  // komisyon toplamı. Hiç maaş kaydı yoksa, en güncel Ödenebilir Komisyon
-  // kaydından BİR ÖNCEKİ kaydın toplamı referans alınır.
-  function referansKomisyonToplamiHesapla(){
-    try{
-      var maasKayitlari = MaasKayitData.tumKayitlar();
-      if(maasKayitlari.length) return maasKayitlari[0].komisyonReferansToplam || 0;
-      var komisyonKayitlari = KomisyonData.tumKayitlar();
-      if(komisyonKayitlari.length > 1) return aylarToplamiHesapla(komisyonKayitlari[1].aylar);
-      return 0;
-    }catch(e){ return 0; }
   }
 
   function brutPrimDizisiOlustur(acikAy, acikYil, acikBrutPrim){
@@ -77,21 +61,22 @@ var MaasOrtakHesap = (function(){
     return null;
   }
 
-  // Ay eşleşme uyarısı: en güncel Ödenebilir Komisyon kaydının tarihi,
-  // hesaplanan ay/yılın İÇİNDE ya da SONRASINDA değilse (yani bu ay için
-  // henüz güncel fotoğraf yüklenmediyse) true döner.
-  function komisyonAyUyumsuzMu(acikAy, acikYil, komisyonTarihAnahtari){
-    if(!komisyonTarihAnahtari) return true;
-    var p = komisyonTarihAnahtari.split("-");
-    var kYil = parseInt(p[0],10), kAy = parseInt(p[1],10);
-    if(isNaN(kYil) || isNaN(kAy)) return true;
-    if(kYil > acikYil) return false;
-    if(kYil === acikYil && kAy >= acikAy) return false;
-    return true;
-  }
-
   function brutSabitOku(){
     return parseFloat(localStorage.getItem("weicon_brut_sabit_maas")) || 0;
+  }
+
+  // 1. Fotoğraf ve 2. Fotoğraf'ın (KomisyonDonemData) toplamlarını okur.
+  // İkisi de yüklenmemişse tamMi=false döner (Brüt Prim henüz hesaplanamaz).
+  function komisyonDonemToplamlariOku(){
+    try{
+      var d = KomisyonDonemData.gecerliDonem();
+      if(!d || !d.birinci || !d.ikinci) return {birinciToplam:0, ikinciToplam:0, tamMi:false};
+      return {
+        birinciToplam: aylarToplamiHesapla(d.birinci.aylar),
+        ikinciToplam: aylarToplamiHesapla(d.ikinci.aylar),
+        tamMi: true
+      };
+    }catch(e){ return {birinciToplam:0, ikinciToplam:0, tamMi:false}; }
   }
 
   // Açık/canlı dönem için TAM hesaplama — Net Maaş sayfası, Ödenebilir
@@ -99,19 +84,19 @@ var MaasOrtakHesap = (function(){
   // çağırır, hepsi AYNI sonuç nesnesinden kendi ilgili alanını okur.
   function hesapla(acikAy, acikYil){
     var brutSabit = brutSabitOku();
-    var komisyon = guncelKomisyonToplami();
-    var referans = referansKomisyonToplamiHesapla();
-    var brutPrim = Math.max(0, komisyon.toplam - referans);
+    var k = komisyonDonemToplamlariOku();
+    var brutPrimHam = k.ikinciToplam - k.birinciToplam;
+    var brutPrim = k.tamMi ? Math.max(0, brutPrimHam) : 0;
     var primDizisi = brutPrimDizisiOlustur(acikAy, acikYil, brutPrim);
     var matrahOverride = matrahOnceOverride(acikAy, acikYil);
     var sonuc = MaasHesaplamaData.ayHesapla(acikAy, brutSabit, primDizisi, matrahOverride);
     return {
       ay: acikAy, yil: acikYil,
       brutSabit: brutSabit,
-      komisyonToplam: komisyon.toplam,
-      komisyonTarih: komisyon.tarih,
-      komisyonAyUyumsuz: komisyonAyUyumsuzMu(acikAy, acikYil, komisyon.tarih),
-      referans: referans,
+      birinciToplam: k.birinciToplam,
+      ikinciToplam: k.ikinciToplam,
+      komisyonTamMi: k.tamMi,
+      brutPrimHam: brutPrimHam,
       brutPrim: brutPrim,
       matrahOverride: matrahOverride,
       sonuc: sonuc

@@ -1,5 +1,5 @@
 /*
-  net-maas-hesaplama-render.js — VERSİYON: WG.270926.2200.650
+  net-maas-hesaplama-render.js — VERSİYON: WG.270926.2245.651
   ==============================================================
   BRÜT MAAŞ → NET MAAŞ sayfası. Ay kapatma YOK — tek kapat butonu Maaş
   Hesaplama (özet) sayfasında. Net Maaş, MaasOrtakHesap.hesapla() üzerinden
@@ -161,6 +161,6 @@ document.addEventListener("DOMContentLoaded", function(){
     nmGorunumCiz();
   };
 
-  try{ KomisyonData.degistiginde(function(){ nmGorunumCiz(); }); }catch(e){}
+  try{ KomisyonDonemData.degistiginde(function(){ nmGorunumCiz(); }); }catch(e){}
   try{ MaasKayitData.degistiginde(function(){ nmGorunumCiz(); }); }catch(e){}
 });

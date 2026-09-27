@@ -195,3 +195,59 @@
   cursor: pointer;
   margin-top: 6px;
 }
+
+/* 1. / 2. FOTOĞRAF KUTULARI (27.09.2026, YENİ) */
+.ok-foto-satir {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ok-foto-kutu {
+  flex: 1;
+  background: #f4f7fb;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+.ok-foto-kutu--dolu { border: 1.5px solid #0e6b34; background: #fff; }
+.ok-foto-kutu-baslik { font-size: 10px; font-weight: 900; color: #556170; margin-bottom: 6px; }
+.ok-foto-kutu--dolu .ok-foto-kutu-baslik { color: #0e6b34; }
+.ok-foto-kutu-resim {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background-color: #eaf2fc;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.ok-foto-kutu-ikon { font-size: 28px; color: #95bdf0; }
+.ok-foto-kutu-tarih { font-size: 9.5px; color: #8a8f98; font-weight: 700; }
+.ok-foto-kutu--dolu .ok-foto-kutu-tarih { color: #556170; }
+.ok-duzenleme-slot-etiket {
+  font-size: 11px;
+  font-weight: 900;
+  color: #003a70;
+  background: #eaf2fc;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+.ok-iptal-btn {
+  width: 100%;
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #556170;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
