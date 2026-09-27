@@ -168,7 +168,6 @@ function avDonemBariCiz(){
 function avDuzenlemeGorunurlugunuAyarla(gorunurMu){
   document.getElementById("avEkleSection").hidden = !gorunurMu;
   document.getElementById("avHarcamaSection").hidden = !gorunurMu;
-  document.getElementById("avNotParagraf").hidden = !gorunurMu;
   document.getElementById("avKapaliSerit").hidden = gorunurMu;
   document.getElementById("btnAvKapaliKaydiSil").hidden = gorunurMu;
 }
