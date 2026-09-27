@@ -94,16 +94,16 @@ var HareketTablo = (function(){
       // girilmiş özel bir kur kullanıldığı tek bakışta anlaşılır (13.09.2026).
       // opts.kurTiklanabilir sadece Sepet'te true geçilir; oraya dokununca
       // manuel kur girme popup'ı açılır (bkz. cart-render.js).
-      // DÜZENLEME (27.09.2026, Abdullah'ın isteğiyle): kur bilgisi tekrar
-      // GENEL TOPLAM kutusunun İÇİNE, en üst satırına taşındı — kırmızı
-      // zemin, beyaz yazı. Altına (primGizli değilse) bir TOPLAM PRİM
+      // DÜZENLEME (27.09.2026, Abdullah'ın isteğiyle): kur bilgisi artık ayrı
+      // bir şerit değil — GENEL TOPLAM ile AYNI satırda, solda, beyaz yazı
+      // (mavi zeminin üzerinde). Altına (primGizli değilse) bir TOPLAM PRİM
       // satırı ekleniyor.
       var primSatiriVarMi = !primGizli;
       var kurIcSinifi = "belge-gt-kur-ic" + (opts.kurManuelMi ? " belge-gt-kur-ic--manuel" : "") + (opts.kurTiklanabilir ? " belge-gt-kur-ic--tiklanabilir" : "");
       var kurEtiketMetni = (opts.kurManuelMi ? "✏️ Bu işlemde " : "Bu işlemde ") + fmt(opts.kur) + " kuru kullanıldı";
       html += "<div class='belge-gt-kutu" + (primSatiriVarMi ? " belge-gt-kutu--altduz" : "") + "'>"
-        + (opts.kur ? "<div class='" + kurIcSinifi + "'>" + kurEtiketMetni + "</div>" : "")
         + "<div class='belge-gt-satir'>"
+        + (opts.kur ? "<span class='" + kurIcSinifi + "'>" + kurEtiketMetni + "</span>" : "")
         + "<span class='belge-gt-etiket-deger-grup'>"
         + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"
         + "<span class='belge-gt-deger'>" + fmt(opts.genelToplam) + " EURO" + (opts.kur ? "<span class='belge-gt-deger-alt'>≈ " + Math.round(opts.genelToplam*opts.kur).toLocaleString("tr-TR") + " TL</span>" : "") + "</span>"

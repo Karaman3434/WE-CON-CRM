@@ -414,11 +414,11 @@
   border-radius: 10px;
 }
 .belge-genel-toplam-serit--altduz { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-/* DÜZENLEME (27.09.2026, Abdullah'ın isteğiyle): kur bilgisi tekrar GENEL
-   TOPLAM kutusunun İÇİNE, en üst satırına taşındı — kırmızı zemin, beyaz
-   yazı. .belge-gt-kutu SADECE hareket-tablo.js'in (Sepet/Gönder ürün
-   tablosu) kullandığı dıştaki kutu; içindeki GENEL TOPLAM satırı
-   .belge-gt-satir ile aynı görünümü (renk/hizalama) üretir. */
+/* DÜZENLEME (27.09.2026, Abdullah'ın isteğiyle): kur bilgisi artık ayrı bir
+   şerit DEĞİL — GENEL TOPLAM ile aynı satırda (solda), beyaz yazı, zemin
+   yok (mavi kutunun kendi rengi görünür). .belge-gt-kutu SADECE
+   hareket-tablo.js'in (Sepet/Gönder ürün tablosu) kullandığı dıştaki kutu;
+   içindeki GENEL TOPLAM satırı .belge-gt-satir ile aynı görünümü üretir. */
 .belge-gt-kutu {
   background: #003a70;
   border-radius: 10px;
@@ -426,13 +426,15 @@
 }
 .belge-gt-kutu--altduz { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .belge-gt-kur-ic {
-  background: #c0392b;
+  background: none;
   color: #ffffff;
-  text-align: center;
-  padding: 5px 16px;
-  font-size: 12.5px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
 }
+/* Manuel kur girildiğinde (mevcut #b7601f rengi yerine) hafif altın tonu —
+   mavi zemin üzerinde okunaklı kalması için. */
+.belge-gt-kur-ic--manuel { color: #ffd27a; }
 /* Sepet'te bu şeride dokunup o işleme özel kur girilebilir (13.09.2026) —
    tıklanabilir olduğunu belli etmek için noktalı alt çizgi. */
 .belge-gt-kur-ic--tiklanabilir { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
