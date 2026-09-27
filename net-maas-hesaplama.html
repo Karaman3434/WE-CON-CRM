@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST V2 — VERSİYON: WG.270926.2200.650 — net-maas-hesaplama.html
+  =====================================================================
+  BRÜT MAAŞ → NET MAAŞ (27.09.2026 mimari bölünme) — eski monolitik Maaş
+  Hesaplama sayfasının Brüt Sabit Maaş + Vergi Matrahı Kalibrasyonu + Net
+  Maaş kısmı buraya taşındı. Hesaplama KURALLARI değişmedi: Net Maaş, o
+  ayın Brüt Prim'ini de bilmek zorunda (bkz. maas-ortak-hesap.js) — bu
+  yüzden brüt prim burada da hesaba giriyor ama SADECE arka planda girdi
+  olarak, ekranda gösterilmiyor (Brüt/Net Prim, Ödenebilir Komisyon
+  sayfasının işi). Ay kapatma işlemi burada YOK — tek kapat butonu Maaş
+  Hesaplama (özet) sayfasında.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3d8c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WEICON ASİST">
+<title>WEICON ASİST — Brüt Maaş → Net Maaş</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2100.648">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2200.650">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="maas-menu.html"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+  <button class="nav-btn nav-btn--menu" id="btnMenu"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
+</nav>
+</div>
+<div class="sayfa-rota-serit">
+  <span class="sayfa-rota-serit-isim">💵 Brüt Maaş → Net Maaş</span>
+  <span class="sayfa-rota-serit-rota">Raporlar › Maaş</span>
+</div>
+
+<main class="sayfa">
+
+  <p class="ok-aciklama" style="background:#fff8e6; border-color:#f0dca0; color:#7a5b00; border-radius:10px; border-top:1.5px solid #f0dca0;">Bu bir TAHMİN aracıdır — 2026 kümülatif vergi matrahı yöntemiyle hesaplar. Kesin rakam için gerçek bordronla karşılaştır.</p>
+
+  <div class="mh-donem-bar" id="nmDonemBar">
+    <button type="button" id="nmDonemOncekiBtn" class="mh-donem-ok-btn" aria-label="Önceki ay">‹</button>
+    <div class="mh-donem-bar-orta"><span id="nmDonemBtnMetin">Yükleniyor…</span></div>
+    <button type="button" id="nmDonemSonrakiBtn" class="mh-donem-ok-btn" aria-label="Sonraki ay">›</button>
+    <button type="button" id="nmDonemYeniAyBtn" class="mh-donem-yeniay-btn" disabled title="Bu ayı Maaş Hesaplama sayfasından kapatınca otomatik açılır">+ Yeni Ay</button>
+  </div>
+  <div class="mh-kapali-serit" id="nmKapaliSerit" hidden>🔒 Bu dönem kapatıldı — sadece görüntüleniyor.</div>
+
+  <div class="mh-tutar-kart">
+    <div class="mh-ust-bilgi-satir">
+      <span class="mh-etiket" style="margin-top:0;">BRÜT SABİT MAAŞ</span>
+      <button type="button" id="btnNmBrutSabitGuncelle" class="mh-guncelle-btn">✏️ Güncelle</button>
+    </div>
+    <div class="mh-tutar-kart-deger" id="nmBrutSabitDeger">0,00 TL</div>
+    <div class="mh-ust-bilgi-not">2026 için sabit — değiştiğinde Güncelle'ye bas.</div>
+    <div class="mh-tutar-kart-alt">
+      <span class="mh-kesinti-oran" id="nmMaasKesintiOran">%0,00 kesinti</span>
+      <span class="mh-net-deger">Net Maaş: <b id="nmNetMaasDeger">0,00 TL</b></span>
+    </div>
+  </div>
+
+  <div class="mh-ust-bilgi-kutu">
+    <div class="mh-ust-bilgi-satir">
+      <span class="mh-etiket" style="margin-top:0;">VERGİ MATRAHI KALİBRASYONU</span>
+      <button type="button" id="btnNmMatrahKalibreEt" class="mh-guncelle-btn">🎯 Kalibre Et</button>
+    </div>
+    <div class="mh-ust-bilgi-not" id="nmMatrahDurum">—</div>
+  </div>
+
+  <div class="mh-toplam-kutu">
+    <div class="mh-toplam-etiket">NET MAAŞ — <span id="nmToplamAyEtiket">—</span></div>
+    <div class="mh-toplam-deger" id="nmToplamDeger">0,00 TL</div>
+  </div>
+
+  <p class="mh-not">Not: Bu sayfadaki Net Maaş hesabı, aynı ayın Brüt Prim değerini de (Ödenebilir Komisyon sayfasından) kullanır — çünkü ikisi TEK bir kümülatif vergi matrahı hesabını paylaşır. Brüt/Net Prim rakamlarını görmek için Ödenebilir Komisyon sayfasına bak. Ayı kapatmak için Maaş Hesaplama sayfasındaki "GEÇERLİ AYIN HESABI KAPANDI" butonunu kullan.</p>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.130926.2010.553"></script>
+<script src="auth.js?v=WG.270926.1940.646"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="ayarlar-sync.js?v=WG.130926.2010.553"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="odenebilir-komisyon-data.js?v=WG.130926.2010.553"></script>
+<script src="maas-kayit-data.js?v=WG.130926.2010.553"></script>
+<script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
+<script src="maas-ortak-hesap.js?v=WG.270926.2200.650"></script>
+<script src="net-maas-hesaplama-render.js?v=WG.270926.2200.650"></script>
+</body>
+</html>

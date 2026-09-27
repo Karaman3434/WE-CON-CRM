@@ -3,7 +3,7 @@
   font-size: 11px;
   font-weight: 900;
   color: #556170;
-  margin: 14px 0 6px;
+  margin: 8px 0 4px;
 }
 .mh-input {
   width: 100%;
@@ -58,6 +58,19 @@
   flex-shrink: 0;
 }
 .mh-donem-ok-btn[hidden] { visibility: hidden; }
+.mh-donem-yeniay-btn {
+  background: rgba(255,255,255,.15);
+  border: none;
+  color: rgba(255,255,255,.6);
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 30px;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.mh-donem-yeniay-btn:disabled { cursor: default; }
 .mh-donem-bar-orta {
   flex: 1;
   text-align: center;
@@ -83,8 +96,8 @@
   background: #fff;
   border: 1px solid #e2e6ec;
   border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 16px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
 }
 .mh-ust-bilgi-satir { display: flex; justify-content: space-between; align-items: center; }
 .mh-guncelle-btn {
@@ -115,8 +128,8 @@
 .mh-avans-toplam-kutu {
   background: #f4f7fb;
   border-radius: 8px;
-  padding: 10px 12px;
-  margin-top: 12px;
+  padding: 8px 12px;
+  margin-top: 6px;
 }
 .mh-avans-durum-satir {
   font-size: 11px;
@@ -128,8 +141,8 @@
   background: #fff;
   border: 1px solid #e2e6ec;
   border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
 }
 .mh-tutar-kart-deger { font-size: 22px; font-weight: 900; color: #111; margin-top: 2px; }
 .mh-tutar-kart-deger--vurgu { color: #b7601f; }
@@ -138,8 +151,8 @@
   justify-content: space-between;
   align-items: baseline;
   border-top: 1px solid #eef1f5;
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 6px;
+  padding-top: 6px;
 }
 .mh-kesinti-oran { font-size: 11px; font-weight: 800; color: #c0392b; }
 .mh-net-deger { font-size: 12px; color: #556170; }
@@ -148,18 +161,38 @@
 .mh-toplam-kutu {
   background: #eafaf0;
   border-radius: 12px;
-  padding: 16px;
+  padding: 12px;
   text-align: center;
-  margin-bottom: 16px; border: 1.5px solid #0e6b34;}
+  margin-bottom: 8px; border: 1.5px solid #0e6b34;}
 .mh-toplam-etiket { font-size: 12px; font-weight: 900; color: #0e6b34; letter-spacing: 0.3px; }
-.mh-toplam-deger { font-size: 28px; font-weight: 900; color: #111; margin-top: 4px; }
+.mh-toplam-deger { font-size: 26px; font-weight: 900; color: #111; margin-top: 2px; }
+
+.mh-komisyon-ozet-kutu {
+  background: #fff;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.mh-komisyon-ozet-satir { display: flex; gap: 8px; margin-top: 4px; }
+.mh-komisyon-ozet-hucre {
+  flex: 1;
+  background: #f4f7fb;
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+}
+.mh-komisyon-ozet-etiket { font-size: 10px; color: #556170; font-weight: 700; }
+.mh-komisyon-ozet-deger { font-size: 15px; font-weight: 900; margin-top: 2px; }
+.mh-komisyon-ozet-deger--brut { color: #b7601f; }
+.mh-komisyon-ozet-deger--net { color: #0e6b34; }
 
 .mh-yatacak-kutu-standalone {
   background: #003a70;
   border-radius: 12px;
-  padding: 18px;
+  padding: 12px;
   text-align: center;
-  margin-bottom: 16px; border: 1.5px solid #004f99;}
+  margin-bottom: 10px; border: 1.5px solid #004f99;}
 .mh-yatacak-kutu-standalone .mh-kart-yatacak-etiket { color: #a9c6e4; }
 .mh-yatacak-kutu-standalone .mh-kart-yatacak-deger { color: #fff; font-size: 30px; }
 
@@ -273,3 +306,25 @@
   cursor: pointer;
   margin-top: 6px;
 }
+
+/* ÖZET SAYFASI TIKLANABİLİR SATIRLAR (27.09.2026, YENİ) — Maaş Hesaplama
+   özet sayfasındaki Net Maaş / Net Prim / Avans satırları; her biri kendi
+   kaynak sayfasına gider. */
+.mh-ozet-satir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+.mh-ozet-satir-sol { display: flex; flex-direction: column; gap: 2px; }
+.mh-ozet-satir-etiket { font-size: 12px; font-weight: 900; color: #003a70; }
+.mh-ozet-satir-alt { font-size: 10px; color: #8a8f98; }
+.mh-ozet-satir-sag { display: flex; align-items: center; gap: 8px; }
+.mh-ozet-satir-deger { font-size: 15px; font-weight: 900; color: #0e6b34; }
+.mh-ozet-satir-deger--kirmizi { color: #c0392b; }
+.mh-ozet-satir-ok { font-size: 18px; color: #b9c2cf; font-weight: 900; }

@@ -9,6 +9,8 @@
      HİÇBİR ŞEY kaydedilmez (OCR asla %100 güvenilmez, özellikle eksi
      işaretini kaçırabilir).
   4) İki kayıt arasında ay ay fark hesaplayıp karşılaştırma gösterir.
+  5) (27.09.2026, YENİ) "Brüt Prim → Net Prim" bölümü — MaasOrtakHesap
+     üzerinden açık maaş dönemine ait Brüt Prim'i alır, Net Prim'e çevirir.
 */
 
 function hataGoster(mesaj){
@@ -233,6 +235,32 @@ function gecmisiCiz(){
   }catch(e){ hataGoster("Geçmiş çizilemedi: " + e.message); }
 }
 
+// BRÜT PRİM → NET PRİM (27.09.2026, YENİ) — açık maaş dönemi için
+// MaasOrtakHesap.hesapla() çağırır; Net Maaş sayfası ve Maaş Hesaplama
+// özeti de AYNI çağrıyı yapıyor, bu yüzden rakamlar hep tutarlı kalır.
+function fmtTL_BN(n){
+  return (n||0).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " TL";
+}
+function fmtOranSadece_BN(brut, net){
+  if(!brut) return "%0,00 kesinti";
+  var oran = (brut-net)/brut*100;
+  return "%" + oran.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " kesinti";
+}
+function brutNetPrimGoster(){
+  try{
+    if(typeof MaasKayitData === "undefined" || typeof MaasOrtakHesap === "undefined") return;
+    var acik = MaasKayitData.acikDonem();
+    document.getElementById("bnDonemEtiket").textContent = AY_ADLARI[acik.ay] + " " + acik.yil;
+    var h = MaasOrtakHesap.hesapla(acik.ay, acik.yil);
+    document.getElementById("bnBrutPrimDeger").textContent = fmtTL_BN(h.brutPrim);
+    document.getElementById("bnPrimKaynak").textContent =
+      "Komisyon toplamı " + fmtTL_BN(h.komisyonToplam) + " − referans " + fmtTL_BN(h.referans);
+    document.getElementById("bnPrimKesintiOran").textContent = fmtOranSadece_BN(h.sonuc.brutPrim, h.sonuc.netPrim);
+    document.getElementById("bnNetPrimDeger").textContent = fmtTL_BN(h.sonuc.netPrim);
+    document.getElementById("bnUyariBanner").hidden = !h.komisyonAyUyumsuz;
+  }catch(e){ hataGoster("Brüt/Net Prim gösterilemedi: " + e.message); }
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -260,7 +288,9 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   };
 
-  KomisyonData.degistiginde(function(){ secicileriDoldur(); gecmisiCiz(); });
+  KomisyonData.degistiginde(function(){ secicileriDoldur(); gecmisiCiz(); brutNetPrimGoster(); });
+  try{ MaasKayitData.degistiginde(function(){ brutNetPrimGoster(); }); }catch(e){}
   secicileriDoldur();
   gecmisiCiz();
+  brutNetPrimGoster();
 });

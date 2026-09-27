@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.020926.2330.95 — maas-hesaplama.html
+  WEICON ASİST V2 — VERSİYON: WG.270926.2200.650 — maas-hesaplama.html
   =====================================================================
-  MAAŞ + PRİM HESAPLAMA v3 — açık dönem otomatik ilerler (hiç kayıt yokken
-  BİR ÖNCEKİ ay açık sayılır, çünkü bir ay ancak bittikten sonra kapatılır).
-  Brüt Prim, Ödenebilir Komisyon'un güncel toplamı ile referans nokta
-  arasındaki farktan otomatik hesaplanır. Brüt Sabit Maaş salt-okunur +
-  "Güncelle" butonuyla değişir (yanlışlıkla değişmesin diye). Sonuç, Cari
-  Bilgi kartına benzer büyük bir "Maaş Kartı" içinde gösterilir.
+  MAAŞ HESAPLAMA (ÖZET) — 27.09.2026 mimari bölünmesi: bu sayfa artık
+  kendi hesaplamasını yapmıyor. Net Maaş → net-maas-hesaplama.html,
+  Net Prim → odenebilir-komisyon.html, Avans/Kesinti → avans-takibi.html
+  sayfalarından okunur (hepsi aynı ay için, aynı MaasOrtakHesap.hesapla()
+  çağrısı üzerinden — rakamlar hep tutarlı). Bu sayfanın tek görevi: bu
+  üçünü toplamak, HESABA YATACAK NET MAAŞ'ı göstermek ve tek
+  "GEÇERLİ AYIN HESABI KAPANDI" butonuyla ayı kapatmak (Avans Takibi'ni
+  de senkron kapatır). Açık dönem otomatik ilerler (hiç kayıt yokken BİR
+  ÖNCEKİ ay açık sayılır, çünkü bir ay ancak bittikten sonra kapatılır).
 -->
 <html lang="tr">
 <head>
@@ -19,11 +22,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WEICON ASİST">
-<title>WEICON ASİST — Maaş + Prim Hesaplama</title>
+<title>WEICON ASİST — Maaş Hesaplama</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
 <link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2100.648">
-<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2100.648">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2200.650">
 </head>
 <body>
 
@@ -40,56 +43,23 @@
 </nav>
 </div>
 <div class="sayfa-rota-serit">
-  <span class="sayfa-rota-serit-isim">🧮 Maaş + Prim Hesaplama</span>
+  <span class="sayfa-rota-serit-isim">🧮 Maaş Hesaplama</span>
   <span class="sayfa-rota-serit-rota">Raporlar › Maaş</span>
 </div>
 
 <main class="sayfa">
 
-  <p class="ok-aciklama" style="background:#fff8e6; border-color:#f0dca0; color:#7a5b00; border-radius:10px; border-top:1.5px solid #f0dca0;">Bu bir TAHMİN aracıdır — 2026 kümülatif vergi matrahı yöntemiyle hesaplar. Kesin rakam için gerçek bordronla karşılaştır.</p>
+  <p class="ok-aciklama" style="background:#fff8e6; border-color:#f0dca0; color:#7a5b00; border-radius:10px; border-top:1.5px solid #f0dca0;">Bu sayfa Net Maaş / Net Prim / Avans bilgilerini ilgili sayfalardan toplar. Detaylı hesaplama veya düzenleme için ilgili satıra dokun.</p>
 
-  <!-- DÖNEM BARI (27.09.2026) — alttaki "Kayıt Geçmişi" listesi kaldırıldı,
-       geçmiş kapanmış aylar artık burada ‹ › ile gezilir; açık/güncel
-       döneme dönüldüğünde canlı hesaplama ve düzenleme butonları geri gelir. -->
+  <!-- DÖNEM BARI — geçmiş kapanmış aylar burada ‹ › ile gezilir; açık/güncel
+       döneme dönüldüğünde kapat butonu geri gelir. -->
   <div class="mh-donem-bar" id="mhDonemBar">
     <button type="button" id="mhDonemOncekiBtn" class="mh-donem-ok-btn" aria-label="Önceki ay">‹</button>
     <div class="mh-donem-bar-orta"><span id="mhDonemBtnMetin">Yükleniyor…</span></div>
     <button type="button" id="mhDonemSonrakiBtn" class="mh-donem-ok-btn" aria-label="Sonraki ay">›</button>
+    <button type="button" id="mhDonemYeniAyBtn" class="mh-donem-yeniay-btn" disabled title="Bu ayı kapatınca otomatik açılır">+ Yeni Ay</button>
   </div>
   <div class="mh-kapali-serit" id="mhKapaliSerit" hidden>🔒 Bu dönem kapatıldı — sadece görüntüleniyor.</div>
-
-  <!-- BRÜT MAAŞ — altında kesinti % ve net maaş -->
-  <div class="mh-tutar-kart">
-    <div class="mh-ust-bilgi-satir">
-      <span class="mh-etiket" style="margin-top:0;">BRÜT SABİT MAAŞ</span>
-      <button type="button" id="btnBrutSabitGuncelle" class="mh-guncelle-btn">✏️ Güncelle</button>
-    </div>
-    <div class="mh-tutar-kart-deger" id="mhBrutSabitDeger">0,00 TL</div>
-    <div class="mh-ust-bilgi-not">2026 için sabit — değiştiğinde Güncelle'ye bas.</div>
-    <div class="mh-tutar-kart-alt">
-      <span class="mh-kesinti-oran" id="mhMaasKesintiOran">%0,00 kesinti</span>
-      <span class="mh-net-deger">Net Maaş: <b id="mhKartNetMaas">0,00 TL</b></span>
-    </div>
-  </div>
-
-  <!-- BRÜT PRİM — altında kesinti % ve net prim -->
-  <div class="mh-tutar-kart">
-    <span class="mh-etiket" style="margin-top:0;">BRÜT PRİM (otomatik)</span>
-    <div class="mh-tutar-kart-deger mh-tutar-kart-deger--vurgu" id="mhPrimDeger">0,00 TL</div>
-    <div class="mh-ust-bilgi-not" id="mhPrimKaynak">—</div>
-    <div class="mh-tutar-kart-alt">
-      <span class="mh-kesinti-oran" id="mhPrimKesintiOran">%0,00 kesinti</span>
-      <span class="mh-net-deger">Net Prim: <b id="mhKartNetPrim">0,00 TL</b></span>
-    </div>
-  </div>
-
-  <div class="mh-ust-bilgi-kutu">
-    <div class="mh-ust-bilgi-satir">
-      <span class="mh-etiket" style="margin-top:0;">VERGİ MATRAHI KALİBRASYONU</span>
-      <button type="button" id="btnMatrahKalibreEt" class="mh-guncelle-btn">🎯 Kalibre Et</button>
-    </div>
-    <div class="mh-ust-bilgi-not" id="mhMatrahDurum">—</div>
-  </div>
 
   <!-- MAAŞ KARTI başlığı + NET MAAŞ + NET PRİM toplamı, yeşil vurgulu tek kutu -->
   <div class="mh-kart-baslik">
@@ -100,15 +70,38 @@
     <div class="mh-toplam-deger" id="mhKartNetToplam">0,00 TL</div>
   </div>
 
-  <section class="ok-kutu">
-    <div class="mh-kutu-baslik-satir">AVANS TOPLAMI</div>
-    <div class="mh-avans-durum-satir" id="mhAvansDurum">Avans Takibi'nde bu dönem için kayıt yok.</div>
-    <div class="mh-avans-toplam-kutu">
-      <div class="mh-sonuc-satir"><span>Özel Avans</span><b id="mhAvansToplamOzel">0,00 TL</b></div>
-      <div class="mh-sonuc-satir"><span>İş Avansı (belgesiz kalan)</span><b id="mhAvansToplamIs">0,00 TL</b></div>
-      <div class="mh-sonuc-satir mh-sonuc-satir--toplam"><span>TOPLAM AVANS/KESİNTİ</span><b id="mhAvansToplamGenel">0,00 TL</b></div>
+  <!-- 3 tıklanabilir satır (27.09.2026, YENİ) — her biri kendi kaynağına
+       gider: Net Maaş sayfası, Ödenebilir Komisyon, Avans Takibi. -->
+  <a class="mh-ozet-satir" href="net-maas-hesaplama.html">
+    <div class="mh-ozet-satir-sol">
+      <span class="mh-ozet-satir-etiket">💵 NET MAAŞ</span>
+      <span class="mh-ozet-satir-alt" id="mhOzetBrutSabitAlt">Brüt: 0,00 TL</span>
     </div>
-  </section>
+    <div class="mh-ozet-satir-sag">
+      <span class="mh-ozet-satir-deger" id="mhOzetNetMaas">0,00 TL</span>
+      <span class="mh-ozet-satir-ok">›</span>
+    </div>
+  </a>
+  <a class="mh-ozet-satir" href="odenebilir-komisyon.html">
+    <div class="mh-ozet-satir-sol">
+      <span class="mh-ozet-satir-etiket">🎯 NET PRİM</span>
+      <span class="mh-ozet-satir-alt" id="mhOzetBrutPrimAlt">Brüt: 0,00 TL</span>
+    </div>
+    <div class="mh-ozet-satir-sag">
+      <span class="mh-ozet-satir-deger" id="mhOzetNetPrim">0,00 TL</span>
+      <span class="mh-ozet-satir-ok">›</span>
+    </div>
+  </a>
+  <a class="mh-ozet-satir" href="avans-takibi.html">
+    <div class="mh-ozet-satir-sol">
+      <span class="mh-ozet-satir-etiket">🧾 AVANS / KESİNTİ</span>
+      <span class="mh-ozet-satir-alt" id="mhOzetAvansDurum">Kayıt yok.</span>
+    </div>
+    <div class="mh-ozet-satir-sag">
+      <span class="mh-ozet-satir-deger mh-ozet-satir-deger--kirmizi" id="mhOzetAvansToplam">0,00 TL</span>
+      <span class="mh-ozet-satir-ok">›</span>
+    </div>
+  </a>
 
   <!-- HESABA YATACAK — avans düşülmüş net toplam, ayrı vurgulu kutu -->
   <div class="mh-yatacak-kutu-standalone">
@@ -134,6 +127,7 @@
 <script src="avans-kayit-data.js?v=WG.240926.1452.618"></script>
 <script src="maas-kayit-data.js?v=WG.130926.2010.553"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
-<script src="maas-hesaplama-render.js?v=WG.270926.2100.648"></script>
+<script src="maas-ortak-hesap.js?v=WG.270926.2200.650"></script>
+<script src="maas-hesaplama-render.js?v=WG.270926.2200.650"></script>
 </body>
 </html>
