@@ -182,8 +182,6 @@ function avDonemeGec(ay, yil){
 }
 
 function avCiz(){
-  document.getElementById("btnAviKapatKayitEt").textContent = "✓ " + AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil + "'ı Kapat ve Kayıt Et";
-
   avListeCiz();
   var govdeHarcama = avTabloCiz("avHarcamaTabloGovde", "avHarcamaBos", avHarcamaListe, "etiket");
   govdeHarcama.querySelectorAll(".mh-harcama-sil-btn").forEach(function(btn){
@@ -243,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function(){
   // veri daha gelmeden bir şey eklerse, boş listeyi Firebase'e YAZIP
   // gerçek (henüz görünmeyen) kayıtları SİLEBİLİRDİ. Veri gelince
   // avYuklemeKilidiniAc() kilidi kaldırır.
-  var avButonlar = ["btnAvEkle","btnHarcamaEkle","btnAviKapatKayitEt"];
+  var avButonlar = ["btnAvEkle","btnHarcamaEkle"];
   function avYuklemeKilidiniKapat(){
     avButonlar.forEach(function(id){ document.getElementById(id).disabled = true; });
   }
@@ -362,27 +360,6 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("avHarcamaCesit").value = "";
     document.getElementById("avHarcamaTutar").value = "";
     avTaslagiKaydet(); avCiz(); avKaydedildiGoster();
-  };
-
-  document.getElementById("btnAviKapatKayitEt").onclick = function(){
-    var t = avToplamlariHesapla({ozelAvansGirisleri:avOzelListe, isAvansiGirisleri:avIsListe, isAvansiHarcamalar:avHarcamaListe});
-    if(!confirm(AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil + " avans dönemini kapatıp kayıt etmek istediğine emin misin?\n\nToplam Kesinti: " + fmtTL_AV(t.toplamKesinti))) return;
-    var kayitObj = {
-      ay: avSeciliAy, yil: avSeciliYil,
-      ozelAvansGirisleri: avOzelListe, isAvansiGirisleri: avIsListe, isAvansiHarcamalar: avHarcamaListe,
-      ozelAvansToplam: t.ozelToplam, isAvansiToplam: t.isToplam, isAvansiBelgelenenToplam: t.belgelenenToplam,
-      isAvansiBelgesizKalan: t.isKesilecek, toplamKesinti: t.toplamKesinti, kayitZamani: Date.now()
-    };
-    document.getElementById("btnAviKapatKayitEt").disabled = true;
-    var kapatilanAy = avSeciliAy, kapatilanYil = avSeciliYil;
-    AvansKayitData.kaydet(kayitObj, function(basarili, err){
-      document.getElementById("btnAviKapatKayitEt").disabled = false;
-      if(!basarili){ alert("Kaydedilemedi: " + (err && err.message)); return; }
-      var sonrakiAy = kapatilanAy+1, sonrakiYil = kapatilanYil;
-      if(sonrakiAy>12){ sonrakiAy=1; sonrakiYil+=1; }
-      avDonemeGec(sonrakiAy, sonrakiYil);
-      avGecmisSeciciDoldur();
-    });
   };
 
   document.getElementById("avGecmisAySecici").onchange = function(){ avGecmisDetayGoster(this.value); };

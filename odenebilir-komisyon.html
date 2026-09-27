@@ -22,7 +22,7 @@
 <title>WEICON ASİST — Ödenebilir Komisyon</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
-<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.140926.1213.555">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2100.648">
 </head>
 <body>
 
@@ -83,7 +83,13 @@
 
   <section class="ok-kutu">
     <div class="ok-kutu-baslik">🕘 Kayıt Geçmişi</div>
-    <div id="okGecmisListesi"></div>
+    <div class="ok-donem-bar" id="okGecmisBar" hidden>
+      <button type="button" id="okGecmisOncekiBtn" class="ok-donem-ok-btn" aria-label="Önceki kayıt">‹</button>
+      <div class="ok-donem-bar-orta"><span id="okGecmisBarMetin">—</span></div>
+      <button type="button" id="okGecmisSonrakiBtn" class="ok-donem-ok-btn" aria-label="Sonraki kayıt">›</button>
+    </div>
+    <div id="okGecmisDetay"></div>
+    <button type="button" id="btnOkGecmisSil" class="ok-gecmis-sil-tam-btn" hidden>🗑 Bu Kaydı Sil</button>
     <p class="bos-mesaj" id="okGecmisBos" hidden>Henüz kayıt yok.</p>
   </section>
 
@@ -98,6 +104,6 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="odenebilir-komisyon-data.js?v=WG.130926.2010.553"></script>
-<script src="odenebilir-komisyon-render.js?v=WG.020926.1927.93"></script>
+<script src="odenebilir-komisyon-render.js?v=WG.270926.2100.648"></script>
 </body>
 </html>

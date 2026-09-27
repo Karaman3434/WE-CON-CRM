@@ -22,8 +22,8 @@
 <title>WEICON ASİST — Maaş + Prim Hesaplama</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
-<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.140926.1213.555">
-<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.240926.1559.619">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2100.648">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2100.648">
 </head>
 <body>
 
@@ -48,7 +48,15 @@
 
   <p class="ok-aciklama" style="background:#fff8e6; border-color:#f0dca0; color:#7a5b00; border-radius:10px; border-top:1.5px solid #f0dca0;">Bu bir TAHMİN aracıdır — 2026 kümülatif vergi matrahı yöntemiyle hesaplar. Kesin rakam için gerçek bordronla karşılaştır.</p>
 
-  <div class="mh-donem-serit" id="mhDonemSerit">Açık Dönem: —</div>
+  <!-- DÖNEM BARI (27.09.2026) — alttaki "Kayıt Geçmişi" listesi kaldırıldı,
+       geçmiş kapanmış aylar artık burada ‹ › ile gezilir; açık/güncel
+       döneme dönüldüğünde canlı hesaplama ve düzenleme butonları geri gelir. -->
+  <div class="mh-donem-bar" id="mhDonemBar">
+    <button type="button" id="mhDonemOncekiBtn" class="mh-donem-ok-btn" aria-label="Önceki ay">‹</button>
+    <div class="mh-donem-bar-orta"><span id="mhDonemBtnMetin">Yükleniyor…</span></div>
+    <button type="button" id="mhDonemSonrakiBtn" class="mh-donem-ok-btn" aria-label="Sonraki ay">›</button>
+  </div>
+  <div class="mh-kapali-serit" id="mhKapaliSerit" hidden>🔒 Bu dönem kapatıldı — sadece görüntüleniyor.</div>
 
   <!-- BRÜT MAAŞ — altında kesinti % ve net maaş -->
   <div class="mh-tutar-kart">
@@ -100,7 +108,6 @@
       <div class="mh-sonuc-satir"><span>İş Avansı (belgesiz kalan)</span><b id="mhAvansToplamIs">0,00 TL</b></div>
       <div class="mh-sonuc-satir mh-sonuc-satir--toplam"><span>TOPLAM AVANS/KESİNTİ</span><b id="mhAvansToplamGenel">0,00 TL</b></div>
     </div>
-    <a href="avans-takibi.html" class="mh-avans-git-btn">🧾 Avans Takibi'ni Aç</a>
   </section>
 
   <!-- HESABA YATACAK — avans düşülmüş net toplam, ayrı vurgulu kutu -->
@@ -109,15 +116,10 @@
     <div class="mh-kart-yatacak-deger" id="mhKartHesabaYatacak">0,00 TL</div>
   </div>
 
-  <button type="button" id="btnAyiKayitEt" class="mh-kayit-et-btn">✓ Kapat ve Kayıt Et</button>
+  <button type="button" id="btnAyiKayitEt" class="mh-kayit-et-btn">✓ GEÇERLİ AYIN HESABI KAPANDI</button>
+  <button type="button" id="btnMhKapaliKaydiSil" class="mh-gecmis-sil-btn" hidden>🗑 Bu Kaydı Sil</button>
 
   <p class="mh-not">Not: Avans/diğer kesinti net maaş ve net prim tutarlarını değiştirmez, sadece ödeme mahsup kalemidir. Gelir vergisi dilim geçiş ayında resmi bordro yazılımları burada gösterilenden birkaç TL farklı sonuç verebilir.</p>
-
-  <section class="ok-kutu">
-    <div class="ok-kutu-baslik">🕘 Kayıt Geçmişi</div>
-    <div id="mhGecmisListesi"></div>
-    <p class="bos-mesaj" id="mhGecmisBos" hidden>Henüz kayıt yok.</p>
-  </section>
 
 </main>
 
@@ -132,6 +134,6 @@
 <script src="avans-kayit-data.js?v=WG.240926.1452.618"></script>
 <script src="maas-kayit-data.js?v=WG.130926.2010.553"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
-<script src="maas-hesaplama-render.js?v=WG.020926.2330.95"></script>
+<script src="maas-hesaplama-render.js?v=WG.270926.2100.648"></script>
 </body>
 </html>

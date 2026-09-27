@@ -204,34 +204,32 @@ function karsilastirmayiCiz(){
   }catch(e){ hataGoster("Karşılaştırma çizilemedi: " + e.message); }
 }
 
+// KAYIT GEÇMİŞİ BARI (27.09.2026) — eski düz liste yerine avans/maaş
+// sayfalarındaki gibi ‹ › ile tek tek gezilen bir bar. 0 = en yeni kayıt.
+var okGecmisIndex = 0;
+
 function gecmisiCiz(){
   try{
     var kayitlar = KomisyonData.tumKayitlar();
-    var kapsayici = document.getElementById("okGecmisListesi");
+    var bar = document.getElementById("okGecmisBar");
+    var detay = document.getElementById("okGecmisDetay");
     var bos = document.getElementById("okGecmisBos");
+    var silBtn = document.getElementById("btnOkGecmisSil");
     if(kayitlar.length === 0){
-      kapsayici.innerHTML = "";
-      bos.hidden = false;
+      bar.hidden = true; detay.innerHTML = ""; silBtn.hidden = true; bos.hidden = false;
       return;
     }
-    bos.hidden = true;
-    kapsayici.innerHTML = kayitlar.map(function(k){
-      var toplam = 0;
-      for(var ay=1; ay<=12; ay++){ toplam += (k.aylar && k.aylar[ay]) || 0; }
-      return "<div class='ok-gecmis-karti'>"
-        + "<div><div class='ok-gecmis-tarih'>" + tarihAnahtariniOku(k.anahtar) + "</div><div class='ok-gecmis-toplam'>Toplam: " + fmtTL(toplam) + " TL</div></div>"
-        + "<button class='ok-gecmis-sil-btn' data-sil='" + k.anahtar + "'>🗑️</button>"
-        + "</div>";
-    }).join("");
-    kapsayici.querySelectorAll(".ok-gecmis-sil-btn").forEach(function(btn){
-      btn.onclick = function(){
-        var anahtar = this.getAttribute("data-sil");
-        if(!confirm(tarihAnahtariniOku(anahtar) + " tarihli kayıt silinsin mi?")) return;
-        KomisyonData.kaydiSil(anahtar, function(basarili, err){
-          if(!basarili) hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
-        });
-      };
-    });
+    bos.hidden = true; bar.hidden = false; silBtn.hidden = false;
+    if(okGecmisIndex > kayitlar.length-1) okGecmisIndex = kayitlar.length-1;
+    if(okGecmisIndex < 0) okGecmisIndex = 0;
+    var k = kayitlar[okGecmisIndex];
+    document.getElementById("okGecmisBarMetin").textContent = tarihAnahtariniOku(k.anahtar);
+    document.getElementById("okGecmisOncekiBtn").hidden = (okGecmisIndex >= kayitlar.length-1);
+    document.getElementById("okGecmisSonrakiBtn").hidden = (okGecmisIndex <= 0);
+    var toplam = 0;
+    for(var ay=1; ay<=12; ay++){ toplam += (k.aylar && k.aylar[ay]) || 0; }
+    detay.innerHTML = "<div class='ok-gecmis-toplam'>Toplam: " + fmtTL(toplam) + " TL</div>";
+    silBtn.setAttribute("data-anahtar", k.anahtar);
   }catch(e){ hataGoster("Geçmiş çizilemedi: " + e.message); }
 }
 
@@ -249,6 +247,18 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnOkOnayla").onclick = onaylaTiklandi;
   document.getElementById("okOncekiSecim").onchange = karsilastirmayiCiz;
   document.getElementById("okSonrakiSecim").onchange = karsilastirmayiCiz;
+
+  document.getElementById("okGecmisOncekiBtn").onclick = function(){ okGecmisIndex++; gecmisiCiz(); };
+  document.getElementById("okGecmisSonrakiBtn").onclick = function(){ okGecmisIndex--; gecmisiCiz(); };
+  document.getElementById("btnOkGecmisSil").onclick = function(){
+    var anahtar = this.getAttribute("data-anahtar");
+    if(!anahtar) return;
+    if(!confirm(tarihAnahtariniOku(anahtar) + " tarihli kayıt silinsin mi?")) return;
+    KomisyonData.kaydiSil(anahtar, function(basarili, err){
+      if(!basarili){ hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata")); return; }
+      okGecmisIndex = 0;
+    });
+  };
 
   KomisyonData.degistiginde(function(){ secicileriDoldur(); gecmisiCiz(); });
   secicileriDoldur();

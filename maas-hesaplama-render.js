@@ -107,10 +107,68 @@ function mhBrutPrimDizisiOlustur(acikAy, acikYil, acikBrutPrim){
 
 function mhAcikDonemEtiketiGuncelle(){
   var acik = MaasKayitData.acikDonem();
-  document.getElementById("mhDonemSerit").textContent = "Açık Dönem: " + AY_ADLARI_MH[acik.ay] + " " + acik.yil;
+  var etiket = document.getElementById("mhDonemBtnMetin");
+  if(etiket) etiket.textContent = AY_ADLARI_MH[acik.ay] + " " + acik.yil;
   document.getElementById("mhKartBaslikAy").textContent = AY_ADLARI_MH[acik.ay] + " " + acik.yil;
-  document.getElementById("btnAyiKayitEt").textContent = "✓ " + AY_ADLARI_MH[acik.ay] + "'ı Kapat ve Kayıt Et";
+  document.getElementById("btnAyiKayitEt").textContent = "✓ GEÇERLİ AYIN HESABI KAPANDI";
   return acik;
+}
+
+// DÖNEM BARI (27.09.2026) — 0 = açık/canlı dönem (mhHesaplaVeCiz ile canlı
+// hesaplanır, düzenlenebilir), 1+ = MaasKayitData.tumKayitlar()[ofset-1]
+// (kapanmış kayıt, salt okunur). Alttaki "Kayıt Geçmişi" listesi bu barla
+// değiştirildi.
+var mhGezinmeOfset = 0;
+
+function mhDuzenlemeGorunurlugunuAyarla(gorunurMu){
+  document.getElementById("btnBrutSabitGuncelle").hidden = !gorunurMu;
+  document.getElementById("btnMatrahKalibreEt").hidden = !gorunurMu;
+  document.getElementById("btnAyiKayitEt").hidden = !gorunurMu;
+  document.getElementById("btnMhKapaliKaydiSil").hidden = gorunurMu;
+  document.getElementById("mhKapaliSerit").hidden = gorunurMu;
+}
+
+function mhKapaliKaydiGoster(k){
+  mhDuzenlemeGorunurlugunuAyarla(false);
+  var etiket = document.getElementById("mhDonemBtnMetin");
+  if(etiket) etiket.textContent = AY_ADLARI_MH[k.ay] + " " + k.yil;
+  document.getElementById("mhKartBaslikAy").textContent = AY_ADLARI_MH[k.ay] + " " + k.yil;
+  document.getElementById("mhBrutSabitDeger").textContent = fmtTL_MH(k.brutSabitAylik);
+  document.getElementById("mhPrimDeger").textContent = fmtTL_MH(k.brutPrim);
+  document.getElementById("mhPrimKaynak").textContent = "Kapanmış kayıt — o dönemde geçerli olan rakam.";
+  document.getElementById("mhMatrahDurum").textContent = "Kapanmış kayıt — kalibrasyon bu görünümde değiştirilemez.";
+  document.getElementById("mhMaasKesintiOran").textContent = fmtOranSadece_MH(k.brutSabitAylik, k.netSabitMaas);
+  document.getElementById("mhKartNetMaas").textContent = fmtTL_MH(k.netSabitMaas);
+  document.getElementById("mhPrimKesintiOran").textContent = fmtOranSadece_MH(k.brutPrim, k.netPrim);
+  document.getElementById("mhKartNetPrim").textContent = fmtTL_MH(k.netPrim);
+  document.getElementById("mhKartNetToplam").textContent = fmtTL_MH(k.netToplam);
+  document.getElementById("mhKartHesabaYatacak").textContent = fmtTL_MH(k.hesabaYatacak);
+  var av = mhAvansToplamlariniOku(k.ay, k.yil);
+  document.getElementById("mhAvansToplamOzel").textContent = fmtTL_MH(av.ozelToplam);
+  document.getElementById("mhAvansToplamIs").textContent = fmtTL_MH(av.isKesilecek);
+  document.getElementById("mhAvansToplamGenel").textContent = fmtTL_MH(av.toplamKesinti);
+  document.getElementById("mhAvansDurum").textContent = av.kapaliVarMi
+    ? "✓ Avans Takibi bu dönem için kapatıldı."
+    : "Avans Takibi'nde bu dönem için kayıt yok.";
+  document.getElementById("btnMhKapaliKaydiSil").setAttribute("data-anahtar", k.anahtar);
+}
+
+function mhGorunumCiz(){
+  var kayitlar = MaasKayitData.tumKayitlar();
+  if(mhGezinmeOfset > kayitlar.length) mhGezinmeOfset = kayitlar.length;
+  if(mhGezinmeOfset < 0) mhGezinmeOfset = 0;
+
+  var btnOnceki = document.getElementById("mhDonemOncekiBtn");
+  var btnSonraki = document.getElementById("mhDonemSonrakiBtn");
+  if(btnOnceki) btnOnceki.hidden = (mhGezinmeOfset >= kayitlar.length);
+  if(btnSonraki) btnSonraki.hidden = (mhGezinmeOfset === 0);
+
+  if(mhGezinmeOfset === 0){
+    mhDuzenlemeGorunurlugunuAyarla(true);
+    mhHesaplaVeCiz();
+  } else {
+    mhKapaliKaydiGoster(kayitlar[mhGezinmeOfset - 1]);
+  }
 }
 
 function mhBrutSabitGoster(){
@@ -183,47 +241,42 @@ function mhHesaplaVeCiz(){
   };
 }
 
-function mhGecmisiCiz(){
-  var kayitlar = MaasKayitData.tumKayitlar();
-  var kutu = document.getElementById("mhGecmisListesi");
-  document.getElementById("mhGecmisBos").hidden = kayitlar.length > 0;
-  kutu.innerHTML = kayitlar.map(function(k){
-    return "<div class='mh-gecmis-karti'>"
-      + "<div class='mh-gecmis-ust'>"
-      + "<span class='mh-gecmis-ay'>" + AY_ADLARI_MH[k.ay] + " " + k.yil + "</span>"
-      + "<span class='mh-gecmis-tutar'>" + fmtTL_MH(k.hesabaYatacak) + "</span>"
-      + "</div>"
-      + "<div class='mh-gecmis-detay' hidden>"
-      + "<div class='mh-sonuc-satir'><span>Net Maaş (Brüt: " + fmtTL_MH(k.brutSabitAylik) + ")</span><b>" + fmtTL_MH(k.netSabitMaas) + fmtOran_MH(k.brutSabitAylik, k.netSabitMaas) + "</b></div>"
-      + "<div class='mh-sonuc-satir'><span>Net Prim (Brüt: " + fmtTL_MH(k.brutPrim) + ")</span><b>" + fmtTL_MH(k.netPrim) + fmtOran_MH(k.brutPrim, k.netPrim) + "</b></div>"
-      + "<div class='mh-sonuc-satir'><span>Toplam Kesinti</span><b>" + fmtTL_MH(k.toplamKesinti) + "</b></div>"
-      + "<div class='mh-sonuc-satir mh-sonuc-satir--toplam'><span>Hesaba Yatan</span><b>" + fmtTL_MH(k.hesabaYatacak) + "</b></div>"
-      + "<button type='button' class='mh-gecmis-sil-btn' data-anahtar='" + k.anahtar + "'>🗑 Bu Kaydı Sil</button>"
-      + "</div></div>";
-  }).join("");
-  kutu.querySelectorAll(".mh-gecmis-ust").forEach(function(el){
-    el.onclick = function(){
-      var detay = this.parentElement.querySelector(".mh-gecmis-detay");
-      detay.hidden = !detay.hidden;
-    };
-  });
-  kutu.querySelectorAll(".mh-gecmis-sil-btn").forEach(function(btn){
-    btn.onclick = function(ev){
-      ev.stopPropagation();
-      if(!confirm("Bu kaydı silmek istediğine emin misin? Bu, sonraki dönemin referans noktasını da etkileyebilir.")) return;
-      MaasKayitData.kaydiSil(this.getAttribute("data-anahtar"), function(basarili, err){
-        if(!basarili) alert("Silinemedi: " + (err && err.message));
-      });
-    };
-  });
-}
-
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_MH();
   document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
 
-  mhHesaplaVeCiz();
-  mhGecmisiCiz();
+  mhGorunumCiz();
+
+  document.getElementById("mhDonemOncekiBtn").onclick = function(){ mhGezinmeOfset++; mhGorunumCiz(); };
+  document.getElementById("mhDonemSonrakiBtn").onclick = function(){ mhGezinmeOfset--; mhGorunumCiz(); };
+  (function(){
+    var bar = document.getElementById("mhDonemBar");
+    var baslangicX = null, baslangicY = null;
+    bar.addEventListener("touchstart", function(ev){
+      var t = ev.touches[0];
+      baslangicX = t.clientX; baslangicY = t.clientY;
+    }, {passive:true});
+    bar.addEventListener("touchend", function(ev){
+      if(baslangicX == null) return;
+      var t = ev.changedTouches[0];
+      var dx = t.clientX - baslangicX, dy = t.clientY - baslangicY;
+      baslangicX = null; baslangicY = null;
+      if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)*1.5) return;
+      if(dx > 0){ mhGezinmeOfset++; } else { mhGezinmeOfset--; }
+      mhGorunumCiz();
+    }, {passive:true});
+  })();
+
+  document.getElementById("btnMhKapaliKaydiSil").onclick = function(){
+    var anahtar = this.getAttribute("data-anahtar");
+    if(!anahtar) return;
+    if(!confirm("Bu kaydı silmek istediğine emin misin? Bu, sonraki dönemin referans noktasını da etkileyebilir.")) return;
+    MaasKayitData.kaydiSil(anahtar, function(basarili, err){
+      if(!basarili){ alert("Silinemedi: " + (err && err.message)); return; }
+      mhGezinmeOfset = 0;
+      mhGorunumCiz();
+    });
+  };
 
   document.getElementById("btnBrutSabitGuncelle").onclick = function(){
     var mevcut = parseFloat(localStorage.getItem("weicon_brut_sabit_maas")) || 0;
@@ -254,10 +307,12 @@ document.addEventListener("DOMContentLoaded", function(){
   };
 
   document.getElementById("btnAyiKayitEt").onclick = function(){
+    if(mhGezinmeOfset !== 0) return; // sadece açık/canlı dönem kapatılabilir
     if(!mhGuncelHesap) return;
     var h = mhGuncelHesap;
     var avansUyari = h.avans.kapaliVarMi ? "" : "\n\nNot: Avans Takibi bu dönem için henüz kapatılmadı — onu da otomatik kapatacağım.";
-    if(!confirm(AY_ADLARI_MH[h.acik.ay] + " " + h.acik.yil + " dönemini kapatıp kayıt etmek istediğine emin misin?\n\nHesaba Yatacak: " + fmtTL_MH(h.hesabaYatacak) + avansUyari + "\n\nKayıt edildikten sonra sistem otomatik bir sonraki aya geçer.")) return;
+    if(!confirm(AY_ADLARI_MH[h.acik.ay] + " " + h.acik.yil + " dönemini kapatmak istediğine emin misin?\n\nHesaba Yatacak: " + fmtTL_MH(h.hesabaYatacak) + avansUyari)) return;
+    if(!confirm("Kesin olarak kapatılsın mı? Bu işlem geri alınamaz.\n\nKayıt edildikten sonra sistem otomatik bir sonraki aya geçer.")) return;
 
     document.getElementById("btnAyiKayitEt").disabled = true;
 
@@ -282,7 +337,8 @@ document.addEventListener("DOMContentLoaded", function(){
         var yeniBaz = {matrah: h.sonuc.kumulatifMatrahSimdi, ay: h.acik.ay, yil: h.acik.yil};
         try{ AyarlarSync.matrahBazKaydet(yeniBaz); }catch(e){}
         localStorage.setItem("weicon_matrah_baz", JSON.stringify(yeniBaz));
-        // MaasKayitData.degistiginde dinleyicisi mhHesaplaVeCiz + mhGecmisiCiz'i tetikleyecek.
+        mhGezinmeOfset = 0;
+        // MaasKayitData.degistiginde dinleyicisi mhGorunumCiz'i tetikleyecek.
       });
     }
 
@@ -309,7 +365,7 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   };
 
-  try{ KomisyonData.degistiginde(function(){ mhHesaplaVeCiz(); }); }catch(e){}
-  try{ MaasKayitData.degistiginde(function(){ mhHesaplaVeCiz(); mhGecmisiCiz(); }); }catch(e){}
-  try{ AvansKayitData.degistiginde(function(){ mhHesaplaVeCiz(); }); }catch(e){}
+  try{ KomisyonData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
+  try{ MaasKayitData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
+  try{ AvansKayitData.degistiginde(function(){ mhGorunumCiz(); }); }catch(e){}
 });
