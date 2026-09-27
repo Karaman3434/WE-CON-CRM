@@ -25,8 +25,8 @@
 <title>WEICON ASİST — Ödenebilir Komisyon</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
-<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2245.651">
-<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2200.650">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2350.654">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2350.654">
 </head>
 <body>
 
@@ -49,11 +49,23 @@
 
 <main class="sayfa">
 
+  <!-- DÖNEM BARI (27.09.2026) — diğer sayfalarla (Avans Takibi, Maaş
+       Hesaplama, Net Maaş) AYNI görsel dil: ‹ › ile geçmiş kapalı dönemleri
+       (salt okunur) gezebilirsin; "+ Yeni Ay" burada hep pasif görünür,
+       çünkü bu sayfanın açık dönemi otomatik olarak Maaş Hesaplama'daki
+       açık döneme senkron olur (elle "yeni ay açma" işlemi yoktur). -->
+  <div class="ok-donem-bar" id="okDonemBar">
+    <button type="button" id="okDonemOncekiBtn" class="ok-donem-ok-btn" aria-label="Önceki ay">‹</button>
+    <div class="ok-donem-bar-orta"><span id="okDonemBtnMetin">Yükleniyor…</span></div>
+    <button type="button" id="okDonemSonrakiBtn" class="ok-donem-ok-btn" aria-label="Sonraki ay">›</button>
+    <button type="button" id="okDonemYeniAyBtn" class="ok-donem-yeniay-btn" disabled title="Bu dönem Maaş Hesaplama'daki açık döneme otomatik senkron olur">+ Yeni Ay</button>
+  </div>
+
   <p class="ok-aciklama" style="border-radius:10px; border-top:1px solid #0e6b34;">Ay başında 1. Fotoğraf'ı, sonra istediğin kadar sıklıkta 2. Fotoğraf'ı güncelle — merkez programındaki "Ödenebilir Komisyon" tablosunun fotoğrafı cihazın kendi içinde (internete/sunucuya göndermeden) okunur. Sen gözden geçirip onaylamadan hiçbir şey kaydedilmez.</p>
 
   <section class="ok-kutu">
     <div class="ok-kutu-baslik">📷 1. ve 2. Fotoğraf — <span id="okDonemEtiket">—</span></div>
-    <div class="ok-foto-satir">
+    <div class="ok-foto-satir" id="okFotoSatir">
       <div class="ok-foto-kutu" id="okFotoKutuBirinci" data-slot="birinci">
         <div class="ok-foto-kutu-baslik">1. FOTOĞRAF</div>
         <div class="ok-foto-kutu-resim" id="okFotoResimBirinci"><span class="ok-foto-kutu-ikon">📷</span></div>
@@ -67,6 +79,7 @@
         <input type="file" accept="image/*" id="okFotoSeciciIkinci" hidden>
       </div>
     </div>
+    <p class="bos-mesaj" id="okKapaliNot" hidden>🔒 Bu dönem kapatılmıştır — fotoğraf ve satır detayları sadece açık (canlı) dönem için tutulur, kapanan dönemlerde sadece Brüt/Net Prim sonucu saklanır.</p>
 
     <div class="ok-ocr-durum" id="okOcrDurum" hidden></div>
 
@@ -113,9 +126,9 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="komisyon-donem-data.js?v=WG.270926.2245.651"></script>
-<script src="maas-kayit-data.js?v=WG.270926.2330.652"></script>
+<script src="maas-kayit-data.js?v=WG.270926.2340.653"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
 <script src="maas-ortak-hesap.js?v=WG.270926.2245.651"></script>
-<script src="odenebilir-komisyon-render.js?v=WG.270926.2245.651"></script>
+<script src="odenebilir-komisyon-render.js?v=WG.270926.2350.654"></script>
 </body>
 </html>

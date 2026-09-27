@@ -58,10 +58,13 @@
   flex-shrink: 0;
 }
 .mh-donem-ok-btn[hidden] { visibility: hidden; }
+/* 27.09.2026 — Avans Takibi'ndeki turuncu "+ Yeni Ay" ile GÖRSEL olarak
+   tutarlı (tüm sayfalarda aynı dönem-barı tasarımı). Bu sayfalarda hâlâ
+   pasif (disabled) — dönem otomatik açılır, elle "yeni ay" düğmesi yok. */
 .mh-donem-yeniay-btn {
-  background: rgba(255,255,255,.15);
+  background: #c78a00;
+  color: #fff;
   border: none;
-  color: rgba(255,255,255,.6);
   border-radius: 8px;
   padding: 0 10px;
   height: 30px;
@@ -69,6 +72,7 @@
   font-weight: 900;
   white-space: nowrap;
   flex-shrink: 0;
+  opacity: .85;
 }
 .mh-donem-yeniay-btn:disabled { cursor: default; }
 .mh-donem-bar-orta {

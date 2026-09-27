@@ -22,8 +22,8 @@
 <title>WEICON ASİST — Avans Takibi</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
-<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2245.651">
-<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2200.650">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2350.654">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2350.654">
 <link rel="stylesheet" href="avans-takibi-style.css?v=WG.270926.1940.646">
 </head>
 <body>
@@ -60,7 +60,32 @@
     <button type="button" id="avDonemYeniAyBtn" class="av-donem-yeniay-btn" hidden>+ Yeni Ay</button>
   </div>
 
-  <section class="ok-kutu" style="position:relative;">
+  <!-- GÜVENLİK BANDI (27.09.2026): açık dönem hesabı değişse bile, daha
+       önce başka bir ay'a girilmiş ve hâlâ Firebase'de duran hiçbir taslak
+       sessizce gözden kaybolmasın diye. -->
+  <div class="banner banner--kirmizi" id="avBaskaTaslakBanner" hidden style="cursor:pointer; margin-bottom:12px;">
+    <span class="banner-baslik">⚠️ Başka dönemde kayıtlı taslak bulundu —</span>
+    <span class="banner-alt" id="avBaskaTaslakBannerAlt"></span>
+  </div>
+
+  <!-- KAPALI DÖNEM ŞERİDİ (27.09.2026) — ‹ › ile geçmiş, KAPATILMIŞ bir aya
+       gelindiğinde görünür (salt okunur); ayrı bir "Kayıt Geçmişi" listesine
+       artık gerek yok, aynı dönem barından geriye gidilerek görülüyor. -->
+  <div class="banner banner--kirmizi banner--kompakt" id="avKapaliSerit" hidden style="margin-bottom:12px;">
+    <span class="banner-baslik">🔒 Bu dönem kapatılmış (salt okunur) —</span>
+    <span class="banner-alt">silmek için dokun</span>
+    <button type="button" id="btnAvKapaliKaydiSil" style="margin-left:auto; background:none; border:none; font-size:18px; cursor:pointer; flex-shrink:0;">🗑</button>
+  </div>
+
+  <!-- ÖZET (27.09.2026, Abdullah'ın isteğiyle yukarı taşındı) — en altta
+       olunca sayfayı fazla aşağı kaydırmak gerekiyordu. -->
+  <div class="mh-avans-toplam-kutu">
+    <div class="mh-sonuc-satir"><span>Özel Avans</span><b id="avToplamOzel">0,00 TL</b></div>
+    <div class="mh-sonuc-satir"><span>Kalan İş Avansı</span><b id="avToplamIs">0,00 TL</b></div>
+    <div class="mh-sonuc-satir mh-sonuc-satir--toplam"><span>MAAŞTAN KESİLECEK</span><b id="avToplamGenel">0,00 TL</b></div>
+  </div>
+
+  <section class="ok-kutu" style="position:relative;" id="avEkleSection">
     <div class="mh-kutu-baslik-satir">AVANS EKLE</div>
     <div class="av-giris-satir">
       <button type="button" id="avTipBtn" class="av-tip-btn" data-tip="is">İŞ<span class="av-tip-ok">▾</span></button>
@@ -90,7 +115,7 @@
     <button type="button" id="btnAvManuelKaydet" class="av-manuel-kaydet-btn">💾 Bilgileri Kaydet</button>
   </section>
 
-  <section class="ok-kutu">
+  <section class="ok-kutu" id="avHarcamaSection">
     <div class="mh-kutu-baslik-satir">HARCAMALAR (belgelediklerin)</div>
     <div class="mh-harcama-giris-satir">
       <input type="date" id="avHarcamaTarih" class="mh-harcama-tarih">
@@ -115,22 +140,7 @@
     <button type="button" id="btnAvManuelKaydet2" class="av-manuel-kaydet-btn">💾 Bilgileri Kaydet</button>
   </section>
 
-  <div class="mh-avans-toplam-kutu">
-    <div class="mh-sonuc-satir"><span>Özel Avans</span><b id="avToplamOzel">0,00 TL</b></div>
-    <div class="mh-sonuc-satir"><span>Kalan İş Avansı</span><b id="avToplamIs">0,00 TL</b></div>
-    <div class="mh-sonuc-satir mh-sonuc-satir--toplam"><span>TOPLAM KESİNTİ</span><b id="avToplamGenel">0,00 TL</b></div>
-  </div>
-
-  <p class="mh-not" style="margin-top:16px;">Not: Bu dönemi kapatmak ve resmi kayda geçirmek için Maaş + Prim Hesaplama sayfasındaki "GEÇERLİ AYIN HESABI KAPANDI" butonunu kullan — o buton bu dönemi de otomatik kapatır.</p>
-
-  <section class="ok-kutu">
-    <div class="ok-kutu-baslik">🕘 Kayıt Geçmişi</div>
-    <div class="ok-karsilastir-secim-satir">
-      <select id="avGecmisAySecici"><option value="">Ay seç…</option></select>
-    </div>
-    <div id="avGecmisDetay"></div>
-    <p class="bos-mesaj" id="avGecmisBos" hidden>Henüz kayıt yok.</p>
-  </section>
+  <p class="mh-not" id="avNotParagraf" style="margin-top:16px;">Not: Bu dönemi kapatmak ve resmi kayda geçirmek için Maaş + Prim Hesaplama sayfasındaki "GEÇERLİ AYIN HESABI KAPANDI" butonunu kullan — o buton bu dönemi de otomatik kapatır.</p>
 
 </main>
 
@@ -140,8 +150,8 @@
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.270926.1940.646"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="maas-kayit-data.js?v=WG.270926.2330.652"></script>
-<script src="avans-kayit-data.js?v=WG.240926.1452.618"></script>
-<script src="avans-takibi-render.js?v=WG.270926.2330.652"></script>
+<script src="maas-kayit-data.js?v=WG.270926.2340.653"></script>
+<script src="avans-kayit-data.js?v=WG.270926.2340.653"></script>
+<script src="avans-takibi-render.js?v=WG.270926.2350.654"></script>
 </body>
 </html>

@@ -311,6 +311,61 @@ function donemKontrolVeCiz(){
   }catch(e){ hataGoster("Dönem kontrolü başarısız: " + e.message); }
 }
 
+// DÖNEM BARI (27.09.2026) — 0 = açık/canlı dönem (yukarıdaki gibi
+// düzenlenebilir, fotoğraf yüklenebilir), 1+ = MaasKayitData.tumKayitlar()
+// [ofset-1] (kapanmış dönem — sadece o an kaydedilmiş Brüt/Net Prim
+// sonucu salt okunur gösterilir; fotoğraflar kapanan dönemler için hiç
+// saklanmaz, bkz. komisyon-donem-data.js).
+var okGezinmeOfset = 0;
+
+function okDuzenlemeGorunurlugunuAyarla(gorunurMu){
+  var satir = document.getElementById("okFotoSatir");
+  if(satir) satir.hidden = !gorunurMu;
+  document.getElementById("okKapaliNot").hidden = gorunurMu;
+  if(!gorunurMu){
+    document.getElementById("okDuzenlemeAlani").hidden = true;
+    document.getElementById("okOcrDurum").hidden = true;
+  }
+}
+
+function okKapaliKaydiGoster(k){
+  okDuzenlemeGorunurlugunuAyarla(false);
+  var etiketMetni = AY_ADLARI[k.ay] + " " + k.yil;
+  document.getElementById("okDonemBtnMetin").textContent = etiketMetni;
+  document.getElementById("okDonemEtiket").textContent = etiketMetni;
+  document.getElementById("bnDonemEtiket").textContent = etiketMetni;
+
+  document.getElementById("bnBekleBanner").hidden = true;
+  document.getElementById("bnFarkTablo").hidden = true;
+
+  var brutPrim = k.brutPrim || 0;
+  document.getElementById("bnToplamFarkDeger").textContent = (brutPrim>=0?"+":"") + fmtTL(brutPrim) + " TL";
+  document.getElementById("bnToplamFarkSerit").hidden = false;
+
+  document.getElementById("bnPrimKesintiOran").textContent = fmtOranSadece_BN(brutPrim, k.netPrim);
+  document.getElementById("bnNetPrimDeger").textContent = fmtTL_BN(k.netPrim);
+  document.getElementById("bnNetAlt").hidden = false;
+}
+
+function okGorunumCiz(){
+  if(typeof MaasKayitData === "undefined") return;
+  var kayitlar = MaasKayitData.tumKayitlar();
+  if(okGezinmeOfset > kayitlar.length) okGezinmeOfset = kayitlar.length;
+  if(okGezinmeOfset < 0) okGezinmeOfset = 0;
+
+  var btnOnceki = document.getElementById("okDonemOncekiBtn");
+  var btnSonraki = document.getElementById("okDonemSonrakiBtn");
+  if(btnOnceki) btnOnceki.hidden = (okGezinmeOfset >= kayitlar.length);
+  if(btnSonraki) btnSonraki.hidden = (okGezinmeOfset === 0);
+
+  if(okGezinmeOfset === 0){
+    okDuzenlemeGorunurlugunuAyarla(true);
+    donemKontrolVeCiz();
+  } else {
+    okKapaliKaydiGoster(kayitlar[okGezinmeOfset - 1]);
+  }
+}
+
 window.addEventListener("error", function(ev){
   hataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
@@ -330,7 +385,27 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnOkOnayla").onclick = onaylaTiklandi;
   document.getElementById("btnOkIptal").onclick = iptalTiklandi;
 
-  try{ KomisyonDonemData.degistiginde(function(){ kutulariCiz(); farkGoster(); }); }catch(e){}
-  try{ MaasKayitData.degistiginde(function(){ donemKontrolVeCiz(); }); }catch(e){}
-  donemKontrolVeCiz();
+  document.getElementById("okDonemOncekiBtn").onclick = function(){ okGezinmeOfset++; okGorunumCiz(); };
+  document.getElementById("okDonemSonrakiBtn").onclick = function(){ okGezinmeOfset--; okGorunumCiz(); };
+  (function(){
+    var bar = document.getElementById("okDonemBar");
+    var baslangicX = null, baslangicY = null;
+    bar.addEventListener("touchstart", function(ev){
+      var t = ev.touches[0];
+      baslangicX = t.clientX; baslangicY = t.clientY;
+    }, {passive:true});
+    bar.addEventListener("touchend", function(ev){
+      if(baslangicX == null) return;
+      var t = ev.changedTouches[0];
+      var dx = t.clientX - baslangicX, dy = t.clientY - baslangicY;
+      baslangicX = null; baslangicY = null;
+      if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)*1.5) return;
+      if(dx > 0){ okGezinmeOfset++; } else { okGezinmeOfset--; }
+      okGorunumCiz();
+    }, {passive:true});
+  })();
+
+  try{ KomisyonDonemData.degistiginde(function(){ if(okGezinmeOfset===0){ kutulariCiz(); farkGoster(); } }); }catch(e){}
+  try{ MaasKayitData.degistiginde(function(){ okGorunumCiz(); }); }catch(e){}
+  okGorunumCiz();
 });

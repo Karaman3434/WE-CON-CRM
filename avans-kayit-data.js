@@ -101,6 +101,13 @@ var AvansKayitData = (function(){
 
   function anahtarOlustur(ay, yil){ return yil + "-" + ("0"+ay).slice(-2); }
 
+  // TÜM taslakları (kapalı olsun olmasın, hangi ay/yıl için olursa olsun)
+  // döner — 27.09.2026: "başka bir dönemde unutulmuş taslak var mı?"
+  // güvenlik bandını beslemek için eklendi (bkz. avans-takibi-render.js).
+  function tumTaslaklar(){
+    return Object.keys(taslaklar).map(function(k){ return Object.assign({anahtar:k}, taslaklar[k]); });
+  }
+
   // Verilen (veya belirtilmemişse açık dönemin) taslağını okur — hiç
   // girilmemişse boş bir taslak döner.
   function taslakOku(ay, yil){
@@ -156,6 +163,7 @@ var AvansKayitData = (function(){
   return {
     degistiginde: degistiginde,
     tumKayitlar: tumKayitlar,
+    tumTaslaklar: tumTaslaklar,
     acikDonem: acikDonem,
     taslakOku: taslakOku,
     taslakYuklendiMi: taslakYuklendiMi,

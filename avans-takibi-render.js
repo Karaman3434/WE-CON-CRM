@@ -140,34 +140,11 @@ function avBaslangicNoktasi(){
 
 // AY ADIMLAMA (27.09.2026, Abdullah'ın isteğiyle yeniden tasarım) — dönem
 // artık uzun bir listeden değil, ‹ › okları (veya kaydırarak) tek tek ay
-// adımıyla değişiyor. Zaten KAPATILMIŞ aylar atlanır (onlar Kayıt
-// Geçmişi'nde), tıpkı eskiden listeden de çıkarıldıkları gibi.
+// adımıyla değişiyor. KAPATILMIŞ aylar artık ATLANMAZ — salt okunur olarak
+// gösterilir (bkz. avDonemeGec/avKapaliGoster); ayrı bir "Kayıt Geçmişi"
+// listesine bu yüzden gerek kalmadı, aynı ‹ › ile geriye gidilerek görülür.
 function avSonrakiAy(ay, yil){ ay++; if(ay>12){ ay=1; yil++; } return {ay:ay, yil:yil}; }
 function avOncekiAy(ay, yil){ ay--; if(ay<1){ ay=12; yil--; } return {ay:ay, yil:yil}; }
-
-// TEK KAYNAK (27.09.2026 senkron düzeltmesi) — "bu ay kapalı mı?" sorusunun
-// cevabı artık AvansKayitData'nın KENDİ (bağımsız, şaşabilen) zincirinden
-// değil, doğrudan MaasKayitData'dan gelir: bir ay ancak Maaş Hesaplama
-// sayfasında GEÇERLİ AYIN HESABI KAPANDI ile kapatıldığında "kapalı"
-// sayılır — Avans Takibi ve Maaş Hesaplama böylece HER ZAMAN aynı ayı
-// "açık dönem" kabul eder.
-function avMaasKapaliMi(ay, yil){
-  var kayitlar = MaasKayitData.tumKayitlar();
-  for(var i=0; i<kayitlar.length; i++){
-    if(kayitlar[i].ay === ay && kayitlar[i].yil === yil) return true;
-  }
-  return false;
-}
-function avOncekiAcikAy(ay, yil){
-  var g = avOncekiAy(ay, yil), guvenlik = 0;
-  while(avMaasKapaliMi(g.ay, g.yil) && guvenlik < 240){ g = avOncekiAy(g.ay, g.yil); guvenlik++; }
-  return g;
-}
-function avSonrakiAcikAy(ay, yil){
-  var g = avSonrakiAy(ay, yil), guvenlik = 0;
-  while(avMaasKapaliMi(g.ay, g.yil) && guvenlik < 240){ g = avSonrakiAy(g.ay, g.yil); guvenlik++; }
-  return g;
-}
 
 // Dönem barını çizer: ay/yıl etiketi + sağdaki "›" / "+ Yeni Ay" geçişi.
 // Doğal referans noktasına (avBaslangicNoktasi — "bugün"e göre bir önceki
@@ -185,14 +162,64 @@ function avDonemBariCiz(){
   if(btnYeniAy) btnYeniAy.hidden = !referansaUlasildiMi;
 }
 
+// DÜZENLEME/SALT-OKUNUR GÖRÜNÜRLÜK (27.09.2026) — kapalı bir döneme
+// gelindiğinde giriş bölümleri (AVANS EKLE / HARCAMALAR) ve alt not
+// gizlenir, yerine kapalı-dönem şeridi (silme düğmesiyle) gösterilir.
+function avDuzenlemeGorunurlugunuAyarla(gorunurMu){
+  document.getElementById("avEkleSection").hidden = !gorunurMu;
+  document.getElementById("avHarcamaSection").hidden = !gorunurMu;
+  document.getElementById("avNotParagraf").hidden = !gorunurMu;
+  document.getElementById("avKapaliSerit").hidden = gorunurMu;
+  document.getElementById("btnAvKapaliKaydiSil").hidden = gorunurMu;
+}
+
+function avKapaliGoster(k){
+  avDuzenlemeGorunurlugunuAyarla(false);
+  document.getElementById("avToplamOzel").textContent = fmtTL_AV(k.ozelAvansToplam||0);
+  document.getElementById("avToplamIs").textContent = fmtTL_AV(k.isAvansiBelgesizKalan||0);
+  document.getElementById("avToplamGenel").textContent = fmtTL_AV(k.toplamKesinti||0);
+  document.getElementById("btnAvKapaliKaydiSil").setAttribute("data-anahtar", k.anahtar);
+}
+
 function avDonemeGec(ay, yil){
   avSeciliAy = ay; avSeciliYil = yil;
-  var taslak = AvansKayitData.taslakOku(ay, yil);
-  avOzelListe = taslak.ozelAvansGirisleri || [];
-  avIsListe = taslak.isAvansiGirisleri || [];
-  avHarcamaListe = taslak.isAvansiHarcamalar || [];
   avDonemBariCiz();
-  avCiz();
+  var kapali = AvansKayitData.kapaliKaydiBul(ay, yil);
+  if(kapali){
+    avKapaliGoster(kapali);
+  } else {
+    avDuzenlemeGorunurlugunuAyarla(true);
+    var taslak = AvansKayitData.taslakOku(ay, yil);
+    avOzelListe = taslak.ozelAvansGirisleri || [];
+    avIsListe = taslak.isAvansiGirisleri || [];
+    avHarcamaListe = taslak.isAvansiHarcamalar || [];
+    avCiz();
+  }
+  avBaskaDonemdeTaslakGoster();
+}
+
+// GÜVENLİK BANDI (27.09.2026) — dönem senkron düzeltmesinden sonra
+// eklendi: hangi ay "resmi açık dönem" sayılırsa sayılsın, kullanıcının
+// daha önce (eski/şaşan mantıkla) başka bir ay'a girdiği ve HÂLÂ Firebase'de
+// duran ama şu an ekranda görünmeyen bir taslak varsa, bunu asla sessizce
+// kaybettirmeyip açıkça bildiriyoruz.
+function avTaslakDoluMu(t){
+  if(!t) return false;
+  return (t.ozelAvansGirisleri||[]).length>0 || (t.isAvansiGirisleri||[]).length>0 || (t.isAvansiHarcamalar||[]).length>0;
+}
+function avBaskaDonemdeTaslakGoster(){
+  var banner = document.getElementById("avBaskaTaslakBanner");
+  var alt = document.getElementById("avBaskaTaslakBannerAlt");
+  if(!banner || !alt) return;
+  if(!AvansKayitData.taslakYuklendiMi() || !avSeciliAy || !avSeciliYil){ banner.hidden = true; return; }
+  var buraya = avSeciliYil + "-" + ("0"+avSeciliAy).slice(-2);
+  var bulunanlar = AvansKayitData.tumTaslaklar().filter(function(t){
+    return t.anahtar !== buraya && avTaslakDoluMu(t);
+  });
+  if(!bulunanlar.length){ banner.hidden = true; return; }
+  banner.hidden = false;
+  alt.textContent = bulunanlar.map(function(t){ return AY_ADLARI_AV[t.ay] + " " + t.yil; }).join(", ") + " — dokun ve gör";
+  banner.onclick = function(){ avDonemeGec(bulunanlar[0].ay, bulunanlar[0].yil); };
 }
 
 function avCiz(){
@@ -210,40 +237,6 @@ function avCiz(){
   document.getElementById("avToplamOzel").textContent = fmtTL_AV(t.ozelToplam);
   document.getElementById("avToplamIs").textContent = fmtTL_AV(t.isKesilecek);
   document.getElementById("avToplamGenel").textContent = fmtTL_AV(t.toplamKesinti);
-}
-
-function avGecmisSeciciDoldur(){
-  var kayitlar = AvansKayitData.tumKayitlar();
-  var sel = document.getElementById("avGecmisAySecici");
-  document.getElementById("avGecmisBos").hidden = kayitlar.length > 0;
-  sel.innerHTML = "<option value=''>Ay seç…</option>" + kayitlar.map(function(k){
-    return "<option value='" + k.anahtar + "'>" + AY_ADLARI_AV[k.ay] + " " + k.yil + "</option>";
-  }).join("");
-}
-
-function avGecmisDetayGoster(anahtar){
-  var detay = document.getElementById("avGecmisDetay");
-  if(!anahtar){ detay.innerHTML = ""; return; }
-  var kayitlar = AvansKayitData.tumKayitlar();
-  var k = kayitlar.filter(function(x){ return x.anahtar===anahtar; })[0];
-  if(!k){ detay.innerHTML = ""; return; }
-  var t = avToplamlariHesapla(k);
-  detay.innerHTML = "<div class='mh-sonuc-satir'><span>Özel Avans</span><b>" + fmtTL_AV(t.ozelToplam) + "</b></div>"
-    + "<div class='mh-sonuc-satir'><span>İş Avansı Alınan</span><b>" + fmtTL_AV(t.isToplam) + "</b></div>"
-    + "<div class='mh-sonuc-satir'><span>Belgelenen</span><b>" + fmtTL_AV(t.belgelenenToplam) + "</b></div>"
-    + "<div class='mh-sonuc-satir'><span>Kalan İş Avansı</span><b>" + fmtTL_AV(t.isKesilecek) + "</b></div>"
-    + "<div class='mh-sonuc-satir mh-sonuc-satir--toplam'><span>TOPLAM KESİNTİ</span><b>" + fmtTL_AV(t.toplamKesinti) + "</b></div>"
-    + "<button type='button' id='btnAvGecmisSil' class='mh-gecmis-sil-btn'>🗑 Bu Kaydı Sil (ayı yeniden açar)</button>";
-  document.getElementById("btnAvGecmisSil").onclick = function(){
-    if(!confirm(AY_ADLARI_AV[k.ay] + " " + k.yil + " avans kaydını silmek istediğine emin misin? Bu ay tekrar Dönem listesinde açık olarak görünecek.")) return;
-    AvansKayitData.kaydiSil(k.anahtar, function(basarili, err){
-      if(!basarili){ alert("Silinemedi: " + (err && err.message)); return; }
-      detay.innerHTML = "";
-      document.getElementById("avGecmisAySecici").value = "";
-      avGecmisSeciciDoldur();
-      avDonemBariCiz();
-    });
-  };
 }
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -278,20 +271,20 @@ document.addEventListener("DOMContentLoaded", function(){
     avIlkGecisYapildiMi = true;
     var acik = MaasKayitData.acikDonem();
     avDonemeGec(acik.ay, acik.yil);
-    avGecmisSeciciDoldur();
     avYuklemeKilidiniAc();
   }
   avIlkGecisiDeneVeYap();
 
   // DÖNEM BARI (27.09.2026) — ‹ › okları + kaydırma (swipe). "+ Yeni Ay"
   // her zaman İLERİ gitmenin karşılığı, sadece etiketi farklı (bkz.
-  // avDonemBariCiz — hangisinin görüneceğine o karar verir).
+  // avDonemBariCiz — hangisinin görüneceğine o karar verir). Artık
+  // KAPATILMIŞ aylar da atlanmadan tek tek gösterilir (salt okunur).
   document.getElementById("avDonemOncekiBtn").onclick = function(){
-    var g = avOncekiAcikAy(avSeciliAy, avSeciliYil);
+    var g = avOncekiAy(avSeciliAy, avSeciliYil);
     avDonemeGec(g.ay, g.yil);
   };
   function avSonrakiAyaGec(){
-    var g = avSonrakiAcikAy(avSeciliAy, avSeciliYil);
+    var g = avSonrakiAy(avSeciliAy, avSeciliYil);
     avDonemeGec(g.ay, g.yil);
   }
   document.getElementById("avDonemSonrakiBtn").onclick = avSonrakiAyaGec;
@@ -378,25 +371,28 @@ document.addEventListener("DOMContentLoaded", function(){
     avTaslagiKaydet(); avCiz(); avKaydedildiGoster();
   };
 
-  document.getElementById("avGecmisAySecici").onchange = function(){ avGecmisDetayGoster(this.value); };
+  // KAPALI KAYDI SİL (27.09.2026) — sadece kapalı bir dönem görüntülenirken
+  // görünür; sildiğinde ay tekrar açık (düzenlenebilir/taslak) hale gelir.
+  document.getElementById("btnAvKapaliKaydiSil").onclick = function(){
+    var anahtar = this.getAttribute("data-anahtar");
+    if(!anahtar) return;
+    if(!confirm("Bu kaydı silmek istediğine emin misin? Bu ay tekrar açık (düzenlenebilir) hale gelecek.")) return;
+    AvansKayitData.kaydiSil(anahtar, function(basarili, err){
+      if(!basarili){ alert("Silinemedi: " + (err && err.message)); return; }
+      avDonemeGec(avSeciliAy, avSeciliYil);
+    });
+  };
 
   AvansKayitData.degistiginde(function(){
-    avGecmisSeciciDoldur();
     avDonemBariCiz();
     avIlkGecisiDeneVeYap();
     // KRİTİK HATA DÜZELTMESİ (24.09.2026): Firebase'den her yeni veri
     // paketi geldiğinde (özellikle SAYFA AÇILDIKTAN SONRA gelen İLK
-    // paket), seçili dönemin listelerini taze veriyle YENİDEN oku ve
-    // çiz — eskiden bu satır yoktu, ekran ilk boş çizdiği haliyle
-    // kalıyor, kayıtlar Firebase'de dururken sayfada "silinmiş" gibi
-    // görünüyordu.
-    if(avSeciliAy && avSeciliYil){
-      var taze = AvansKayitData.taslakOku(avSeciliAy, avSeciliYil);
-      avOzelListe = taze.ozelAvansGirisleri || [];
-      avIsListe = taze.isAvansiGirisleri || [];
-      avHarcamaListe = taze.isAvansiHarcamalar || [];
-      avCiz();
-    }
+    // paket), seçili dönemi TAZE veriyle yeniden değerlendir (açık mı
+    // kapalı mı olduğu da değişmiş olabilir) — eskiden bu satır yoktu,
+    // ekran ilk boş çizdiği haliyle kalıyor, kayıtlar Firebase'de
+    // dururken sayfada "silinmiş" gibi görünüyordu.
+    if(avSeciliAy && avSeciliYil) avDonemeGec(avSeciliAy, avSeciliYil);
     if(AvansKayitData.taslakYuklendiMi()) avYuklemeKilidiniAc();
   });
 
