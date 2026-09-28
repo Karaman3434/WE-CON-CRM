@@ -1,21 +1,24 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.040926.1052.110 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2210.659 — home.html -->
 <!--
-  WEICON ASİST — ANA SAYFA v2 (yeniden yapılanma)
-  =================================================
-  Bu sayfa, önceki tasarımdaki ağır CSS efektlerini (çoklu gradyan, box-shadow +
-  text-shadow yığılması) KASITLI OLARAK kullanmaz. Amaç: bazı cihaz/tarayıcı
-  kombinasyonlarında görülen "DOM doğru ama ekrana çizilmiyor" türü render
-  sorunlarına karşı en düşük riskli, en sade yapıyı kurmak.
+  WEICON ASİST — ANA SAYFA v3 (yeni tasarım — Abdullah'ın onayladığı mockup)
+  =============================================================================
+  Eski geniş menü-grid/hızlı işlemler bölümü kaldırıldı; işlemler artık
+  soldan açılan bir çekmece menüde (bkz. .as-drawer-*). Ana ekranda SADECE
+  gösterge panelleri kalıyor: EUR kuru + kalan iş günü, takip gerekiyor
+  uyarısı, günün özeti, ve 2x2 satış/prim panelleri.
+
+  Bu sayfaya özel TÜM görsel stiller home-anasayfa-style.css'te ("as-"
+  önekli sınıflar) — home-style.css'teki PAYLAŞILAN .app-header/.app-nav/
+  .kart-grid/.menu-grid sınıflarına buradan hiç dokunulmadı (o sınıflar
+  diğer tüm sayfalarda hâlâ kullanılıyor).
 
   DOSYA YAPISI:
-    home.html       — bu dosya: sadece HTML iskeleti, hiç inline style yok
-    home-style.css  — TÜM görsel stiller burada (düz renkler, minimal gölge)
-    home-data.js    — Firebase bağlantısı + veri çekme/hesaplama mantığı
-    home-render.js  — veriyi okuyup DOM'a yazma mantığı
-
-  Her dosya TEK bir işten sorumlu. Bir sonraki sayfa eklenirken bu dört
-  dosyanın deseni (shell / style / data / render) tekrarlanacak.
+    home.html                 — bu dosya: HTML iskeleti
+    home-style.css             — paylaşılan temel stiller (diğer sayfalarla ortak)
+    home-anasayfa-style.css    — SADECE bu sayfaya özel yeni tasarım stilleri
+    home-data.js                — Firebase bağlantısı + veri çekme/hesaplama
+    home-render.js              — veriyi okuyup DOM'a yazma + çekmece menü mantığı
 -->
 <html lang="tr">
 <head>
@@ -30,138 +33,98 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2210.659">
 </head>
 <body>
 
 <div class="app-ust-sabit">
-  <div class="motivasyon-kutu">
-    <div class="motivasyon-tek-satir">
-      <span class="motivasyon-selam" id="motivasyonSelam">Merhaba,</span>
-      <span class="motivasyon-soz" id="motivasyonSoz"></span>
-    </div>
+  <header class="as-header">
+    <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">☰</button>
+    <div class="as-logo">WEICON</div>
+    <div class="as-avatar" aria-hidden="true">👤</div>
+  </header>
+  <div class="as-motivasyon">
+    <span id="motivasyonSelam">Merhaba,</span>
+    <span id="motivasyonSoz"></span>
   </div>
-
-<header class="app-header">
-  <div class="logo">WEICON</div>
-  <div class="tarih" id="gunTarihi"></div>
-</header>
-
-<nav class="app-nav">
-  <button class="nav-btn nav-btn--geri" id="btnGeri"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></button>
-  <button class="nav-btn nav-btn--ana" id="btnAnaSayfa"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></button>
-  <button class="nav-btn nav-btn--menu" id="btnMenu" onclick="window.location.href='menu.html'"><span class='nav-ikon'>☰</span><span class='nav-etiket'>Menü</span></button>
-</nav>
-</div>
-<div class="sayfa-rota-serit">
-  <span class="sayfa-rota-serit-isim">🏠 Ana Sayfa</span>
 </div>
 
-<main class="sayfa" id="page8">
+<main class="sayfa as-sayfa" id="page8">
 
-  <div class="gosterge-paneli-etiket">GÖSTERGE PANELİ</div>
-
-  <div class="anasayfa-ust-satir">
-    <div class="is-gunu-kutu is-gunu-kutu--esit" id="isGunuKutu">
-      <div class="is-gunu-etiket">İŞ GÜNÜ KALDI</div>
-      <div class="is-gunu-deger" id="isGunuDeger">-</div>
-    </div>
-    <a class="gunun-ozeti-kutu" id="gununOzetiKutu" href="ziyaret.html">
-      <div class="gunun-ozeti-baslik">📊 GÜNÜN ÖZETİ</div>
-      <div class="gunun-ozeti-satir-3">
-        <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">🔄 <span id="gununOzetiIslemSayi">0</span></div><div class="gunun-ozeti-etiket">İşlem</div></div>
-        <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">📦 <span id="gununOzetiSiparisSayi">0</span></div><div class="gunun-ozeti-etiket">Sipariş</div></div>
-        <div class="gunun-ozeti-blok"><div class="gunun-ozeti-sayi">📍 <span id="gununOzetiTemasSayi">0</span></div><div class="gunun-ozeti-etiket">Temas</div></div>
+  <div class="as-panel-satir">
+    <div class="as-kur-panel">
+      <div class="as-kur-tarih" id="gunTarihi"></div>
+      <div class="as-kur-deger-satir">
+        <span class="as-kur-etiket">EUR</span>
+        <span class="as-kur-deger" id="asKurDeger">-</span>
       </div>
-    </a>
+    </div>
+    <div class="as-isgunu-panel">
+      <div class="as-isgunu-etiket">İŞ GÜNÜ KALDI</div>
+      <div class="as-isgunu-deger" id="isGunuDeger">-</div>
+    </div>
   </div>
 
-  <section class="kart-grid">
-    <div class="kart kart--koyu-mavi" onclick="window.location.href='satis-listesi.html?kapsam=ay'" style="cursor:pointer;">
-      <div class="kart-baslik" id="anaSayfaAyEtiketi">EYLÜL 2026 SATIŞ</div>
-      <div class="kart-deger" id="anaSayfaSatisToplam">0,00 EURO</div>
-      <div class="kart-tl-alt" id="anaSayfaSatisToplamTl">≈ 0,00 TL</div>
+  <div class="banner as-uyari-panel" id="bildirimBanner" hidden>
+    <span class="as-uyari-ikon">⚠️</span>
+    <div>
+      <div class="as-uyari-baslik" id="bildirimBannerBaslik">Takip gerekiyor —</div>
+      <div class="as-uyari-alt" id="bildirimBannerAlt"></div>
     </div>
-    <div class="kart kart--koyu-yesil">
-      <div class="kart-baslik" id="anaSayfaPrimEtiketi">EYLÜL 2026 PRİM</div>
-      <div class="kart-deger" id="anaSayfaPrimToplam">0,00 TL</div>
-    </div>
-  </section>
-
-  <section class="kart-grid">
-    <div class="kart kart--acik-mavi" onclick="window.location.href='satis-listesi.html?kapsam=bugun'" style="cursor:pointer;">
-      <div class="kart-baslik">BUGÜN SATIŞ</div>
-      <div class="kart-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
-      <div class="kart-tl-alt" id="anaSayfaBugunSatisTl">≈ 0,00 TL</div>
-    </div>
-    <div class="kart kart--acik-yesil">
-      <div class="kart-baslik">BUGÜN PRİM</div>
-      <div class="kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
-    </div>
-  </section>
-
-  <div class="banner banner--kirmizi banner--kompakt" id="bildirimBanner" hidden>
-    <span class="banner-baslik" id="bildirimBannerBaslik">⏰ Takip Gerekiyor —</span>
-    <span class="banner-alt" id="bildirimBannerAlt"></span>
   </div>
 
-  <hr class="ayrac">
-
-  <div class="hizli-islemler-baslik-satiri">
-    <span class="hizli-islemler-baslik">Hızlı İşlemler</span>
-  </div>
-
-  <!-- FATURA · VADE · ÖDEME TAKİP (22.09.2026) — Hızlı İşlemler'in en üst
-       satırı, Ürün Bul/Hızlı Hesapla kutularının üstünde. -->
-  <a class="fvt-kutu" id="fvtKutu" href="vade-takip.html">
-    <div class="fvt-ikon">📄</div>
-    <div class="fvt-govde">
-      <div class="fvt-baslik">FATURA · VADE · ÖDEME TAKİP</div>
-      <div class="fvt-deger" id="fvtDeger">Yükleniyor…</div>
-      <div class="fvt-alt" id="fvtAlt" hidden></div>
-    </div>
-    <div class="fvt-ok">›</div>
+  <a class="as-ozet-panel" id="gununOzetiKutu" href="ziyaret.html">
+    <span class="as-ozet-baslik">📊 Günün özeti</span>
+    <span class="as-ozet-deger"><span id="gununOzetiIslemSayi">0</span> işlem</span>
+    <span class="as-ozet-deger"><span id="gununOzetiSiparisSayi">0</span> sipariş</span>
+    <span class="as-ozet-deger"><span id="gununOzetiTemasSayi">0</span> temas</span>
   </a>
 
-  <section class="menu-grid">
-    <button class="menu-kart menu-kart--mavi" id="btnUrunBul" onclick="window.location.href='product.html'">
-      <span class="menu-ikon">🔍</span>
-      <div class="menu-metin-blok"><span class="menu-baslik">Ürün Bul</span><span class="menu-alt">KATALOG</span></div>
-    </button>
-    <button class="menu-kart menu-kart--yesil" id="btnHizliHesapla" onclick="window.location.href='calc.html'">
-      <span class="menu-ikon">🧮</span>
-      <div class="menu-metin-blok"><span class="menu-baslik">Hızlı Hesapla</span><span class="menu-alt">FİYATLANDIR</span></div>
-    </button>
-    <button class="menu-kart menu-kart--mor" id="btnHareketler" onclick="window.location.href='customer.html'">
-      <span class="menu-ikon">👥</span>
-      <div class="menu-metin-blok"><span class="menu-baslik">Müşteri</span><span class="menu-alt">ARA · BUL · EKLE</span></div>
-    </button>
-    <button class="menu-kart menu-kart--pembe" id="btnSonIslemler" onclick="window.location.href='son-islemler.html'">
-      <span class="menu-ikon">🕐</span>
-      <div class="menu-metin-blok"><span class="menu-baslik">Son İşlemler</span><span class="menu-alt">LİSTELE</span></div>
-    </button>
-    <button class="menu-kart menu-kart--turuncu" id="btnAracKm" onclick="window.location.href='km.html'">
-      <span class="menu-ikon">🚗</span>
-      <div class="menu-metin-blok"><span class="menu-baslik">Araç KM</span><span class="menu-alt" id="kmDurumAlt">TAKİP</span></div>
-    </button>
-    <button class="menu-kart menu-kart--gri" id="btnRaporlar" onclick="window.location.href='raporlar.html'">
-      <span class="menu-ikon">📊</span>
-      <div class="menu-metin-blok"><span class="menu-baslik">Raporlar</span><span class="menu-alt">İSTATİSTİK · GÖREV</span></div>
-    </button>
-    <!-- KİŞİSEL (24.09.2026) — Hesaba Yatacak göstergesi ve Maaş klasörü
-         artık burada AÇILAN kisisel.html'de; Ana Sayfa'da kasıtlı olarak
-         hiçbir TL rakamı görünmüyor (Abdullah'ın açık isteği: kimse
-         Ana Sayfa'ya bakınca kişisel kazanç bilgisini görmesin). -->
-    <button class="menu-kart menu-kart--lacivert menu-kart--tam-satir" id="btnKisisel" onclick="window.location.href='kisisel.html'">
-      <span class="menu-ikon">🔒</span>
-      <div class="menu-metin-blok"><span class="menu-baslik">Kişisel</span><span class="menu-alt">GİZLİ ALAN</span></div>
-    </button>
+  <section class="as-satis-grid">
+    <div class="as-satis-kart as-satis-kart--koyu" onclick="window.location.href='satis-listesi.html?kapsam=ay'">
+      <div class="as-satis-baslik" id="anaSayfaAyEtiketi">EYLÜL 2026 SATIŞ</div>
+      <div class="as-satis-deger" id="anaSayfaSatisToplam">0,00 EURO</div>
+    </div>
+    <div class="as-satis-kart as-satis-kart--koyu-yesil">
+      <div class="as-satis-baslik" id="anaSayfaPrimEtiketi">EYLÜL 2026 PRİM</div>
+      <div class="as-satis-deger" id="anaSayfaPrimToplam">0,00 TL</div>
+    </div>
+    <div class="as-satis-kart as-satis-kart--acik" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
+      <div class="as-satis-baslik">BUGÜN SATIŞ</div>
+      <div class="as-satis-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
+    </div>
+    <div class="as-satis-kart as-satis-kart--acik-yesil">
+      <div class="as-satis-baslik">BUGÜN PRİM</div>
+      <div class="as-satis-deger" id="anaSayfaBugunPrim">0,00 TL</div>
+    </div>
   </section>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.1620.658 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2210.659 ***</span>
   </footer>
 
 </main>
+
+<!-- Menü çekmecesi (soldan açılır, yarım genişlik, tam yükseklik) -->
+<div class="as-drawer-overlay" id="asDrawerOverlay" hidden>
+  <div class="as-drawer" id="asDrawer">
+    <div class="as-drawer-profil">
+      <div class="as-drawer-avatar" aria-hidden="true">👤</div>
+      <div class="as-drawer-isim" id="asDrawerIsim">…</div>
+    </div>
+    <nav class="as-drawer-liste">
+      <a class="as-drawer-oge" href="product.html"><span class="as-drawer-ikon" style="color:#5dade2;">🔍</span>Ürün Bul</a>
+      <a class="as-drawer-oge" href="calc.html"><span class="as-drawer-ikon" style="color:#58d68d;">🧮</span>Hızlı Hesapla</a>
+      <a class="as-drawer-oge" href="customer.html"><span class="as-drawer-ikon" style="color:#bb8fce;">👥</span>Müşteri</a>
+      <a class="as-drawer-oge" href="son-islemler.html"><span class="as-drawer-ikon" style="color:#f1948a;">🕐</span>Son İşlemler</a>
+      <a class="as-drawer-oge" href="km.html"><span class="as-drawer-ikon" style="color:#f5b041;">🚗</span>Araç KM</a>
+      <a class="as-drawer-oge" href="raporlar.html"><span class="as-drawer-ikon" style="color:#aeb6bf;">📊</span>Raporlar</a>
+      <a class="as-drawer-oge" href="vade-takip.html"><span class="as-drawer-ikon" style="color:#e59866;">📄</span>Fatura · Vade · Ödeme Takip</a>
+      <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#48c9b0;">🔒</span>Kişisel</a>
+    </nav>
+    <button class="as-drawer-cikis" id="btnAsCikis"><span aria-hidden="true">🚪</span>Çıkış Yap</button>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -172,13 +135,10 @@
 <script src="ayarlar-sync.js?v=WG.140926.1412.560"></script>
 <script src="home-data.js?v=WG.150926.1241.572"></script>
 <script src="customer-data.js?v=WG.240926.0752.611"></script>
-<script src="reports-data.js?v=WG.230926.2005.610"></script>
-<script src="vade-takip-data.js?v=WG.210926.2044.591"></script>
-<script src="km-data.js?v=WG.240926.1923.620"></script>
 <script src="hata-log.js?v=WG.140926.1412.560"></script>
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.240926.1959.621"></script>
+<script src="home-render.js?v=WG.280926.2210.659"></script>
 </body>
 </html>

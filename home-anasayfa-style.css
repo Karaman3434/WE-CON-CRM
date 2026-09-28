@@ -1,0 +1,237 @@
+/*
+  home-anasayfa-style.css
+  ========================
+  SADECE home.html'e özel — Ana Sayfa'nın yeni tasarımı (Abdullah'ın onayladığı
+  mockup v19). Bilerek home-style.css'e YAZILMADI: home-style.css TÜM
+  sayfalarda paylaşılıyor, .app-header/.app-nav/.kart-grid/.menu-grid gibi
+  sınıfları burada değiştirmek diğer 20+ sayfayı da etkilerdi. Bu dosyadaki
+  TÜM sınıflar "as-" (Ana Sayfa) öneki taşır ve SADECE bu sayfada kullanılır.
+
+  Renkler: yeni renk icat edilmedi — hepsi home-style.css'te zaten var olan
+  paletten alındı (koyu/açık mavi #003a70 / #eaf2fc, yeşil #0e6b58 / #eafaf0,
+  kırmızı #c0392b / #fdeaea, mor #8e44ad / #f3e8fb).
+*/
+
+.as-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px 8px;
+  background: #0d3d8c;
+}
+.as-menu-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  line-height: 1;
+  padding: 4px;
+  cursor: pointer;
+}
+.as-logo {
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 21px;
+  letter-spacing: 1px;
+  flex: 1;
+  text-align: left;
+  padding-left: 4px;
+}
+.as-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.as-motivasyon {
+  background: #0d3d8c;
+  padding: 0 14px 12px;
+  font-size: 12px;
+  font-style: italic;
+  color: #cfe2f3;
+}
+.as-motivasyon #motivasyonSelam { font-style: normal; font-weight: 700; margin-right: 4px; }
+
+.sayfa.as-sayfa { padding: 8px 8px 16px; }
+
+.as-panel-satir {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.as-kur-panel, .as-isgunu-panel {
+  flex: 1;
+  min-width: 0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+}
+.as-kur-panel {
+  background: #f4f6f9;
+}
+.as-kur-tarih { font-size: 10px; font-weight: 700; color: #6b7684; margin-bottom: 3px; }
+.as-kur-deger-satir { display: flex; align-items: baseline; gap: 5px; }
+.as-kur-etiket { font-size: 10.5px; font-weight: 800; color: #6b7684; }
+.as-kur-deger { font-size: 16px; font-weight: 900; color: #2d3540; }
+
+.as-isgunu-panel {
+  background: #fdeaea;
+  border: 1.5px solid #c0392b;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.as-isgunu-etiket { font-size: 10.5px; font-weight: 800; color: #c0392b; }
+.as-isgunu-deger { font-size: 18px; font-weight: 900; color: #c0392b; margin-top: 2px; }
+
+.as-uyari-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fdeaea;
+  border: 1.5px solid #c0392b;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+.as-uyari-ikon { font-size: 17px; flex-shrink: 0; }
+.as-uyari-baslik { font-size: 12px; font-weight: 900; color: #c0392b; }
+.as-uyari-alt { font-size: 10.5px; font-weight: 700; color: #c0392b; opacity: .9; }
+
+.as-ozet-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  background: #f3e8fb;
+  border: 1.5px solid #8e44ad;
+  border-radius: 10px;
+  padding: 9px 10px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  font-size: 11px;
+}
+.as-ozet-baslik { font-weight: 900; color: #8e44ad; flex-shrink: 0; }
+.as-ozet-deger { font-weight: 700; color: #8e44ad; white-space: nowrap; }
+
+.as-satis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.as-satis-kart {
+  border-radius: 10px;
+  padding: 9px 11px;
+  box-sizing: border-box;
+}
+.as-satis-baslik { font-size: 10px; font-weight: 800; letter-spacing: .3px; }
+.as-satis-deger { font-size: 15px; font-weight: 900; margin-top: 3px; }
+
+.as-satis-kart--koyu { background: #003a70; cursor: pointer; }
+.as-satis-kart--koyu .as-satis-baslik { color: #a9c6e4; }
+.as-satis-kart--koyu .as-satis-deger { color: #ffffff; }
+
+.as-satis-kart--koyu-yesil { background: #0e6b58; }
+.as-satis-kart--koyu-yesil .as-satis-baslik { color: #a8e6d4; }
+.as-satis-kart--koyu-yesil .as-satis-deger { color: #ffffff; }
+
+.as-satis-kart--acik { background: #eaf2fc; border: 1.5px solid #95bdf0; cursor: pointer; }
+.as-satis-kart--acik .as-satis-baslik { color: #3569b8; }
+.as-satis-kart--acik .as-satis-deger { color: #003a70; }
+
+.as-satis-kart--acik-yesil { background: #eafaf0; border: 1.5px solid #0e6b34; }
+.as-satis-kart--acik-yesil .as-satis-baslik { color: #0e6b58; }
+.as-satis-kart--acik-yesil .as-satis-deger { color: #0e6b58; }
+
+/* ---------- Menü çekmecesi ---------- */
+.as-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,17,40,.55);
+  z-index: 2000;
+}
+.as-drawer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 62%;
+  max-width: 280px;
+  background: #0b2447;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform .25s ease;
+}
+.as-drawer--acik { transform: translateX(0); }
+body.as-drawer-kilit { overflow: hidden; }
+
+.as-drawer-profil {
+  background: #122b57;
+  padding: 20px 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.as-drawer-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.as-drawer-isim {
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.as-drawer-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 10px 0;
+  flex: 1;
+  overflow-y: auto;
+}
+.as-drawer-oge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+.as-drawer-oge:active { background: rgba(255,255,255,.08); }
+.as-drawer-ikon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+
+.as-drawer-cikis {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #791F1F;
+  border: none;
+  color: #ffffff;
+  padding: 13px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}

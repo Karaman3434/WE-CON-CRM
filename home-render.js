@@ -35,13 +35,11 @@ function kartlariGuncelle(){
     var bugun = WeiconData.bugununVerisi();
 
     setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro) + " EURO");
-    setText("anaSayfaSatisToplamTl", "≈ " + WeiconData.fmt(ay.toplamEuroTl) + " TL");
     setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim) + " TL");
     setText("anaSayfaAyEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " SATIŞ");
     setText("anaSayfaPrimEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " PRİM");
 
     setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro) + " EURO");
-    setText("anaSayfaBugunSatisTl", "≈ " + WeiconData.fmt(bugun.toplamEuroTl) + " TL");
     setText("anaSayfaBugunPrim", WeiconData.fmt(bugun.toplamPrim) + " TL");
 
   }catch(e){ hataGoster("Kartlar güncellenemedi: " + e.message); }
@@ -84,16 +82,6 @@ function setText(id, deger){
   else console.warn("Element bulunamadı:", id);
 }
 
-function butonlariBagla(){
-  try{
-    var atlaBaglantisi = function(ad){
-      return function(){ alert(ad + " — sonraki adımda bağlanacak."); };
-    };
-    document.getElementById("btnGeri").onclick = atlaBaglantisi("Geri");
-    document.getElementById("btnAnaSayfa").onclick = function(){ kartlariGuncelle(); };
-  }catch(e){ hataGoster("Butonlar bağlanamadı: " + e.message); }
-}
-
 function bildirimBanneriGuncelle(){
   try{
     var ozet = WeiconData.bildirimOzetiHesapla();
@@ -134,19 +122,49 @@ function isGunuKutusunuGuncelle(){
   }catch(e){ hataGoster("İş günü göstergesi güncellenemedi: " + e.message); }
 }
 
-function kmDurumuGuncelle(){
+function asKurGuncelle(){
   try{
-    var el = document.getElementById("kmDurumAlt");
-    if(!el || typeof KmData === "undefined") return;
-    var bugun = KmData.kaydiOku(KmData.bugunAnahtari());
-    if(bugun && bugun.km!=null && bugun.km!==""){
-      el.textContent = "✓ Bugün: " + bugun.km + " km girildi";
-      el.classList.add("menu-alt--basarili");
-    } else {
-      el.textContent = "TAKİP";
-      el.classList.remove("menu-alt--basarili");
-    }
-  }catch(e){ hataGoster("KM durumu güncellenemedi: " + e.message); }
+    var el = document.getElementById("asKurDeger");
+    if(!el) return;
+    var kur = parseFloat(localStorage.getItem("weicon_kur"));
+    el.textContent = isNaN(kur) ? "-" : kur.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:4});
+  }catch(e){}
+}
+
+function asDrawerAc(){
+  try{
+    var overlay = document.getElementById("asDrawerOverlay");
+    var drawer = document.getElementById("asDrawer");
+    if(!overlay || !drawer) return;
+    overlay.hidden = false;
+    document.body.classList.add("as-drawer-kilit");
+    requestAnimationFrame(function(){ drawer.classList.add("as-drawer--acik"); });
+  }catch(e){ hataGoster("Menü açılamadı: " + e.message); }
+}
+function asDrawerKapat(){
+  try{
+    var overlay = document.getElementById("asDrawerOverlay");
+    var drawer = document.getElementById("asDrawer");
+    if(!overlay || !drawer) return;
+    drawer.classList.remove("as-drawer--acik");
+    document.body.classList.remove("as-drawer-kilit");
+    setTimeout(function(){ overlay.hidden = true; }, 250);
+  }catch(e){}
+}
+function asDrawerBagla(){
+  try{
+    document.getElementById("btnAsMenuAc").onclick = asDrawerAc;
+    var overlay = document.getElementById("asDrawerOverlay");
+    overlay.addEventListener("click", function(ev){
+      if(ev.target === overlay) asDrawerKapat();
+    });
+    document.getElementById("btnAsCikis").onclick = function(){
+      if(!confirm("Çıkış yapmak istediğinize emin misiniz?")) return;
+      firebase.auth().signOut().then(function(){
+        window.location.href = "login.html";
+      });
+    };
+  }catch(e){ hataGoster("Menü bağlanamadı: " + e.message); }
 }
 
 window.addEventListener("error", function(ev){
@@ -167,25 +185,6 @@ function motivasyonuGuncelle(){
   }catch(e){}
 }
 
-// FATURA · VADE · ÖDEME TAKİP kutusu (21.09.2026).
-function vadeTakipKutusunuGuncelle(){
-  try{
-    if(typeof VadeTakip === "undefined") return;
-    var ozet = VadeTakip.ozet();
-    var kutu = document.getElementById("fvtKutu");
-    var altEl = document.getElementById("fvtAlt");
-    setText("fvtDeger", ozet.takipSayisi === 0 ? "Takipte fatura yok" : (ozet.takipSayisi + " fatura takipte"));
-    if(ozet.gectiSayisi > 0){
-      kutu.classList.add("fvt-kutu--uyari");
-      altEl.hidden = false;
-      altEl.textContent = "⚠ " + ozet.gectiSayisi + " fatura vadesi geçti — " + ozet.gectiTutar.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " EURO";
-    } else {
-      kutu.classList.remove("fvt-kutu--uyari");
-      altEl.hidden = true;
-    }
-  }catch(e){ if(typeof hataGoster === "function") hataGoster("Vade takip kutusu güncellenemedi: " + e.message); }
-}
-
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   motivasyonuGuncelle();
@@ -198,22 +197,24 @@ document.addEventListener("DOMContentLoaded", function(){
   setInterval(function(){
     if(new Date().getDate() !== isGunuSonHesaplananGun) isGunuKutusunuGuncelle();
   }, 60000);
-  butonlariBagla();
+  asDrawerBagla();
   WeiconData.veriDegistiginde(kartlariGuncelle);
   WeiconData.bildirimDegistiginde(bildirimBanneriGuncelle);
   WeiconData.bildirimDegistiginde(gununOzetiniGuncelle);
   WeiconData.bildirimVerisiDinlemeyeBasla();
   if(typeof CustomerData !== "undefined") CustomerData.listeDegistiginde(gununOzetiniGuncelle);
-  if(typeof ReportsData !== "undefined"){ ReportsData.arsivDegistiginde(vadeTakipKutusunuGuncelle); }
-  if(typeof CustomerData !== "undefined"){ CustomerData.listeDegistiginde(vadeTakipKutusunuGuncelle); }
-  vadeTakipKutusunuGuncelle();
   document.getElementById("bildirimBanner").onclick = function(){ window.location.href = "bildirimler.html"; };
   // Firebase verisi henüz gelmemiş olabilir; ilk anda da bir kez dene.
   kartlariGuncelle();
   gununOzetiniGuncelle();
-  if(typeof KmData !== "undefined"){ KmData.degistiginde(kmDurumuGuncelle); kmDurumuGuncelle(); }
 
-  // Döviz kuru artık global header'da gösteriliyor; Ana Sayfa'nın kendi
-  // ayrı kur şeridi ve yenile butonu kaldırıldı (Ayarlar'daki "Şimdi Dene"
-  // ile manuel tazeleme hâlâ mümkün).
+  asKurGuncelle();
+  window.addEventListener("storage", function(ev){ if(ev.key === "weicon_kur") asKurGuncelle(); });
+  window.addEventListener("weiconAuthHazir", function(ev){
+    asKurGuncelle();
+    try{
+      var el = document.getElementById("asDrawerIsim");
+      if(el && ev.detail && ev.detail.user) el.textContent = ev.detail.user.email;
+    }catch(e){}
+  });
 });
