@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2245.661 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2256.662 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v4 (Abdullah'ın paylaştığı referans fotoğrafa göre)
   =============================================================================
@@ -39,7 +39,7 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2245.661">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2256.662">
 </head>
 <body>
 
@@ -48,33 +48,28 @@
     <header class="as-header">
       <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">☰</button>
       <div class="as-logo">WEICON</div>
-      <div class="as-avatar" aria-hidden="true">👤</div>
+      <div class="as-header-denge" aria-hidden="true"></div>
     </header>
-    <div class="as-header-alt">
-      <div class="as-motivasyon">
-        <span id="motivasyonSelam">Merhaba,</span>
-        <span id="motivasyonSoz"></span>
-      </div>
-      <div class="as-tarih-kur-pil">
-        <div class="as-tarih-pil-tarih" id="gunTarihi"></div>
-        <div class="as-tarih-pil-kur">EUR <span id="asKurDeger">-</span></div>
-      </div>
+    <div class="as-motivasyon">
+      <span id="motivasyonSelam">Merhaba,</span>
+      <span id="motivasyonSoz"></span>
     </div>
   </div>
 </div>
 
 <main class="sayfa as-sayfa" id="page8">
 
-  <div class="as-kart-satir">
-    <div class="as-kart as-kart--acik-mavi" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
-      <span class="as-kart-ikon" aria-hidden="true">📊</span>
-      <div class="as-kart-baslik">BUGÜN SATIŞ</div>
-      <div class="as-kart-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
+  <div class="as-panel-satir">
+    <div class="as-isgunu-panel">
+      <div class="as-isgunu-etiket">İŞ GÜNÜ KALDI</div>
+      <div class="as-isgunu-deger" id="isGunuDeger">-</div>
     </div>
-    <div class="as-kart as-kart--acik-yesil">
-      <span class="as-kart-ikon" aria-hidden="true">🪙</span>
-      <div class="as-kart-baslik">BUGÜN PRİM</div>
-      <div class="as-kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
+    <div class="as-kur-panel">
+      <div class="as-kur-tarih" id="gunTarihi"></div>
+      <div class="as-kur-deger-satir">
+        <span class="as-kur-etiket">EUR</span>
+        <span class="as-kur-deger" id="asKurDeger">-</span>
+      </div>
     </div>
   </div>
 
@@ -91,17 +86,24 @@
     </div>
   </div>
 
-  <div class="as-panel-satir">
-    <div class="as-isgunu-panel">
-      <div class="as-isgunu-etiket">İŞ GÜNÜ KALDI</div>
-      <div class="as-isgunu-deger" id="isGunuDeger">-</div>
+  <div class="as-kart-satir">
+    <div class="as-kart as-kart--acik-mavi" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
+      <span class="as-kart-ikon" aria-hidden="true">📊</span>
+      <div class="as-kart-baslik">BUGÜN SATIŞ</div>
+      <div class="as-kart-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
     </div>
-    <div class="as-uyari-panel" id="bildirimBanner" hidden>
-      <span class="as-uyari-ikon" aria-hidden="true">⚠️</span>
-      <div>
-        <div class="as-uyari-baslik" id="bildirimBannerBaslik">Takip gerekiyor —</div>
-        <div class="as-uyari-alt" id="bildirimBannerAlt"></div>
-      </div>
+    <div class="as-kart as-kart--acik-yesil">
+      <span class="as-kart-ikon" aria-hidden="true">🪙</span>
+      <div class="as-kart-baslik">BUGÜN PRİM</div>
+      <div class="as-kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
+    </div>
+  </div>
+
+  <div class="as-uyari-panel" id="bildirimBanner" hidden>
+    <span class="as-uyari-ikon" aria-hidden="true">⚠️</span>
+    <div>
+      <div class="as-uyari-baslik" id="bildirimBannerBaslik">Takip gerekiyor —</div>
+      <div class="as-uyari-alt" id="bildirimBannerAlt"></div>
     </div>
   </div>
 
@@ -113,7 +115,7 @@
   </a>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2245.661 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2256.662 ***</span>
   </footer>
 
 </main>
@@ -173,6 +175,6 @@
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.280926.2245.661"></script>
+<script src="home-render.js?v=WG.280926.2256.662"></script>
 </body>
 </html>

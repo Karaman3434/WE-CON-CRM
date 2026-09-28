@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .as-menu-btn {
   background: none;
@@ -37,50 +37,19 @@
   flex: 1;
   text-align: center;
 }
-.as-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
+.as-header-denge {
+  width: 24px;
   flex: 0 0 auto;
 }
 
-.as-header-alt {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-}
 .as-motivasyon {
   font-size: 12px;
   color: #ffffff;
-  max-width: 62%;
 }
 .as-motivasyon #motivasyonSelam { font-weight: 800; margin-right: 4px; }
 .as-motivasyon #motivasyonSoz { font-style: italic; color: #d7e6fb; }
 
-.as-tarih-kur-pil {
-  background: rgba(255,255,255,.16);
-  border-radius: 10px;
-  padding: 6px 10px;
-  text-align: center;
-  flex-shrink: 0;
-}
-.as-tarih-pil-tarih { font-size: 9.5px; font-weight: 700; color: #ffffff; white-space: nowrap; }
-.as-tarih-pil-kur {
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #ffffff;
-  margin-top: 3px;
-  padding-top: 3px;
-  border-top: 1px solid rgba(255,255,255,.3);
-}
-
-.sayfa.as-sayfa { padding: 0 8px 16px; margin-top: -20px; }
+.sayfa.as-sayfa { padding: 0 8px 16px; margin-top: -20px; position: relative; z-index: 1001; }
 
 .as-kart-satir {
   display: flex;
@@ -91,7 +60,7 @@
   flex: 1;
   min-width: 0;
   border-radius: 12px;
-  padding: 15px 12px;
+  padding: 20px 12px;
   box-sizing: border-box;
   box-shadow: 0 2px 6px rgba(18,52,99,.12);
 }
@@ -125,7 +94,7 @@
   min-width: 0;
   background: #fdeceb;
   border-radius: 12px;
-  padding: 15px 10px;
+  padding: 20px 10px;
   box-sizing: border-box;
   text-align: center;
   display: flex;
@@ -135,17 +104,32 @@
 .as-isgunu-etiket { font-size: 10px; font-weight: 800; color: #c0392b; }
 .as-isgunu-deger { font-size: 19px; font-weight: 900; color: #c0392b; margin-top: 3px; }
 
-.as-uyari-panel {
-  flex: 1.6;
+.as-kur-panel {
+  flex: 1;
   min-width: 0;
+  background: #eef2f8;
+  border-radius: 12px;
+  padding: 20px 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.as-kur-tarih { font-size: 10px; font-weight: 700; color: #6b7684; margin-bottom: 4px; }
+.as-kur-deger-satir { display: flex; align-items: baseline; gap: 5px; }
+.as-kur-etiket { font-size: 10.5px; font-weight: 800; color: #6b7684; }
+.as-kur-deger { font-size: 17px; font-weight: 900; color: #1257c7; }
+
+.as-uyari-panel {
   display: flex;
   align-items: center;
   gap: 8px;
   background: #fdf3df;
   border-radius: 12px;
-  padding: 14px 10px;
+  padding: 20px 10px;
   box-sizing: border-box;
   cursor: pointer;
+  margin-bottom: 6px;
 }
 .as-uyari-ikon { font-size: 17px; flex-shrink: 0; }
 .as-uyari-baslik { font-size: 11.5px; font-weight: 800; color: #8a5a10; }
@@ -158,7 +142,7 @@
   gap: 6px;
   background: #f0ecfb;
   border-radius: 12px;
-  padding: 15px 10px;
+  padding: 20px 10px;
   margin-bottom: 8px;
   text-decoration: none;
   font-size: 11px;
