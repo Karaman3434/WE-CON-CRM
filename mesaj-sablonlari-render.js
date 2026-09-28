@@ -23,10 +23,9 @@ function tarihiGuncelle(){
 // hiçbir yer tutucu/şart yok (bkz. mesaj-data.js).
 var KUTULAR = {
   mail:     {alan: "sablonMailMetni",     btn: "btnMailKaydet",     durum: "mailDurum"},
-  whatsapp: {alan: "sablonWhatsappMetni", btn: "btnWhatsappKaydet", durum: "whatsappDurum"},
-  numune:   {alan: "sablonNumuneMetni",   btn: "btnNumuneKaydet",   durum: "numuneDurum"}
+  whatsapp: {alan: "sablonWhatsappMetni", btn: "btnWhatsappKaydet", durum: "whatsappDurum"}
 };
-var kullaniciDuzenledi = {mail: false, whatsapp: false, numune: false};
+var kullaniciDuzenledi = {mail: false, whatsapp: false};
 
 function metinleriDoldur(){
   Object.keys(KUTULAR).forEach(function(k){

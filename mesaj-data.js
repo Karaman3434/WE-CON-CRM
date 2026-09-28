@@ -10,31 +10,30 @@
   gönderirken işleme göre SİPARİŞ / FİYAT TEKLİFİ / PROFORMA FATURA / NUMUNE
   olarak değişir. Başka hiçbir kelime/işaret değiştirilmez.
 
-  GÜNCELLEME (26.09.2026, Abdullah'ın isteğiyle): HAREKET artık çıplak isim
-  değil, "-in" hâli ekiyle (siparişin / fiyat teklifinin / numunenin /
-  proforma faturanın) değişiyor — "HAREKET işleme alınmasını rica ederim"
-  gibi kalıplarda cümle eksik/anlamsız kalmasın diye.
+  GÜNCELLEME (28.09.2026, Abdullah'ın isteğiyle — merkez ofis/Satış Destek'e
+  giden mailin daha kurumsal/doğru Türkçe olması için): metin artık İKİ ayrı
+  yer tutucu tanıyor — HAREKET (belirtme hâli: "Siparişi/Proforma faturayı/
+  Fiyat teklifini/Numuneyi göndermenizi rica ederim" gibi kalıplarda) ve
+  BELGE (yalın hâl: "Sipariş/Proforma fatura/Fiyat teklifi/Numune formu
+  ektedir" gibi kalıplarda). NUMUNE artık ayrı bir metin DEĞİL — diğer 3 tür
+  gibi aynı ortak "mail" şablonunu (HAREKET/BELGE ile) kullanıyor.
 
   Saklama: localStorage + Firebase (mesajSablonlari/metinler — mevcut
   Firebase kuralı zaten bu yolu kapsıyor, kural değişikliği gerekmez).
-  Eski sistemin {FIRMA}/{BELGE} yer tutuculu kayıtları KULLANILMAZ (temiz
-  başlangıç); yeni kayıt yolu eski kayıtlara dokunmaz.
+  Eski sistemin {FIRMA}/{BELGE_ESKI} yer tutuculu kayıtları KULLANILMAZ
+  (temiz başlangıç); yeni kayıt yolu eski kayıtlara dokunmaz.
 */
 var MesajData = (function(){
 
   var ANAHTAR = "weiconv2_mesaj_metinleri";
   var YOL = "mesajSablonlari/metinler";
-  // "numune" (28.09.2026, Abdullah'ın isteğiyle eklendi): NUMUNE gönderiminde
-  // artık genel mail/WhatsApp şablonu değil, bu AYRI sabit metin kullanılır —
-  // kanal fark etmeksizin (bkz. send-render.js mesajMetniOlustur).
-  var KANALLAR = ["mail", "whatsapp", "numune"];
+  var KANALLAR = ["mail", "whatsapp"];
 
   // Hiç kayıt yapılmamışken başlangıç metni — sadece bir başlangıç noktası,
   // Mesaj Ayarları'nda istenildiği gibi değiştirilip kaydedilir.
   var VARSAYILAN = {
-    mail: "Merhaba,\nBilgilerini paylaştığım Firma için HAREKET bilgi formu ektedir. BİLGİNİZE.",
-    whatsapp: "Merhaba,\nİstediğiniz ürün için fiyat bilgisi ektedir.",
-    numune: "Merhaba,\nSöyleyeceğini paylaştım Firma için bilgi formu ektedir.\nFirmaya numune gönderimi yapmanızı rica ederim."
+    mail: "Merhaba,\nBilgilerini paylaştığım Firma için HAREKET göndermenizi rica ederim. BELGE formu ektedir.",
+    whatsapp: "Merhaba,\nİstediğiniz ürün için fiyat bilgisi ektedir."
   };
 
   function yerelOku(){
@@ -50,13 +49,19 @@ var MesajData = (function(){
     return firebase.apps.length ? firebase.database() : null;
   }
 
-  var HAREKET_ADLARI = {siparis:"siparişin", teklif:"fiyat teklifinin", proforma:"proforma faturanın", numune:"numunenin"};
+  // HAREKET = belirtme hâli ("...HAREKET göndermenizi rica ederim" -> "...Siparişi göndermenizi rica ederim")
+  // BELGE   = yalın hâl     ("BELGE formu ektedir" -> "Sipariş formu ektedir")
+  var HAREKET_ADLARI = {siparis:"Siparişi", teklif:"Fiyat teklifini", proforma:"Proforma faturayı", numune:"Numuneyi"};
+  var BELGE_ADLARI = {siparis:"Sipariş", teklif:"Fiyat teklifi", proforma:"Proforma fatura", numune:"Numune"};
 
-  // Metindeki (büyük harf, birebir) HAREKET kelimesini işlem adıyla değiştirir.
+  // Metindeki (büyük harf, birebir) HAREKET/BELGE kelimelerini işlem adıyla değiştirir.
   function uygula(metin, tip){
-    var ad = HAREKET_ADLARI[tip];
-    if(!ad) return metin;
-    return String(metin).split("HAREKET").join(ad);
+    var hareket = HAREKET_ADLARI[tip];
+    var belge = BELGE_ADLARI[tip];
+    var sonuc = String(metin);
+    if(hareket) sonuc = sonuc.split("HAREKET").join(hareket);
+    if(belge) sonuc = sonuc.split("BELGE").join(belge);
+    return sonuc;
   }
 
   // Kaydedilmiş metin varsa (boş bile olsa) onu, hiç kayıt yoksa başlangıç metnini döndürür.

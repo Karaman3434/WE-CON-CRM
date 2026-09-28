@@ -64,12 +64,11 @@ function adresleriBelirle(musteri){
 // yazılan metin olduğu gibi döner — otomatik "Merhaba,", müşteri notu ekleme
 // yok. TEK İSTİSNA (WG.210926.1603.585): metindeki HAREKET kelimesi işleme
 // göre SİPARİŞ/FİYAT TEKLİFİ/PROFORMA FATURA/NUMUNE olur (bkz. mesaj-data.js).
-// NUMUNE METNİ (28.09.2026, Abdullah'ın isteğiyle): NUMUNE gönderiminde
-// artık genel mail/WhatsApp şablonu (HAREKET yer tutuculu) değil, Mesaj
-// Ayarları'ndaki AYRI "Numune metni" kutusunda yazan sabit metin kullanılır
-// — kanal (mail/WhatsApp) fark etmez, ikisinde de aynı numune metni gider.
+// Mesaj metni TAMAMEN MANUEL: Mesaj Ayarları'nda yazılan metin olduğu gibi
+// döner — otomatik "Merhaba," ekleme yok. HAREKET/BELGE yer tutucuları,
+// gönderilen belge türüne göre değişir (bkz. mesaj-data.js — NUMUNE de
+// 28.09.2026'dan itibaren aynı ortak "mail" şablonunu kullanıyor).
 function mesajMetniOlustur(musteri, sepet, tip, kanal){
-  if(tip === "numune") return MesajData.oku("numune");
   return MesajData.uygula(MesajData.oku(kanal === "whatsapp" ? "whatsapp" : "mail"), tip);
 }
 
