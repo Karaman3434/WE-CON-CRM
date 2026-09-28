@@ -33,13 +33,18 @@ var HareketTablo = (function(){
     return (urunler||[]).map(function(u, i){
       var h = hesapla(u);
       var toplamVarMi = h && h.toplamEuro != null;
+      // NUMUNE/BEDELSİZ GÖSTERİMİ (28.09.2026, Abdullah'ın isteğiyle): bedelsiz
+      // (numune) işaretli ürünlerde TOPLAM sütunu "0,00 EURO" yerine "NUMUNE"
+      // yazar. İskonto %100 girilmişse İSK sütununda "%100" yerine sadece "-".
+      var iskYuz100 = (u.iskonto||0) === 100;
+      var toplamHucreIcerik = !toplamVarMi ? "-" : ((u.ozelEtiket === "bedelsiz") ? "NUMUNE" : paraHtml(fmt(h.toplamEuro),"EURO"));
       var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
       if(basit){
         return "<tr class='" + (zeminSinifi||"") + "'>"
           + urunHucre
           + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
           + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+paraHtml(fmt(h.iskontoluFiyat),"EURO")+"</span>" : "-") + "</td>"
-          + "<td class='belge-td-toplam'>" + (toplamVarMi ? paraHtml(fmt(h.toplamEuro),"EURO") : "-") + "</td>"
+          + "<td class='belge-td-toplam'>" + toplamHucreIcerik + "</td>"
           + "</tr>";
       }
       var primHucre;
@@ -52,9 +57,9 @@ var HareketTablo = (function(){
         + urunHucre
         + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
         + "<td>" + (u.listeFiyat!=null ? paraHtml(fmt(u.listeFiyat),"EURO") : "-") + "</td>"
-        + "<td>" + (u.iskonto!=null ? "<span class='belge-isk-metin'>"+paraHtml(u.iskonto,"%")+"</span>" : "-") + "</td>"
+        + "<td>" + (iskYuz100 ? "-" : (u.iskonto!=null ? "<span class='belge-isk-metin'>"+paraHtml(u.iskonto,"%")+"</span>" : "-")) + "</td>"
         + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+paraHtml(fmt(h.iskontoluFiyat),"EURO")+"</span>" : "-") + "</td>"
-        + "<td class='belge-td-toplam'>" + (toplamVarMi ? paraHtml(fmt(h.toplamEuro),"EURO") : "-") + "</td>"
+        + "<td class='belge-td-toplam'>" + toplamHucreIcerik + "</td>"
         + (primGizli ? "" : "<td class='belge-td-prim'>" + primHucre + "</td>")
         + "</tr>";
     }).join("");

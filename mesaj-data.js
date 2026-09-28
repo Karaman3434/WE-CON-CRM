@@ -24,13 +24,17 @@ var MesajData = (function(){
 
   var ANAHTAR = "weiconv2_mesaj_metinleri";
   var YOL = "mesajSablonlari/metinler";
-  var KANALLAR = ["mail", "whatsapp"];
+  // "numune" (28.09.2026, Abdullah'ın isteğiyle eklendi): NUMUNE gönderiminde
+  // artık genel mail/WhatsApp şablonu değil, bu AYRI sabit metin kullanılır —
+  // kanal fark etmeksizin (bkz. send-render.js mesajMetniOlustur).
+  var KANALLAR = ["mail", "whatsapp", "numune"];
 
   // Hiç kayıt yapılmamışken başlangıç metni — sadece bir başlangıç noktası,
   // Mesaj Ayarları'nda istenildiği gibi değiştirilip kaydedilir.
   var VARSAYILAN = {
     mail: "Merhaba,\nBilgilerini paylaştığım Firma için HAREKET bilgi formu ektedir. BİLGİNİZE.",
-    whatsapp: "Merhaba,\nİstediğiniz ürün için fiyat bilgisi ektedir."
+    whatsapp: "Merhaba,\nİstediğiniz ürün için fiyat bilgisi ektedir.",
+    numune: "Merhaba,\nSöyleyeceğini paylaştım Firma için bilgi formu ektedir.\nFirmaya numune gönderimi yapmanızı rica ederim."
   };
 
   function yerelOku(){

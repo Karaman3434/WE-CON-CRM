@@ -50,6 +50,19 @@
   </section>
 
   <div style="font-size:11px;color:#8a96a3;font-weight:600;padding:0 2px;">Yazdığın metin olduğu gibi gönderilir. Tek istisna: metne <b>HAREKET</b> (büyük harfle) yazarsan, gönderirken işleme göre SİPARİŞ / FİYAT TEKLİFİ / PROFORMA FATURA / NUMUNE olur.</div>
+
+  <!-- NUMUNE METNİ (28.09.2026, Abdullah'ın isteğiyle) — NUMUNE gönderiminde
+       artık yukarıdaki genel Mail/WhatsApp metni değil, bu AYRI sabit metin
+       kullanılır (kanal fark etmez). HAREKET yer tutucusu burada geçerli
+       DEĞİL — metin olduğu gibi gider. -->
+  <section class="ayar-kutu">
+    <label>🧪 Numune metni</label>
+    <textarea id="sablonNumuneMetni" rows="6" placeholder="NUMUNE gönderirken kullanılacak metni buraya yaz"></textarea>
+    <button class="kaydet-buton" id="btnNumuneKaydet">Kaydet</button>
+    <div id="numuneDurum" style="font-size:12px;font-weight:700;margin-top:6px;min-height:16px;"></div>
+  </section>
+
+  <div style="font-size:11px;color:#8a96a3;font-weight:600;padding:0 2px;">NUMUNE gönderirken (mail veya WhatsApp fark etmeksizin) yukarıdaki genel metin yerine bu metin kullanılır.</div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -59,7 +72,7 @@
 <script src="auth.js?v=WG.270926.1940.646"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="mesaj-data.js?v=WG.260926.2345.639"></script>
-<script src="mesaj-sablonlari-render.js?v=WG.210926.1603.585"></script>
+<script src="mesaj-data.js?v=WG.280926.0130.657"></script>
+<script src="mesaj-sablonlari-render.js?v=WG.280926.0130.657"></script>
 </body>
 </html>

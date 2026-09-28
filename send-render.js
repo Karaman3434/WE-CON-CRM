@@ -64,7 +64,12 @@ function adresleriBelirle(musteri){
 // yazılan metin olduğu gibi döner — otomatik "Merhaba,", müşteri notu ekleme
 // yok. TEK İSTİSNA (WG.210926.1603.585): metindeki HAREKET kelimesi işleme
 // göre SİPARİŞ/FİYAT TEKLİFİ/PROFORMA FATURA/NUMUNE olur (bkz. mesaj-data.js).
+// NUMUNE METNİ (28.09.2026, Abdullah'ın isteğiyle): NUMUNE gönderiminde
+// artık genel mail/WhatsApp şablonu (HAREKET yer tutuculu) değil, Mesaj
+// Ayarları'ndaki AYRI "Numune metni" kutusunda yazan sabit metin kullanılır
+// — kanal (mail/WhatsApp) fark etmez, ikisinde de aynı numune metni gider.
 function mesajMetniOlustur(musteri, sepet, tip, kanal){
+  if(tip === "numune") return MesajData.oku("numune");
   return MesajData.uygula(MesajData.oku(kanal === "whatsapp" ? "whatsapp" : "mail"), tip);
 }
 
@@ -267,12 +272,21 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     var h = CartData.hesapla(u, kur, kdv);
     netEuro += h.toplamEuro;
     var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
+    // NUMUNE/BEDELSİZ GÖSTERİMİ (28.09.2026, Abdullah'ın isteğiyle): bedelsiz
+    // (numune) işaretli bir ürün gönderiliyorsa TOPLAM sütununda "0,00 EURO"
+    // yerine "NUMUNE" yazılır. İskonto %100 girilmişse (bedelsiz ya da özel
+    // fiyat fark etmez) İSK sütununda "%100" yerine sadece "-" gösterilir.
+    var iskYuz100 = (u.iskonto||0) === 100;
+    var toplamHucreIcerik = (u.ozelEtiket === "bedelsiz")
+      ? "<div class='belge-td-sayi'>NUMUNE</div>"
+      : sayiDivHtml(fmtG2(h.toplamEuro), "EURO");
+    var iskHucreIcerik = iskYuz100 ? "<div class='belge-td-sayi'>-</div>" : sayiDivHtml((u.iskonto||0), "%");
     if(basit){
       satirlarHtml += "<tr>"
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
         + "<td class='belge-td-fiyat belge-td-fiyat--net'>" + sayiDivHtml(fmtG2(h.iskontoluFiyat), "EURO") + "</td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'>" + sayiDivHtml(fmtG2(h.toplamEuro), "EURO") + "</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'>" + toplamHucreIcerik + "</td>"
         + "</tr>";
     } else {
       satirlarHtml += "<tr>"
@@ -280,9 +294,9 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
         + urunHucre
         + "<td>" + (u.adet||0) + "</td>"
         + "<td class='belge-td-fiyat'>" + sayiDivHtml(fmtG2(u.listeFiyat||0), "EURO") + "</td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--isk'>" + sayiDivHtml((u.iskonto||0), "%") + "</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--isk'>" + iskHucreIcerik + "</td>"
         + "<td class='belge-td-fiyat belge-td-fiyat--net'>" + sayiDivHtml(fmtG2(h.iskontoluFiyat), "EURO") + "</td>"
-        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'>" + sayiDivHtml(fmtG2(h.toplamEuro), "EURO") + "</td>"
+        + "<td class='belge-td-fiyat belge-td-fiyat--toplam'>" + toplamHucreIcerik + "</td>"
         + "</tr>";
     }
   });
@@ -499,10 +513,15 @@ function gonderTiklandi(kanal, ozelKonu){
         // gidiyor — gövdeye (text) bir daha eklenmiyordu ama burada ikinci
         // kez ekleniyordu, mail gövdesinde konu satırı tekrar çıkıyordu.
         // Artık gövde SADECE metin, kanal ne olursa olsun.
-        // Madde 7: mail gövdesindeki \n'leri Mail.app'in paragraf aralığı
-        // eklemesini önlemek için U+2028 ile değiştiriyoruz (WhatsApp'ta
-        // gerek yok, orada normal \n doğru görünüyor).
-        var paylasimMetni = kanal === "whatsapp" ? metin : metin.replace(/\n/g, "\u2028");
+        // DUZELTME (28.09.2026, Abdullah'in bildirdigi hata): burada mail
+        // metnine de U+2028 uygulaniyordu - bu SADECE metinTabanliGonder()
+        // icindeki mailto: linki icin (iOS Mail'in mailto govdesinde \n'i
+        // fazladan paragraf bosluğu yapmasi) gerekliydi. navigator.share
+        // (asil kullanilan yol, resim EKI ile giden) icin U+2028 bircok
+        // Android mail uygulamasinda (Gmail/Outlook) HIC satir atlamiyor -
+        // Merhaba, ile devami bitisik gorunuyordu. navigator.share'e giden
+        // metin artik normal \n ile, oldugu gibi gidiyor.
+        var paylasimMetni = metin;
 
         if(navigator.canShare && navigator.canShare({files:[dosya]})){
           navigator.share({files:[dosya], title:konuMetni, text:paylasimMetni}).then(function(){
@@ -651,6 +670,16 @@ document.addEventListener("DOMContentLoaded", function(){
   };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
+    // GÜVENLİK AĞI (28.09.2026, Abdullah'ın bildirdiği hata): bazı mail
+    // uygulamaları (Outlook Android vb. — bkz. mailKonuKopyalaBtn'in
+    // yorumu) paylaşımdaki KONU'yu görmezden gelip konu kutusuna mesaj
+    // metnini koyabiliyor — bu platform kısıtı koddan tam düzeltilemiyor.
+    // Bu yüzden Gönder'e basılır basılmaz doğru KONU sessizce panoya da
+    // kopyalanır — mail uygulaması konuyu yanlış/boş getirirse tek yapman
+    // gereken konu kutusuna yapıştırmak.
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(konu).catch(function(){});
+    }
     document.getElementById("mailOnizlemeOverlay").hidden = true;
     gonderTiklandi("mail", konu);
   };

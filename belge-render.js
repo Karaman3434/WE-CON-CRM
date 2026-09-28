@@ -122,14 +122,19 @@ function belgeyiCiz(kayit, musteri){
       var satirPrimTl = Math.round(satirPrim * kaydinKuru);
       if(satirPrim > 0){ toplamPrim += satirPrim; toplamPrimTl += satirPrimTl; }
       var primHucre = item.ozelEtiket === "bedelsiz" ? "🎁 Bedelsiz" : (ozelFiyatMi ? "Ö.F" : (satirPrim<0 ? "Yok" : ("<span class='belge-td-prim-tek'>"+paraHtml(satirPrimTl.toLocaleString("tr-TR"),"TL")+"</span>")));
+      // NUMUNE/BEDELSİZ GÖSTERİMİ (28.09.2026, Abdullah'ın isteğiyle): bedelsiz
+      // (numune) işaretli ürünlerde TOPLAM sütunu "0,00 EURO" yerine "NUMUNE"
+      // yazar. İskonto %100 girilmişse İSK sütununda "%100" yerine sadece "-".
+      var iskYuz100 = (item.iskonto||0) === 100;
+      var toplamHucreIcerik = (item.ozelEtiket === "bedelsiz") ? "NUMUNE" : paraHtml(fmt(toplamEuro),"EURO");
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(item.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(item.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
         + "<td>" + paraHtml(fmt(item.listeFiyat||0),"EURO") + "</td>"
-        + "<td><span class='belge-isk-metin'>" + paraHtml((item.iskonto||0), "%") + "</span></td>"
+        + "<td>" + (iskYuz100 ? "-" : "<span class='belge-isk-metin'>" + paraHtml((item.iskonto||0), "%") + "</span>") + "</td>"
         + "<td><span class='rozet-net'>" + paraHtml(fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)),"EURO") + "</span></td>"
-        + "<td class='belge-td-toplam'>" + paraHtml(fmt(toplamEuro),"EURO") + "</td>"
+        + "<td class='belge-td-toplam'>" + toplamHucreIcerik + "</td>"
         + "<td class='belge-td-prim'>" + primHucre + "</td>"
         + "</tr>";
     }).join("");
