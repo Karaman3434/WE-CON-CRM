@@ -11,7 +11,7 @@
 
 .as-header-blok {
   background: #1257c7;
-  padding: 12px 14px 30px;
+  padding: 12px 14px 16px;
 }
 .as-header {
   display: flex;
@@ -49,7 +49,7 @@
 .as-motivasyon #motivasyonSelam { font-weight: 800; margin-right: 4px; }
 .as-motivasyon #motivasyonSoz { font-style: italic; color: #d7e6fb; }
 
-.sayfa.as-sayfa { padding: 0 8px 16px; margin-top: -20px; position: relative; z-index: 1001; }
+.sayfa.as-sayfa { padding: 14px 8px 16px; }
 
 .as-kart-satir {
   display: flex;
@@ -65,7 +65,7 @@
   box-shadow: 0 2px 6px rgba(18,52,99,.12);
 }
 .as-kart-ikon { font-size: 17px; line-height: 1; }
-.as-kart-baslik { font-size: 10px; font-weight: 800; letter-spacing: .3px; margin-top: 5px; }
+.as-kart-baslik { font-size: 15px; font-weight: 800; letter-spacing: .3px; margin-top: 5px; }
 .as-kart-deger { font-size: 16px; font-weight: 900; margin-top: 3px; }
 
 .as-kart--acik-mavi { background: #e9f2fd; cursor: pointer; }
@@ -101,7 +101,7 @@
   flex-direction: column;
   justify-content: center;
 }
-.as-isgunu-etiket { font-size: 10px; font-weight: 800; color: #c0392b; }
+.as-isgunu-etiket { font-size: 15px; font-weight: 800; color: #c0392b; }
 .as-isgunu-deger { font-size: 19px; font-weight: 900; color: #c0392b; margin-top: 3px; }
 
 .as-kur-panel {
@@ -115,9 +115,9 @@
   flex-direction: column;
   justify-content: center;
 }
-.as-kur-tarih { font-size: 10px; font-weight: 700; color: #6b7684; margin-bottom: 4px; }
+.as-kur-tarih { font-size: 15px; font-weight: 700; color: #6b7684; margin-bottom: 4px; }
 .as-kur-deger-satir { display: flex; align-items: baseline; gap: 5px; }
-.as-kur-etiket { font-size: 10.5px; font-weight: 800; color: #6b7684; }
+.as-kur-etiket { font-size: 15.5px; font-weight: 800; color: #6b7684; }
 .as-kur-deger { font-size: 17px; font-weight: 900; color: #1257c7; }
 
 .as-uyari-panel {
@@ -126,14 +126,14 @@
   gap: 8px;
   background: #fdf3df;
   border-radius: 12px;
-  padding: 20px 10px;
+  padding: 26px 10px;
   box-sizing: border-box;
   cursor: pointer;
   margin-bottom: 6px;
 }
 .as-uyari-ikon { font-size: 17px; flex-shrink: 0; }
-.as-uyari-baslik { font-size: 11.5px; font-weight: 800; color: #8a5a10; }
-.as-uyari-alt { font-size: 10px; font-weight: 700; color: #8a5a10; opacity: .9; }
+.as-uyari-baslik { font-size: 17px; font-weight: 800; color: #8a5a10; }
+.as-uyari-alt { font-size: 15px; font-weight: 700; color: #8a5a10; opacity: .9; }
 
 .as-ozet-panel {
   display: flex;
@@ -142,10 +142,10 @@
   gap: 6px;
   background: #f0ecfb;
   border-radius: 12px;
-  padding: 20px 10px;
+  padding: 26px 10px;
   margin-bottom: 8px;
   text-decoration: none;
-  font-size: 11px;
+  font-size: 16px;
 }
 .as-ozet-baslik { font-weight: 800; color: #6c4fbb; flex-shrink: 0; }
 .as-ozet-deger { font-weight: 700; color: #6c4fbb; white-space: nowrap; }
