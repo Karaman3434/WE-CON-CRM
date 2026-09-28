@@ -1,23 +1,21 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2311.663 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2358.664 — home.html -->
 <!--
-  WEICON ASİST — ANA SAYFA v4 (Abdullah'ın paylaştığı referans fotoğrafa göre)
+  WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
-  Ana ekranda SADECE gösterge panelleri var: Bugün Satış/Prim, Eylül
-  Satış/Prim, İş Günü Kaldı + Takip Gerekiyor, Günün Özeti. Tüm işlem
-  kısayolları (Ürün Bul, Hızlı Hesapla, vb.) SADECE soldan açılan çekmece
-  menüde (bkz. .as-drawer-*) — ana ekranda tekrar yok (Abdullah'ın açık
-  isteği).
+  Ana ekranda SADECE gösterge panelleri var: en üstte selamlama/motivasyon
+  sözü, üst bar (menü/logo/tarih), İş Günü Kaldı + EUR Kur, koyu lacivert
+  Eylül Satış/Prim kartı (aylık hedefe göre GERÇEK ilerleme çubuğu —
+  Ayarlar'da girilen "weicon_hedef" değerine göre hesaplanır, hedef
+  girilmemişse çubuk/rozet hiç gösterilmez), Bugün Satış/Prim, ve
+  Takip Gerekiyor + Günün Özeti liste satırları. Tüm işlem kısayolları
+  (Ürün Bul, Hızlı Hesapla, vb.) SADECE soldan açılan çekmece menüde
+  (bkz. .as-drawer-*) — ana ekranda tekrar yok (Abdullah'ın açık isteği).
 
   Bu sayfaya özel TÜM görsel stiller home-anasayfa-style.css'te ("as-"
   önekli sınıflar) — home-style.css'teki PAYLAŞILAN .app-header/.app-nav/
   .kart-grid/.menu-grid sınıflarına buradan hiç dokunulmadı (o sınıflar
   diğer tüm sayfalarda hâlâ kullanılıyor).
-
-  NOT: Referans fotoğraftaki "Hedef: X EUR %Y" ilerleme çubukları ve
-  "↑ %12" artış rozetleri BİLEREK eklenmedi — sistemde aylık hedef veya
-  önceki döneme göre değişim hesaplayan bir veri yok; Abdullah onaylarsa
-  gerçek bir hesaplamayla eklenecek.
 
   DOSYA YAPISI:
     home.html                 — bu dosya: HTML iskeleti
@@ -39,21 +37,19 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2311.663">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2358.664">
 </head>
 <body>
 
 <div class="app-ust-sabit">
-  <div class="as-header-blok">
-    <header class="as-header">
-      <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">☰</button>
-      <div class="as-logo">WEICON</div>
-      <div class="as-header-denge" aria-hidden="true"></div>
-    </header>
-    <div class="as-motivasyon">
-      <span id="motivasyonSelam">Merhaba,</span>
-      <span id="motivasyonSoz"></span>
-    </div>
+  <div class="as-selam-blok">
+    <span id="motivasyonSelam" class="as-selam-isim">Merhaba,</span>
+    <span id="motivasyonSoz" class="as-selam-soz"></span>
+  </div>
+  <div class="as-ustbar">
+    <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">☰</button>
+    <div class="as-logo-buyuk">WEICON</div>
+    <div class="as-tarih" id="gunTarihi"></div>
   </div>
 </div>
 
@@ -61,61 +57,69 @@
 
   <div class="as-panel-satir">
     <div class="as-isgunu-panel">
-      <div class="as-isgunu-etiket">İŞ GÜNÜ KALDI</div>
+      <div>
+        <span class="as-isgunu-ikon" aria-hidden="true">📅</span>
+        <div class="as-isgunu-etiket">İş günü<br>kaldı</div>
+      </div>
       <div class="as-isgunu-deger" id="isGunuDeger">-</div>
     </div>
     <div class="as-kur-panel">
-      <div class="as-kur-tarih" id="gunTarihi"></div>
-      <div class="as-kur-deger-satir">
-        <span class="as-kur-etiket">EUR</span>
-        <span class="as-kur-deger" id="asKurDeger">-</span>
+      <div class="as-kur-etiket">EUR<br>kur</div>
+      <div class="as-kur-deger" id="asKurDeger">-</div>
+    </div>
+  </div>
+
+  <div class="as-hedef-blok">
+    <div class="as-hedef-kart" onclick="window.location.href='satis-listesi.html?kapsam=ay'">
+      <div class="as-hedef-ust-satir">
+        <span class="as-hedef-ay-etiket" id="anaSayfaAyEtiketi">Eylül 2026 satışı</span>
+        <span class="as-hedef-rozet" id="asHedefRozet" hidden>-</span>
       </div>
+      <div class="as-hedef-tutar" id="anaSayfaSatisToplam">0,00 EURO</div>
+      <div class="as-hedef-bar-track" id="asHedefBarTrack" hidden>
+        <div class="as-hedef-bar-dolu" id="asHedefBarDolu"></div>
+      </div>
+      <div class="as-hedef-alt-yazi" id="asHedefAltYazi" hidden></div>
+
+      <div class="as-hedef-ayrac"></div>
+      <div class="as-prim-etiket" id="anaSayfaPrimEtiketi">Eylül 2026 primi</div>
+      <div class="as-prim-tutar" id="anaSayfaPrimToplam">0,00 TL</div>
     </div>
   </div>
 
   <div class="as-kart-satir">
-    <div class="as-kart as-kart--koyu-mavi" onclick="window.location.href='satis-listesi.html?kapsam=ay'">
-      <span class="as-kart-ikon" aria-hidden="true">🎯</span>
-      <div class="as-kart-baslik" id="anaSayfaAyEtiketi">EYLÜL 2026 SATIŞ</div>
-      <div class="as-kart-deger" id="anaSayfaSatisToplam">0,00 EURO</div>
-    </div>
-    <div class="as-kart as-kart--koyu-yesil">
-      <span class="as-kart-ikon" aria-hidden="true">🪙</span>
-      <div class="as-kart-baslik" id="anaSayfaPrimEtiketi">EYLÜL 2026 PRİM</div>
-      <div class="as-kart-deger" id="anaSayfaPrimToplam">0,00 TL</div>
-    </div>
-  </div>
-
-  <div class="as-kart-satir">
-    <div class="as-kart as-kart--acik-mavi" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
-      <span class="as-kart-ikon" aria-hidden="true">📊</span>
-      <div class="as-kart-baslik">BUGÜN SATIŞ</div>
+    <div class="as-kart" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
+      <div class="as-kart-etiket">Bugün satış</div>
       <div class="as-kart-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
     </div>
-    <div class="as-kart as-kart--acik-yesil">
-      <span class="as-kart-ikon" aria-hidden="true">🪙</span>
-      <div class="as-kart-baslik">BUGÜN PRİM</div>
+    <div class="as-kart">
+      <div class="as-kart-etiket">Bugün prim</div>
       <div class="as-kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
     </div>
   </div>
 
-  <div class="as-uyari-panel" id="bildirimBanner" hidden>
-    <span class="as-uyari-ikon" aria-hidden="true">⚠️</span>
-    <div>
-      <div class="as-uyari-baslik" id="bildirimBannerBaslik">Takip gerekiyor —</div>
-      <div class="as-uyari-alt" id="bildirimBannerAlt"></div>
+  <div class="as-liste-blok">
+    <div class="as-liste-baslik">Bugüne bakış</div>
+    <div class="as-liste-satir as-liste-satir--uyari" id="bildirimBanner" hidden>
+      <span class="as-liste-ikon-kutu"><span class="as-liste-ikon" aria-hidden="true">⚠️</span></span>
+      <span class="as-liste-metin">
+        <span class="as-liste-metin-baslik" id="bildirimBannerBaslik">Takip gerekiyor</span>
+        <span class="as-liste-metin-alt" id="bildirimBannerAlt"></span>
+      </span>
+      <span class="as-liste-ok" aria-hidden="true">›</span>
     </div>
+    <a class="as-liste-satir as-liste-satir--ozet" id="gununOzetiKutu" href="ziyaret.html">
+      <span class="as-liste-ikon-kutu"><span class="as-liste-ikon" aria-hidden="true">📊</span></span>
+      <span class="as-liste-metin">
+        <span class="as-liste-metin-baslik">Günün özeti</span>
+        <span class="as-liste-metin-alt" id="gununOzetiAlt">0 işlem · 0 sipariş · 0 temas</span>
+      </span>
+      <span class="as-liste-ok" aria-hidden="true">›</span>
+    </a>
   </div>
 
-  <a class="as-ozet-panel" id="gununOzetiKutu" href="ziyaret.html">
-    <span class="as-ozet-baslik">📊 Günün özeti</span>
-    <span class="as-ozet-deger"><span id="gununOzetiIslemSayi">0</span> işlem</span>
-    <span class="as-ozet-deger"><span id="gununOzetiSiparisSayi">0</span> sipariş</span>
-    <span class="as-ozet-deger"><span id="gununOzetiTemasSayi">0</span> temas</span>
-  </a>
-
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2311.663 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2358.664 ***</span>
   </footer>
 
 </main>
@@ -168,13 +172,13 @@
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.270926.1940.646"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="ayarlar-sync.js?v=WG.140926.1412.560"></script>
+<script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
 <script src="home-data.js?v=WG.150926.1241.572"></script>
 <script src="customer-data.js?v=WG.240926.0752.611"></script>
 <script src="hata-log.js?v=WG.140926.1412.560"></script>
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.280926.2311.663"></script>
+<script src="home-render.js?v=WG.280926.2358.664"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.280926.2311.663";
+var APP_VERSION = "WG.280926.2358.664";
 
 var AY_ADLARI_AYARLAR = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 
@@ -29,8 +29,11 @@ function ayarlariDoldur(){
   try{
     var kur = parseFloat(localStorage.getItem("weicon_kur"));
     var kdv = parseFloat(localStorage.getItem("weicon_kdv_orani"));
+    var hedef = parseFloat(localStorage.getItem("weicon_hedef"));
     document.getElementById("kurInput").value = isNaN(kur) ? "" : kur;
     document.getElementById("kdvInput").value = isNaN(kdv) ? 20 : kdv;
+    var hedefEl = document.getElementById("hedefInput");
+    if(hedefEl) hedefEl.value = isNaN(hedef) ? "" : hedef;
     sonGuncellemeYazisiniGoster();
   }catch(e){ hataGoster("Ayarlar okunamadı: " + e.message); }
 }
@@ -55,13 +58,17 @@ function ayarlariKaydet(){
   try{
     var kur = parseFloat(document.getElementById("kurInput").value) || 0;
     var kdv = parseFloat(document.getElementById("kdvInput").value) || 20;
+    var hedefEl = document.getElementById("hedefInput");
+    var hedef = hedefEl ? (parseFloat(hedefEl.value) || 0) : 0;
     if(typeof AyarlarSync !== "undefined"){
       AyarlarSync.kurKaydet(kur);
       AyarlarSync.kdvKaydet(kdv);
+      if(typeof AyarlarSync.hedefKaydet === "function") AyarlarSync.hedefKaydet(hedef);
     } else {
       localStorage.setItem("weicon_kur", kur);
       localStorage.setItem("weicon_kur_zaman", Date.now());
       localStorage.setItem("weicon_kdv_orani", kdv);
+      localStorage.setItem("weicon_hedef", hedef);
     }
     alert("✓ Ayarlar kaydedildi.");
   }catch(e){ hataGoster("Ayarlar kaydedilemedi: " + e.message); }

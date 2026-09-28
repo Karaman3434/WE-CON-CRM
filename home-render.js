@@ -36,13 +36,47 @@ function kartlariGuncelle(){
 
     setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro) + " EURO");
     setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim) + " TL");
-    setText("anaSayfaAyEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " SATIŞ");
-    setText("anaSayfaPrimEtiketi", ay.ayAd.toLocaleUpperCase("tr-TR") + " " + ay.yil + " PRİM");
+    setText("anaSayfaAyEtiketi", ay.ayAd + " " + ay.yil + " satışı");
+    setText("anaSayfaPrimEtiketi", ay.ayAd + " " + ay.yil + " primi");
 
     setText("anaSayfaBugunSatis", WeiconData.fmt(bugun.toplamEuro) + " EURO");
     setText("anaSayfaBugunPrim", WeiconData.fmt(bugun.toplamPrim) + " TL");
 
+    hedefGostergesiniGuncelle(ay.toplamEuro);
+
   }catch(e){ hataGoster("Kartlar güncellenemedi: " + e.message); }
+}
+
+// Aylık satış hedefi ilerleme göstergesi — hedef Ayarlar sayfasında
+// girilir (localStorage "weicon_hedef", Firebase "ayarlar/hedef" ile
+// senkron). Hedef girilmemişse (0 veya boş) rozet/çubuk/alt yazı
+// tamamen gizlenir — sahte bir yüzde asla gösterilmez.
+function hedefGostergesiniGuncelle(satisToplamEuro){
+  try{
+    var rozet = document.getElementById("asHedefRozet");
+    var barTrack = document.getElementById("asHedefBarTrack");
+    var barDolu = document.getElementById("asHedefBarDolu");
+    var altYazi = document.getElementById("asHedefAltYazi");
+    if(!rozet || !barTrack || !barDolu || !altYazi) return;
+
+    var hedef = parseFloat(localStorage.getItem("weicon_hedef"));
+    if(!isFinite(hedef) || hedef <= 0){
+      rozet.hidden = true;
+      barTrack.hidden = true;
+      altYazi.hidden = true;
+      return;
+    }
+
+    var yuzde = Math.round((satisToplamEuro / hedef) * 100);
+    if(yuzde < 0) yuzde = 0;
+
+    rozet.hidden = false;
+    rozet.textContent = "%" + yuzde + " hedef";
+    barTrack.hidden = false;
+    barDolu.style.width = Math.min(yuzde, 100) + "%";
+    altYazi.hidden = false;
+    altYazi.textContent = "Hedef: " + WeiconData.fmt(hedef) + " EURO";
+  }catch(e){ hataGoster("Hedef göstergesi güncellenemedi: " + e.message); }
 }
 
 var TEMAS_TUR_ETIKET = {ziyaret:"Ziyaret", telefon:"Telefon", mail:"Mail", whatsapp:"WhatsApp"};
@@ -50,8 +84,8 @@ var TEMAS_TUR_ETIKET = {ziyaret:"Ziyaret", telefon:"Telefon", mail:"Mail", whats
 function gununOzetiniGuncelle(){
   try{
     var islem = WeiconData.gununIslemOzeti();
-    setText("gununOzetiIslemSayi", islem.toplam);
-    setText("gununOzetiSiparisSayi", islem.dokum.siparis||0);
+    var siparisSayisi = islem.dokum.siparis||0;
+    var temasToplam = 0;
 
     if(typeof CustomerData !== "undefined"){
       var bugun = new Date();
@@ -64,10 +98,10 @@ function gununOzetiniGuncelle(){
           temasDokum[t]++;
         }
       });
-      var temasToplam = 0;
       Object.keys(temasDokum).forEach(function(t){ temasToplam += temasDokum[t]; });
-      setText("gununOzetiTemasSayi", temasToplam);
     }
+
+    setText("gununOzetiAlt", islem.toplam + " işlem · " + siparisSayisi + " sipariş · " + temasToplam + " temas");
 
     var bugunTarih = new Date();
     var tarihStr = bugunTarih.getFullYear() + "-" + String(bugunTarih.getMonth()+1).padStart(2,"0") + "-" + String(bugunTarih.getDate()).padStart(2,"0");
@@ -211,7 +245,11 @@ document.addEventListener("DOMContentLoaded", function(){
   gununOzetiniGuncelle();
 
   asKurGuncelle();
-  window.addEventListener("storage", function(ev){ if(ev.key === "weicon_kur") asKurGuncelle(); });
+  window.addEventListener("storage", function(ev){
+    if(ev.key === "weicon_kur") asKurGuncelle();
+    if(ev.key === "weicon_hedef") kartlariGuncelle();
+  });
+  if(typeof AyarlarSync !== "undefined") AyarlarSync.degistiginde(kartlariGuncelle);
   window.addEventListener("weiconAuthHazir", function(ev){
     asKurGuncelle();
     try{
