@@ -154,6 +154,8 @@ function asDrawerKapat(){
 function asDrawerBagla(){
   try{
     document.getElementById("btnAsMenuAc").onclick = asDrawerAc;
+    var btnKapat = document.getElementById("btnAsMenuKapat");
+    if(btnKapat) btnKapat.onclick = asDrawerKapat;
     var overlay = document.getElementById("asDrawerOverlay");
     overlay.addEventListener("click", function(ev){
       if(ev.target === overlay) asDrawerKapat();
@@ -213,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function(){
   window.addEventListener("weiconAuthHazir", function(ev){
     asKurGuncelle();
     try{
-      var el = document.getElementById("asDrawerIsim");
+      var el = document.getElementById("asDrawerEposta");
       if(el && ev.detail && ev.detail.user) el.textContent = ev.detail.user.email;
     }catch(e){}
   });

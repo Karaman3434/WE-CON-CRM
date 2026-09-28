@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2225.660 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2245.661 — home.html -->
 <!--
-  WEICON ASİST — ANA SAYFA v3 (yeni tasarım — Abdullah'ın onayladığı mockup)
+  WEICON ASİST — ANA SAYFA v4 (Abdullah'ın paylaştığı referans fotoğrafa göre)
   =============================================================================
-  Eski geniş menü-grid/hızlı işlemler bölümü kaldırıldı; işlemler artık
-  soldan açılan bir çekmece menüde (bkz. .as-drawer-*). Ana ekranda SADECE
-  gösterge panelleri kalıyor: EUR kuru + kalan iş günü, takip gerekiyor
-  uyarısı, günün özeti, ve 2x2 satış/prim panelleri.
+  Ana ekranda SADECE gösterge panelleri var: Bugün Satış/Prim, Eylül
+  Satış/Prim, İş Günü Kaldı + Takip Gerekiyor, Günün Özeti. Tüm işlem
+  kısayolları (Ürün Bul, Hızlı Hesapla, vb.) SADECE soldan açılan çekmece
+  menüde (bkz. .as-drawer-*) — ana ekranda tekrar yok (Abdullah'ın açık
+  isteği).
 
   Bu sayfaya özel TÜM görsel stiller home-anasayfa-style.css'te ("as-"
   önekli sınıflar) — home-style.css'teki PAYLAŞILAN .app-header/.app-nav/
   .kart-grid/.menu-grid sınıflarına buradan hiç dokunulmadı (o sınıflar
   diğer tüm sayfalarda hâlâ kullanılıyor).
+
+  NOT: Referans fotoğraftaki "Hedef: X EUR %Y" ilerleme çubukları ve
+  "↑ %12" artış rozetleri BİLEREK eklenmedi — sistemde aylık hedef veya
+  önceki döneme göre değişim hesaplayan bir veri yok; Abdullah onaylarsa
+  gerçek bir hesaplamayla eklenecek.
 
   DOSYA YAPISI:
     home.html                 — bu dosya: HTML iskeleti
@@ -25,7 +31,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d3d8c">
+<meta name="theme-color" content="#1257c7">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,43 +39,69 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2225.660">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2245.661">
 </head>
 <body>
 
 <div class="app-ust-sabit">
-  <header class="as-header">
-    <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">☰</button>
-    <div class="as-logo">WEICON</div>
-    <div class="as-avatar" aria-hidden="true">👤</div>
-  </header>
-  <div class="as-motivasyon">
-    <span id="motivasyonSelam">Merhaba,</span>
-    <span id="motivasyonSoz"></span>
+  <div class="as-header-blok">
+    <header class="as-header">
+      <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">☰</button>
+      <div class="as-logo">WEICON</div>
+      <div class="as-avatar" aria-hidden="true">👤</div>
+    </header>
+    <div class="as-header-alt">
+      <div class="as-motivasyon">
+        <span id="motivasyonSelam">Merhaba,</span>
+        <span id="motivasyonSoz"></span>
+      </div>
+      <div class="as-tarih-kur-pil">
+        <div class="as-tarih-pil-tarih" id="gunTarihi"></div>
+        <div class="as-tarih-pil-kur">EUR <span id="asKurDeger">-</span></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <main class="sayfa as-sayfa" id="page8">
 
-  <div class="as-panel-satir">
-    <div class="as-kur-panel">
-      <div class="as-kur-tarih" id="gunTarihi"></div>
-      <div class="as-kur-deger-satir">
-        <span class="as-kur-etiket">EUR</span>
-        <span class="as-kur-deger" id="asKurDeger">-</span>
-      </div>
+  <div class="as-kart-satir">
+    <div class="as-kart as-kart--acik-mavi" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
+      <span class="as-kart-ikon" aria-hidden="true">📊</span>
+      <div class="as-kart-baslik">BUGÜN SATIŞ</div>
+      <div class="as-kart-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
     </div>
+    <div class="as-kart as-kart--acik-yesil">
+      <span class="as-kart-ikon" aria-hidden="true">🪙</span>
+      <div class="as-kart-baslik">BUGÜN PRİM</div>
+      <div class="as-kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
+    </div>
+  </div>
+
+  <div class="as-kart-satir">
+    <div class="as-kart as-kart--koyu-mavi" onclick="window.location.href='satis-listesi.html?kapsam=ay'">
+      <span class="as-kart-ikon" aria-hidden="true">🎯</span>
+      <div class="as-kart-baslik" id="anaSayfaAyEtiketi">EYLÜL 2026 SATIŞ</div>
+      <div class="as-kart-deger" id="anaSayfaSatisToplam">0,00 EURO</div>
+    </div>
+    <div class="as-kart as-kart--koyu-yesil">
+      <span class="as-kart-ikon" aria-hidden="true">🪙</span>
+      <div class="as-kart-baslik" id="anaSayfaPrimEtiketi">EYLÜL 2026 PRİM</div>
+      <div class="as-kart-deger" id="anaSayfaPrimToplam">0,00 TL</div>
+    </div>
+  </div>
+
+  <div class="as-panel-satir">
     <div class="as-isgunu-panel">
       <div class="as-isgunu-etiket">İŞ GÜNÜ KALDI</div>
       <div class="as-isgunu-deger" id="isGunuDeger">-</div>
     </div>
-  </div>
-
-  <div class="banner as-uyari-panel" id="bildirimBanner" hidden>
-    <span class="as-uyari-ikon">⚠️</span>
-    <div>
-      <div class="as-uyari-baslik" id="bildirimBannerBaslik">Takip gerekiyor —</div>
-      <div class="as-uyari-alt" id="bildirimBannerAlt"></div>
+    <div class="as-uyari-panel" id="bildirimBanner" hidden>
+      <span class="as-uyari-ikon" aria-hidden="true">⚠️</span>
+      <div>
+        <div class="as-uyari-baslik" id="bildirimBannerBaslik">Takip gerekiyor —</div>
+        <div class="as-uyari-alt" id="bildirimBannerAlt"></div>
+      </div>
     </div>
   </div>
 
@@ -80,51 +112,50 @@
     <span class="as-ozet-deger"><span id="gununOzetiTemasSayi">0</span> temas</span>
   </a>
 
-  <section class="as-satis-grid">
-    <div class="as-satis-kart as-satis-kart--koyu" onclick="window.location.href='satis-listesi.html?kapsam=ay'">
-      <div class="as-satis-baslik" id="anaSayfaAyEtiketi">EYLÜL 2026 SATIŞ</div>
-      <div class="as-satis-deger" id="anaSayfaSatisToplam">0,00 EURO</div>
-    </div>
-    <div class="as-satis-kart as-satis-kart--koyu-yesil">
-      <div class="as-satis-baslik" id="anaSayfaPrimEtiketi">EYLÜL 2026 PRİM</div>
-      <div class="as-satis-deger" id="anaSayfaPrimToplam">0,00 TL</div>
-    </div>
-    <div class="as-satis-kart as-satis-kart--acik" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
-      <div class="as-satis-baslik">BUGÜN SATIŞ</div>
-      <div class="as-satis-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
-    </div>
-    <div class="as-satis-kart as-satis-kart--acik-yesil">
-      <div class="as-satis-baslik">BUGÜN PRİM</div>
-      <div class="as-satis-deger" id="anaSayfaBugunPrim">0,00 TL</div>
-    </div>
-  </section>
-
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2225.660 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2245.661 ***</span>
   </footer>
 
 </main>
 
-<!-- Menü çekmecesi (soldan açılır, yarım genişlik, tam yükseklik) -->
+<!-- Menü çekmecesi (soldan açılır, referans fotoğraftaki gibi geniş) -->
 <div class="as-drawer-overlay" id="asDrawerOverlay" hidden>
   <div class="as-drawer" id="asDrawer">
+
+    <div class="as-drawer-ustbar">
+      <span class="as-drawer-logo">WEICON</span>
+      <button class="as-drawer-kapat" id="btnAsMenuKapat" aria-label="Menüyü kapat">✕</button>
+    </div>
+
     <div class="as-drawer-profil">
       <div class="as-drawer-avatar" aria-hidden="true">👤</div>
-      <div class="as-drawer-isim" id="asDrawerIsim">…</div>
+      <div class="as-drawer-isim-blok">
+        <div class="as-drawer-isim" id="asDrawerIsim">Hesabım</div>
+        <div class="as-drawer-eposta" id="asDrawerEposta">…</div>
+      </div>
     </div>
+
+    <a class="as-drawer-anasayfa" href="home.html">
+      <span class="as-drawer-ikon" aria-hidden="true">🏠</span>
+      <span class="as-drawer-etiket">Ana Sayfa</span>
+      <span class="as-drawer-ok" aria-hidden="true">›</span>
+    </a>
+
     <nav class="as-drawer-liste">
-      <a class="as-drawer-oge" href="product.html"><span class="as-drawer-ikon" style="color:#5dade2;">🔍</span>Ürün Bul</a>
-      <a class="as-drawer-oge" href="calc.html"><span class="as-drawer-ikon" style="color:#58d68d;">🧮</span>Hızlı Hesapla</a>
-      <a class="as-drawer-oge" href="customer.html"><span class="as-drawer-ikon" style="color:#bb8fce;">👥</span>Müşteri</a>
-      <a class="as-drawer-oge" href="son-islemler.html"><span class="as-drawer-ikon" style="color:#f1948a;">🕐</span>Son İşlemler</a>
-      <a class="as-drawer-oge" href="km.html"><span class="as-drawer-ikon" style="color:#f5b041;">🚗</span>Araç KM</a>
-      <a class="as-drawer-oge" href="raporlar.html"><span class="as-drawer-ikon" style="color:#aeb6bf;">📊</span>Raporlar</a>
-      <a class="as-drawer-oge" href="vade-takip.html"><span class="as-drawer-ikon" style="color:#e59866;">📄</span>Fatura · Vade · Ödeme Takip</a>
-      <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#48c9b0;">🔒</span>Kişisel</a>
+      <a class="as-drawer-oge" href="product.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">🔍</span><span class="as-drawer-etiket">Ürün Bul</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <a class="as-drawer-oge" href="calc.html"><span class="as-drawer-ikon" style="color:#ec7063;" aria-hidden="true">🧮</span><span class="as-drawer-etiket">Hızlı Hesapla</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <a class="as-drawer-oge" href="customer.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">👥</span><span class="as-drawer-etiket">Müşteri</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <a class="as-drawer-oge" href="son-islemler.html"><span class="as-drawer-ikon" aria-hidden="true">🕐</span><span class="as-drawer-etiket">Son İşlemler</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <a class="as-drawer-oge" href="km.html"><span class="as-drawer-ikon" style="color:#ec7063;" aria-hidden="true">🚗</span><span class="as-drawer-etiket">Araç KM</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <a class="as-drawer-oge" href="raporlar.html"><span class="as-drawer-ikon" style="color:#f5b041;" aria-hidden="true">📊</span><span class="as-drawer-etiket">Raporlar</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <a class="as-drawer-oge" href="vade-takip.html"><span class="as-drawer-ikon" aria-hidden="true">📄</span><span class="as-drawer-etiket">Fatura · Vade · Ödeme Takip</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#f5c451;" aria-hidden="true">🔒</span><span class="as-drawer-etiket">Kişisel</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
     </nav>
+
     <div class="as-drawer-ayarlar-blok">
-      <a class="as-drawer-oge" href="menu.html"><span class="as-drawer-ikon" style="color:#aeb6bf;">⚙️</span>Ayarlar</a>
+      <a class="as-drawer-oge" href="menu.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">⚙️</span><span class="as-drawer-etiket">Ayarlar</span></a>
     </div>
+
     <button class="as-drawer-cikis" id="btnAsCikis"><span aria-hidden="true">🚪</span>Çıkış Yap</button>
   </div>
 </div>
@@ -142,6 +173,6 @@
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.280926.2225.660"></script>
+<script src="home-render.js?v=WG.280926.2245.661"></script>
 </body>
 </html>
