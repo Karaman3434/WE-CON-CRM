@@ -122,6 +122,9 @@ function kosulSatirlariniSigdir(kok){
 // Fatura/Teslimat/Yetkili seçim mantığı (adresleriBelirle/seciliAdresler,
 // weiconv2_secili_iletisim) DEĞİŞMEDİ — sadece görünüm burada üretiliyor.
 function cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatAdr, seciliYetkili){
+  // Cari'deki tek "ŞEHİR" alanı SADECE fatura adresine eklenir — teslimat
+  // çoğu zaman bambaşka bir ilçe/ildedir, ona hiç eklenmez (29.09.2026,
+  // Abdullah'ın bildirdiği hata: teslimat adresine fatura şehri sızıyordu).
   var sehirEk = musteri.sehir ? ", " + htmlEsc(musteri.sehir) : "";
   var html = "<div class='ck-isim-satir'>" + htmlEsc(musteri.ad) + "</div>"
     + "<div class='ozet-satir-3 ozet-satir-3--birlesik'>"
@@ -135,7 +138,7 @@ function cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatA
     + "</div></div></div>";
   if(teslimatAdr){
     html += "<div class='ck-blok-etiket ck-blok-etiket--teslimat'><span>🚚 TESLİMAT ADRESİ</span></div>"
-      + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart'>" + htmlEsc(teslimatAdr) + sehirEk + "</div></div></div>";
+      + "<div class='ck-blok'><div class='ck-kart-liste'><div class='ck-kart'>" + htmlEsc(teslimatAdr) + "</div></div></div>";
   }
   if(seciliYetkili){
     html += "<div class='ck-blok-etiket ck-blok-etiket--yetkili'><span>👤 YETKİLİ</span></div>"

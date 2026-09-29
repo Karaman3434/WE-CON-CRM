@@ -162,6 +162,8 @@ function belgeyiCiz(kayit, musteri){
     var yetkililer = kayit.gorunecekYetkililer
       ? tumYetkililer.filter(function(k){ return kayit.gorunecekYetkililer.indexOf(k.isim) !== -1; })
       : tumYetkililer;
+    // Cari'deki tek "ŞEHİR" alanı SADECE fatura adresine eklenir — teslimat
+    // çoğu zaman bambaşka bir ilçe/ildedir, ona hiç eklenmez (29.09.2026).
     var sehir = (musteri && musteri.sehir) || "";
     var yetkiliBilgiHtml = yetkililer.map(function(k){ return yetkiliSatiriHtml(k.isim, k.telefon, k.eposta); }).join("");
 
@@ -170,7 +172,7 @@ function belgeyiCiz(kayit, musteri){
       + "<div class='belge-musteri-ad'>" + htmlEsc(kayit.musteri) + "</div>"
       + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + kosulKutusuHtml("📅","VADE",vade) + kosulKutusuHtml("📄","FATURA",faturaTuru) + kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
       + (faturaAdr ? "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + htmlEsc(faturaAdr) + (sehir?", "+htmlEsc(sehir):"") + "</div>" : "")
-      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + (sehir?", "+htmlEsc(sehir):"") + "</div>" : "")
+      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
       + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
       + "</div>";
 

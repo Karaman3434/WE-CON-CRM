@@ -69,7 +69,14 @@ function kayitAltMetin(tip, kayit){
   if(tip === "yetkili") return [kayit.gorev, kayit.telefon, kayit.eposta].filter(Boolean).join(" · ");
   if(tip === "not") return kayit.metin || "";
   var adres = kayit.adres || "";
-  var sehir = (musteriVerisi && musteriVerisi.sehir) || "";
+  // DÜZELTME (29.09.2026, Abdullah'ın bildirdiği hata): Temel Bilgiler'deki
+  // tek "ŞEHİR" (ilçe/il) alanı, cari bilginin GENEL/fatura konumu olarak
+  // giriliyor — ama bu satır ESKİDEN fatura VE teslimat adreslerinin
+  // İKİSİNE de körü körüne ekleniyordu. Teslimat adresi çoğu zaman BAMBAŞKA
+  // bir ilçe/ildedir (örn. fatura İstanbul'da, teslimat Erzurum'da) — bu
+  // yüzden şehir artık SADECE fatura adresine ekleniyor, teslimat adresi
+  // ne yazıldıysa AYNEN öyle gösteriliyor.
+  var sehir = (tip === "fatura" && musteriVerisi) ? (musteriVerisi.sehir || "") : "";
   return sehir && adres ? (adres + ", " + sehir) : adres;
 }
 
