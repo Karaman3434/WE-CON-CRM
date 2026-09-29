@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.040926.1348.111 — cart.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.290926.1651.670 — cart.html -->
 <!--
   WEICON ASİST — SEPET / HAREKET FORMU v5 (TEK ADIMDA KAYDET)
   ================================================================
@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
 <link rel="stylesheet" href="belge-style.css?v=WG.270926.1215.645">
 <link rel="stylesheet" href="musteri-serit.css?v=WG.270926.0045.641">
-<link rel="stylesheet" href="cart-style.css?v=WG.220926.2331.604">
+<link rel="stylesheet" href="cart-style.css?v=WG.290926.1651.670">
 <link rel="stylesheet" href="detail-style.css?v=WG.240926.1332.615">
 </head>
 <body>
@@ -71,15 +71,34 @@
       <button class="tip-secim-vazgec-btn" id="btnAsamaSecimVazgec">Kapat</button>
     </div>
   </div>
-  <!-- Müşteri seçilmeden Gönder'e basılırsa: hızlı, kayıtsız paylaşım
-       seçeneği. CRM'e hiçbir şey yazılmaz, İşlem Geçmişi'ne düşmez. -->
+  <!-- Müşteri seçilmeden Gönder'e basılırsa: gerçek Gönder ekranıyla
+       (send.html) AYNI görünümde (üstte WhatsApp/Mail, altında düzenlenebilir
+       mesaj + ürün tablosu) hızlı, kayıtsız bir önizleme paneli açılır.
+       CRM'e hiçbir şey yazılmaz, İşlem Geçmişi'ne düşmez (29.09.2026,
+       Abdullah'ın isteğiyle: küçük 2 butonluk eski pencere yerine). -->
   <div class="tip-secim-overlay" id="musterisizGonderOverlay" hidden>
-    <div class="tip-secim-kutu">
-      <div class="sheet-baslik">Müşteri seçilmedi</div>
-      <p class="sheet-alt">Sepetteki ürünleri, kayıt oluşturmadan sadece WhatsApp veya mail ile paylaşabilirsin. Bir müşteriye kaydetmek istersen önce Geri dönüp müşteri seç.</p>
-      <button class="sheet-secenek" id="btnMusterisizWhatsapp"><span class="ikon">💬</span>WhatsApp ile Gönder</button>
-      <button class="sheet-secenek" id="btnMusterisizMail"><span class="ikon">✉️</span>Mail ile Gönder</button>
-      <button class="sheet-secenek sheet-secenek--vazgec" id="btnMusterisizVazgec">Kapat</button>
+    <div class="tip-secim-kutu musterisiz-onizleme-kutu">
+      <div class="sheet-baslik">Fiyat bilgisi hazır — göndermek ister misin?</div>
+      <p class="sheet-alt">Müşteri kaydı yok — bu gönderim CRM'e işlenmez, İşlem Geçmişi'ne düşmez.</p>
+
+      <div class="iletisim-secenek-grid iletisim-secenek-grid--iki">
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--whatsapp" id="btnMusterisizWhatsapp">
+          <span class="iletisim-secenek-ikon">💬</span>
+          <span class="iletisim-secenek-metin">WhatsApp</span>
+        </button>
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnMusterisizMail">
+          <span class="iletisim-secenek-ikon">📧</span>
+          <span class="iletisim-secenek-metin">Mail</span>
+        </button>
+      </div>
+
+      <div class="musterisiz-onizleme-etiket">MESAJ (düzenlenebilir)</div>
+      <textarea id="musterisizOnizlemeMetin" rows="7"></textarea>
+
+      <div class="musterisiz-onizleme-etiket">ÜRÜN TABLOSU</div>
+      <div id="musterisizOnizlemeTablo"></div>
+
+      <button class="sheet-secenek sheet-secenek--vazgec" id="btnMusterisizVazgec">‹ Geri — Listeye Dön ve Düzelt</button>
     </div>
   </div>
 
@@ -118,7 +137,7 @@
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.270926.1940.646"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="ayarlar-sync.js?v=WG.130926.2010.553"></script>
+<script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
 <script src="hareket-tablo.js?v=WG.280926.0130.657"></script>
 <script src="cart-data.js?v=WG.150926.1224.571"></script>
 <script src="customer-data.js?v=WG.240926.0752.611"></script>
@@ -127,7 +146,7 @@
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("cart.html", "🛒 Sepet"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="cart-render.js?v=WG.270926.0300.643"></script>
+<script src="cart-render.js?v=WG.290926.1651.670"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

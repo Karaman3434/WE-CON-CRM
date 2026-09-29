@@ -407,7 +407,7 @@ function kaydetGercekIslem(niyet){
 function kaydetTiklandi(niyet){
   if(!CartData.tamamHesaplandiMi()) return;
   if(niyet === "gonder" && !CustomerData.seciliyiOku()){
-    document.getElementById("musterisizGonderOverlay").hidden = false;
+    musterisizOnizlemeAc();
     return;
   }
   var devam = function(){ kurTazeligeGetir(function(){ kaydetGercekIslem(niyet); }); };
@@ -416,27 +416,66 @@ function kaydetTiklandi(niyet){
 }
 
 // ---- Müşterisiz hızlı gönder — kayıt oluşturmadan sadece paylaşım ----
+// DÜZELTME (29.09.2026, Abdullah'ın bildirdiği hata): sepetteki ürün
+// nesnesinde "iskBirim"/"toplamEuro" diye bir alan HİÇ tutulmuyor — bunlar
+// sadece CartData.hesapla()'nın anlık ÇIKTISI, kayıtlı üründe yok. Bu yüzden
+// birim fiyat ve toplam metinde hep 0,00 çıkıyordu. Artık her satır için
+// CartData.hesapla() GERÇEKTEN çağrılıyor, ürün kodu (Berta/Abas) da satıra
+// ekleniyor — telefonda tanışıp sadece WhatsApp'tan fiyat isteyen müşteriye
+// tek dokunuşla doğru, eksiksiz bir metin gönderilebilsin diye.
 function musterisizOzetMetniOlustur(){
   var sepet = CartData.liste();
   var kur = aktifKuruOku();
+  var kdv = CartData.kdvOku();
   var satirlar = sepet.map(function(u, i){
-    var toplam = u.toplamEuro!==undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
-    return (i+1) + ". " + u.ad + " — " + (u.adet||0) + " adet x " + CartData.fmt(u.iskBirim||0) + " EURO = " + CartData.fmt(toplam) + " EURO";
+    var h = CartData.hesapla(u, kur, kdv);
+    var kodParcalari = [];
+    if(u.berta) kodParcalari.push("B" + u.berta);
+    if(u.abas) kodParcalari.push("A" + u.abas);
+    var kod = kodParcalari.length ? " (" + kodParcalari.join(" / ") + ")" : "";
+    var netFiyatSatiri = (u.ozelEtiket === "bedelsiz")
+      ? "   " + (u.adet||0) + " adet — NUMUNE (bedelsiz)"
+      : "   " + (u.adet||0) + " adet x " + CartData.fmt(h.iskontoluFiyat) + " EURO = " + CartData.fmt(h.toplamEuro) + " EURO";
+    return (i+1) + ". " + u.ad + kod + "\n" + netFiyatSatiri;
   });
-  var genelToplam = sepet.reduce(function(s,u){ return s + (u.toplamEuro!==undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0))); }, 0);
-  var metin = "WEICON Fiyat Bilgisi\n\n" + satirlar.join("\n") + "\n\nToplam: " + CartData.fmt(genelToplam) + " EURO";
-  if(kur) metin += " (≈ " + Math.round(genelToplam*kur).toLocaleString("tr-TR") + " TL)";
+  var toplamlar = CartData.genelToplam(kur, kdv);
+  var metin = "WEICON Fiyat Bilgisi\n\n" + satirlar.join("\n\n") + "\n\nToplam: " + CartData.fmt(toplamlar.toplamEuro) + " EURO";
+  if(kur) metin += " (≈ " + Math.round(toplamlar.toplamEuro*kur).toLocaleString("tr-TR") + " TL)";
   return metin;
 }
+// Gerçek Gönder ekranıyla (send.html) AYNI görünümde: üstte WhatsApp/Mail,
+// altında düzenlenebilir mesaj metni + ürün tablosu (HareketTablo ile,
+// diğer TÜM belge/gönder ekranlarıyla birebir aynı tasarım). Müşteri
+// kaydı YOK, kayıt yok, İşlem Geçmişi'ne düşmez.
+function musterisizOnizlemeAc(){
+  try{
+    var kur = aktifKuruOku();
+    var kdv = CartData.kdvOku();
+    var hesapla = function(u){ return CartData.hesapla(u, kur, kdv); };
+    var toplamlar = CartData.genelToplam(kur, kdv);
+    document.getElementById("musterisizOnizlemeMetin").value = musterisizOzetMetniOlustur();
+    document.getElementById("musterisizOnizlemeTablo").innerHTML = HareketTablo.grupHtml({
+      urunler: CartData.liste(),
+      hesapla: hesapla,
+      kanal: "whatsapp",
+      primGizli: true,
+      genelToplam: toplamlar.toplamEuro,
+      kur: kur,
+      kurManuelMi: aktifKurManuelMi()
+    });
+    document.getElementById("musterisizGonderOverlay").hidden = false;
+  }catch(e){ hataGoster("Önizleme açılamadı: " + e.message); }
+}
+// Mesaj metni textarea'da elle düzenlenebildiği için WhatsApp/Mail butonları
+// metni YENİDEN ÜRETMEZ — o anda kutuda ne yazıyorsa AYNEN onu gönderir.
 function musterisizWhatsappGonder(){
-  document.getElementById("musterisizGonderOverlay").hidden = true;
-  window.open("https://wa.me/?text=" + encodeURIComponent(musterisizOzetMetniOlustur()), "_blank");
+  var metin = document.getElementById("musterisizOnizlemeMetin").value;
+  window.open("https://wa.me/?text=" + encodeURIComponent(metin), "_blank");
 }
 function musterisizMailGonder(){
-  document.getElementById("musterisizGonderOverlay").hidden = true;
+  var metin = document.getElementById("musterisizOnizlemeMetin").value;
   var konu = encodeURIComponent("WEICON Fiyat Bilgisi");
-  var govde = encodeURIComponent(musterisizOzetMetniOlustur());
-  window.location.href = "mailto:?subject=" + konu + "&body=" + govde;
+  window.location.href = "mailto:?subject=" + konu + "&body=" + encodeURIComponent(metin);
 }
 
 window.addEventListener("error", function(ev){

@@ -484,3 +484,47 @@
   margin-bottom: 8px;
   text-align: center;
 }
+
+/* ---------- Müşterisiz Gönder — gerçek Gönder ekranıyla aynı görünüm
+   (WG.290926.1651.670, Abdullah'ın isteğiyle) ---------- */
+.musterisiz-onizleme-kutu { max-height: 88vh; overflow-y: auto; }
+.iletisim-secenek-grid {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.iletisim-secenek-grid--iki { grid-template-columns: 1fr 1fr; }
+.iletisim-secenek-btn {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 11px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.iletisim-secenek-ikon { font-size: 17px; line-height: 1; }
+.iletisim-secenek-metin { font-size: 13px; font-weight: 800; }
+.iletisim-secenek-btn--mail { background: #faeeda; border: 1.5px solid #b7601f; }
+.iletisim-secenek-btn--mail .iletisim-secenek-metin { color: #b7601f; }
+.iletisim-secenek-btn--whatsapp { background: #128C7E; border: 1.5px solid #0e6b56; }
+.iletisim-secenek-btn--whatsapp .iletisim-secenek-metin { color: #ffffff; }
+.iletisim-secenek-btn--whatsapp .iletisim-secenek-ikon { filter: brightness(10); }
+.musterisiz-onizleme-etiket {
+  font-size: 11px;
+  font-weight: 800;
+  color: #8a96a3;
+  margin: 12px 0 5px;
+}
+#musterisizOnizlemeMetin {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #185fa5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #eaf2fc;
+  color: #0c447c;
+  resize: vertical;
+}
