@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.280926.2358.664 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.290926.0850.665 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
@@ -37,7 +37,7 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.280926.2358.664">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.290926.0850.665">
 </head>
 <body>
 
@@ -75,7 +75,10 @@
         <span class="as-hedef-ay-etiket" id="anaSayfaAyEtiketi">Eylül 2026 satışı</span>
         <span class="as-hedef-rozet" id="asHedefRozet" hidden>-</span>
       </div>
-      <div class="as-hedef-tutar" id="anaSayfaSatisToplam">0,00 EURO</div>
+      <div class="as-hedef-deger-satir">
+        <span class="as-hedef-birim">EURO</span>
+        <span class="as-hedef-tutar" id="anaSayfaSatisToplam">0,00</span>
+      </div>
       <div class="as-hedef-bar-track" id="asHedefBarTrack" hidden>
         <div class="as-hedef-bar-dolu" id="asHedefBarDolu"></div>
       </div>
@@ -83,16 +86,19 @@
 
       <div class="as-hedef-ayrac"></div>
       <div class="as-prim-etiket" id="anaSayfaPrimEtiketi">Eylül 2026 primi</div>
-      <div class="as-prim-tutar" id="anaSayfaPrimToplam">0,00 TL</div>
+      <div class="as-prim-deger-satir">
+        <span class="as-prim-birim">TL</span>
+        <span class="as-prim-tutar" id="anaSayfaPrimToplam">0,00</span>
+      </div>
     </div>
   </div>
 
   <div class="as-kart-satir">
-    <div class="as-kart" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
+    <div class="as-kart as-kart--satis" onclick="window.location.href='satis-listesi.html?kapsam=bugun'">
       <div class="as-kart-etiket">Bugün satış</div>
       <div class="as-kart-deger" id="anaSayfaBugunSatis">0,00 EURO</div>
     </div>
-    <div class="as-kart">
+    <div class="as-kart as-kart--prim">
       <div class="as-kart-etiket">Bugün prim</div>
       <div class="as-kart-deger" id="anaSayfaBugunPrim">0,00 TL</div>
     </div>
@@ -112,14 +118,18 @@
       <span class="as-liste-ikon-kutu"><span class="as-liste-ikon" aria-hidden="true">📊</span></span>
       <span class="as-liste-metin">
         <span class="as-liste-metin-baslik">Günün özeti</span>
-        <span class="as-liste-metin-alt" id="gununOzetiAlt">0 işlem · 0 sipariş · 0 temas</span>
+        <span class="as-ozet-satir">
+          <span class="as-ozet-oge as-ozet-oge--islem"><span class="as-ozet-ikon" aria-hidden="true">📝</span><span id="gununOzetiIslemSayi">0</span> işlem</span>
+          <span class="as-ozet-oge as-ozet-oge--siparis"><span class="as-ozet-ikon" aria-hidden="true">📦</span><span id="gununOzetiSiparisSayi">0</span> sipariş</span>
+          <span class="as-ozet-oge as-ozet-oge--temas"><span class="as-ozet-ikon" aria-hidden="true">👥</span><span id="gununOzetiTemasSayi">0</span> temas</span>
+        </span>
       </span>
       <span class="as-liste-ok" aria-hidden="true">›</span>
     </a>
   </div>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.280926.2358.664 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.290926.0850.665 ***</span>
   </footer>
 
 </main>
@@ -179,6 +189,6 @@
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.280926.2358.664"></script>
+<script src="home-render.js?v=WG.290926.0850.665"></script>
 </body>
 </html>

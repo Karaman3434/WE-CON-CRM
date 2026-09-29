@@ -34,8 +34,8 @@ function kartlariGuncelle(){
     var ay = WeiconData.buAyinVerisi();
     var bugun = WeiconData.bugununVerisi();
 
-    setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro) + " EURO");
-    setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim) + " TL");
+    setText("anaSayfaSatisToplam", WeiconData.fmt(ay.toplamEuro));
+    setText("anaSayfaPrimToplam", WeiconData.fmt(ay.toplamPrim));
     setText("anaSayfaAyEtiketi", ay.ayAd + " " + ay.yil + " satışı");
     setText("anaSayfaPrimEtiketi", ay.ayAd + " " + ay.yil + " primi");
 
@@ -84,8 +84,8 @@ var TEMAS_TUR_ETIKET = {ziyaret:"Ziyaret", telefon:"Telefon", mail:"Mail", whats
 function gununOzetiniGuncelle(){
   try{
     var islem = WeiconData.gununIslemOzeti();
-    var siparisSayisi = islem.dokum.siparis||0;
-    var temasToplam = 0;
+    setText("gununOzetiIslemSayi", islem.toplam);
+    setText("gununOzetiSiparisSayi", islem.dokum.siparis||0);
 
     if(typeof CustomerData !== "undefined"){
       var bugun = new Date();
@@ -98,10 +98,10 @@ function gununOzetiniGuncelle(){
           temasDokum[t]++;
         }
       });
+      var temasToplam = 0;
       Object.keys(temasDokum).forEach(function(t){ temasToplam += temasDokum[t]; });
+      setText("gununOzetiTemasSayi", temasToplam);
     }
-
-    setText("gununOzetiAlt", islem.toplam + " işlem · " + siparisSayisi + " sipariş · " + temasToplam + " temas");
 
     var bugunTarih = new Date();
     var tarihStr = bugunTarih.getFullYear() + "-" + String(bugunTarih.getMonth()+1).padStart(2,"0") + "-" + String(bugunTarih.getDate()).padStart(2,"0");
