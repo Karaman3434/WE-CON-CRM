@@ -301,6 +301,17 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
+  // Menüdeki "Hızlı Hesapla" (Hızlı İşlemler) her zaman MÜŞTERİSİZ açılır
+  // (29.09.2026, Abdullah'ın bildirdiği hata): önceki bir müşteri akışından
+  // (İşlem Yap → Sepete Git → Hesapla) kalmış seçili müşteri, drawer'daki
+  // bu bağımsız kısayolla açıldığında EKRANDA GÖRÜNMEMELİ. home.html'deki
+  // link artık "calc.html?hizli=1" ile geliyor — bu işaret varsa, sayfa
+  // hiçbir müşteri şeridi göstermeden ÖNCE eski seçimi tamamen temizler.
+  try{
+    if(new URLSearchParams(window.location.search).get("hizli") === "1" && typeof CustomerData !== "undefined"){
+      CustomerData.secimiKaldir();
+    }
+  }catch(e){ hataGoster("Hızlı Hesapla müşteri temizliği başarısız: " + e.message); }
   cariBilgiSatiriniGuncelle();
   document.getElementById("searchInput").addEventListener("input", aramaSonuclariniCiz);
   document.getElementById("btnUrunTemizle").onclick = function(){
