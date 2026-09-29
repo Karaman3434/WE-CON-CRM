@@ -1,9 +1,20 @@
 /*
-  reports-data.js — WG250826.02
+  reports-data.js — WG290926.03
   ===============
   TEK görevi: arşiv kayıtlarını ("arsiv/numune|teklif|proforma|siparis") ve
   görevleri ("gorevler") Firebase'den okumak/yazmak. Eski uygulamayla AYNI
   yollar — ayrı veri girmeye gerek yok.
+
+  29.09.2026 GÜVENLİ YAZMA GÜNCELLEMESİ: Bu dosyadaki "önce once('value') ile
+  oku, JS'te değiştir, sonra set() ile TÜM listeyi geri yaz" deseni, iki cihaz
+  (veya iki sekme) aynı anda yazarsa birinin yazdığını diğerinin sessizce
+  ezmesine (data-loss race condition) açıktı. Artık TÜMÜ Firebase'in
+  db.ref(yol).transaction(guncelleyiciFn, sonucFn) API'sini kullanıyor:
+  Firebase sunucudan gelen EN TAZE veriyle guncelleyiciFn'i (gerekirse tekrar
+  tekrar) çalıştırıp yazmayı GARANTİ EDER — böyle bir çakışma artık mümkün
+  değil. Dışa açık fonksiyon imzaları (parametreler, geriBildir(basarili, err)
+  çağrı şekli, "Kayıt bulunamadı" hata mesajı) HİÇ DEĞİŞMEDİ — sadece içeride
+  daha güvenli yazılıyor.
 */
 
 var ReportsData = (function(){
@@ -82,17 +93,19 @@ var ReportsData = (function(){
     });
   }
 
-  // Görevler için de GÜVENLİ YAZMA DESENİ: yazmadan hemen önce sunucudan taze
-  // veri okunur, değişiklik sadece o taze veri üzerine uygulanır.
+  // Görevler için de GÜVENLİ YAZMA DESENİ: transaction() Firebase'den EN
+  // TAZE veriyi garanti eder ve değişikliği onun üzerine uygular — iki cihaz
+  // aynı anda yazsa bile biri diğerini ezmez (29.09.2026).
   function guvenliGorevYaz(mutateFn){
     try{
       var db = firebase.database();
-      db.ref("gorevler").once("value").then(function(snap){
-        var data = snap.val();
-        var tazeGorevler = data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+      db.ref("gorevler").transaction(function(mevcut){
+        var tazeGorevler = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
         mutateFn(tazeGorevler);
-        return db.ref("gorevler").set(tazeGorevler);
-      }).catch(function(err){ console.error("Görev kaydetme hatası:", err); });
+        return tazeGorevler;
+      }, function(err){
+        if(err) console.error("Görev kaydetme hatası:", err);
+      });
     }catch(e){ console.error("Görev kaydetme hatası:", e); }
   }
 
@@ -178,16 +191,20 @@ var ReportsData = (function(){
   function kaydiKacanIsaretle(tip, ts, sebep, rakip, geriBildir){
     try{
       var db = firebase.database();
-      db.ref("arsiv/" + tip).once("value").then(function(snap){
-        var mevcut = snap.val();
+      var hataMesaji = null;
+      db.ref("arsiv/" + tip).transaction(function(mevcut){
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
         var idx = liste.findIndex(function(k){ return k.ts === ts; });
-        if(idx === -1){ geriBildir(false, "Kayıt bulunamadı"); return; }
+        if(idx === -1){ hataMesaji = "Kayıt bulunamadı"; return; }
         liste[idx].durum = "kacan";
         liste[idx].kacanSebep = sebep || "";
         liste[idx].kacanRakip = rakip || "";
-        return db.ref("arsiv/" + tip).set(liste).then(function(){ geriBildir(true); });
-      }).catch(function(err){ geriBildir(false, err); });
+        return liste;
+      }, function(err, committed){
+        if(err){ geriBildir(false, err); return; }
+        if(!committed){ geriBildir(false, hataMesaji || "Kayıt bulunamadı"); return; }
+        geriBildir(true);
+      });
     }catch(e){ geriBildir(false, e); }
   }
 
@@ -380,12 +397,13 @@ var ReportsData = (function(){
   function kaydiSil(tip, ts, geriBildir){
     try{
       var db = firebase.database();
-      db.ref("arsiv/" + tip).once("value").then(function(snap){
-        var mevcut = snap.val();
+      db.ref("arsiv/" + tip).transaction(function(mevcut){
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
-        var yeniListe = liste.filter(function(k){ return k.ts !== ts; });
-        return db.ref("arsiv/" + tip).set(yeniListe);
-      }).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+        return liste.filter(function(k){ return k.ts !== ts; });
+      }, function(err){
+        if(err){ geriBildir(false, err); return; }
+        geriBildir(true);
+      });
     }catch(e){ geriBildir(false, e); }
   }
 
@@ -401,28 +419,32 @@ var ReportsData = (function(){
     function sonrakiTipeGec(){
       if(i >= tipler.length){ gorevleriTasi(); return; }
       var tip = tipler[i]; i++;
-      db.ref("arsiv/" + tip).once("value").then(function(snap){
-        var mevcut = snap.val();
+      db.ref("arsiv/" + tip).transaction(function(mevcut){
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
         var degistiMi = false;
         liste.forEach(function(k){
           var buNaAitMi = (digerId && k.musteriId) ? (k.musteriId===digerId) : (k.musteri===digerAd);
           if(buNaAitMi){ k.musteri = anaAd; k.musteriId = anaId; degistiMi = true; }
         });
-        if(!degistiMi) return sonrakiTipeGec();
-        return db.ref("arsiv/" + tip).set(liste).then(sonrakiTipeGec);
-      }).catch(function(err){ geriBildir(false, err); });
+        if(!degistiMi) return; // değişiklik yok — yazma iptal
+        return liste;
+      }, function(err){
+        if(err){ geriBildir(false, err); return; }
+        sonrakiTipeGec();
+      });
     }
 
     function gorevleriTasi(){
-      db.ref("gorevler").once("value").then(function(snap){
-        var mevcut = snap.val();
+      db.ref("gorevler").transaction(function(mevcut){
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
         var degistiMi = false;
         liste.forEach(function(g){ if(g.musteriAd===digerAd){ g.musteriAd=anaAd; degistiMi=true; } });
-        if(!degistiMi) return geriBildir(true);
-        return db.ref("gorevler").set(liste).then(function(){ geriBildir(true); });
-      }).catch(function(err){ geriBildir(false, err); });
+        if(!degistiMi) return; // değişiklik yok — yazma iptal
+        return liste;
+      }, function(err){
+        if(err){ geriBildir(false, err); return; }
+        geriBildir(true);
+      });
     }
 
     sonrakiTipeGec();
@@ -431,15 +453,19 @@ var ReportsData = (function(){
   function kaydiGuncelle(tip, ts, yeniUrunler, geriBildir){
     try{
       var db = firebase.database();
-      db.ref("arsiv/" + tip).once("value").then(function(snap){
-        var mevcut = snap.val();
+      var hataMesaji = null;
+      db.ref("arsiv/" + tip).transaction(function(mevcut){
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
         var idx = liste.findIndex(function(k){ return k.ts === ts; });
-        if(idx === -1){ throw new Error("Kayıt bulunamadı"); }
+        if(idx === -1){ hataMesaji = "Kayıt bulunamadı"; return; }
         liste[idx].urunler = yeniUrunler;
         liste[idx].revizeZamani = Date.now();
-        return db.ref("arsiv/" + tip).set(liste);
-      }).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+        return liste;
+      }, function(err, committed){
+        if(err){ geriBildir(false, err); return; }
+        if(!committed){ geriBildir(false, hataMesaji || "Kayıt bulunamadı"); return; }
+        geriBildir(true);
+      });
     }catch(e){ geriBildir(false, e); }
   }
 
@@ -449,16 +475,20 @@ var ReportsData = (function(){
   function kaydiAlanGuncelle(tip, ts, alanlar, geriBildir){
     try{
       var db = firebase.database();
-      db.ref("arsiv/" + tip).once("value").then(function(snap){
-        var mevcut = snap.val();
+      var hataMesaji = null;
+      db.ref("arsiv/" + tip).transaction(function(mevcut){
         var liste = mevcut ? (Array.isArray(mevcut) ? mevcut.filter(Boolean) : Object.values(mevcut)) : [];
         var idx = liste.findIndex(function(k){ return k.ts === ts; });
-        if(idx === -1){ throw new Error("Kayıt bulunamadı"); }
+        if(idx === -1){ hataMesaji = "Kayıt bulunamadı"; return; }
         for(var alan in alanlar){
           if(alanlar.hasOwnProperty(alan)) liste[idx][alan] = alanlar[alan];
         }
-        return db.ref("arsiv/" + tip).set(liste);
-      }).then(function(){ geriBildir(true); }).catch(function(err){ geriBildir(false, err); });
+        return liste;
+      }, function(err, committed){
+        if(err){ geriBildir(false, err); return; }
+        if(!committed){ geriBildir(false, hataMesaji || "Kayıt bulunamadı"); return; }
+        geriBildir(true);
+      });
     }catch(e){ geriBildir(false, e); }
   }
 

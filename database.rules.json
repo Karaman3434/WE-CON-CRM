@@ -18,6 +18,8 @@
     "cihazPin":            { ".read": "auth != null", ".write": "auth != null" },
     "maasKayitlari":       { ".read": "auth != null", ".write": "auth != null" },
     "avansKayitlari":      { ".read": "auth != null", ".write": "auth != null" },
-    "avansTaslak":         { ".read": "auth != null", ".write": "auth != null" }
+    "avansTaslak":         { ".read": "auth != null", ".write": "auth != null" },
+    "kmHatirlatmaNotu":    { ".read": "auth != null", ".write": "auth != null" },
+    "odenebilirKomisyonDonem": { ".read": "auth != null", ".write": "auth != null" }
   }
 }
