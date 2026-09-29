@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.290926.0850.665 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.290926.1030.667 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
@@ -37,7 +37,7 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.290926.0850.665">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.290926.1030.667">
 </head>
 <body>
 
@@ -46,10 +46,13 @@
     <span id="motivasyonSelam" class="as-selam-isim">Merhaba,</span>
     <span id="motivasyonSoz" class="as-selam-soz"></span>
   </div>
-  <div class="as-ustbar">
+  <div class="as-logo-satir">
+    <img class="as-logo-gorsel" src="anasayfa-logo-banner.jpg?v=WG.290926.1030.667" alt="WEICON">
+  </div>
+  <div class="as-tarih-satir">
     <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">☰</button>
-    <div class="as-logo-buyuk">WEICON</div>
     <div class="as-tarih" id="gunTarihi"></div>
+    <div class="as-tarih-denge" aria-hidden="true"></div>
   </div>
 </div>
 
@@ -73,7 +76,7 @@
     <div class="as-hedef-kart" onclick="window.location.href='satis-listesi.html?kapsam=ay'">
       <div class="as-hedef-ust-satir">
         <span class="as-hedef-ay-etiket" id="anaSayfaAyEtiketi">Eylül 2026 satışı</span>
-        <span class="as-hedef-rozet" id="asHedefRozet" hidden>-</span>
+        <span class="as-hedef-rozet" id="asHedefRozet" onclick="event.stopPropagation(); window.location.href='ayarlar.html';" hidden>-</span>
       </div>
       <div class="as-hedef-deger-satir">
         <span class="as-hedef-birim">EURO</span>
@@ -129,8 +132,12 @@
   </div>
 
   <footer class="alt-bilgi">
-    <span id="versiyonEtiketi">*** WEİCON ASİST WG.290926.0850.665 ***</span>
+    <span id="versiyonEtiketi">*** WEİCON ASİST WG.290926.1030.667 ***</span>
   </footer>
+
+  <div class="as-urun-gorsel-blok">
+    <img class="as-urun-gorsel" src="anasayfa-urun-banner.jpg?v=WG.290926.1030.667" alt="WEICON ürünleri">
+  </div>
 
 </main>
 
@@ -189,6 +196,6 @@
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.290926.0850.665"></script>
+<script src="home-render.js?v=WG.290926.1030.667"></script>
 </body>
 </html>

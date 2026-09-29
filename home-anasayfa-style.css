@@ -16,12 +16,15 @@
 .as-selam-isim { font-size: 15px; font-weight: 700; color: #1c2430; margin-right: 5px; }
 .as-selam-soz { font-size: 12.5px; font-style: italic; color: #6b7280; }
 
-/* ---------- Üst bar: menü + logo + tarih ---------- */
-.as-ustbar {
-  padding: 14px 20px 14px;
-  display: flex;
+/* ---------- Üst bar: logo görseli (tam satır) + menü/tarih satırı ---------- */
+.as-logo-satir { padding: 10px 20px 6px; }
+.as-logo-gorsel { display: block; width: 100%; height: 64px; object-fit: contain; }
+
+.as-tarih-satir {
+  padding: 2px 20px 14px;
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
   align-items: center;
-  justify-content: space-between;
 }
 .as-menu-btn {
   width: 38px;
@@ -36,21 +39,15 @@
   line-height: 1;
   color: #1c2430;
   cursor: pointer;
-  flex: 0 0 auto;
   padding: 0;
 }
-.as-logo-buyuk {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: .5px;
-  color: #1257c7;
-}
 .as-tarih {
-  font-size: 13px;
+  font-size: 17px;
   color: #1f2937;
   font-weight: 600;
-  flex: 0 0 auto;
+  text-align: center;
 }
+.as-tarih-denge { width: 38px; }
 
 /* ---------- İş günü kaldı + EUR kur satırı ---------- */
 .as-panel-satir {
@@ -113,6 +110,7 @@
   padding: 3px 10px;
   border-radius: 99px;
   white-space: nowrap;
+  cursor: pointer;
 }
 .as-hedef-deger-satir,
 .as-prim-deger-satir {
@@ -200,6 +198,10 @@
 .as-liste-metin-baslik { display: block; font-size: 14px; font-weight: 700; color: #1c2430; }
 .as-liste-metin-alt { display: block; font-size: 12px; color: #6b7280; margin-top: 1px; }
 .as-liste-ok { font-size: 16px; color: #b0b6c0; flex-shrink: 0; }
+
+/* ---------- Alt: ürün görseli (kenardan kenara) ---------- */
+.as-urun-gorsel-blok { width: 100%; line-height: 0; }
+.as-urun-gorsel { display: block; width: 100%; height: auto; }
 
 .as-ozet-satir { display: flex; gap: 14px; margin-top: 4px; flex-wrap: wrap; }
 .as-ozet-oge { font-size: 12px; font-weight: 600; white-space: nowrap; }

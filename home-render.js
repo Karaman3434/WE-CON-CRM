@@ -49,8 +49,10 @@ function kartlariGuncelle(){
 
 // Aylık satış hedefi ilerleme göstergesi — hedef Ayarlar sayfasında
 // girilir (localStorage "weicon_hedef", Firebase "ayarlar/hedef" ile
-// senkron). Hedef girilmemişse (0 veya boş) rozet/çubuk/alt yazı
-// tamamen gizlenir — sahte bir yüzde asla gösterilmez.
+// senkron). Hedef girilmemişse sahte bir yüzde asla gösterilmez, ama
+// gösterge tamamen de gizlenmez — rozet "Hedef belirle" yazan tıklanabilir
+// bir bağlantıya dönüşür (Ayarlar'a götürür) ki özellik var olduğu hâlde
+// yokmuş gibi görünmesin.
 function hedefGostergesiniGuncelle(satisToplamEuro){
   try{
     var rozet = document.getElementById("asHedefRozet");
@@ -60,10 +62,13 @@ function hedefGostergesiniGuncelle(satisToplamEuro){
     if(!rozet || !barTrack || !barDolu || !altYazi) return;
 
     var hedef = parseFloat(localStorage.getItem("weicon_hedef"));
+
     if(!isFinite(hedef) || hedef <= 0){
-      rozet.hidden = true;
+      rozet.hidden = false;
+      rozet.textContent = "Hedef belirle";
       barTrack.hidden = true;
-      altYazi.hidden = true;
+      altYazi.hidden = false;
+      altYazi.textContent = "Aylık hedefini Ayarlar'dan girersen ilerleme burada görünür.";
       return;
     }
 
