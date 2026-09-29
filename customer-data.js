@@ -304,16 +304,15 @@ var CustomerData = (function(){
     return "M-" + String(maxNo+1).padStart(4, "0");
   }
 
-  // ---- YAZIM DÜZENİ (WG.240926.611): ticari isim / adres / yetkili ismi
-  // otomatik büyük-küçük harf standardı. Kural (Abdullah'ın tarifiyle):
-  //  - Ticari isim, açık adres, fatura/teslimat adresi, liste isimleri:
-  //    sadece İLK kelimenin ilk harfi büyük, devamı küçük — ADRES son eki
-  //    (Cad./Sok./Bulvarı/Mah. vb.) geçen özel isimler istisna, onların
-  //    ilk harfleri korunur (Atatürk Cad., Ahmet Üçok Bulvarı gibi).
-  //  - Yetkili ismi: ad kısmı ilk harf büyük devamı küçük, SOYAD tamamen
-  //    büyük (Abdurrahman KARAMAN gibi).
-  // Bu %100 kusursuz özel-isim tespiti YAPAMAZ (basit bir sözlük sezgisi),
-  // ama pratikte adres son eklerinin hemen öncesini doğru yakalar.
+  // ---- YAZIM DÜZENİ (WG.240926.611): ticari isim / yetkili ismi otomatik
+  // büyük-küçük harf standardı.
+  // KALDIRILDI (29.09.2026, Abdullah'ın bildirdiği hata): adresDurumuYap
+  // artık FATURA/TESLİMAT ADRESİ ve AÇIK ADRES alanlarına UYGULANMIYOR —
+  // "Aşkale - Erzurum" gibi özel isimleri otomatik küçük harfe çeviriyor,
+  // kullanıcının bilerek yazdığı büyük/küçük harfi eziyordu. Adres alanları
+  // artık TAM OLARAK yazıldığı gibi (sadece baştaki/sondaki boşluk
+  // kırpılarak) kaydediliyor. Ticari isim (unvanDurumuYap) ve yetkili ismi
+  // (yetkiliIsimDurumuYap) kuralları DEĞİŞMEDİ, sadece adres etkilenmedi.
   var ADRES_OZEL_ISIM_EKLERI = ["cad.","cad","caddesi","sok.","sok","sokak","sokağı",
     "bulvarı","bulvar","blv.","mah.","mah","mahallesi","apt.","apt","apartmanı",
     "sitesi","sit.","köyü","mevkii"];
@@ -571,7 +570,7 @@ var CustomerData = (function(){
         id: musteriIdUret(tazeListe, bilgi.sehir),
         ad: unvanDurumuYap(bilgi.ad),
         sehir: (bilgi.sehir||"").trim(),
-        acikAdres: adresDurumuYap(bilgi.acikAdres),
+        acikAdres: (bilgi.acikAdres||"").trim(),
         vade: (bilgi.vade||"").trim(),
         fatura: (bilgi.fatura||"").trim(),
         telefon: (bilgi.telefon||"").trim(),
@@ -584,10 +583,10 @@ var CustomerData = (function(){
         // Adresi sayılır — "Fatura Adresi: Girilmemiş" görünüp de aslında
         // bir adres girilmiş olması durumunu önler.
         faturaAdresleri: (bilgi.acikAdres && bilgi.acikAdres.trim())
-          ? [{etiket:"Fatura Adresi", adres: adresDurumuYap(bilgi.acikAdres)}]
+          ? [{etiket:"Fatura Adresi", adres: bilgi.acikAdres.trim()}]
           : [],
         teslimatAdresleri: (bilgi.teslimatAdresi && bilgi.teslimatAdresi.trim())
-          ? [{etiket:"Teslimat Adresi", adres: adresDurumuYap(bilgi.teslimatAdresi)}]
+          ? [{etiket:"Teslimat Adresi", adres: bilgi.teslimatAdresi.trim()}]
           : []
       };
       tazeListe.unshift(yeniKayit);
@@ -618,7 +617,7 @@ var CustomerData = (function(){
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       if(!tazeListe[idx][alan]) tazeListe[idx][alan] = [];
-      tazeListe[idx][alan].push({etiket: etiket || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi"), adres: adresDurumuYap(adres)});
+      tazeListe[idx][alan].push({etiket: etiket || (tip==="fatura"?"Fatura Adresi":"Teslimat Adresi"), adres: (adres||"").trim()});
     }, geriBildir);
   }
 
@@ -638,7 +637,7 @@ var CustomerData = (function(){
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
       if(!tazeListe[idx][alan] || !tazeListe[idx][alan][adresIdx]) throw new Error("Adres bulunamadı");
-      tazeListe[idx][alan][adresIdx] = {etiket: etiket, adres: adresDurumuYap(adres)};
+      tazeListe[idx][alan][adresIdx] = {etiket: etiket, adres: (adres||"").trim()};
     }, geriBildir);
   }
 
@@ -679,7 +678,7 @@ var CustomerData = (function(){
       var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
       if(idx===-1) throw new Error("Müşteri bulunamadı");
       var alan = tip==="fatura" ? "faturaAdresleri" : "teslimatAdresleri";
-      tazeListe[idx][alan] = [{etiket: tip==="fatura"?"Fatura Adresi":"Teslimat Adresi", adres: adresDurumuYap(adres||"")}];
+      tazeListe[idx][alan] = [{etiket: tip==="fatura"?"Fatura Adresi":"Teslimat Adresi", adres: (adres||"").trim()}];
     }, geriBildir);
   }
 
