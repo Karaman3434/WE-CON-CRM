@@ -20,7 +20,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.260926.2345.639">
 <link rel="stylesheet" href="customer-style.css?v=WG.270926.0300.643">
-<link rel="stylesheet" href="detail-style.css?v=WG.240926.1332.615">
+<link rel="stylesheet" href="detail-style.css?v=WG.300926.1130.675">
 </head>
 <body>
 
@@ -64,6 +64,15 @@
     </div>
   </div>
 
+  <div class="tip-secim-overlay" id="temasSilOnayOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">Silinsin mi?</div>
+      <p id="temasSilOnayMetin" style="text-align:center;font-size:14px;color:#44494f;margin:0 0 14px;"></p>
+      <button id="btnTemasSilOnayla" style="background:#c0392b;color:#fff;border:none;border-radius:8px;padding:12px;min-height:44px;font-size:14px;font-weight:800;width:100%;margin-bottom:8px;cursor:pointer;">🗑️ Evet, Sil</button>
+      <button class="tip-secim-vazgec-btn" id="btnTemasSilVazgec">Kapat</button>
+    </div>
+  </div>
+
   <div class="tip-secim-overlay" id="temasNotOverlay" hidden>
     <div class="tip-secim-kutu">
       <div class="tip-secim-baslik" id="temasNotBaslik">Temas Notu</div>
@@ -81,10 +90,10 @@
 <script src="firebase-config.js?v=WG.130926.2010.553"></script>
 <script src="auth.js?v=WG.270926.1940.646"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="customer-data.js?v=WG.290926.2156.673"></script>
+<script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer-temas.html", "📍 Temas"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="customer-temas-render.js?v=WG.100926.2057.496"></script>
+<script src="customer-temas-render.js?v=WG.300926.1130.675"></script>
 </body>
 </html>

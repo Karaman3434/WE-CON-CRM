@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function(){
     : (bilgi.musteriAd
       ? (bilgi.musteriAd + " için sipariş/teklif formu paylaşım uygulamasına gönderildi.")
       : "Form paylaşım uygulamasına gönderildi.");
-  altMetin += " 6 sn içinde Ana Sayfa'ya yönlendiriliyorsun.";
+  altMetin += " 5 sn içinde Ana Sayfa'ya yönlendiriliyorsun.";
   document.getElementById("gbAltMetin").textContent = altMetin;
 
   function anaSayfayaDonVeTemizle(){
@@ -28,8 +28,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
   document.getElementById("btnGbAnaSayfa").onclick = anaSayfayaDonVeTemizle;
 
-  // Ekran 3 saniye görünüp kendiliğinden Ana Sayfa'ya döner (26.09.2026,
-  // Abdullah'ın isteğiyle — butona basmaya gerek kalmadan).
+  // Ekran 5 saniye görünüp kendiliğinden Ana Sayfa'ya döner (26.09.2026,
+  // Abdullah'ın isteğiyle — butona basmaya gerek kalmadan; 30.09.2026'da
+  // 6 sn'den 5 sn'ye kısaltıldı ve arka plan fotoğrafı kaldırılıp beyaz
+  // zemin + gerçek WEICON logosu ortalanarak büyütüldü).
   //
   // KÖK NEDEN DÜZELTMESİ (27.09.2026): Mail/WhatsApp paylaşımı seçilince
   // telefon başka bir uygulamaya (Outlook/Gmail/WhatsApp) geçiyor, bu
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function(){
   // olduğunda (visibilitychange) süre dolmuşsa hemen, dolmamışsa kalan
   // süre kadar bekleyip yönlendiriyor.
   var baslangicZamani = Date.now();
-  var GECIKME_MS = 6000;
+  var GECIKME_MS = 5000;
   var yonlendirildiMi = false;
 
   function zamanindaYonlendir(){

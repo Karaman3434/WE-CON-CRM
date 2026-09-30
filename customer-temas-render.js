@@ -43,6 +43,8 @@ var seciliMusteriAdi = null;
 var seciliMusteriId = null;
 var secilenTemasTuru = null;
 
+var silinecekTs = null;
+
 function ziyaretGecmisiniCiz(musteri){
   try{
     var liste = (musteri.ziyaretGecmisi || []).slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
@@ -62,11 +64,24 @@ function ziyaretGecmisiniCiz(musteri){
       return "<div class='gecmis-karti'>"
         + "<div class='gecmis-karti-ust'>"
         + "<span class='temas-rozet temas-rozet--" + (z.tur||"ziyaret") + "'>" + tur.ikon + " " + tur.etiket + "</span>"
+        + "<span class='gecmis-karti-sag'>"
         + "<span class='gecmis-tarih'>" + tarihStr + "</span>"
+        + "<button type='button' class='gecmis-sil-btn' data-ts='" + z.ts + "' aria-label='Temas kaydını sil'>🗑️</button>"
+        + "</span>"
         + "</div>"
         + (z.not ? "<div class='gecmis-not'>" + htmlEsc(z.not) + "</div>" : "")
         + "</div>";
     }).join("");
+
+    kapsayici.querySelectorAll(".gecmis-sil-btn").forEach(function(btn){
+      btn.onclick = function(){
+        silinecekTs = parseInt(this.getAttribute("data-ts"), 10);
+        var kayit = liste.find(function(z){ return z.ts === silinecekTs; });
+        var tur = kayit ? (TUR_META[kayit.tur] || TUR_META.ziyaret) : TUR_META.ziyaret;
+        document.getElementById("temasSilOnayMetin").textContent = tur.ikon + " " + tur.etiket + " kaydı kalıcı olarak silinecek.";
+        document.getElementById("temasSilOnayOverlay").hidden = false;
+      };
+    });
   }catch(e){ hataGoster("Temas geçmişi çizilemedi: " + e.message); }
 }
 
@@ -105,6 +120,24 @@ document.addEventListener("DOMContentLoaded", function(){
   });
   document.getElementById("btnTemasNotVazgec").onclick = function(){
     document.getElementById("temasNotOverlay").hidden = true;
+  };
+  document.getElementById("btnTemasSilVazgec").onclick = function(){
+    document.getElementById("temasSilOnayOverlay").hidden = true;
+    silinecekTs = null;
+  };
+  document.getElementById("btnTemasSilOnayla").onclick = function(){
+    if(silinecekTs === null) return;
+    var btn = this;
+    btn.disabled = true;
+    CustomerData.ziyaretSil(seciliMusteriAdi, silinecekTs, function(basarili, err){
+      btn.disabled = false;
+      if(!basarili){
+        hataGoster("Silinemedi: " + (err && err.message ? err.message : err));
+        return;
+      }
+      document.getElementById("temasSilOnayOverlay").hidden = true;
+      silinecekTs = null;
+    }, seciliMusteriId);
   };
   document.getElementById("btnTemasKaydet").onclick = function(){
     var not = document.getElementById("temasNotInput").value.trim();

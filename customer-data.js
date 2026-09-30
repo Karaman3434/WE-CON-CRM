@@ -179,6 +179,26 @@ var CustomerData = (function(){
     }, geriBildir);
   }
 
+  // Bir temas kaydını (Ziyaret/Telefon/Mail/WhatsApp Msj) kalıcı siler.
+  // ts (kayıt anındaki Date.now() değeri) ile eşleştirir — dizi indeksi
+  // yerine bunu kullanmak, transaction sunucudan taze veriyle tekrar
+  // çalışsa bile yanlış kaydı silme riskini ortadan kaldırır. Silinince
+  // aynı Firebase verisini okuyan Takvim (ziyaret.html) ve Cari Kart'taki
+  // Temas sayacı da OTOMATİK güncellenir — ayrı bir "her yerden sil"
+  // adımına gerek yok (30.09.2026, Abdullah'ın isteğiyle eklendi).
+  function ziyaretSil(musteriAd, ts, geriBildir, musteriId){
+    guvenliYaz(function(tazeListe){
+      var idx = musteriIndexBul(tazeListe, musteriAd, musteriId);
+      if(idx===-1) throw new Error("Müşteri bulunamadı");
+      var gecmis = tazeListe[idx].ziyaretGecmisi || [];
+      var yeniGecmis = gecmis.filter(function(z){ return z.ts !== ts; });
+      if(yeniGecmis.length === gecmis.length) throw new Error("Temas kaydı bulunamadı");
+      tazeListe[idx].ziyaretGecmisi = yeniGecmis;
+      tazeListe[idx].sonZiyaret = yeniGecmis.length ? yeniGecmis[0].ts : null;
+      tazeListe[idx].sonZiyaretNot = yeniGecmis.length ? yeniGecmis[0].not : null;
+    }, geriBildir);
+  }
+
   // Takvim görünümü için: tüm müşterilerin tüm ziyaret/temas kayıtlarını,
   // hangi müşteriye ait olduğu bilgisiyle birlikte tek listede döner.
   function tumZiyaretTemaslar(){
@@ -839,6 +859,7 @@ var CustomerData = (function(){
     arsivMusteriIdGuncelle: arsivMusteriIdGuncelle,
     ziyaretHatirlatmalari: ziyaretHatirlatmalari,
     ziyaretEkle: ziyaretEkle,
+    ziyaretSil: ziyaretSil,
     tumZiyaretTemaslar: tumZiyaretTemaslar,
     hatirlatmalarBugun: hatirlatmalarBugun,
     gunFarkiHesapla: gunFarkiHesapla,
