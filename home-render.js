@@ -170,6 +170,72 @@ function asKurGuncelle(){
   }catch(e){}
 }
 
+// Menü içi "yana açılan" alt menü paneli — GENEL altyapı (30.09.2026,
+// Abdullah'ın isteğiyle). Hangi drawer etiketinin alt menüsü olduğu,
+// sadece bu tabloya bir anahtar eklenerek tanımlanır; HTML tarafında o
+// etiket <a> yerine <button data-alt-menu="anahtar"> olur (bkz. home.html
+// "Raporlar" satırı) — panel konumlandırma/açma/kapama kodu SABİT kalır,
+// yarın başka bir etikete (örn. Müşteri) alt menü eklemek istenirse bu
+// tabloya birkaç satır eklemek yeterlidir.
+var DRAWER_ALT_MENULERI = {
+  raporlar: {
+    baslik: "Raporlar",
+    ogeler: [
+      {ikon:"📊", etiket:"İstatistikler", href:"reports.html"},
+      {ikon:"📋", etiket:"Son İşlemler", href:"son-islemler.html"},
+      {ikon:"📌", etiket:"Görevlerim", href:"gorevler.html"},
+      {ikon:"📆", etiket:"Ziyaret Takvimi", href:"ziyaret.html"},
+      {ikon:"❌", etiket:"Kaçan Satışlar", href:"kacan-satislar.html"}
+    ]
+  }
+};
+
+var altMenuAcikTetikleyici = null;
+
+function altMenuKapat(){
+  var panel = document.getElementById("asDrawerAltMenu");
+  if(!panel) return;
+  panel.hidden = true;
+  if(altMenuAcikTetikleyici) altMenuAcikTetikleyici.classList.remove("as-drawer-oge--acik");
+  altMenuAcikTetikleyici = null;
+}
+
+function altMenuAc(anahtar, tetikleyiciEl){
+  try{
+    var tanim = DRAWER_ALT_MENULERI[anahtar];
+    if(!tanim) return;
+    // Aynı satıra tekrar dokununca kapat (aç/kapa tuşu gibi davransın).
+    if(altMenuAcikTetikleyici === tetikleyiciEl){ altMenuKapat(); return; }
+    altMenuKapat();
+
+    var panel = document.getElementById("asDrawerAltMenu");
+    document.getElementById("asDrawerAltMenuBaslik").textContent = tanim.baslik;
+    document.getElementById("asDrawerAltMenuListe").innerHTML = tanim.ogeler.map(function(o){
+      return "<a class='as-drawer-altmenu-oge' href='" + o.href + "'>"
+        + "<span class='as-drawer-altmenu-oge-ikon' aria-hidden='true'>" + o.ikon + "</span>"
+        + "<span>" + o.etiket + "</span></a>";
+    }).join("");
+
+    panel.hidden = false;
+    // Tetikleyici satırın TAM YANINA konumlandır, ekrandan taşarsa sola
+    // kaydırıp sığdır (küçük ekranlarda bile okunaklı kalması için).
+    var rect = tetikleyiciEl.getBoundingClientRect();
+    var panelGenislik = panel.offsetWidth;
+    var sol = rect.right + 6;
+    if(sol + panelGenislik > window.innerWidth - 8){ sol = window.innerWidth - panelGenislik - 8; }
+    if(sol < 8) sol = 8;
+    var ust = rect.top;
+    var panelYukseklik = panel.offsetHeight;
+    if(ust + panelYukseklik > window.innerHeight - 8){ ust = window.innerHeight - panelYukseklik - 8; }
+    if(ust < 8) ust = 8;
+    panel.style.left = sol + "px";
+    panel.style.top = ust + "px";
+
+    tetikleyiciEl.classList.add("as-drawer-oge--acik");
+    altMenuAcikTetikleyici = tetikleyiciEl;
+  }catch(e){ hataGoster("Alt menü açılamadı: " + e.message); }
+}
+
 function asDrawerAc(){
   try{
     var overlay = document.getElementById("asDrawerOverlay");
@@ -185,6 +251,7 @@ function asDrawerKapat(){
     var overlay = document.getElementById("asDrawerOverlay");
     var drawer = document.getElementById("asDrawer");
     if(!overlay || !drawer) return;
+    altMenuKapat();
     drawer.classList.remove("as-drawer--acik");
     document.body.classList.remove("as-drawer-kilit");
     setTimeout(function(){ overlay.hidden = true; }, 250);
@@ -198,6 +265,22 @@ function asDrawerBagla(){
     var overlay = document.getElementById("asDrawerOverlay");
     overlay.addEventListener("click", function(ev){
       if(ev.target === overlay) asDrawerKapat();
+    });
+    // Alt menüsü olan etiketler (data-alt-menu="...") — GENEL bağlama:
+    // kaç tane olursa olsun tek seferde bulup bağlar, tekrar kod yazmaya
+    // gerek kalmaz (bkz. DRAWER_ALT_MENULERI).
+    document.querySelectorAll("[data-alt-menu]").forEach(function(btn){
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        altMenuAc(this.getAttribute("data-alt-menu"), this);
+      };
+    });
+    document.addEventListener("click", function(ev){
+      var panel = document.getElementById("asDrawerAltMenu");
+      if(!panel || panel.hidden) return;
+      if(panel.contains(ev.target) || ev.target.closest("[data-alt-menu]")) return;
+      altMenuKapat();
     });
     document.getElementById("btnAsCikis").onclick = function(){
       if(!confirm("Çıkış yapmak istediğinize emin misiniz?")) return;

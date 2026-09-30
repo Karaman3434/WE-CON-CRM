@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.300926.1130.675 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.300926.1155.676 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
@@ -37,7 +37,7 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.270926.0110.642">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.300926.1130.675">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.300926.1155.676">
 </head>
 <body>
 
@@ -171,18 +171,34 @@
       <a class="as-drawer-oge" href="customer.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">👥</span><span class="as-drawer-etiket">Müşteri</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
       <a class="as-drawer-oge" href="son-islemler.html"><span class="as-drawer-ikon" aria-hidden="true">🕐</span><span class="as-drawer-etiket">Son İşlemler</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
       <a class="as-drawer-oge" href="km.html"><span class="as-drawer-ikon" style="color:#ec7063;" aria-hidden="true">🚗</span><span class="as-drawer-etiket">Araç KM</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
-      <a class="as-drawer-oge" href="raporlar.html"><span class="as-drawer-ikon" style="color:#f5b041;" aria-hidden="true">📊</span><span class="as-drawer-etiket">Raporlar</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
+      <button type="button" class="as-drawer-oge as-drawer-oge--buton" id="drawerAltMenuBtn-raporlar" data-alt-menu="raporlar"><span class="as-drawer-ikon" style="color:#f5b041;" aria-hidden="true">📊</span><span class="as-drawer-etiket">Raporlar</span><span class="as-drawer-ok" aria-hidden="true">›</span></button>
       <a class="as-drawer-oge" href="vade-takip.html"><span class="as-drawer-ikon" aria-hidden="true">📄</span><span class="as-drawer-etiket">Fatura · Vade · Ödeme Takip</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
       <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#f5c451;" aria-hidden="true">🔒</span><span class="as-drawer-etiket">Kişisel</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
     </nav>
 
-    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.300926.1130.675 ***</div>
+    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.300926.1155.676 ***</div>
 
     <div class="as-drawer-ayarlar-blok">
       <a class="as-drawer-oge" href="menu.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">⚙️</span><span class="as-drawer-etiket">Ayarlar</span></a>
     </div>
 
     <button class="as-drawer-cikis" id="btnAsCikis"><span aria-hidden="true">🚪</span>Çıkış Yap</button>
+  </div>
+
+  <!-- Menü içi "yana açılan" alt menü paneli (30.09.2026, Abdullah'ın
+       isteğiyle) — GENEL/tekrar kullanılabilir bir altyapı: hangi
+       etikete tıklandığı data-alt-menu="..." ile home-render.js'deki
+       DRAWER_ALT_MENULERI tablosundan okunur ve bu TEK panel doldurulup
+       tıklanan satırın yanına konumlandırılır. Yarın başka bir etikete
+       (örn. Müşteri) alt menü eklemek için sadece o tabloya birkaç satır
+       eklemek yeterli — bu panel ve konumlandırma kodu değişmez.
+       BİLEREK .as-drawer'ın DIŞINA, .as-drawer-overlay'in doğrudan
+       altına konuldu — .as-drawer kayarken transform kullanıyor, içeride
+       olsaydı position:fixed konumlandırması ekrana göre değil o kayan
+       kutuya göre hesaplanır ve yanlış yere çıkardı. -->
+  <div class="as-drawer-altmenu" id="asDrawerAltMenu" hidden>
+    <div class="as-drawer-altmenu-baslik" id="asDrawerAltMenuBaslik"></div>
+    <div class="as-drawer-altmenu-liste" id="asDrawerAltMenuListe"></div>
   </div>
 </div>
 
@@ -199,6 +215,6 @@
 <script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.290926.2156.673"></script>
+<script src="home-render.js?v=WG.300926.1155.676"></script>
 </body>
 </html>
