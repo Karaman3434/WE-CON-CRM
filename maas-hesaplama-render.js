@@ -133,8 +133,8 @@ function mhHesaplaVeCiz(){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_MH();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   mhGorunumCiz();
 
   document.getElementById("mhDonemOncekiBtn").onclick = function(){ mhGezinmeOfset++; mhGorunumCiz(); };

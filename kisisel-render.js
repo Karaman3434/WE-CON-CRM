@@ -33,8 +33,8 @@ function hesabaYatacakGuncelle(){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   hesabaYatacakGuncelle();
   try{ KomisyonDonemData.degistiginde(hesabaYatacakGuncelle); }catch(e){}
   try{ AvansKayitData.degistiginde(hesabaYatacakGuncelle); }catch(e){}

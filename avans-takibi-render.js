@@ -240,8 +240,8 @@ function avCiz(){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_AV();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   // KRİTİK HATA DÜZELTMESİ (24.09.2026): Firebase'den ilk veri paketi
   // gelene kadar ekleme/silme butonlarını KİLİTLE — aksi halde kullanıcı
   // veri daha gelmeden bir şey eklerse, boş listeyi Firebase'e YAZIP

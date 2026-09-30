@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.300926.1155.676";
+var APP_VERSION = "WG.300926.1400.677";
 
 var AY_ADLARI_AYARLAR = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 
@@ -82,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   ayarlariDoldur();
   document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKodlariStandartlastir").onclick = function(){
     var onay = confirm(
       "⚠️ Bu işlem TÜM müşteri kodlarını M-0001, M-0002... şeklinde yeniden numaralandırır ve geçmiş Numune/Teklif/Proforma/Sipariş kayıtlarındaki müşteri bağlantılarını buna göre günceller.\n\n" +

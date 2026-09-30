@@ -463,8 +463,8 @@ function duzenlemeKaydet(){
 document.addEventListener("DOMContentLoaded", function(){
   akilliGeriBagla("reports.html");
   tarihiGuncelle();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnBelgeKapat").onclick = function(){
     if(window.history.length > 1) window.history.back();
     else window.location.href = "reports.html";

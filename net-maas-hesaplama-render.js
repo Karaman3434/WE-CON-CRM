@@ -109,8 +109,8 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_NM();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   nmGorunumCiz();
 
   document.getElementById("nmDonemOncekiBtn").onclick = function(){ nmGezinmeOfset++; nmGorunumCiz(); };

@@ -170,8 +170,8 @@ document.addEventListener("DOMContentLoaded", function(){
   kategoriSecimBagla();
   document.getElementById("kmBugun").addEventListener("input", dunOzetiniCiz);
   document.getElementById("btnKmKaydet").onclick = kmKaydetTiklandi;
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnKmBaslangicKaydet").onclick = function(){
     var deger = parseFloat(document.getElementById("kmBaslangicInput").value);
     if(!deger || deger<=0){ hataGoster("Geçerli bir kilometre değeri girin."); return; }

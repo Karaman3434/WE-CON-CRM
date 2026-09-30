@@ -122,8 +122,8 @@ function listeyiCiz(){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnSiralama").onclick = function(){
     siralamaYonu = siralamaYonu === "yeni" ? "eski" : "yeni";
     this.textContent = siralamaYonu === "yeni" ? "Yeni → Eski ⇅" : "Eski → Yeni ⇅";

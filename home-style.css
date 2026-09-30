@@ -175,7 +175,7 @@ body {
 /* ---------- Navigasyon ---------- */
 .app-nav {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 4px;
   padding: 12px 12px 9px;
 }
@@ -184,7 +184,7 @@ body {
   border: none;
   border-radius: 8px;
   padding: 8px 4px 6.4px;
-  height: 55px;
+  height: 68px;
   box-sizing: border-box;
   font-size: 16px;
   font-weight: 700;
@@ -200,12 +200,27 @@ body {
 .nav-btn--geri {
   color: #c0392b;
   flex-direction: row;
-  gap: 2px;
+  gap: 4px;
 }
-.nav-btn--geri .nav-ikon--geri-kucuk { font-size: 45px; line-height: 1; }
-.nav-btn--geri .nav-ikon--geri-buyuk { font-size: 58.5px; line-height: 1; margin-left: -6px; }
-.nav-btn--geri .nav-etiket { margin-left: 2px; }
+.nav-btn--geri .nav-ikon--geri-kucuk {
+  font-size: 50px;
+  line-height: 1;
+}
+.nav-btn--geri .nav-ikon--geri-kucuk::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+.nav-btn--geri .nav-ikon--geri-buyuk { font-size: 62px; line-height: 1; margin-left: 0; }
+.nav-btn--geri .nav-etiket { margin-left: 2px; font-size: 24px; }
 .nav-btn--ana { color: #003a70; }
+.nav-btn--ana .nav-ikon { font-size: 32px; }
+.nav-btn--ana .nav-etiket { font-size: 14px; }
 .nav-ikon {
   font-size: 22.5px;
   line-height: 1;

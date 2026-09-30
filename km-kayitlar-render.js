@@ -349,7 +349,8 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnExcel").onclick = excelAktar;
   document.getElementById("btnKmTabloKaydet").onclick = function(){
     // Tablodaki hücreler zaten yazarken (blur olunca) otomatik kaydediyor —

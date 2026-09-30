@@ -88,7 +88,8 @@ function listeyiCiz(){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("hkGunFiltre").onchange = listeyiCiz;
   document.getElementById("btnHkHepsiniSil").onclick = function(){
     if(tumKayitlar.length === 0) return;

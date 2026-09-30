@@ -487,8 +487,8 @@ document.addEventListener("DOMContentLoaded", function(){
   oncedenSecilenTipVarsaUygula();
   ilerletKaynagiVarsaSekmeAyarla();
   kurManuelOverlayBaglantilariKur();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
-
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnSepetKaydet").onclick = function(){ kaydetTiklandi("kaydet"); };
   document.getElementById("btnSepetGonder").onclick = function(){ kaydetTiklandi("gonder"); };
   document.getElementById("btnMusterisizWhatsapp").onclick = musterisizWhatsappGonder;

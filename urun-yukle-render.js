@@ -103,7 +103,8 @@ function onayVeYukle(){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   document.getElementById("btnDosyaSec").onclick = function(){ document.getElementById("jsonFileInput").click(); };
   document.getElementById("jsonFileInput").onchange = function(e){ dosyaSecildi(e.target.files[0]); };
   document.getElementById("btnOnayYukle").onclick = onayVeYukle;

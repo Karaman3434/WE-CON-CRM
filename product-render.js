@@ -245,7 +245,8 @@ document.addEventListener("DOMContentLoaded", function(){
   if(geriLinkEl) geriLinkEl.addEventListener("click", sepetiSessizceTemizle);
   var anaLinkEl = document.querySelector(".nav-btn--ana");
   if(anaLinkEl) anaLinkEl.addEventListener("click", sepetiSessizceTemizle);
-  document.getElementById("btnMenu").onclick = function(){ sepetiSessizceTemizle(); window.location.href = "menu.html"; };
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ sepetiSessizceTemizle(); window.location.href = "menu.html"; };
   document.getElementById("btnSepeteDevam").onclick = function(){ window.location.href = "cart.html"; };
   document.getElementById("btnSepetiBosalt").onclick = function(){
     if(!confirm("Sepetteki tüm ürünler kaldırılacak. Emin misiniz?")) return;

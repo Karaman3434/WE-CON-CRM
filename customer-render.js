@@ -253,7 +253,8 @@ document.addEventListener("DOMContentLoaded", function(){
     tumMusterilerModuAktif = true;
     listeyiCiz();
   };
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   CustomerData.listeDegistiginde(listeyiCiz);
   // HATA DÜZELTME (WG.080926.196): Temas/İşlem rozetleri ReportsData'ya
   // bağlı ama liste sadece CustomerData değiştiğinde yeniden çiziliyordu.

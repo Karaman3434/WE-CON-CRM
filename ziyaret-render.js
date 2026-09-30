@@ -265,8 +265,9 @@ document.addEventListener("DOMContentLoaded", function(){
   goruntulenenYil = simdi.getFullYear();
   goruntulenenAy = simdi.getMonth();
 
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  var btnMenuEl = document.getElementById("btnMenu");
 
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
   // Ay seç pop-up (25.09.2026) — ◀ Eylül 2026 ▶ ok gezinmesinin yerini aldı.
   document.getElementById("btnAySecAc").onclick = function(){
     aySecPopupDoldur();
