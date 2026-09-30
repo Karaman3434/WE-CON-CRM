@@ -16,6 +16,12 @@
 
   if(!firebase.apps.length){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
 
+  // Oturumun kalıcı (LOCAL) modda saklanmasını AÇIKÇA istiyoruz — bu zaten
+  // SDK'nın varsayılanı ama bazı Android tarayıcı/sürüm kombinasyonlarında
+  // açıkça belirtmek daha güvenilir çalışıyor (30.09.2026, Samsung S22'de
+  // sık sık tam girişe düşme şikayeti üzerine eklendi).
+  try{ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
+
   // PIN KİLİDİ (WG.270926.güncelleme): 5 dakika kullanılmazsa PIN istenir.
   // "Kullanılmama" = ekrana son dokunuş/kaydırma/tuş vuruşundan beri geçen
   // süre (aşağıdaki etkileşim dinleyicileri zaman damgasını taze tutar).
@@ -109,6 +115,19 @@
     if(ev.persisted) geriDonusKilitKontrolu();   // geri/ileri önbelleğinden dönüş
   });
   window.addEventListener("focus", geriDonusKilitKontrolu);
+
+  // PERİYODİK GÜVENLİK AĞI (30.09.2026): iOS'ta (iPhone/iPad, Safari standalone
+  // PWA) uygulama arka plandan öne alındığında "visibilitychange"/"focus"
+  // olayları Samsung/Android'deki kadar güvenilir tetiklenmiyor — bu yüzden
+  // kilit kontrolü hiç çalışmadan oturum sonsuza kadar açık kalabiliyordu
+  // (Samsung'da her seferinde soruyor, iPhone/iPad'de hiç sormuyordu; hedefimiz
+  // ikisinde de AYNI kurala uymasıydı). Bu 20 saniyelik zamanlayıcı, olay
+  // tetiklenmese bile süreyi düzenli kontrol eder. AKTİF KULLANIMI KESMEZ:
+  // gecenSureDurumu() dokunma/kaydırma/yazma oldukça tazelenen zaman damgasına
+  // bakıyor, yani ekrana dokunmaya devam ettiğin sürece (durum===0) bu
+  // zamanlayıcı hiçbir şey yapmaz, işlemin ortasında seni asla PIN/şifre
+  // ekranına atmaz — sadece GERÇEKTEN 5/120 dakika dokunulmamışsa devreye girer.
+  setInterval(geriDonusKilitKontrolu, 20000);
 
   // GERÇEK KULLANIM TAKİBİ: Zaman damgası eskiden sadece sayfa açılırken
   // yenileniyordu. Artık ekrana dokunma/kaydırma/tuş vuruşu da (en fazla 2 sn'de
