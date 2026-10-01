@@ -1,0 +1,106 @@
+WEICON ASİST — AI ÜRÜN ASİSTANI
+Firebase Cloud Function KURULUM TALİMATI (01.10.2026)
+========================================================
+
+Bu zip'teki "functions" klasörü, GitHub Pages'teki siteden AYRI olarak
+Firebase'e deploy edilmesi gereken bir arka uç (backend) içeriyor. Bu
+işlem sadece SENİN kendi bilgisayarından, bir kez yapılır.
+
+ÖNEMLİ: Bu adımları ben (Claude) senin yerine çalıştıramıyorum çünkü bu
+oturumdan Firebase'in sunucularına ağ erişimim yok. Ama aşağıdaki
+adımları sırayla uygularsan 15-20 dakikada biter.
+
+------------------------------------------------------------
+ADIM 0 — Önkoşullar
+------------------------------------------------------------
+- Node.js kurulu olmalı (bilgisayarında zaten yoksa nodejs.org'dan kur).
+- Firebase projenin "Blaze" (kullandıkça öde) planında olması gerekiyor:
+  Firebase Console (console.firebase.google.com) > weicon-asist projesi >
+  sol altta "Planları yükselt" > Blaze'i seç. Blaze'e geçmek otomatik
+  ücret almaz, sadece gerçek kullanıma göre faturalandırır; harcama
+  limiti koymak istersen Google Cloud Console > Billing > Budgets &
+  alerts kısmından bir uyarı/limit kurabilirsin.
+- OpenAI API anahtarını zaten aldıysan (platform.openai.com > API keys)
+  hazır tut, birazdan gerekecek.
+
+------------------------------------------------------------
+ADIM 1 — Firebase CLI'yi kur (bir kerelik)
+------------------------------------------------------------
+Bilgisayarında bir terminal/komut satırı aç ve şunu çalıştır:
+
+    npm install -g firebase-tools
+
+------------------------------------------------------------
+ADIM 2 — Giriş yap
+------------------------------------------------------------
+    firebase login
+
+Tarayıcı açılacak, WEICON ASİST'in bağlı olduğu Google hesabınla giriş
+yap ve izin ver.
+
+------------------------------------------------------------
+ADIM 3 — Bu zip'i aç ve functions klasörüne gir
+------------------------------------------------------------
+Zip'i bilgisayarında bir klasöre çıkart (örneğin Masaüstü'nde
+"weicon-ai-fonksiyon" adında bir klasöre), sonra terminalde o klasöre
+gir:
+
+    cd Masaustu/weicon-ai-fonksiyon
+
+Eğer bu klasörde bir "firebase.json" dosyası YOKSA (muhtemelen yok,
+çünkü bu zip sadece functions klasörünü içeriyor), şunu çalıştır:
+
+    firebase init functions
+
+Sorulara şöyle cevap ver:
+  - "Please select an option" → "Use an existing project"
+  - Proje listesinden "weicon-asist" seç
+  - "What language?" → JavaScript
+  - "Use ESLint?" → No (Hayır) dersen daha basit olur
+  - "File functions/package.json already exists. Overwrite?" → NO
+    (Hayır — bizim hazır package.json'ımızı KORUMALISIN)
+  - "File functions/index.js already exists. Overwrite?" → NO
+    (Hayır — bizim hazır index.js'imizi KORUMALISIN)
+  - "Install dependencies now?" → Evet
+
+------------------------------------------------------------
+ADIM 4 — OpenAI API anahtarını Firebase'e gir (GÜVENLİ kısım)
+------------------------------------------------------------
+    firebase functions:secrets:set OPENAI_API_KEY
+
+Bu komut sana anahtarı soracak — platform.openai.com'dan aldığın
+"sk-" ile başlayan anahtarı buraya yapıştır ve Enter'a bas. Bu anahtar
+sadece Firebase'in güvenli deposunda saklanır, hiçbir zaman GitHub'a
+veya koda yazılmaz.
+
+------------------------------------------------------------
+ADIM 5 — Deploy et
+------------------------------------------------------------
+    firebase deploy --only functions
+
+Bu işlem birkaç dakika sürebilir. Sonunda şöyle bir satır göreceksin:
+
+    Function URL (aiUrunAcikla(europe-west1)): https://europe-west1-weicon-asist.cloudfunctions.net/aiUrunAcikla
+
+Bu adres, ai-urun-asistani.js dosyasındaki AI_FONKSIYON_URL ile BİREBİR
+AYNI olmalı — zaten aynı olacak şekilde hazırladım, ekstra bir işlem
+gerekmiyor. (Adres farklı çıkarsa bana söyle, dosyayı güncelleyeyim.)
+
+------------------------------------------------------------
+ADIM 6 — Test et
+------------------------------------------------------------
+Programda Ürün Bul sayfasını aç, bir ürünün yanındaki 🤖 ikonuna dokun.
+"AI ürünü analiz ediyor…" yazısından sonra açıklamanın gelmesi gerekir.
+
+Hata alırsan (örn. "Ürün açıklaması şu anda oluşturulamadı"), Firebase
+Console > Functions > aiUrunAcikla > Logs kısmından gerçek hatayı
+görebilirsin, ya da bana ekran görüntüsünü gönder.
+
+------------------------------------------------------------
+Sonradan anahtarı değiştirmek/iptal etmek istersen
+------------------------------------------------------------
+    firebase functions:secrets:set OPENAI_API_KEY   (yenisini girip üzerine yazar)
+    firebase functions:secrets:access OPENAI_API_KEY   (hangi fonksiyonların kullandığını gösterir)
+
+Maliyeti kontrol altında tutmak için platform.openai.com > Settings >
+Billing kısmından aylık harcama limiti (Usage limit) koymanı öneririm.

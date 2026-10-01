@@ -64,7 +64,10 @@ function sonuclariCiz(){
       html += "<tr>"
         + "<td class='product-cell product-cell--tikla' data-arama='" + htmlEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "'>"
         + "<div class='tablo-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(bilgi.berta||"-") + "</span> <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(bilgi.abas||"-") + "</span>" + "</div>"
-        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span></div>"
+        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span>"
+        + " <button class='btn-ai-acikla' title='AI ile açıkla' aria-label='AI ile açıkla'"
+        + " data-ad='" + htmlEsc(bilgi.ad) + "' data-berta='" + htmlEsc(bilgi.berta||"") + "'"
+        + " data-abas='" + htmlEsc(bilgi.abas||"") + "' data-fiyat='" + bilgi.fiyat + "'>🤖</button></div>"
         + "</td>"
         + "<td><span class='tablo-fiyat" + (bilgi.fiyat >= 1000 ? " tablo-fiyat--buyuk" : "") + "'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
         + "<td><button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"Seç") + "</button></td>"
@@ -98,6 +101,25 @@ function sonuclariCiz(){
         }
       };
     });
+
+    // AI ile Açıkla butonu (01.10.2026, Abdullah'ın isteğiyle) — ürün
+    // hücresinin içinde, tıklamayı hücreye (WEICON Türkiye araması açan
+    // product-cell--tikla) sızdırmadan durduruyoruz.
+    if(typeof AiUrunAsistani !== "undefined"){
+      liste.querySelectorAll(".btn-ai-acikla").forEach(function(btn){
+        btn.onclick = function(e){
+          e.stopPropagation();
+          e.preventDefault();
+          AiUrunAsistani.ac(
+            this.getAttribute("data-ad"),
+            this.getAttribute("data-berta"),
+            this.getAttribute("data-abas"),
+            this.getAttribute("data-fiyat"),
+            false
+          );
+        };
+      });
+    }
   }catch(e){ hataGoster("Sonuçlar çizilemedi: " + e.message); }
 }
 

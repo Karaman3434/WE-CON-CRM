@@ -22,7 +22,7 @@
 <title>WEICON ASİST — Ürün Bul</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.300926.1310.680">
-<link rel="stylesheet" href="product-style.css?v=WG.300926.1410.678">
+<link rel="stylesheet" href="product-style.css?v=WG.011026.0940.686">
 <link rel="stylesheet" href="belge-style.css?v=WG.270926.1215.645">
 <link rel="stylesheet" href="musteri-serit.css?v=WG.270926.0045.641">
 </head>
@@ -130,6 +130,18 @@
 
 </main>
 
+<!-- AI ÜRÜN ASİSTANI modalı (01.10.2026, Abdullah'ın isteğiyle) — mantığı
+     ai-urun-asistani.js'te, bu sadece boş iskelet. -->
+<div class="ai-modal-overlay" id="aiModalOverlay" hidden>
+  <div class="ai-modal-kutu">
+    <div class="ai-modal-ust">
+      <p class="ai-modal-baslik" id="aiModalBaslik">Ürün</p>
+      <button class="ai-modal-kapat" id="aiModalKapatX" aria-label="Kapat">✕</button>
+    </div>
+    <div id="aiModalIcerik"></div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -144,7 +156,8 @@
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("product.html", "🔍 Ürün Bul"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="product-render.js?v=WG.300926.1400.677"></script>
+<script src="ai-urun-asistani.js?v=WG.011026.0940.686"></script>
+<script src="product-render.js?v=WG.011026.0940.686"></script>
 <!-- yarim-kalan-uyari.js (22.09.2026): Bu sayfadan kaldırıldı — artık Geri/
      Ana Sayfa/Menü'de SORMADAN sessizce temizleniyor (bkz. product-render.js
      sepetiSessizceTemizle). Eski modül burada hâlâ dursaydı hem çakışan bir
