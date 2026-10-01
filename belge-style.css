@@ -375,7 +375,7 @@
 /* Gönder ekranının tablo etiketi artık ortalı + belge tipi/tarih birlikte
    (27.09.2026) — rozet yok, bkz. send-render.js tamOnizlemeHtmlOlustur. */
 .hareket-grup-etiket--ortali { justify-content: center; }
-.hareket-satir--sari { background: #ffeca3; }
+.hareket-satir--sari { background: #ffe3c2; }
 .hareket-satir--yesil { background: #eafaf0; }
 
 /* Sepet ekranındaki kompakt Cari Bilgi başlığı — firma adı+şehir tek
