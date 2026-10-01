@@ -126,12 +126,25 @@ function aiAltButonlariBagla(hataDurumuMu){
 }
 
 async function aiAcikla(ad, berta, abas, fiyat, zorlaYenile){
+  // GEÇİCİ TEŞHİS (01.10.2026) — butona basılınca gerçekte neyin ulaştığını
+  // görmek için, modal açılır açılmaz önce bunu gösteriyoruz. Sorun
+  // bulunduktan sonra bu blok kaldırılacak.
+  try{
+    aiModalAc(ad);
+    var icerikTeshis = document.getElementById("aiModalIcerik");
+    if(icerikTeshis){
+      icerikTeshis.innerHTML = "<div style='font-size:11px;color:#8a94a6;padding:8px 0;'>"
+        + "TEŞHİS — ad: " + aiHtmlEsc(String(ad)) + " | berta: " + aiHtmlEsc(String(berta)) + " | abas: " + aiHtmlEsc(String(abas)) + " | fiyat: " + aiHtmlEsc(String(fiyat))
+        + "</div><div class='ai-modal-yukleniyor'>🤖 AI ürünü analiz ediyor…</div>";
+    }
+  }catch(e){
+    console.error("Teşhis hatası:", e);
+  }
+
   try{
     if(aiIstekDevamEdiyor) return; // dokümandaki 13. madde: çift istek engeli
     aiSonAcilanUrun = {ad:ad, berta:berta, abas:abas, fiyat:fiyat};
     var anahtar = aiUrunAnahtariUret(ad, berta, abas);
-
-    aiModalAc(ad);
 
     if(!zorlaYenile){
       var onbellek = aiCacheOku(anahtar);
@@ -139,7 +152,6 @@ async function aiAcikla(ad, berta, abas, fiyat, zorlaYenile){
     }
 
     aiIstekDevamEdiyor = true;
-    aiYukleniyorGoster();
 
     var idToken = null;
     try{
