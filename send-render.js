@@ -501,10 +501,41 @@ function basariBildirimGoster(mesaj){
 // açtığı seçim kutusundaki ikinci seçenek. Hiçbir önizleme ekranı AÇMAZ,
 // hiçbir mail/paylaşım penceresi TETİKLEMEZ (bir web sayfası telefonun
 // mail uygulamasını gelen kutusuna/zincire açacak şekilde başlatamıyor —
-// platform kısıtı). Tek yaptığı: KONU (kalın üst satır) + mesaj metni +
-// cari bilgi + ürün tablosunun TAMAMINI TEK bir görsel olarak sistem
-// panosuna kopyalamak. Kullanıcı sonra kendi mail uygulamasına geçip
-// devam eden zinciri bulup yapıştırıyor.
+// platform kısıtı). DÜZELTME (01.10.2026, 3. tur): "text/html" + ayrı
+// resim gömme denemesi Abdullah'ın gerçek cihazında (Outlook/Android)
+// TEST EDİLDİ ve işe yaramadı — Outlook panodaki metni/HTML'i yok sayıp
+// direkt resmi aldı, yani metin+tablo yine TEK görsel olarak geldi. Bu,
+// "zengin biçim yapıştırma" ihtimalinin bu uygulamada gerçekleşmediğini
+// KANITLADI; aynı yöntemi başka varyasyonlarla denemek artık kanıta değil
+// varsayıma dayanır. Bu yüzden EN GÜVENİLİR/ÇALIŞTIĞI DOĞRULANMIŞ yönteme
+// dönüldü: KONU (kalın üst satır) + mesaj metni + cari bilgi + ürün
+// tablosunun TAMAMI TEK bir görsel olarak panoya kopyalanır. KONU metni
+// AYRICA düz metin olarak da panoya ekleniyor — resim kabul etmeyen, sade
+// düz metin alan bir kutuya (ör. Konu kutusu) yapıştırılırsa oraya otomatik
+// düz metin gelir; bu kısım platform kısıtına takılmıyor çünkü iki farklı
+// alan türü arasında seçimi uygulamanın kendisi yapıyor, biz zorlamıyoruz.
+//
+// YENİ DENEME (01.10.2026, 4. tur, Abdullah'ın "mutlaka bir çözüm bul"
+// isteğiyle): Android'de bir web sayfasının bir uygulamayı YENİ BİR TASLAK
+// AÇMADAN, sadece o uygulamanın kendi ana ekranını açacak şekilde
+// başlatmasını sağlayan "intent://" bağlantı türü var — mailto: ile KARIŞTIRILMAMALI,
+// mailto: her zaman yeni taslak açar, intent:// ise uygulamayı paket adıyla
+// doğrudan (compose değil, normal açılışıyla) başlatır. Bu, Abdullah'ın en
+// başta istediği "mail uygulamasını aç, yeni mail sayfası değil" isteğiyle
+// birebir örtüşüyor. SADECE Android'de çalışır (iOS/Apple buna izin
+// vermiyor — platform kısıtı burada da geçerli) ve hedef uygulamanın
+// (Outlook) cihazda kurulu olmasına bağlıdır. Daha önce denenmemiş, test
+// edilmesi gerekiyor — kopyalama bitince kısa bir gecikmeyle deneniyor;
+// başarısız olursa (iOS'ta, Outlook kurulu değilse veya tarayıcı
+// desteklemiyorsa) sessizce hiçbir şey olmaz, kullanıcı sayfada kalır ve
+// panodaki içerik zaten kopyalanmış durumda — zarar vermez.
+function mailUygulamasiniAcmayiDene(){
+  try{
+    var ua = navigator.userAgent || "";
+    if(!/Android/i.test(ua)) return;
+    window.location.href = "intent://#Intent;package=com.microsoft.office.outlook;category=android.intent.category.LAUNCHER;action=android.intent.action.MAIN;end";
+  }catch(e){}
+}
 function zinciriCevaplaKopyala(){
   try{
     if(typeof html2canvas === "undefined"){ alert("Görsel oluşturulamadı."); return; }
@@ -527,17 +558,6 @@ function zinciriCevaplaKopyala(){
             alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor.");
             return;
           }
-          // ÇİFT FORMATLI PANO KAYDI (01.10.2026, Abdullah'ın isteğiyle):
-          // aynı tek kopyalama içine HEM resmi HEM de düz metin KONU'yu
-          // birlikte koyuyoruz. Hangi uygulama/alan resmi kabul ediyorsa
-          // (mail gövdesi gibi) oraya yapıştırınca resim gelir — bugünkü
-          // gibi. Ama resim kabul ETMEYEN, sadece düz metin alan bir kutuya
-          // (KONU/Subject kutusu gibi) yapıştırılırsa, o kutu kendiliğinden
-          // bu metin karşılığını alır — ekstra dokunuş/buton gerekmeden.
-          // (Mesaj metnini de AYRICA düz metin olarak gövdeye koymak, aynı
-          // tek yapıştırmada mümkün değil — bir yapıştırma, bir alan, bir
-          // format: platform kısıtı. O yüzden mesaj metni görselin içinde
-          // kalmaya devam ediyor.)
           var panoOgesi;
           try{
             panoOgesi = new ClipboardItem({
@@ -550,7 +570,8 @@ function zinciriCevaplaKopyala(){
           navigator.clipboard.write([panoOgesi]).then(function(){
             gonderimKanaliniKaydet("mail_zincir");
             basariBildirimGoster("Kopyalandı! Mail uygulamasına geçip zincire yapıştırabilirsin.");
-            setTimeout(function(){ basariEkraninaGit("panoya"); }, 1500);
+            setTimeout(function(){ mailUygulamasiniAcmayiDene(); }, 350);
+            setTimeout(function(){ basariEkraninaGit("panoya"); }, 1800);
           }).catch(function(err){
             alert("Kopyalanamadı: " + (err && err.message ? err.message : "izin verilmedi"));
           });
