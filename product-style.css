@@ -34,7 +34,7 @@ body {
 
 /* ---------- Sayfa gövdesi ---------- */
 .sayfa {
-  padding: 4px 4px 16px;
+  padding: 4px 6px 16px;
 }
 
 /* ---------- Arama kutusu ---------- */
@@ -366,9 +366,6 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-}
-.product-cell--tikla {
-  cursor: pointer;
 }
 .urun-detay-ok {
   font-size: 11px;

@@ -559,15 +559,10 @@ function zinciriCevaplaKopyala(){
             alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor.");
             return;
           }
-          var panoOgesi;
-          try{
-            panoOgesi = new ClipboardItem({
-              "image/png": blob,
-              "text/plain": new Blob([konu], {type:"text/plain"})
-            });
-          }catch(e){
-            panoOgesi = new ClipboardItem({"image/png": blob});
-          }
+          // DÜZELTME (01.10.2026, Abdullah'ın isteğiyle): artık KONU metni
+          // panoya ayrıca düz metin olarak eklenmiyor — konuyu kendisi elle
+          // yazacak. Sadece görsel (tablo + mesaj) kopyalanıyor.
+          var panoOgesi = new ClipboardItem({"image/png": blob});
           navigator.clipboard.write([panoOgesi]).then(function(){
             gonderimKanaliniKaydet("mail_zincir");
             basariBildirimGoster("Kopyalandı! Mail uygulamasına geçip zincire yapıştırabilirsin.");

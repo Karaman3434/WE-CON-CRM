@@ -86,15 +86,10 @@ function sonuclariCiz(){
     }
     liste.innerHTML = html;
 
-    // Ürün hücresine dokununca WEICON Türkiye sitesinde bu ürünü ara (yeni
-    // sekme). Statik siteden doğrudan resim/teknik bilgi çekmek CORS
-    // nedeniyle mümkün değil, bu yüzden gerçek WEICON sayfasını açıyoruz.
-    liste.querySelectorAll(".product-cell--tikla").forEach(function(td){
-      td.onclick = function(){
-        var kod = this.getAttribute("data-arama");
-        window.open("https://www.weicon.com.tr/search?search=" + encodeURIComponent(kod), "_blank");
-      };
-    });
+    // DÜZELTME (01.10.2026, Abdullah'ın isteğiyle): ürün hücresine dokununca
+    // da WEICON sayfası açılıyordu, bu da 🔗 butonuyla ÇAKIŞIYORDU (aynı anda
+    // iki yoldan aynı sayfa açılıyordu). Artık SADECE 🔗 butonu (.btn-link-ac,
+    // aşağıda) açıyor — ürün ismine dokunmak artık hiçbir şey açmıyor.
 
     // Buton olayları — HTML string'e onclick gömmek yerine burada bağlanıyor
     var butonlar = liste.querySelectorAll(".btn-add");

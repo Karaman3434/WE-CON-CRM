@@ -9,7 +9,7 @@
   sınıflar "as-" (Ana Sayfa) öneki taşır ve SADECE bu sayfada kullanılır.
 */
 
-.sayfa.as-sayfa { padding: 0 4px 16px; }
+.sayfa.as-sayfa { padding: 0 6px 16px; }
 
 /* ---------- Üst selamlama (sade, sayfanın en üstü) ---------- */
 .as-selam-blok { padding: 18px 0 4px; }

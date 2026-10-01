@@ -2,7 +2,7 @@
    ağırlıklı yazılar (kalın değil). Cari Bilgi ve Ürün Tablosu artık İKİ AYRI
    kart (.belge-kart), aralarında ince bir boşluk (.belge-kart-ayrac). */
 
-.sayfa { padding: 4px 4px 16px; }
+.sayfa { padding: 4px 6px 16px; }
 
 /* Genel amaçlı temiz kart — Cari Bilgi ve Ürün Tablosu ayrı ayrı bunu kullanır. */
 .belge-kart {
@@ -375,8 +375,27 @@
 /* Gönder ekranının tablo etiketi artık ortalı + belge tipi/tarih birlikte
    (27.09.2026) — rozet yok, bkz. send-render.js tamOnizlemeHtmlOlustur. */
 .hareket-grup-etiket--ortali { justify-content: center; }
-.hareket-satir--sari { background: #ffe3c2; }
-.hareket-satir--yesil { background: #eafaf0; }
+.hareket-satir--sari { background: #ffb066; }
+.hareket-satir--sari td,
+.hareket-satir--sari .rozet-net,
+.hareket-satir--sari .rozet-isk,
+.hareket-satir--sari .belge-isk-metin,
+.hareket-satir--sari .belge-isk-metin .belge-para-birim,
+.hareket-satir--sari .belge-td-toplam,
+.hareket-satir--sari .belge-td-urun-ad,
+.hareket-satir--sari .belge-net-tl,
+.hareket-satir--sari .belge-para-birim { color: #5c2e00; }
+
+.hareket-satir--yesil { background: #6fcf9a; }
+.hareket-satir--yesil td,
+.hareket-satir--yesil .rozet-net,
+.hareket-satir--yesil .rozet-isk,
+.hareket-satir--yesil .belge-isk-metin,
+.hareket-satir--yesil .belge-isk-metin .belge-para-birim,
+.hareket-satir--yesil .belge-td-toplam,
+.hareket-satir--yesil .belge-td-urun-ad,
+.hareket-satir--yesil .belge-net-tl,
+.hareket-satir--yesil .belge-para-birim { color: #0b3d22; }
 
 /* Sepet ekranındaki kompakt Cari Bilgi başlığı — firma adı+şehir tek
    satırda, sağda işlem türü rozeti (SİPARİŞ/TEKLİF/vb). */
