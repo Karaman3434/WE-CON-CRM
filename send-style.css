@@ -1,5 +1,46 @@
 /* send-style.css — aynı kural: gradyan/gölge yığılması yok. */
 
+/* MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) — üst 3
+   buton satırı aynı kalıyor, Mail'e dokununca altında bu küçük kutu açılır:
+   Yeni Mail / Zinciri Cevapla. */
+.iletisim-secenek-mail-sarmal { position: relative; }
+.iletisim-secenek-mail-sarmal .iletisim-secenek-btn { width: 100%; }
+.mail-secenek-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 190px;
+  background: #ffffff;
+  border: 1px solid #d7dce3;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.16);
+  z-index: 50;
+  overflow: hidden;
+}
+.mail-secenek-popover-oge {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 9px 12px;
+  cursor: pointer;
+}
+.mail-secenek-popover-oge:not(:last-child) { border-bottom: 1px solid #eef1f5; }
+.mail-secenek-popover-oge:active { background: #f4f6f9; }
+.mail-secenek-popover-baslik {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #1f2937;
+}
+.mail-secenek-popover-alt {
+  display: block;
+  font-size: 10.5px;
+  color: #8a96a3;
+  margin-top: 1px;
+}
+
 .musteri-ozet-kutu {
   background: #eaf2fc;
   border: 2px solid #3569b8;

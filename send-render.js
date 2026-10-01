@@ -486,6 +486,60 @@ function tabloSadeceKopyala(btnEl){
   }).catch(function(){ eskiHaleDon(); alert("Görsel oluşturulamadı."); });
 }
 
+// Kısa süreli yeşil başarı bildirimi (01.10.2026) — hataGoster ile aynı
+// mantık, sadece başarı rengiyle; Zinciri Cevapla tek dokunuşluk kopyalama
+// sonrası ekran değişmeden önce kısa bir onay göstermek için.
+function basariBildirimGoster(mesaj){
+  var kutu = document.createElement("div");
+  kutu.textContent = "✓ " + mesaj;
+  kutu.style.cssText = "position:fixed;top:8px;left:8px;right:8px;background:#1e8e5a;color:#fff;padding:10px;border-radius:8px;font-size:13px;font-weight:700;text-align:center;z-index:99999;";
+  document.body.appendChild(kutu);
+  setTimeout(function(){ kutu.remove(); }, 1700);
+}
+
+// ZİNCİRİ CEVAPLA (01.10.2026, Abdullah'ın isteğiyle) — "Mail" tuşunun
+// açtığı seçim kutusundaki ikinci seçenek. Hiçbir önizleme ekranı AÇMAZ,
+// hiçbir mail/paylaşım penceresi TETİKLEMEZ (bir web sayfası telefonun
+// mail uygulamasını gelen kutusuna/zincire açacak şekilde başlatamıyor —
+// platform kısıtı). Tek yaptığı: KONU (kalın üst satır) + mesaj metni +
+// cari bilgi + ürün tablosunun TAMAMINI TEK bir görsel olarak sistem
+// panosuna kopyalamak. Kullanıcı sonra kendi mail uygulamasına geçip
+// devam eden zinciri bulup yapıştırıyor.
+function zinciriCevaplaKopyala(){
+  try{
+    if(typeof html2canvas === "undefined"){ alert("Görsel oluşturulamadı."); return; }
+    var g = gonderBaglam;
+    var TIP_ETIKET6 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
+    var sehirEk = (g.musteri.sehir && g.musteri.sehir.trim()) ? (" - " + g.musteri.sehir.trim()) : "";
+    var konu = "*** " + TIP_ETIKET6[g.tip] + " *** " + g.musteri.ad + sehirEk;
+    var metin = document.getElementById("gonderMetin").value;
+    var kayitliKod = (sonKaydedilenBelge&&sonKaydedilenBelge.kayit) ? sonKaydedilenBelge.kayit.kod : "";
+    var kayitliTarih = (sonKaydedilenBelge&&sonKaydedilenBelge.kayit) ? sonKaydedilenBelge.kayit.tarih : "";
+    var alan = document.getElementById("belgeGorselAlani");
+    alan.innerHTML = "<div style='font-size:13px;font-weight:700;color:#0c447c;background:#eaf2fc;padding:8px 10px;border-radius:6px;margin-bottom:10px;'>KONU: " + htmlEsc(konu) + "</div>"
+      + "<div style='font-size:13px;color:#2d3540;line-height:1.5;margin-bottom:14px;white-space:pre-wrap;'>" + htmlEsc(metin) + "</div>"
+      + belgeGorselHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, kayitliKod, "mail", kayitliTarih);
+    kosulSatirlariniSigdir(alan);
+    setTimeout(function(){
+      html2canvas(alan, {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
+        canvas.toBlob(function(blob){
+          if(!blob || !navigator.clipboard || typeof window.ClipboardItem === "undefined"){
+            alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor.");
+            return;
+          }
+          navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(function(){
+            gonderimKanaliniKaydet("mail_zincir");
+            basariBildirimGoster("Kopyalandı! Mail uygulamasına geçip zincire yapıştırabilirsin.");
+            setTimeout(function(){ basariEkraninaGit("panoya"); }, 1500);
+          }).catch(function(err){
+            alert("Kopyalanamadı: " + (err && err.message ? err.message : "izin verilmedi"));
+          });
+        }, "image/png");
+      }).catch(function(){ alert("Görsel oluşturulamadı."); });
+    }, 60);
+  }catch(e){ hataGoster("Zincir kopyalama hatası: " + e.message); }
+}
+
 function gonderimKanaliniKaydet(kanal){
   try{
     if(!sonKaydedilenBelge || !sonKaydedilenBelge.kayit || !gonderBaglam) return;
@@ -677,27 +731,6 @@ document.addEventListener("DOMContentLoaded", function(){
       }catch(e){ alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin."); }
     }
   };
-  // MESAJ METNİNİ KOPYALA (01.10.2026, Abdullah'ın isteğiyle) — konu
-  // kopyalama butonuyla aynı mantık, mesaj metni için.
-  document.getElementById("mailMetinKopyalaBtn").onclick = function(){
-    var metin = document.getElementById("mailOnizlemeMetin").textContent;
-    var btn = this;
-    var eskiMetin = btn.textContent;
-    function eskiHaleDon(){ btn.textContent = eskiMetin; }
-    function basarili(){ btn.textContent = "✓ Kopyalandı"; setTimeout(eskiHaleDon, 1500); }
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(metin).then(basarili).catch(function(){
-        alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin.");
-      });
-    } else {
-      alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin.");
-    }
-  };
-  // DEVAM EDEN YAZIŞMAYA YAPIŞTIRMA (01.10.2026, Abdullah'ın isteğiyle) —
-  // WhatsApp'taki "Kopyala ve Kaydet" ile AYNI fonksiyon, "mail" kanalıyla:
-  // cari bilgi + ürün tablosu (LİSTE/İSK/NET/TOPLAM) görsel olarak panoya
-  // kopyalanır, yeni bir mail AÇILMAZ.
-  document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
     // GÜVENLİK AĞI (28.09.2026, Abdullah'ın bildirdiği hata): bazı mail
@@ -745,7 +778,31 @@ document.addEventListener("DOMContentLoaded", function(){
   // Formun ÜSTÜNDEKİ 3 buton — Mail / WhatsApp / Tablo (14.09.2026,
   // Abdullah'ın onayladığı akış). Ayrı bir "İletişim - Gönder" popup'ı
   // artık yok — bu 3 buton doğrudan formun üstünde duruyor.
-  document.getElementById("btnUstMail").onclick = mailOnizlemeAc;
+  // MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) — Mail
+  // tuşu artık direkt önizleme açmıyor, önce "Yeni Mail / Zinciri Cevapla"
+  // seçim kutusunu açıyor.
+  document.getElementById("btnUstMail").onclick = function(ev){
+    ev.stopPropagation();
+    var pop = document.getElementById("mailSecenekPopover");
+    pop.hidden = !pop.hidden;
+  };
+  document.getElementById("mailSecenekYeniMail").onclick = function(ev){
+    ev.stopPropagation();
+    document.getElementById("mailSecenekPopover").hidden = true;
+    mailOnizlemeAc();
+  };
+  document.getElementById("mailSecenekZincir").onclick = function(ev){
+    ev.stopPropagation();
+    document.getElementById("mailSecenekPopover").hidden = true;
+    zinciriCevaplaKopyala();
+  };
+  document.addEventListener("click", function(ev){
+    var pop = document.getElementById("mailSecenekPopover");
+    var btn = document.getElementById("btnUstMail");
+    if(pop && !pop.hidden && !pop.contains(ev.target) && ev.target !== btn && !btn.contains(ev.target)){
+      pop.hidden = true;
+    }
+  });
   document.getElementById("btnUstWhatsapp").onclick = whatsappOnizlemeAc;
   document.getElementById("btnUstTablo").onclick = tabloSadeceOnizlemeAc;
 

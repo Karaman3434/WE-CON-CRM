@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.300926.1310.680">
 <link rel="stylesheet" href="cart-style.css?v=WG.290926.1816.671">
 <link rel="stylesheet" href="cari-kart-style.css?v=WG.011026.1317.691">
-<link rel="stylesheet" href="send-style.css?v=WG.270926.0300.643">
+<link rel="stylesheet" href="send-style.css?v=WG.011026.1532.694">
 <link rel="stylesheet" href="belge-style.css?v=WG.011026.1458.693">
 <link rel="stylesheet" href="detail-style.css?v=WG.011026.1458.693">
 </head>
@@ -49,10 +49,26 @@
 
     <!-- 3 buton mesaj kutusunun ÜSTÜNDE (14.09.2026) — Mail / WhatsApp / Tablo. -->
     <div class="iletisim-secenek-grid">
-      <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnUstMail">
-        <span class="iletisim-secenek-ikon">📧</span>
-        <span class="iletisim-secenek-metin">Mail</span>
-      </button>
+      <div class="iletisim-secenek-mail-sarmal">
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnUstMail">
+          <span class="iletisim-secenek-ikon">📧</span>
+          <span class="iletisim-secenek-metin">Mail</span>
+        </button>
+        <!-- MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) —
+             üstteki 3 buton satırı DEĞİŞMEDİ, sadece Mail'e dokununca bu
+             küçük kutu açılıyor: Yeni Mail (mevcut otomatik akış) / Zinciri
+             Cevapla (yeni — tek dokunuş, önizleme yok, panoya kopyalar). -->
+        <div class="mail-secenek-popover" id="mailSecenekPopover" hidden>
+          <button type="button" class="mail-secenek-popover-oge" id="mailSecenekYeniMail">
+            <span class="mail-secenek-popover-baslik">Yeni mail</span>
+            <span class="mail-secenek-popover-alt">Her şeyi otomatik doldurur</span>
+          </button>
+          <button type="button" class="mail-secenek-popover-oge" id="mailSecenekZincir">
+            <span class="mail-secenek-popover-baslik">Zinciri cevapla</span>
+            <span class="mail-secenek-popover-alt">Kopyalar, sen yapıştırırsın</span>
+          </button>
+        </div>
+      </div>
       <button class="iletisim-secenek-btn iletisim-secenek-btn--whatsapp" id="btnUstWhatsapp">
         <span class="iletisim-secenek-ikon">💬</span>
         <span class="iletisim-secenek-metin">WhatsApp</span>
@@ -103,16 +119,13 @@
 
       <div class="form-etiket">MESAJ</div>
       <div class="mail-onizleme-metin" id="mailOnizlemeMetin"></div>
-      <button type="button" class="mail-konu-kopyala-btn" id="mailMetinKopyalaBtn" style="margin:6px 0 0;">📋 Mesaj Metnini Kopyala</button>
 
       <div class="form-etiket">SİPARİŞ TABLOSU (otomatik ek olarak gidecek)</div>
       <div id="mailOnizlemeTablo"></div>
-      <!-- DEVAM EDEN YAZIŞMAYA YAPIŞTIRMA (01.10.2026, Abdullah'ın isteğiyle)
-           — WhatsApp'taki "Kopyala ve Kaydet" ile AYNI mantık: yeni bir mail
-           AÇMAZ, konu+mesaj+tabloyu panoya kopyalar — müşteriyle devam eden
-           bir yazışmaya (Yanıtla/İlet) yapıştırmak için. -->
-      <button type="button" class="tablo-kopyala-btn" id="mailTabloKopyalaBtn">📋 Kopyala ve Kaydet</button>
-      <div class="tablo-kopyala-not">Müşteriyle devam eden bir yazışmaya (Yanıtla/İlet) yapıştırmak için kopyala — bu buton yeni bir mail açmaz.</div>
+      <!-- NOT (01.10.2026): devam eden bir yazışmaya yapıştırma ihtiyacı artık
+           üst satırdaki "Mail" tuşunun "Zinciri Cevapla" seçeneğiyle tek
+           dokunuşta karşılanıyor — bu önizleme ekranındaki ayrı kopyalama
+           butonları (mesaj metni / tablo) bu yüzden kaldırıldı. -->
 
       <div class="sheet-buton-satir">
         <button class="btn-vazgec" id="mailOnizlemeVazgecBtn">Kapat</button>
@@ -170,7 +183,7 @@
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("send.html", "📤 Gönder"); RotaTakip.ciz("rotaSeridi"); });</script>
 <script src="mesaj-data.js?v=WG.280926.1620.658"></script>
-<script src="send-render.js?v=WG.011026.1458.693"></script>
+<script src="send-render.js?v=WG.011026.1532.694"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>
