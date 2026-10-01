@@ -336,8 +336,7 @@ body {
 .data-table td { font-variant-numeric: tabular-nums; }
 .data-table tbody tr:nth-child(even) td { background: #f7f9fc; }
 .col-urun { width: auto; }
-.col-euro { width: 100px; }
-.col-islem { width: 80px; }
+.col-islem { width: 1%; }
 
 .tablo-kod {
   font-size: 9.6px;
@@ -355,7 +354,9 @@ body {
   padding: 0 1px;
 }
 .kod-blok--b { color: #c0392b; }
-.kod-blok--a { color: #003a70; }
+/* DEĞİŞİKLİK (01.10.2026, Abdullah'ın isteğiyle): A (Abas) kodu da artık
+   B (Berta) ile aynı kırmızı — ikisi de aynı renkte okunsun istedi. */
+.kod-blok--a { color: #c0392b; }
 .urun-adi {
   font-size: 14.6px;
   font-weight: 500;
@@ -387,38 +388,67 @@ body {
 /* KURAL (23.09.2026): 1000 EURO ve üzeri fiyatlarda otomatik biraz küçük
    yazı — sütun genişliği sabit olduğu için büyük fiyatlar taşmasın diye. */
 .tablo-fiyat--buyuk { font-size: 10.2px; }
-.btn-add {
-  background: #eaf2fc;
-  color: #003a70;
-  border: 2px solid #3569b8;
-  padding: 8px 6px;
-  font-size: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 100%;
-  text-align: center;
-  font-weight: bold;
+/* İŞLEM ALANI YENİDEN TASARIMI (01.10.2026, Abdullah'ın isteğiyle, mockup
+   üzerinden onaylandı) — EURO sütunu kaldırıldı, fiyat + WEICON bağlantısı +
+   AI bilgi + Seç/Eklendi artık tek hücrede, yan yana, kenara yakın. */
+.urun-islem-hucre {
+  white-space: nowrap;
 }
-.btn-add.added {
-  background: #fdeaea;
-  color: #c0392b;
-  border-color: #c0392b; border: 1.5px solid #c0392b;}
-
-/* AI ÜRÜN ASİSTANI (01.10.2026, Abdullah'ın isteğiyle) — BİLEREK minimal:
-   satır yüksekliğini/sütun genişliğini ETKİLEMESİN diye ayrı bir buton
-   veya sütun değil, zaten var olan 🔗 işaretinin yanına küçük bir ikon
-   olarak eklendi. */
-.btn-ai-acikla {
-  background: none;
+.urun-islem-grup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.urun-fiyat-yazi {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5f6b7a;
+  margin-right: 2px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.btn-link-ac, .btn-ai-acikla {
+  width: 41px;
+  height: 28px;
   border: none;
-  padding: 0;
-  margin-left: 2px;
-  font-size: 13px;
+  border-radius: 7px;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
-  vertical-align: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
 }
-.btn-ai-acikla:active { opacity: .5; }
+.btn-link-ac:active, .btn-ai-acikla:active { opacity: .6; }
+.btn-link-ac {
+  background: #eaf2fc;
+  color: #0c447c;
+}
+.btn-ai-acikla {
+  background: #f1ecfa;
+  color: #5a3fa0;
+}
+.btn-add {
+  width: 62px;
+  height: 28px;
+  border: none;
+  border-radius: 7px;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  background: #fdeaea;
+  color: #c0392b;
+}
+.btn-add.added {
+  background: #e8f6ee;
+  color: #1f9d55;
+  text-transform: none;
+}
 
 .ai-modal-overlay {
   position: fixed;

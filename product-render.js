@@ -72,13 +72,17 @@ function sonuclariCiz(){
       html += "<tr>"
         + "<td class='product-cell product-cell--tikla' data-arama='" + htmlEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "'>"
         + "<div class='tablo-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(bilgi.berta||"-") + "</span> <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(bilgi.abas||"-") + "</span>" + "</div>"
-        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span>"
-        + " <button class='btn-ai-acikla' title='AI ile açıkla' aria-label='AI ile açıkla'"
-        + " data-ad=\"" + aiAttrEsc(bilgi.ad) + "\" data-berta=\"" + aiAttrEsc(bilgi.berta||"") + "\""
-        + " data-abas=\"" + aiAttrEsc(bilgi.abas||"") + "\" data-fiyat=\"" + bilgi.fiyat + "\">🤖</button></div>"
+        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + "</div>"
         + "</td>"
-        + "<td><span class='tablo-fiyat" + (bilgi.fiyat >= 1000 ? " tablo-fiyat--buyuk" : "") + "'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
-        + "<td><button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"Seç") + "</button></td>"
+        + "<td class='urun-islem-hucre'><div class='urun-islem-grup'>"
+        + "<span class='urun-fiyat-yazi'>" + bilgi.fiyat.toFixed(2) + " €</span>"
+        + "<button class='btn-link-ac' title='WEICON sayfasını aç' aria-label='WEICON sayfasını aç'"
+        + " data-arama=\"" + aiAttrEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "\">🔗</button>"
+        + "<button class='btn-ai-acikla' title='AI ile açıkla' aria-label='AI ile açıkla'"
+        + " data-ad=\"" + aiAttrEsc(bilgi.ad) + "\" data-berta=\"" + aiAttrEsc(bilgi.berta||"") + "\""
+        + " data-abas=\"" + aiAttrEsc(bilgi.abas||"") + "\" data-fiyat=\"" + bilgi.fiyat + "\">ℹ️</button>"
+        + "<button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"SEÇ") + "</button>"
+        + "</div></td>"
         + "</tr>";
     }
     liste.innerHTML = html;
@@ -107,6 +111,17 @@ function sonuclariCiz(){
           document.getElementById("searchInput").focus();
           sonuclariCiz();
         }
+      };
+    });
+
+    // WEICON sayfasını aç butonu (01.10.2026 yeniden tasarım) — artık
+    // İŞLEM hücresinde ayrı bir ikon, ürün hücresindeki eski tıklama
+    // davranışıyla aynı adrese gidiyor.
+    liste.querySelectorAll(".btn-link-ac").forEach(function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        var kod = this.getAttribute("data-arama");
+        window.open("https://www.weicon.com.tr/search?search=" + encodeURIComponent(kod), "_blank");
       };
     });
 
