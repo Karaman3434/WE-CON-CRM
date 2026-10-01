@@ -77,9 +77,6 @@ function sonuclariCiz(){
         + "<span class='urun-fiyat-yazi'>" + bilgi.fiyat.toFixed(2) + " €</span>"
         + "<button class='btn-link-ac' title='WEICON sayfasını aç' aria-label='WEICON sayfasını aç'"
         + " data-arama=\"" + aiAttrEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "\">🔗</button>"
-        + "<button class='btn-ai-acikla' title='AI ile açıkla' aria-label='AI ile açıkla'"
-        + " data-ad=\"" + aiAttrEsc(bilgi.ad) + "\" data-berta=\"" + aiAttrEsc(bilgi.berta||"") + "\""
-        + " data-abas=\"" + aiAttrEsc(bilgi.abas||"") + "\" data-fiyat=\"" + bilgi.fiyat + "\">ℹ️</button>"
         + "<button class='btn-add' data-idx='" + idx + "'>SEÇ</button>"
         + "</div></td>"
         + "</tr>";
@@ -118,25 +115,6 @@ function sonuclariCiz(){
         window.open("https://www.weicon.com.tr/search?search=" + encodeURIComponent(kod), "_blank");
       };
     });
-
-    // AI ile Açıkla butonu (01.10.2026, Abdullah'ın isteğiyle) — ürün
-    // hücresinin içinde, tıklamayı hücreye (WEICON Türkiye araması açan
-    // product-cell--tikla) sızdırmadan durduruyoruz.
-    if(typeof AiUrunAsistani !== "undefined"){
-      liste.querySelectorAll(".btn-ai-acikla").forEach(function(btn){
-        btn.onclick = function(e){
-          e.stopPropagation();
-          e.preventDefault();
-          AiUrunAsistani.ac(
-            this.getAttribute("data-ad"),
-            this.getAttribute("data-berta"),
-            this.getAttribute("data-abas"),
-            this.getAttribute("data-fiyat"),
-            false
-          );
-        };
-      });
-    }
   }catch(e){ hataGoster("Sonuçlar çizilemedi: " + e.message); }
 }
 
