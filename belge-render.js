@@ -490,7 +490,16 @@ document.addEventListener("DOMContentLoaded", function(){
     ReportsData.kaydiSil(ref.tip, ref.ts, function(basarili, err){
       if(basarili){
         alert("✓ Sadece bu belge silindi. Müşteri kartı ve diğer bilgiler etkilenmedi.");
-        window.location.href = "reports.html";
+        // HATA DÜZELTMESİ (01.10.2026, Abdullah'ın bildirdiği hata): silme
+        // sonrası sabit olarak "reports.html" (Aylık Satış/Prim) açılıyordu
+        // — oysa kullanıcı buraya Müşteri Kartı > İşlemler > İşlem Geçmişi
+        // (gecmis.html) üzerinden gelmiş olabilir ve geri oraya dönmesini
+        // bekliyor. "Kapat" butonuyla aynı akıllı-geri mantığı kullanılıyor:
+        // tarayıcı geçmişinde önceki sayfa varsa (her zaman vardır, buraya
+        // bir yerden tıklanarak gelinmiştir) oraya dönülür — gecmis.html'den
+        // gelindiyse gecmis.html'e, başka bir listeden gelindiyse oraya.
+        if(window.history.length > 1) window.history.back();
+        else window.location.href = "reports.html";
       } else {
         btn.disabled = false;
         btn.textContent = "🗑️ Kaydı sil";
