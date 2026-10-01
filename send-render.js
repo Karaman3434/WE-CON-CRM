@@ -527,7 +527,27 @@ function zinciriCevaplaKopyala(){
             alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor.");
             return;
           }
-          navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(function(){
+          // ÇİFT FORMATLI PANO KAYDI (01.10.2026, Abdullah'ın isteğiyle):
+          // aynı tek kopyalama içine HEM resmi HEM de düz metin KONU'yu
+          // birlikte koyuyoruz. Hangi uygulama/alan resmi kabul ediyorsa
+          // (mail gövdesi gibi) oraya yapıştırınca resim gelir — bugünkü
+          // gibi. Ama resim kabul ETMEYEN, sadece düz metin alan bir kutuya
+          // (KONU/Subject kutusu gibi) yapıştırılırsa, o kutu kendiliğinden
+          // bu metin karşılığını alır — ekstra dokunuş/buton gerekmeden.
+          // (Mesaj metnini de AYRICA düz metin olarak gövdeye koymak, aynı
+          // tek yapıştırmada mümkün değil — bir yapıştırma, bir alan, bir
+          // format: platform kısıtı. O yüzden mesaj metni görselin içinde
+          // kalmaya devam ediyor.)
+          var panoOgesi;
+          try{
+            panoOgesi = new ClipboardItem({
+              "image/png": blob,
+              "text/plain": new Blob([konu], {type:"text/plain"})
+            });
+          }catch(e){
+            panoOgesi = new ClipboardItem({"image/png": blob});
+          }
+          navigator.clipboard.write([panoOgesi]).then(function(){
             gonderimKanaliniKaydet("mail_zincir");
             basariBildirimGoster("Kopyalandı! Mail uygulamasına geçip zincire yapıştırabilirsin.");
             setTimeout(function(){ basariEkraninaGit("panoya"); }, 1500);
