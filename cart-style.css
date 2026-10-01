@@ -18,19 +18,21 @@
    başlıyor. */
 #grupSariAlani .belge-urun-tablo th {
   background: #ff8a3d;
-  color: #5c2e00;
+  color: #ffffff;
+  font-weight: 900;
   border: 1px solid #cc6a1f;
 }
 #grupSariAlani .belge-urun-tablo td {
-  border: 1px solid #e08a3f;
+  border: 1px solid #f3cfa0;
 }
 #grupYesilAlani .belge-urun-tablo th {
   background: #3bb273;
-  color: #0b3d22;
+  color: #ffffff;
+  font-weight: 900;
   border: 1px solid #1f7a4d;
 }
 #grupYesilAlani .belge-urun-tablo td {
-  border: 1px solid #4fae7d;
+  border: 1px solid #b9e8cf;
 }
 
 .kur-satiri {

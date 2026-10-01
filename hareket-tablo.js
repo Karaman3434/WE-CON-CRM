@@ -94,7 +94,7 @@ var HareketTablo = (function(){
     // cart-render.js'in HESAPLANACAK/HESAPLANDI şeridi ETKİLENMEZ.
     // TURUNCU ZEMİN (01.10.2026, Abdullah'ın isteğiyle) — Hesaplanacak grubu
     // etiket şeridi eski soluk sarıdan canlı turuncuya çevrildi.
-    var etiketRenk = opts.etiketRenkOzel || (opts.zeminSinifi === "hareket-satir--sari" ? "#5c2e00" : "#0b3d22");
+    var etiketRenk = opts.etiketRenkOzel || "#ffffff";
     var etiketBg = opts.etiketBgOzel || (opts.zeminSinifi === "hareket-satir--sari" ? "#ff8a3d" : "#3bb273");
     var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozetSinifi ? " hareket-grup-etiket-rozet--" + opts.etiketRozetSinifi : (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "")) + "'>" + opts.etiketRozet + "</span>") : "";
     var html = opts.etiket ? ("<div class='hareket-grup-etiket" + (opts.etiketOrtali ? " hareket-grup-etiket--ortali" : "") + "' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";

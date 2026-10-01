@@ -375,7 +375,7 @@
 /* Gönder ekranının tablo etiketi artık ortalı + belge tipi/tarih birlikte
    (27.09.2026) — rozet yok, bkz. send-render.js tamOnizlemeHtmlOlustur. */
 .hareket-grup-etiket--ortali { justify-content: center; }
-.hareket-satir--sari { background: #ffb066; }
+.hareket-satir--sari { background: #ffe6cc; }
 .hareket-satir--sari td,
 .hareket-satir--sari .rozet-net,
 .hareket-satir--sari .rozet-isk,
@@ -384,9 +384,9 @@
 .hareket-satir--sari .belge-td-toplam,
 .hareket-satir--sari .belge-td-urun-ad,
 .hareket-satir--sari .belge-net-tl,
-.hareket-satir--sari .belge-para-birim { color: #5c2e00; }
+.hareket-satir--sari .belge-para-birim { color: #3d1f00; }
 
-.hareket-satir--yesil { background: #6fcf9a; }
+.hareket-satir--yesil { background: #ddf5e8; }
 .hareket-satir--yesil td,
 .hareket-satir--yesil .rozet-net,
 .hareket-satir--yesil .rozet-isk,
@@ -395,7 +395,7 @@
 .hareket-satir--yesil .belge-td-toplam,
 .hareket-satir--yesil .belge-td-urun-ad,
 .hareket-satir--yesil .belge-net-tl,
-.hareket-satir--yesil .belge-para-birim { color: #0b3d22; }
+.hareket-satir--yesil .belge-para-birim { color: #061f10; }
 
 /* Sepet ekranındaki kompakt Cari Bilgi başlığı — firma adı+şehir tek
    satırda, sağda işlem türü rozeti (SİPARİŞ/TEKLİF/vb). */
@@ -464,14 +464,14 @@
   font-weight: 700;
   white-space: nowrap;
 }
-/* Manuel kur girildiğinde (mevcut #b7601f rengi yerine) hafif altın tonu —
-   mavi zemin üzerinde okunaklı kalması için. */
-.belge-gt-kur-ic--manuel { color: #ffd27a; }
+/* DÜZELTME (01.10.2026, Abdullah'ın isteğiyle): manuel kur girildiğinde
+   artık ayrı bir renkli (kırmızımsı/amber) vurgu YOK — yazı rengi normal
+   beyaz kalıyor, zemin de değişmiyor. Manuel kur olduğu zaten metindeki
+   "✏️ Bu işlemde..." ön eki ile anlaşılıyor. */
+.belge-gt-kur-ic--manuel { color: #ffffff; background: none; }
 /* Sepet'te bu şeride dokunup o işleme özel kur girilebilir (13.09.2026) —
    tıklanabilir olduğunu belli etmek için noktalı alt çizgi. */
 .belge-gt-kur-ic--tiklanabilir { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
-/* Manuel kur girildiğinde amber vurgusu (mevcut #b7601f rengi). */
-.belge-gt-kur-ic--manuel { background: #b7601f; }
 .belge-gt-satir {
   display: flex;
   justify-content: space-between;

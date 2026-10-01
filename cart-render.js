@@ -173,6 +173,7 @@ function sayfayiCiz(){
 
     grupSariAlani.innerHTML = bekleyenler.length === 0 ? "" : HareketTablo.grupHtml({
       etiket: "🟡 HESAPLANACAK",
+      etiketOrtali: true,
       urunler: bekleyenler,
       hesapla: function(){ return null; },
       zeminSinifi: "hareket-satir--sari"
@@ -182,6 +183,7 @@ function sayfayiCiz(){
     hesaplananlar.forEach(function(u){ hesaplananToplam += hesapla(u).toplamEuro; });
     grupYesilAlani.innerHTML = hesaplananlar.length === 0 ? "" : HareketTablo.grupHtml({
       etiket: "🟢 HESAPLANDI",
+      etiketOrtali: true,
       etiketRozet: TIP_ETIKET_ROZET[secilenTip],
       etiketRozetSinifi: "islem-tipi",
       urunler: hesaplananlar,
