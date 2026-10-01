@@ -52,7 +52,6 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   document.getElementById("btnPinDegistir").onclick = pinDegistirTiklandi;
-  document.getElementById("btnMenuAktif").onclick = function(){};
   document.getElementById("btnCikis").onclick = function(){
     if(!confirm("Çıkış yapmak istediğinize emin misiniz?")) return;
     firebase.auth().signOut().then(function(){
