@@ -107,6 +107,10 @@ function anaSayfayiRenderEt(){
     if(secimler[tip] >= liste.length) secimler[tip] = 0;
     kapsayici.innerHTML = liste.map(function(k, i){
       var govde = "<div class='ck-kart-ust'>" + escapeText(kayitBaslik(tip,k)) + "</div><div class='ck-kart-alt'>" + escapeText(kayitAltMetin(tip,k)) + "</div>";
+      // Şirket telefonu/e-postası SADECE ilk fatura adresi kartına, en alta
+      // ekleniyor — müşteri seviyesinde tek bir bilgi, her adres kartında
+      // tekrar etmesin diye.
+      if(tip === "fatura" && i === 0) govde += faturaIletisimSatiri();
       if(!secilebilirMi) return "<div class='ck-kart'>" + govde + "</div>";
       var seciliMi = secimler[tip] === i;
       return "<div class='ck-kart ck-kart--secilebilir" + (seciliMi ? " ck-kart--secili" : "") + "' data-tip='" + tip + "' data-i='" + i + "'>"
@@ -129,6 +133,20 @@ function secimTiklariniBagla(){
       anaSayfayiRenderEt();
     };
   });
+}
+
+// ŞİRKET TELEFONU/E-POSTASI (01.10.2026, Abdullah'ın isteğiyle) — yeni
+// müşteri eklenirken girilen telefon/eposta (yetkili kişiden AYRI, şirket
+// seviyesinde) artık Fatura Adresi kutusunun altında gösteriliyor. İkisi
+// de boşsa hiçbir şey eklenmez, kutu eskisi gibi kalır.
+function faturaIletisimSatiri(){
+  var m = musteriVerisi;
+  if(!m) return "";
+  var satirlar = [];
+  if(m.telefon && m.telefon.trim()) satirlar.push("<div class='ck-kart-iletisim-satir'><span class='ck-kart-iletisim-ikon'>📞</span>" + escapeText(m.telefon.trim()) + "</div>");
+  if(m.eposta && m.eposta.trim()) satirlar.push("<div class='ck-kart-iletisim-satir'><span class='ck-kart-iletisim-ikon'>✉️</span>" + escapeText(m.eposta.trim()) + "</div>");
+  if(satirlar.length === 0) return "";
+  return "<div class='ck-kart-iletisim'>" + satirlar.join("") + "</div>";
 }
 
 function alanlariDoldur(musteri){
