@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+  WEICON ASİST — ÇALIŞAN ERİŞİMİ v1
+  ====================================
+  Abdullah'ın kullanıcı adı + şifresini kendi belirleyip oluşturduğu,
+  sınırlı erişimli çalışan hesapları. Her hesap için uygulamadaki hangi
+  sayfaların açık olacağı burada tek tek işaretlenir (bkz. calisan-erisim-
+  render.js içindeki İZIN_TANIMLARI — yeni bir sayfa izni eklemek istersen
+  SADECE o listeye eklenir, auth.js'teki SAYFA_IZIN_ANAHTARI ile eşleşen
+  anahtarı kullanmalı).
+
+  Hesap oluşturma, Abdullah'ın kendi oturumunu bozmadan ikincil bir Firebase
+  app örneği üzerinden yapılır (ücretsiz, Cloud Function GEREKMEZ).
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3d8c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WEICON ASİST">
+<title>WEICON ASİST — Çalışan Erişimi</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.011026.2340.706">
+<link rel="stylesheet" href="calisan-erisim-style.css?v=WG.011026.2340.706">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="ayarlar.html"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+</nav>
+</div>
+<div class="sayfa-rota-serit">
+  <span class="sayfa-rota-serit-isim">🔐 Çalışan Erişimi</span>
+  <span class="sayfa-rota-serit-rota">Ayarlar</span>
+</div>
+
+<main class="sayfa">
+
+  <section class="ce-kart">
+    <div class="ce-kart-baslik">➕ Yeni Kullanıcı</div>
+    <div class="ce-form-alan">
+      <input type="text" id="ceKullaniciAdi" placeholder="Kullanıcı adı" autocomplete="off" autocapitalize="off">
+      <input type="password" id="ceSifre" placeholder="Şifre (en az 6 karakter)" autocomplete="new-password">
+    </div>
+    <p class="ce-hata" id="ceOlusturHata" hidden></p>
+    <button class="ce-olustur-btn" id="btnCeOlustur">✓ Kullanıcı Oluştur</button>
+  </section>
+
+  <div id="ceKullaniciListesi"></div>
+  <p class="ce-bos-mesaj" id="ceBosMesaj" hidden>Henüz çalışan hesabı oluşturmadın.</p>
+
+  <p class="surum-bilgisi" id="surumBilgisi"></p>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.011026.2340.706"></script>
+<script src="auth.js?v=WG.011026.2340.706"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="calisan-erisim-render.js?v=WG.011026.2340.706"></script>
+</body>
+</html>

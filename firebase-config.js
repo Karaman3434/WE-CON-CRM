@@ -30,3 +30,9 @@ var WEICON_FIREBASE_CONFIG = {
 if(typeof firebase !== "undefined" && !firebase.apps.length){
   firebase.initializeApp(WEICON_FIREBASE_CONFIG);
 }
+
+// Çalışan Erişimi (01.10.2026) — kullanıcı adı girişlerini Firebase Auth'un
+// e-posta/şifre sağlayıcısı için arka planda sahte bir e-postaya çevirmekte
+// kullanılan TEK ortak sabit. login-render.js VE calisan-erisim-render.js
+// bunu AYNI değerle kullanmalı — biri değişirse diğeri de değişmeli.
+var WEICON_CALISAN_EMAIL_DOMAINI = "@weicon-calisan.local";

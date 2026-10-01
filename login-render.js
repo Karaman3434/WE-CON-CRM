@@ -25,15 +25,27 @@ document.addEventListener("DOMContentLoaded", function(){
     btn.textContent = "Giriş Yap";
   });
 
+  // Çalışan hesapları e-posta yerine Abdullah'ın belirlediği kullanıcı
+  // adıyla girer (01.10.2026) — "@" içermeyen bir değer, Firebase Auth'un
+  // e-posta/şifre sağlayıcısı için arka planda sahte bir e-postaya çevrilir.
+  // Bu dönüşüm calisan-erisim-render.js'teki hesap oluşturma ile AYNI
+  // sabiti (WEICON_CALISAN_EMAIL_DOMAINI) kullanmalı.
+  function girisDegeriEpostaYap(deger){
+    deger = String(deger).trim();
+    if(deger.indexOf("@") >= 0) return deger;
+    return deger.toLowerCase().replace(/\s+/g,"") + WEICON_CALISAN_EMAIL_DOMAINI;
+  }
+
   function girisYap(){
-    var email = document.getElementById("girisEmail").value.trim();
+    var girilenDeger = document.getElementById("girisEmail").value.trim();
     var sifre = document.getElementById("girisSifre").value;
     hataEl.hidden = true;
-    if(!email || !sifre){
-      hataEl.textContent = "E-posta ve şifre girin.";
+    if(!girilenDeger || !sifre){
+      hataEl.textContent = "E-posta/kullanıcı adı ve şifre girin.";
       hataEl.hidden = false;
       return;
     }
+    var email = girisDegeriEpostaYap(girilenDeger);
     btn.disabled = true;
     btn.textContent = "Giriş yapılıyor...";
     try{

@@ -65,6 +65,99 @@
   var buSayfaPin = yol.indexOf("pin.html") >= 0;
   var buSayfaCihazEngelli = yol.indexOf("cihaz-engelli.html") >= 0;
 
+  // ---- ÇALIŞAN ERİŞİMİ / SINIRLI HESAP KONTROLÜ (01.10.2026) ----
+  // Abdullah'ın Ayarlar > Çalışan Erişimi'nden oluşturduğu sınırlı hesaplar
+  // "kisitliKullanicilar/{uid}" altında bir izin haritasıyla saklanır.
+  // Bu harita YOKSA kullanıcı kısıtlı değildir (Abdullah'ın kendi hesabı).
+  // YENİ BİR SAYFA İZNİ EKLEMEK İSTERSEN: bu haritaya dosya adını ekle VE
+  // calisan-erisim-render.js'teki İZIN_TANIMLARI listesine aynı anahtarla
+  // bir satır ekle — iki dosya senkron olmalı.
+  var SAYFA_IZIN_ANAHTARI = {
+    "calc.html": "hesapla",
+    "product.html": "urunBul",
+    "cart.html": "sepet",
+    "belge-onizleme.html": "sepet",
+    "gonderim-basarili.html": "sepet",
+    "send.html": "gonder",
+    "customer.html": "musteriBul",
+    "customer-hub.html": "musteriBul",
+    "customer-detail.html": "musteriBul",
+    "customer-cari-kart.html": "musteriBul",
+    "customer-temas.html": "musteriBul",
+    "customer-add.html": "musteriBul",
+    "gecmis.html": "islemGecmisi",
+    "raporlar.html": "raporlar",
+    "reports.html": "raporlar",
+    "kacan-satislar.html": "raporlar",
+    "satis-listesi.html": "satisListesi",
+    "hareketler.html": "hareketler",
+    "son-islemler.html": "hareketler",
+    "ziyaret.html": "ziyaret",
+    "takip-gerekenler.html": "takipGerekenler",
+    "gorevler.html": "gorevler",
+    "vade-takip.html": "vadeTakip",
+    "km.html": "kmTakip",
+    "km-kayitlar.html": "kmTakip",
+    "maas-hesaplama.html": "maasHesaplama",
+    "maas-menu.html": "maasHesaplama",
+    "ay-detay.html": "maasHesaplama",
+    "net-maas-hesaplama.html": "netMaasHesaplama",
+    "avans-takibi.html": "avansTakibi",
+    "odenebilir-komisyon.html": "odenebilirKomisyon",
+    "bildirimler.html": "bildirimler",
+    "home.html": "anaSayfa"
+  };
+  // Hiçbir izin eşleşmediğinde yönlendirilecek ilk uygun sayfayı bulmak için
+  // taranan sıra (anahtar -> o izne ait varsayılan sayfa).
+  var SAYFA_IZIN_SIRASI = ["hesapla","urunBul","sepet","gonder","musteriBul","islemGecmisi",
+    "raporlar","satisListesi","hareketler","ziyaret","takipGerekenler","gorevler","vadeTakip",
+    "maasHesaplama","netMaasHesaplama","avansTakibi","odenebilirKomisyon","anaSayfa","kmTakip","bildirimler"];
+  var SAYFA_IZIN_DOSYA = {
+    hesapla:"calc.html", urunBul:"product.html", sepet:"cart.html", gonder:"send.html",
+    musteriBul:"customer.html", islemGecmisi:"gecmis.html", raporlar:"raporlar.html",
+    satisListesi:"satis-listesi.html", hareketler:"hareketler.html", ziyaret:"ziyaret.html",
+    takipGerekenler:"takip-gerekenler.html", gorevler:"gorevler.html", vadeTakip:"vade-takip.html",
+    maasHesaplama:"maas-hesaplama.html", netMaasHesaplama:"net-maas-hesaplama.html",
+    avansTakibi:"avans-takibi.html", odenebilirKomisyon:"odenebilir-komisyon.html",
+    anaSayfa:"home.html", kmTakip:"km.html", bildirimler:"bildirimler.html"
+  };
+  // Bu sayfalar kısıtlı hesaplar için de HER ZAMAN erişilebilir — giriş/kilit
+  // akışının kendisi oldukları için izin kontrolünden muaf tutulurlar.
+  var KISITLI_MUSTESNA_SAYFALAR = ["login.html","pin.html","cihaz-engelli.html","erisim-reddedildi.html"];
+
+  function kisitliSayfaKontrolu(user, cb){
+    var dosyaAdi = yol.split("/").pop() || "home.html";
+    if(KISITLI_MUSTESNA_SAYFALAR.indexOf(dosyaAdi) >= 0){ cb(true); return; }
+    try{
+      firebase.database().ref("kisitliKullanicilar/" + user.uid).once("value").then(function(snap){
+        if(!snap.exists()){ cb(true); return; } // harita yok -> kısıtlı değil
+        var veri = snap.val() || {};
+        if(veri.aktif === false){
+          document.documentElement.style.visibility = "hidden";
+          firebase.auth().signOut();
+          cb(false);
+          return;
+        }
+        var izinler = veri.izinler || {};
+        var gerekliAnahtar = SAYFA_IZIN_ANAHTARI[dosyaAdi];
+        if(gerekliAnahtar && izinler[gerekliAnahtar] === true){ cb(true); return; }
+        // İzinsiz — izinli ilk sayfaya sessizce yönlendir, hiçbiri yoksa çıkış yap.
+        var hedefAnahtar = null;
+        for(var i=0; i<SAYFA_IZIN_SIRASI.length; i++){
+          if(izinler[SAYFA_IZIN_SIRASI[i]] === true){ hedefAnahtar = SAYFA_IZIN_SIRASI[i]; break; }
+        }
+        document.documentElement.style.visibility = "hidden";
+        if(!hedefAnahtar){
+          firebase.auth().signOut();
+          cb(false);
+          return;
+        }
+        window.location.replace(SAYFA_IZIN_DOSYA[hedefAnahtar]);
+        cb(false);
+      }).catch(function(){ cb(true); }); // okunamazsa (çevrimdışı vb.) engelleme
+    }catch(e){ cb(true); }
+  }
+
   function aktiviteZamaniniGuncelle(){
     try{ localStorage.setItem("weicon_son_aktivite", Date.now().toString()); }catch(e){}
   }
@@ -200,16 +293,22 @@
             });
             return;
           }
-          document.documentElement.style.visibility = "visible";
-          if(!buSayfaPin) aktiviteZamaniniGuncelle();
-          cihazKaydiGuncelle();
-          window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
+          kisitliSayfaKontrolu(user, function(izinVar){
+            if(!izinVar) return; // yönlendirme/çıkış zaten tetiklendi
+            document.documentElement.style.visibility = "visible";
+            if(!buSayfaPin) aktiviteZamaniniGuncelle();
+            cihazKaydiGuncelle();
+            window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
+          });
         });
         return;
       }
-      document.documentElement.style.visibility = "visible";
-      if(!buSayfaPin) aktiviteZamaniniGuncelle();
-      window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
+      kisitliSayfaKontrolu(user, function(izinVar){
+        if(!izinVar) return;
+        document.documentElement.style.visibility = "visible";
+        if(!buSayfaPin) aktiviteZamaniniGuncelle();
+        window.dispatchEvent(new CustomEvent("weiconAuthHazir", {detail:{user:user}}));
+      });
     } else {
       if(buSayfaCihazEngelli){
         document.documentElement.style.visibility = "visible";
