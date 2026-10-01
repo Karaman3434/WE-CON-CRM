@@ -6,6 +6,33 @@
 
 .sayfa { padding: 4px 6px 16px; }
 
+/* HESAPLANACAK/HESAPLANDI BAŞLIK SATIRI + HÜCRE ÇERÇEVESİ (01.10.2026,
+   Abdullah'ın isteğiyle) — tablo başlığı (SR/ÜRÜN BİLGİSİ/ADET/.../PRİM)
+   artık her yerde sabit mavi değil, grubun kendi tonunda (turuncu/yeşil) —
+   etiket şeridiyle, satırla birebir aynı renk ailesi. Hücreler arasına da
+   aynı tondan ince çerçeve eklendi (eskiden sadece açık gri zebra/kenarlıktı,
+   tek renk zeminde sütunlar birbirine karışıyordu). SADECE bu sayfadaki iki
+   tabloya (#grupSariAlani / #grupYesilAlani) uygulanır — Gönder önizlemesi,
+   Belge Önizleme gibi diğer sayfalardaki tablolar (hep aynı .belge-urun-tablo
+   sınıfını kullanır) ETKİLENMEZ, çünkü seçiciler bu sayfaya özel ID'lerle
+   başlıyor. */
+#grupSariAlani .belge-urun-tablo th {
+  background: #ff8a3d;
+  color: #5c2e00;
+  border: 1px solid #cc6a1f;
+}
+#grupSariAlani .belge-urun-tablo td {
+  border: 1px solid #e08a3f;
+}
+#grupYesilAlani .belge-urun-tablo th {
+  background: #3bb273;
+  color: #0b3d22;
+  border: 1px solid #1f7a4d;
+}
+#grupYesilAlani .belge-urun-tablo td {
+  border: 1px solid #4fae7d;
+}
+
 .kur-satiri {
   display: flex;
   align-items: center;
