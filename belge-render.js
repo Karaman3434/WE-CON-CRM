@@ -127,13 +127,21 @@ function belgeyiCiz(kayit, musteri){
       // yazar. İskonto %100 girilmişse İSK sütununda "%100" yerine sadece "-".
       var iskYuz100 = (item.iskonto||0) === 100;
       var toplamHucreIcerik = (item.ozelEtiket === "bedelsiz") ? "NUMUNE" : paraHtml(fmt(toplamEuro),"EURO");
+      // NET TL SATIRI (01.10.2026, Abdullah'ın isteğiyle) — Belge Önizleme/
+      // Kayıtlar ekranında da NET EURO'nun altında, günün/kaydın kuruyla
+      // hesaplanmış TL karşılığı gösterilsin istendi. SADECE EKRAN İÇİN:
+      // bu sayfa (belge-onizleme.html) hiçbir zaman mail/WhatsApp'a giden
+      // görseli üretmiyor (o ayrı fonksiyon — send-render.js'teki
+      // belgeGorselHtmlOlustur), o yüzden burada ek bir gizleme gerekmiyor.
+      var netBirimFiyat = item.iskBirim!==undefined ? item.iskBirim : (item.listeFiyat||0);
+      var netTl = kaydinKuru ? "<div class='belge-net-tl'>≈ " + Math.round(netBirimFiyat*kaydinKuru).toLocaleString("tr-TR") + " TL</div>" : "";
       return "<tr>"
         + "<td class='belge-td-sira'>" + (i+1) + "</td>"
         + "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(item.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(item.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(item.ad) + "</div></td>"
         + "<td>" + (item.adet||0) + "</td>"
         + "<td>" + paraHtml(fmt(item.listeFiyat||0),"EURO") + "</td>"
         + "<td>" + (iskYuz100 ? "-" : "<span class='belge-isk-metin'>" + paraHtml((item.iskonto||0), "%") + "</span>") + "</td>"
-        + "<td><span class='rozet-net'>" + paraHtml(fmt(item.iskBirim!==undefined?item.iskBirim:(item.listeFiyat||0)),"EURO") + "</span></td>"
+        + "<td><span class='rozet-net'>" + paraHtml(fmt(netBirimFiyat),"EURO") + "</span>" + netTl + "</td>"
         + "<td class='belge-td-toplam'>" + toplamHucreIcerik + "</td>"
         + "<td class='belge-td-prim'>" + primHucre + "</td>"
         + "</tr>";

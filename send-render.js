@@ -208,7 +208,8 @@ function tamOnizlemeHtmlOlustur(musteri, sepet, tip, kur, kdv, kanal){
     hesapla: function(u){ return CartData.hesapla(u, kur, kdv); },
     genelToplam: tToplamEuro,
     kanal: kanal,
-    primGizli: true
+    primGizli: true,
+    kur: kur
   });
   html += "</div>";
   return html;
