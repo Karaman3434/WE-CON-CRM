@@ -68,7 +68,6 @@ function sonuclariCiz(){
     for(var i=0;i<sonuclar.length;i++){
       var idx = sonuclar[i].idx;
       var bilgi = ProductData.urunBilgisi(sonuclar[i].item);
-      var eklendi = ProductData.sepetteMi(idx);
       html += "<tr>"
         + "<td class='product-cell product-cell--tikla' data-arama='" + htmlEsc(bilgi.abas || bilgi.berta || bilgi.ad) + "'>"
         + "<div class='tablo-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(bilgi.berta||"-") + "</span> <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(bilgi.abas||"-") + "</span>" + "</div>"
@@ -81,7 +80,7 @@ function sonuclariCiz(){
         + "<button class='btn-ai-acikla' title='AI ile açıkla' aria-label='AI ile açıkla'"
         + " data-ad=\"" + aiAttrEsc(bilgi.ad) + "\" data-berta=\"" + aiAttrEsc(bilgi.berta||"") + "\""
         + " data-abas=\"" + aiAttrEsc(bilgi.abas||"") + "\" data-fiyat=\"" + bilgi.fiyat + "\">ℹ️</button>"
-        + "<button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"SEÇ") + "</button>"
+        + "<button class='btn-add' data-idx='" + idx + "'>SEÇ</button>"
         + "</div></td>"
         + "</tr>";
     }

@@ -29,7 +29,17 @@ var HareketTablo = (function(){
   // zeminSinifi: "hareket-satir--sari" | "hareket-satir--yesil" | ""
   // basit: true ise WhatsApp'a özel sade satır (SIRA/ÜRÜN/ADET/NET/TOPLAM) üretir —
   // müşteriye internal bilgi olan LİSTE/İSK/PRİM sütunları hiç gönderilmez.
-  function satirlarHtml(urunler, hesapla, zeminSinifi, basit, primGizli){
+  // NET TL SATIRI (01.10.2026, Abdullah'ın isteğiyle) — NET hücresinin
+  // altında, günün kuruyla hesaplanmış TL karşılığı, küçük gri yazı.
+  // SADECE EKRAN İÇİN: "Sadece Tablo" kopyalanıp ofise/mail'e giderken bu
+  // satır gizlenir (bkz. send-render.js tabloSadeceKopyala, ".net-tl-gizle"
+  // sınıfı) — kopyalanan/gönderilen tabloda yalnızca EURO kalır.
+  function netTlHtml(netEuro, kur){
+    if(!kur) return "";
+    return "<div class='belge-net-tl'>≈ " + Math.round(netEuro*kur).toLocaleString("tr-TR") + " TL</div>";
+  }
+
+  function satirlarHtml(urunler, hesapla, zeminSinifi, basit, primGizli, kur){
     return (urunler||[]).map(function(u, i){
       var h = hesapla(u);
       var toplamVarMi = h && h.toplamEuro != null;
@@ -38,12 +48,13 @@ var HareketTablo = (function(){
       // yazar. İskonto %100 girilmişse İSK sütununda "%100" yerine sadece "-".
       var iskYuz100 = (u.iskonto||0) === 100;
       var toplamHucreIcerik = !toplamVarMi ? "-" : ((u.ozelEtiket === "bedelsiz") ? "NUMUNE" : paraHtml(fmt(h.toplamEuro),"EURO"));
+      var netTl = toplamVarMi ? netTlHtml(h.iskontoluFiyat, kur) : "";
       var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
       if(basit){
         return "<tr class='" + (zeminSinifi||"") + "'>"
           + urunHucre
           + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
-          + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+paraHtml(fmt(h.iskontoluFiyat),"EURO")+"</span>" : "-") + "</td>"
+          + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+paraHtml(fmt(h.iskontoluFiyat),"EURO")+"</span>"+netTl : "-") + "</td>"
           + "<td class='belge-td-toplam'>" + toplamHucreIcerik + "</td>"
           + "</tr>";
       }
@@ -58,7 +69,7 @@ var HareketTablo = (function(){
         + "<td>" + (u.adet!=null ? u.adet : "-") + "</td>"
         + "<td>" + (u.listeFiyat!=null ? paraHtml(fmt(u.listeFiyat),"EURO") : "-") + "</td>"
         + "<td>" + (iskYuz100 ? "-" : (u.iskonto!=null ? "<span class='belge-isk-metin'>"+paraHtml(u.iskonto,"%")+"</span>" : "-")) + "</td>"
-        + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+paraHtml(fmt(h.iskontoluFiyat),"EURO")+"</span>" : "-") + "</td>"
+        + "<td>" + (toplamVarMi ? "<span class='rozet-net'>"+paraHtml(fmt(h.iskontoluFiyat),"EURO")+"</span>"+netTl : "-") + "</td>"
         + "<td class='belge-td-toplam'>" + toplamHucreIcerik + "</td>"
         + (primGizli ? "" : "<td class='belge-td-prim'>" + primHucre + "</td>")
         + "</tr>";
@@ -92,7 +103,7 @@ var HareketTablo = (function(){
           : "<th style='width:3.6%;'>SR</th><th style='width:29.2%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:11.2%;'>PRİM</th>");
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"
-      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli) + "</tbody></table></div>";
+      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli, opts.kur) + "</tbody></table></div>";
     if(opts.genelToplam != null){
       // Manuel kur girilmişse (opts.kurManuelMi) etiket "Hesaplanan Kur" yerine
       // kısa "✏️ Manuel Kur" olur — böylece bu işlemde günlük kur DEĞİL, elle

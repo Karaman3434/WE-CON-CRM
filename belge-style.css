@@ -303,6 +303,19 @@
    ALTINDA küçük birim satırı. */
 .belge-isk-metin, .belge-isk-metin .belge-para-birim { color: #c0392b; }
 .rozet-net { color: #0e6b34; }
+
+/* NET TL SATIRI (01.10.2026, Abdullah'ın isteğiyle) — NET hücresinin
+   altında küçük gri TL karşılığı, SADECE ekranda görünür. ".net-tl-gizle"
+   sınıfı kopyalama/gönderme anında (bkz. send-render.js tabloSadeceKopyala)
+   geçici olarak eklenip bu satırı gizler, sonra kaldırılır — kopyalanan/
+   gönderilen tabloda yalnızca EURO kalır. */
+.belge-net-tl {
+  font-size: 9px;
+  font-weight: 500;
+  color: #8a97a6;
+  margin-top: 2px;
+}
+.net-tl-gizle .belge-net-tl { display: none; }
 /* Geriye dönük isimler — eski kod hâlâ bu sınıfları kullanıyor olabilir,
    artık badge görünümü YOK, sadece renk taşıyorlar. */
 .rozet-isk { color: #c0392b; }

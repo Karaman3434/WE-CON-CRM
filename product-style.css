@@ -390,25 +390,33 @@ body {
 .tablo-fiyat--buyuk { font-size: 10.2px; }
 /* İŞLEM ALANI YENİDEN TASARIMI (01.10.2026, Abdullah'ın isteğiyle, mockup
    üzerinden onaylandı) — EURO sütunu kaldırıldı, fiyat + WEICON bağlantısı +
-   AI bilgi + Seç/Eklendi artık tek hücrede, yan yana, kenara yakın. */
+   AI bilgi + Seç artık tek hücrede, yan yana, kenara yakın. */
 .urun-islem-hucre {
   white-space: nowrap;
 }
 .urun-islem-grup {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
+/* DEĞİŞİKLİK (01.10.2026, Abdullah'ın isteğiyle, mockup üzerinden onaylandı):
+   fiyat artık sabit genişlikte ve sağa yaslı — basamak sayısı kaç olursa
+   olsun yanındaki butonlar HER SATIRDA aynı yatay hizada kalır. Kalın ve
+   kırmızı. */
 .urun-fiyat-yazi {
+  display: inline-block;
+  width: 62px;
+  text-align: right;
   font-size: 12px;
-  font-weight: 500;
-  color: #5f6b7a;
+  font-weight: 700;
+  color: #c0392b;
   margin-right: 2px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 .btn-link-ac, .btn-ai-acikla {
-  width: 41px;
+  width: 34px;
   height: 28px;
   border: none;
   border-radius: 7px;
@@ -430,8 +438,11 @@ body {
   background: #f1ecfa;
   color: #5a3fa0;
 }
+/* DEĞİŞİKLİK (01.10.2026, Abdullah'ın isteğiyle): "EKLENDİ" durumu
+   kaldırıldı — basınca direkt sepete ekleniyor, buton her zaman "SEÇ"
+   yazıyor/aynı kırmızı renkte kalıyor. */
 .btn-add {
-  width: 62px;
+  width: 52px;
   height: 28px;
   border: none;
   border-radius: 7px;
@@ -440,14 +451,8 @@ body {
   cursor: pointer;
   text-align: center;
   flex-shrink: 0;
-  text-transform: uppercase;
   background: #fdeaea;
   color: #c0392b;
-}
-.btn-add.added {
-  background: #e8f6ee;
-  color: #1f9d55;
-  text-transform: none;
 }
 
 .ai-modal-overlay {

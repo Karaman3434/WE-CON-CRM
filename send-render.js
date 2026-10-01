@@ -460,9 +460,15 @@ function tabloSadeceKopyala(btnEl){
   var eskiMetin = btnEl.textContent;
   btnEl.textContent = "⏳ Hazırlanıyor...";
   btnEl.disabled = true;
-  function eskiHaleDon(){ btnEl.textContent = eskiMetin; btnEl.disabled = false; }
+  var alan = document.getElementById("tabloSadeceAlan");
+  function eskiHaleDon(){ btnEl.textContent = eskiMetin; btnEl.disabled = false; alan.classList.remove("net-tl-gizle"); }
   if(typeof html2canvas === "undefined"){ eskiHaleDon(); alert("Görsel oluşturulamadı."); return; }
-  html2canvas(document.getElementById("tabloSadeceAlan"), {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
+  // NET TL SATIRI (01.10.2026, Abdullah'ın isteğiyle): ekranda görünen TL
+  // karşılığı, ofise/mail'e giden bu kopyada OLMAMALI — sadece EURO kalır.
+  // Kopyalama bitince (başarılı ya da başarısız fark etmez) ekrana geri
+  // getiriliyor.
+  alan.classList.add("net-tl-gizle");
+  html2canvas(alan, {backgroundColor:"#ffffff", scale:2}).then(function(canvas){
     canvas.toBlob(function(blob){
       if(!blob || !navigator.clipboard || typeof window.ClipboardItem === "undefined"){
         eskiHaleDon(); alert("Bu tarayıcı doğrudan panoya kopyalamayı desteklemiyor.");
@@ -470,6 +476,7 @@ function tabloSadeceKopyala(btnEl){
       }
       navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(function(){
         btnEl.textContent = "✓ Kopyalandı! Mail/Sohbete yapıştırabilirsin";
+        alan.classList.remove("net-tl-gizle");
         setTimeout(eskiHaleDon, 2200);
       }).catch(function(err){
         eskiHaleDon();
