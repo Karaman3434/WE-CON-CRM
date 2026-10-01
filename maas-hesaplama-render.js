@@ -168,10 +168,46 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   };
 
+  // BAŞKA DÖNEMDE UNUTULMUŞ TASLAK KORUMASI (01.10.2026): "Ayı Kayıt Et",
+  // Avans Takibi'ni kapatırken SADECE kapatılan ayın taslağını okur
+  // (AvansKayitData.taslakOku(h.acik.ay, h.acik.yil)). Ama Avans Takibi
+  // sayfasında ‹ › ile GEÇMİŞ bir aya gidip orada da giriş yapmak mümkün —
+  // kullanıcı farkında olmadan verisini "açık/resmi" sayılan aydan FARKLI
+  // bir ayın taslağına yazmış olabilir. Böyle bir durumda burası o ayı BOŞ
+  // sanıp SIFIR tutarla kapatıyordu, gerçek veri ise başka bir ayda açık
+  // taslak olarak öylece kalıyordu (veri KAYBOLMUYOR ama kullanıcıya
+  // "silinmiş" gibi görünüyor ve yanlış rakamla kapanmış oluyordu — bkz.
+  // Abdullah'ın 01.10.2026 bildirimi). Şimdi kapatmadan ÖNCE diğer
+  // aylarda dolu bir taslak var mı kontrol ediyoruz; varsa işlemi
+  // DURDURUP açıkça uyarıyoruz, sessizce yanlış veriyle kapatmıyoruz.
+  function mhBaskaDonemdeDoluTaslakVarMi(buAy, buYil){
+    try{
+      var buAnahtar = buYil + "-" + ("0"+buAy).slice(-2);
+      return AvansKayitData.tumTaslaklar().filter(function(t){
+        if(t.anahtar === buAnahtar) return false;
+        return (t.ozelAvansGirisleri||[]).length>0 || (t.isAvansiGirisleri||[]).length>0 || (t.isAvansiHarcamalar||[]).length>0;
+      });
+    }catch(e){ return []; }
+  }
+
   document.getElementById("btnAyiKayitEt").onclick = function(){
     if(mhGezinmeOfset !== 0) return; // sadece açık/canlı dönem kapatılabilir
     if(!mhGuncelHesap) return;
     var h = mhGuncelHesap;
+
+    var baskaTaslaklar = mhBaskaDonemdeDoluTaslakVarMi(h.acik.ay, h.acik.yil);
+    if(baskaTaslaklar.length){
+      alert(
+        "⚠️ DURDURULDU — " + AY_ADLARI_MH[h.acik.ay] + " " + h.acik.yil + " dönemini kapatamıyorum.\n\n"
+        + "Şu dönem(ler)de hâlâ dolu, kapatılmamış bir Avans Takibi taslağı var:\n"
+        + baskaTaslaklar.map(function(t){ return "• " + AY_ADLARI_MH[t.ay] + " " + t.yil; }).join("\n")
+        + "\n\nBunu şimdi kapatırsam, o taslaktaki gerçek verin görünmeden, bu ay SIFIR avans ile yanlış kapanır. "
+        + "Önce Avans Takibi sayfasından o döneme gidip verini kontrol et, gerekirse Ayarlar > Bakım bölümündeki "
+        + "\"Avans Dönemi Taşı\" aracıyla doğru döneme taşı, sonra buraya dönüp tekrar dene."
+      );
+      return;
+    }
+
     var avansUyari = "\n\nNot: Avans Takibi bu dönem için de otomatik kapatılacak.";
     if(!confirm(AY_ADLARI_MH[h.acik.ay] + " " + h.acik.yil + " dönemini kapatmak istediğine emin misin?\n\nHesaba Yatacak: " + fmtTL_MH(h.hesabaYatacak) + avansUyari)) return;
     if(!confirm("Kesin olarak kapatılsın mı? Bu işlem geri alınamaz.\n\nKayıt edildikten sonra sistem otomatik bir sonraki aya geçer.")) return;
