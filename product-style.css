@@ -431,6 +431,12 @@ body {
   padding: 16px;
   box-sizing: border-box;
 }
+/* BULUNAN HATA (01.10.2026): yukarıdaki "display:flex" kuralı, tarayıcının
+   "hidden" özniteliğini eziyordu — bu yüzden pencere JavaScript "gizli
+   kal" dese de HER SAYFA AÇILIŞINDA görünür kalıyordu, X butonu ve sayfa
+   yenileme de işe yaramıyordu. Bu satır "hidden" özniteliğine CSS
+   kuralından daha yüksek öncelik vererek düzeltiyor. */
+.ai-modal-overlay[hidden] { display: none; }
 .ai-modal-kutu {
   background: #ffffff;
   border-radius: 14px;
