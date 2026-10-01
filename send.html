@@ -24,8 +24,8 @@
 <link rel="stylesheet" href="cart-style.css?v=WG.290926.1816.671">
 <link rel="stylesheet" href="cari-kart-style.css?v=WG.011026.1317.691">
 <link rel="stylesheet" href="send-style.css?v=WG.270926.0300.643">
-<link rel="stylesheet" href="belge-style.css?v=WG.011026.1412.692">
-<link rel="stylesheet" href="detail-style.css?v=WG.011026.1412.692">
+<link rel="stylesheet" href="belge-style.css?v=WG.011026.1458.693">
+<link rel="stylesheet" href="detail-style.css?v=WG.011026.1458.693">
 </head>
 <body>
 
@@ -103,13 +103,20 @@
 
       <div class="form-etiket">MESAJ</div>
       <div class="mail-onizleme-metin" id="mailOnizlemeMetin"></div>
+      <button type="button" class="mail-konu-kopyala-btn" id="mailMetinKopyalaBtn" style="margin:6px 0 0;">📋 Mesaj Metnini Kopyala</button>
 
       <div class="form-etiket">SİPARİŞ TABLOSU (otomatik ek olarak gidecek)</div>
       <div id="mailOnizlemeTablo"></div>
+      <!-- DEVAM EDEN YAZIŞMAYA YAPIŞTIRMA (01.10.2026, Abdullah'ın isteğiyle)
+           — WhatsApp'taki "Kopyala ve Kaydet" ile AYNI mantık: yeni bir mail
+           AÇMAZ, konu+mesaj+tabloyu panoya kopyalar — müşteriyle devam eden
+           bir yazışmaya (Yanıtla/İlet) yapıştırmak için. -->
+      <button type="button" class="tablo-kopyala-btn" id="mailTabloKopyalaBtn">📋 Kopyala ve Kaydet</button>
+      <div class="tablo-kopyala-not">Müşteriyle devam eden bir yazışmaya (Yanıtla/İlet) yapıştırmak için kopyala — bu buton yeni bir mail açmaz.</div>
 
       <div class="sheet-buton-satir">
         <button class="btn-vazgec" id="mailOnizlemeVazgecBtn">Kapat</button>
-        <button class="btn-kaydet" id="mailOnizlemeGonderBtn">✓ Gönder</button>
+        <button class="btn-kaydet" id="mailOnizlemeGonderBtn">✓ Gönder (yeni mail aç)</button>
       </div>
     </div>
   </div>
@@ -155,7 +162,7 @@
 <script src="auth.js?v=WG.300926.1535.681"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
-<script src="hareket-tablo.js?v=WG.011026.1412.692"></script>
+<script src="hareket-tablo.js?v=WG.011026.1458.693"></script>
 <script src="cart-data.js?v=WG.150926.1224.571"></script>
 <script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="send-data.js?v=WG.150926.1224.571"></script>
@@ -163,7 +170,7 @@
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("send.html", "📤 Gönder"); RotaTakip.ciz("rotaSeridi"); });</script>
 <script src="mesaj-data.js?v=WG.280926.1620.658"></script>
-<script src="send-render.js?v=WG.011026.1412.692"></script>
+<script src="send-render.js?v=WG.011026.1458.693"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

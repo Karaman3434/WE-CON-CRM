@@ -677,6 +677,27 @@ document.addEventListener("DOMContentLoaded", function(){
       }catch(e){ alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin."); }
     }
   };
+  // MESAJ METNİNİ KOPYALA (01.10.2026, Abdullah'ın isteğiyle) — konu
+  // kopyalama butonuyla aynı mantık, mesaj metni için.
+  document.getElementById("mailMetinKopyalaBtn").onclick = function(){
+    var metin = document.getElementById("mailOnizlemeMetin").textContent;
+    var btn = this;
+    var eskiMetin = btn.textContent;
+    function eskiHaleDon(){ btn.textContent = eskiMetin; }
+    function basarili(){ btn.textContent = "✓ Kopyalandı"; setTimeout(eskiHaleDon, 1500); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(metin).then(basarili).catch(function(){
+        alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin.");
+      });
+    } else {
+      alert("Kopyalanamadı — metni elle seçip kopyalayabilirsin.");
+    }
+  };
+  // DEVAM EDEN YAZIŞMAYA YAPIŞTIRMA (01.10.2026, Abdullah'ın isteğiyle) —
+  // WhatsApp'taki "Kopyala ve Kaydet" ile AYNI fonksiyon, "mail" kanalıyla:
+  // cari bilgi + ürün tablosu (LİSTE/İSK/NET/TOPLAM) görsel olarak panoya
+  // kopyalanır, yeni bir mail AÇILMAZ.
+  document.getElementById("mailTabloKopyalaBtn").onclick = function(){ tabloyuPanoyaKopyala("mail", this); };
   document.getElementById("mailOnizlemeGonderBtn").onclick = function(){
     var konu = document.getElementById("mailOnizlemeKonu").value.trim() || "WEICON";
     // GÜVENLİK AĞI (28.09.2026, Abdullah'ın bildirdiği hata): bazı mail
