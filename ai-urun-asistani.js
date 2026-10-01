@@ -147,14 +147,25 @@ async function aiAcikla(ad, berta, abas, fiyat, zorlaYenile){
       if(kullanici) idToken = await kullanici.getIdToken();
     }catch(e){}
 
-    var yanit = await fetch(AI_FONKSIYON_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": idToken ? ("Bearer " + idToken) : ""
-      },
-      body: JSON.stringify({ urun: { ad: ad, berta: berta, abas: abas, fiyat: fiyat } })
-    });
+    // Zaman sınırı (01.10.2026 düzeltmesi): fonksiyon henüz deploy
+    // edilmediyse veya ağ yanıt vermezse istek SÜRESİZ askıda kalmasın —
+    // en fazla 10 saniye beklenir, sonra anlaşılır hata gösterilir.
+    var kontrolcu = new AbortController();
+    var zamanAsimi = setTimeout(function(){ kontrolcu.abort(); }, 10000);
+    var yanit;
+    try{
+      yanit = await fetch(AI_FONKSIYON_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": idToken ? ("Bearer " + idToken) : ""
+        },
+        body: JSON.stringify({ urun: { ad: ad, berta: berta, abas: abas, fiyat: fiyat } }),
+        signal: kontrolcu.signal
+      });
+    }finally{
+      clearTimeout(zamanAsimi);
+    }
 
     if(!yanit.ok) throw new Error("HTTP " + yanit.status);
     var veri = await yanit.json();

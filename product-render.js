@@ -30,6 +30,14 @@ function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+// AI ile Açıkla butonunun data-* özniteliklerine özel (01.10.2026) — bu
+// değerler çift tırnakla sarıldığı için burada sadece " karakterini
+// kaçırmak yeterli (htmlEsc'i genel olarak değiştirip başka hiçbir yeri
+// etkilemek istemedim).
+function aiAttrEsc(s){
+  return htmlEsc(s).replace(/"/g, "&quot;");
+}
+
 function sonuclariCiz(){
   try{
     var q = document.getElementById("searchInput").value;
@@ -66,8 +74,8 @@ function sonuclariCiz(){
         + "<div class='tablo-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(bilgi.berta||"-") + "</span> <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(bilgi.abas||"-") + "</span>" + "</div>"
         + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + " <span class='urun-detay-ok'>🔗</span>"
         + " <button class='btn-ai-acikla' title='AI ile açıkla' aria-label='AI ile açıkla'"
-        + " data-ad='" + htmlEsc(bilgi.ad) + "' data-berta='" + htmlEsc(bilgi.berta||"") + "'"
-        + " data-abas='" + htmlEsc(bilgi.abas||"") + "' data-fiyat='" + bilgi.fiyat + "'>🤖</button></div>"
+        + " data-ad=\"" + aiAttrEsc(bilgi.ad) + "\" data-berta=\"" + aiAttrEsc(bilgi.berta||"") + "\""
+        + " data-abas=\"" + aiAttrEsc(bilgi.abas||"") + "\" data-fiyat=\"" + bilgi.fiyat + "\">🤖</button></div>"
         + "</td>"
         + "<td><span class='tablo-fiyat" + (bilgi.fiyat >= 1000 ? " tablo-fiyat--buyuk" : "") + "'>" + bilgi.fiyat.toFixed(2) + " EUR</span></td>"
         + "<td><button class='btn-add" + (eklendi?" added":"") + "' data-idx='" + idx + "'>" + (eklendi?"EKLENDİ":"Seç") + "</button></td>"
