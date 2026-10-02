@@ -332,3 +332,122 @@
 .mh-ozet-satir-deger { font-size: 15px; font-weight: 900; color: #0e6b34; }
 .mh-ozet-satir-deger--kirmizi { color: #c0392b; }
 .mh-ozet-satir-ok { font-size: 18px; color: #b9c2cf; font-weight: 900; }
+
+/* ---------- "Avans Seçimi" satırı + açılır pencere (02.10.2026,
+   Abdullah'ın isteğiyle — bkz. maas-hesaplama-render.js) ---------- */
+.mh-ozet-satir--bekleyen {
+  width: 100%;
+  border: 1.5px solid #e0a63a;
+  background: #fff9ee;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.mh-ozet-satir--bekleyen .mh-ozet-satir-etiket { color: #9a6400; }
+.mh-bekleyen-rozet {
+  display: inline-block;
+  background: #e0730f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 99px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+
+.overlay {
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(10,20,35,0.5);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 900;
+}
+.overlay[hidden] { display: none; }
+.sheet {
+  background: #fff;
+  width: 100%; max-width: none;
+  border-radius: 16px 16px 0 0;
+  padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+  max-height: 92%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 4px; }
+.sheet-alt { font-size: 12px; color: #6b7684; margin-bottom: 12px; }
+
+.ba-donem-kart {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1.5px solid #e2e6ec;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.ba-donem-sol { display: flex; align-items: center; gap: 10px; }
+.ba-checkbox { width: 22px; height: 22px; accent-color: #0e6b58; flex-shrink: 0; }
+.ba-donem-metin-grup { display: flex; flex-direction: column; }
+.ba-donem-ay { font-size: 13.5px; font-weight: 900; color: #1c2430; }
+.ba-donem-tur { font-size: 10.5px; color: #8a8f98; margin-top: 1px; }
+.ba-donem-tutar { font-size: 15px; font-weight: 900; color: #c0392b; }
+
+.ba-secim-ozet {
+  background: #eafaf0;
+  border: 1.5px solid #0e6b34;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+.ba-secim-ozet-etiket { font-size: 11.5px; font-weight: 800; color: #0e6b34; }
+.ba-secim-ozet-tutar { font-size: 17px; font-weight: 900; color: #0e6b34; }
+
+.ba-ekle-btn {
+  width: 100%;
+  background: #0e6b58;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 13.5px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.ba-kapat-btn {
+  width: 100%;
+  background: none;
+  color: #6b7684;
+  border: none;
+  padding: 10px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ba-bolum-baslik {
+  font-size: 11px;
+  font-weight: 900;
+  color: #8a94a6;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  margin: 16px 2px 8px;
+}
+.ba-gecmis-kart {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7f8fa;
+  border: 1px solid #e9ecf1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+}
+.ba-gecmis-ay { font-size: 12.5px; font-weight: 800; color: #556170; }
+.ba-gecmis-not { font-size: 10px; color: #9aa5b1; margin-top: 1px; }
+.ba-gecmis-tutar { font-size: 13px; font-weight: 800; color: #8a94a6; }

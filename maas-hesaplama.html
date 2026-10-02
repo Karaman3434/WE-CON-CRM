@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.280926.0030.656 — maas-hesaplama.html
+  WEICON ASİST V2 — VERSİYON: WG.021026.1835.712 — maas-hesaplama.html
   =====================================================================
   MAAŞ HESAPLAMA (ÖZET) — 27.09.2026 mimari bölünmesi: bu sayfa artık
   kendi hesaplamasını yapmıyor. Net Maaş → net-maas-hesaplama.html,
@@ -26,7 +26,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
 <link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2350.654">
-<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2350.654">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.021026.1835.712">
 </head>
 <body>
 
@@ -100,6 +100,23 @@
     </div>
   </a>
 
+  <!-- "AVANS SEÇİMİ" (02.10.2026, Abdullah'ın isteğiyle) — masraf formu
+       gecikmesi yüzünden bir avansın aynı ay değil, seçtiği bir SONRAKİ
+       ayın maaşından kesilmesini sağlar. Bu ayın kendi avansını (yukarıdaki
+       satır, değişmedi) otomatik dahil etmeyi kapatabilir VE/VEYA geçmişte
+       bekleyen (henüz hiçbir maaştan düşülmemiş) avansları bu aya
+       ekleyebilir. Sadece açık/canlı dönemde anlamlı. -->
+  <button type="button" class="mh-ozet-satir mh-ozet-satir--bekleyen" id="mhBekleyenAvansSatiri">
+    <div class="mh-ozet-satir-sol">
+      <span class="mh-ozet-satir-etiket">⏳ AVANS SEÇİMİ<span class="mh-bekleyen-rozet" id="mhBekleyenRozet" hidden>0 ay</span></span>
+      <span class="mh-ozet-satir-alt" id="mhBekleyenAlt">—</span>
+    </div>
+    <div class="mh-ozet-satir-sag">
+      <span class="mh-ozet-satir-deger" style="color:#b7601f;" id="mhBekleyenDeger">0,00 TL</span>
+      <span class="mh-ozet-satir-ok">›</span>
+    </div>
+  </button>
+
   <!-- HESABA YATACAK — avans düşülmüş net toplam, ayrı vurgulu kutu -->
   <div class="mh-yatacak-kutu-standalone">
     <div class="mh-kart-yatacak-etiket">HESABA YATACAK MAAŞ</div>
@@ -111,6 +128,28 @@
 
 </main>
 
+<!-- SHEET: Avans Seçimi (02.10.2026) -->
+<div class="overlay" id="mhBekleyenSheetOverlay" hidden>
+  <div class="sheet">
+    <div class="sheet-baslik">⏳ Avans Seçimi</div>
+    <div class="sheet-alt">Bu ayın maaş kesintisine hangi avansların dahil edileceğini seç.</div>
+
+    <div id="mhBekleyenKendiAlan"></div>
+    <div id="mhBekleyenListeAlan"></div>
+
+    <div class="ba-secim-ozet">
+      <span class="ba-secim-ozet-etiket">Bu aya eklenecek toplam</span>
+      <span class="ba-secim-ozet-tutar" id="mhBekleyenSecimToplam">0,00 TL</span>
+    </div>
+    <button type="button" class="ba-ekle-btn" id="btnMhBekleyenUygula">✓ Bu Aya Uygula</button>
+
+    <div class="ba-bolum-baslik" id="mhGecmisBaslik" hidden>Daha Önce Dahil Edilenler</div>
+    <div id="mhGecmisListeAlan"></div>
+
+    <button type="button" class="ba-kapat-btn" id="btnMhBekleyenKapat">Kapat</button>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -119,10 +158,10 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
 <script src="komisyon-donem-data.js?v=WG.270926.2245.651"></script>
-<script src="avans-kayit-data.js?v=WG.270926.2340.653"></script>
+<script src="avans-kayit-data.js?v=WG.021026.1835.712"></script>
 <script src="maas-kayit-data.js?v=WG.270926.2340.653"></script>
 <script src="maas-hesaplama-data.js?v=WG.020926.2258.94"></script>
 <script src="maas-ortak-hesap.js?v=WG.270926.2245.651"></script>
-<script src="maas-hesaplama-render.js?v=WG.011026.0825.683"></script>
+<script src="maas-hesaplama-render.js?v=WG.021026.1835.712"></script>
 </body>
 </html>

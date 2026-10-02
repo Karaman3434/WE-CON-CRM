@@ -158,6 +158,39 @@ var AvansKayitData = (function(){
     }catch(e){ cb(false, e); }
   }
 
+  /* ---------- "Bekleyen Avans" (02.10.2026, Abdullah'ın isteğiyle) ----------
+     Kapalı bir avans kaydı artık kapandığı anda otomatik olarak AYNI ayın
+     maaşından düşülmek ZORUNDA değil — masraf formu gecikmesi yüzünden
+     bazen bir sonraki (veya iki sonraki) ayın maaşına dahil edilmesi
+     gerekebiliyor. "maasaDahilEdildigiDonem" alanı hangi maaş döneminin
+     bu avansı kestiğini tutar; bu alan yoksa kayıt hâlâ "bekliyor"
+     demektir. Avans Takibi'nin kendi kayıt/taslak/kapatma akışı HİÇ
+     değişmedi — sadece bu tek yeni alan eklendi. */
+
+  // Henüz hiçbir maaş dönemine dahil edilmemiş (bekleyen) kapalı avans
+  // kayıtları — tutarı sıfır olanlar (hiç avans girilmemiş boş kapanışlar)
+  // listeye hiç girmez.
+  function bekleyenKayitlar(){
+    return tumKayitlar().filter(function(k){
+      return (k.toplamKesinti||0) > 0 && !k.maasaDahilEdildigiDonem;
+    });
+  }
+
+  // Verilen avans kayıt anahtarlarını (bir ya da daha fazla), belirtilen
+  // maaş döneminin kesintisine dahil edildi olarak tek seferde işaretler.
+  function dahilEdildiginiIsaretle(anahtarlar, hedefMaasAnahtari, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    if(!anahtarlar || !anahtarlar.length){ cb(true); return; }
+    try{
+      var guncellemeler = {};
+      anahtarlar.forEach(function(a){
+        guncellemeler["avansKayitlari/" + a + "/maasaDahilEdildigiDonem"] = hedefMaasAnahtari;
+      });
+      firebase.database().ref().update(guncellemeler)
+        .then(function(){ cb(true); }).catch(function(err){ cb(false, err); });
+    }catch(e){ cb(false, e); }
+  }
+
   baslat();
 
   return {
@@ -171,7 +204,9 @@ var AvansKayitData = (function(){
     taslakGuncelle: taslakGuncelle,
     kapaliKaydiBul: kapaliKaydiBul,
     kaydet: kaydet,
-    kaydiSil: kaydiSil
+    kaydiSil: kaydiSil,
+    bekleyenKayitlar: bekleyenKayitlar,
+    dahilEdildiginiIsaretle: dahilEdildiginiIsaretle
   };
 
 })();
