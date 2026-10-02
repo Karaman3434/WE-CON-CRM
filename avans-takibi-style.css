@@ -38,19 +38,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.av-donem-yeniay-btn {
-  background: #c78a00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0 10px;
-  height: 30px;
-  font-size: 11px;
-  font-weight: 900;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
 /* SATIR ARALIKLARI DARALTILDI (27.09.2026) — yazı boyutları AYNI kalır,
    sadece dikey boşluklar azaltıldı. Sadece bu sayfa için geçerli. */
 .ok-kutu { padding: 10px 12px; margin-bottom: 10px; }

@@ -1,11 +1,22 @@
 /*
-  avans-takibi-render.js
+  avans-takibi-render.js — VERSİYON: WG.021026.1910.713
   ========================
   Özel Avans / İş Avansı / İş Avansı Harcamaları listelerini yönetir.
   Dönem artık ‹ › okları (veya kaydırarak) tek tek ay adımıyla değişir
   (27.09.2026) — kapatılmamış herhangi bir aya (geçmiş dahil) gidip orada
   da giriş yapılabilir. Her ekleme/silme ANINDA AvansKayitData.taslakGuncelle()
   ile seçili dönemin taslağına yazılır.
+
+  02.10.2026 (Abdullah'ın isteğiyle) — bu sayfa artık kendi başına yeni
+  bir dönem AÇAMAZ. "+ Yeni Ay" düğmesi kaldırıldı; "›" oku, Maaş
+  Hesaplama'nın resmi açık dönemine (MaasKayitData.acikDonem()) gelince
+  otomatik gizlenir — daha ileri gidilemez. Tek kontrol noktası Maaş
+  Hesaplama'daki "GEÇERLİ AYIN HESABI KAPANDI" düğmesidir: o basılınca
+  MaasKayitData'nın açık dönemi ilerler ve bu sayfa, EĞER o an canlı/açık
+  dönemi izliyorsa (avCanliMi), otomatik olarak yeni açık döneme geçer
+  (bkz. avCanliMi, avDonemBariCiz, MaasKayitData.degistiginde altındaki
+  dinleyici). Geçmiş bir ayı inceliyorsan (avCanliMi=false), bir dönem
+  kapanması seni oradan koparmaz.
 */
 
 var AY_ADLARI_AV = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
@@ -15,6 +26,12 @@ var avIsListe = [];
 var avHarcamaListe = [];
 var avSeciliAy = null;
 var avSeciliYil = null;
+// CANLI TAKİP (02.10.2026) — true: şu an görüntülenen ay, Maaş
+// Hesaplama'nın resmi açık/canlı dönemiyle aynı (yani bu sayfa, bir ay
+// kapandığında otomatik olarak yeni açık döneme geçmeli). false: geçmiş,
+// kapanmış bir ay geriye gidilerek inceleniyor — bu durumda bir dönem
+// kapanması bu sayfadaki görünümü DEĞİŞTİRMEMELİ.
+var avCanliMi = true;
 
 function fmtTL_AV(n){
   return (n||0).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " TL";
@@ -126,18 +143,6 @@ function avTaslagiKaydet(){
   });
 }
 
-// Dönem seçiciyi doldurur: AÇIK DÖNEM'in doğal başlangıç noktasından
-// (hiç kayıt yokken "bir önceki ay") itibaren 18 ay ileriye kadar — geçmiş
-// yıllar listelenmez. ZATEN KAPATILMIŞ aylar da listelenmez (onlar Kayıt
-// Geçmişi'nde; yanlışlıkla kapatıldıysa oradan silinip buraya geri gelir).
-function avBaslangicNoktasi(){
-  var simdi = new Date();
-  var ay = simdi.getMonth(); // 0-index = zaten "bir önceki ay"ın 1-index karşılığı
-  var yil = simdi.getFullYear();
-  if(ay < 1){ ay = 12; yil -= 1; }
-  return {ay:ay, yil:yil};
-}
-
 // AY ADIMLAMA (27.09.2026, Abdullah'ın isteğiyle yeniden tasarım) — dönem
 // artık uzun bir listeden değil, ‹ › okları (veya kaydırarak) tek tek ay
 // adımıyla değişiyor. KAPATILMIŞ aylar artık ATLANMAZ — salt okunur olarak
@@ -146,20 +151,20 @@ function avBaslangicNoktasi(){
 function avSonrakiAy(ay, yil){ ay++; if(ay>12){ ay=1; yil++; } return {ay:ay, yil:yil}; }
 function avOncekiAy(ay, yil){ ay--; if(ay<1){ ay=12; yil--; } return {ay:ay, yil:yil}; }
 
-// Dönem barını çizer: ay/yıl etiketi + sağdaki "›" / "+ Yeni Ay" geçişi.
-// Doğal referans noktasına (avBaslangicNoktasi — "bugün"e göre bir önceki
-// ay) ULAŞMIŞ veya GEÇMİŞSEK sağda artık "+ Yeni Ay" gösterilir — ileri
-// gitmek burada yeni bir dönem AÇMAK demektir; hâlâ gerisindeysek normal
-// "›" ile var olan (henüz kapatılmamış) sonraki aya geçilir.
+// Dönem barını çizer: ay/yıl etiketi + "›" oku görünürlüğü. 02.10.2026
+// (Abdullah'ın isteğiyle) — "+ Yeni Ay" düğmesi kaldırıldı; bu sayfa artık
+// kendi başına yeni bir dönem AÇAMAZ. "›" oku, Maaş Hesaplama'nın resmi
+// açık dönemine (MaasKayitData.acikDonem()) ULAŞILINCA gizlenir — daha
+// ileri gidip henüz resmi olarak açılmamış bir ayın taslağını doldurmak
+// artık mümkün değil. Yeni dönem sadece Maaş Hesaplama'dan kapatılarak
+// açılır (bkz. dosya başı not + MaasKayitData.degistiginde dinleyicisi).
 function avDonemBariCiz(){
   var etiket = document.getElementById("avDonemBtnMetin");
   if(etiket && avSeciliAy && avSeciliYil) etiket.textContent = AY_ADLARI_AV[avSeciliAy] + " " + avSeciliYil;
-  var b = avBaslangicNoktasi();
-  var referansaUlasildiMi = (avSeciliYil > b.yil) || (avSeciliYil === b.yil && avSeciliAy >= b.ay);
+  var acik = MaasKayitData.acikDonem();
+  var acikDonemdeMiyiz = (avSeciliAy === acik.ay && avSeciliYil === acik.yil);
   var btnSonraki = document.getElementById("avDonemSonrakiBtn");
-  var btnYeniAy = document.getElementById("avDonemYeniAyBtn");
-  if(btnSonraki) btnSonraki.hidden = referansaUlasildiMi;
-  if(btnYeniAy) btnYeniAy.hidden = !referansaUlasildiMi;
+  if(btnSonraki) btnSonraki.hidden = acikDonemdeMiyiz;
 }
 
 // DÜZENLEME/SALT-OKUNUR GÖRÜNÜRLÜK (27.09.2026) — kapalı bir döneme
@@ -182,6 +187,8 @@ function avKapaliGoster(k){
 
 function avDonemeGec(ay, yil){
   avSeciliAy = ay; avSeciliYil = yil;
+  var acik = MaasKayitData.acikDonem();
+  avCanliMi = (ay === acik.ay && yil === acik.yil);
   avDonemBariCiz();
   var kapali = AvansKayitData.kapaliKaydiBul(ay, yil);
   if(kapali){
@@ -274,20 +281,22 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   avIlkGecisiDeneVeYap();
 
-  // DÖNEM BARI (27.09.2026) — ‹ › okları + kaydırma (swipe). "+ Yeni Ay"
-  // her zaman İLERİ gitmenin karşılığı, sadece etiketi farklı (bkz.
-  // avDonemBariCiz — hangisinin görüneceğine o karar verir). Artık
-  // KAPATILMIŞ aylar da atlanmadan tek tek gösterilir (salt okunur).
+  // DÖNEM BARI (27.09.2026 tasarım, 02.10.2026 revize) — ‹ › okları +
+  // kaydırma (swipe). KAPATILMIŞ aylar atlanmadan tek tek gösterilir (salt
+  // okunur). "›" artık Maaş Hesaplama'nın resmi açık dönemini GEÇEMEZ —
+  // avDonemBariCiz o noktada "›"yı zaten gizliyor, ama avSonrakiAyaGec de
+  // ek bir güvenlik olarak aynı sınırı uygular.
   document.getElementById("avDonemOncekiBtn").onclick = function(){
     var g = avOncekiAy(avSeciliAy, avSeciliYil);
     avDonemeGec(g.ay, g.yil);
   };
   function avSonrakiAyaGec(){
+    var acik = MaasKayitData.acikDonem();
+    if(avSeciliAy === acik.ay && avSeciliYil === acik.yil) return; // zaten açık dönemde, daha ileri gidilemez
     var g = avSonrakiAy(avSeciliAy, avSeciliYil);
     avDonemeGec(g.ay, g.yil);
   }
   document.getElementById("avDonemSonrakiBtn").onclick = avSonrakiAyaGec;
-  document.getElementById("avDonemYeniAyBtn").onclick = avSonrakiAyaGec;
 
   (function(){
     var bar = document.getElementById("avDonemBar");
@@ -397,12 +406,21 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // MaasKayitData artık açık/kapalı dönem belirlemede TEK KAYNAK — o
   // yüklenince (veya bir dönem Maaş Hesaplama'dan kapatılınca) burada da
-  // ilk geçiş denenir ve dönem barı (‹ › oklarının görünürlüğü) yeniden
-  // çizilir, böylece iki sayfa hep aynı ayı "açık" görür.
+  // ilk geçiş denenir. 02.10.2026 (Abdullah'ın isteğiyle): eğer o an canlı/
+  // açık dönemi izliyorsak (avCanliMi), bir dönem kapanması bu sayfayı
+  // OTOMATİK olarak yeni açık döneme geçirir — elle "›"ye basmaya gerek
+  // kalmaz. Geçmiş bir ayı inceliyorsak (avCanliMi=false), sadece dönem
+  // barının ok görünürlüğü tazelenir, görünümden koparılmayız.
   try{
     MaasKayitData.degistiginde(function(){
       avIlkGecisiDeneVeYap();
-      if(avSeciliAy && avSeciliYil) avDonemBariCiz();
+      if(avSeciliAy && avSeciliYil){
+        if(avCanliMi){
+          var acik = MaasKayitData.acikDonem();
+          if(avSeciliAy !== acik.ay || avSeciliYil !== acik.yil){ avDonemeGec(acik.ay, acik.yil); return; }
+        }
+        avDonemBariCiz();
+      }
     });
   }catch(e){}
 });

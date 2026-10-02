@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.280926.0030.656 — avans-takibi.html
+  WEICON ASİST V2 — VERSİYON: WG.021026.1910.713 — avans-takibi.html
   =====================================================================
   AVANS TAKİBİ — Özel Avans ve İş Avansı (+ belgeleme harcamaları) için
   bağımsız, kendi "ay kapat" döngüsüne sahip manuel giriş sayfası. Her
@@ -8,6 +8,12 @@
   avans-kayit-data.js). Maaş Hesaplama bu sayfanın verisini (kapalı kayıt
   veya açık taslak) otomatik okur; Maaş Hesaplama'yı kapatmak bu sayfayı da
   senkron kapatır.
+
+  02.10.2026 (Abdullah'ın isteğiyle) — bu sayfanın kendi başına yeni ay
+  açabilen "+ Yeni Ay" düğmesi kaldırıldı. İleri gitme artık Maaş
+  Hesaplama'nın resmi açık dönemini geçemez; yeni dönem sadece Maaş
+  Hesaplama'daki "GEÇERLİ AYIN HESABI KAPANDI" ile açılır ve bu sayfa
+  (canlı dönemi izliyorsa) otomatik olarak oraya geçer.
 -->
 <html lang="tr">
 <head>
@@ -22,9 +28,9 @@
 <title>WEICON ASİST — Avans Takibi</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
-<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.270926.2350.654">
-<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.270926.2350.654">
-<link rel="stylesheet" href="avans-takibi-style.css?v=WG.270926.1940.646">
+<link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.021026.1910.713">
+<link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.021026.1910.713">
+<link rel="stylesheet" href="avans-takibi-style.css?v=WG.021026.1910.713">
 </head>
 <body>
 
@@ -46,17 +52,17 @@
 
 <main class="sayfa">
 
-  <!-- DÖNEM BARI (27.09.2026, Abdullah'ın isteğiyle yeniden tasarım): eski
-       "DÖNEM (istediğin ayı seçebilirsin)" etiketi + uzun alttan açılan ay
-       listesi kaldırıldı. Artık sadece ‹ › okları (veya kaydırarak) ile
-       aya geçilir; en güncel (doğal) döneme gelindiğinde sağ taraf
-       "+ Yeni Ay" düğmesine dönüşür — ileri gitmek artık yeni bir dönem
-       AÇMAK anlamına gelir, geriye gitmek geçmiş açık aylara göz atmaktır. -->
+  <!-- DÖNEM BARI (27.09.2026 tasarım, 02.10.2026 revize): ‹ › okları
+       (veya kaydırarak) ile aya geçilir. "+ Yeni Ay" düğmesi kaldırıldı —
+       bu sayfa kendi başına yeni bir dönem AÇAMAZ; "›" oku, Maaş
+       Hesaplama'nın resmi açık dönemine (MaasKayitData.acikDonem()) gelince
+       gizlenir ve daha ileri gidilemez. Yeni dönem sadece Maaş
+       Hesaplama'dan "GEÇERLİ AYIN HESABI KAPANDI" ile açılır, bu sayfa da
+       (canlı dönemi izliyorsa) otomatik oraya geçer. -->
   <div class="av-donem-bar" id="avDonemBar">
     <button type="button" id="avDonemOncekiBtn" class="av-donem-ok-btn" aria-label="Önceki ay">‹</button>
     <div class="av-donem-bar-orta"><span id="avDonemBtnMetin">Yükleniyor…</span></div>
     <button type="button" id="avDonemSonrakiBtn" class="av-donem-ok-btn" aria-label="Sonraki ay">›</button>
-    <button type="button" id="avDonemYeniAyBtn" class="av-donem-yeniay-btn" hidden>+ Yeni Ay</button>
   </div>
 
   <!-- GÜVENLİK BANDI (27.09.2026): açık dönem hesabı değişse bile, daha
@@ -149,6 +155,6 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="maas-kayit-data.js?v=WG.270926.2340.653"></script>
 <script src="avans-kayit-data.js?v=WG.021026.1835.712"></script>
-<script src="avans-takibi-render.js?v=WG.300926.1400.677"></script>
+<script src="avans-takibi-render.js?v=WG.021026.1910.713"></script>
 </body>
 </html>
