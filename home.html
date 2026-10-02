@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.021026.1245.709 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.021026.1510.710 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
-  Ana ekranda SADECE gösterge panelleri var: en üstte selamlama/motivasyon
-  sözü, üst bar (menü/logo/tarih), İş Günü Kaldı + EUR Kur, koyu lacivert
-  Eylül Satış/Prim kartı (aylık hedefe göre GERÇEK ilerleme çubuğu —
-  Ayarlar'da girilen "weicon_hedef" değerine göre hesaplanır, hedef
-  girilmemişse çubuk/rozet hiç gösterilmez), Bugün Satış/Prim, ve
-  Takip Gerekiyor + Günün Özeti liste satırları. Tüm işlem kısayolları
+  Ana ekranda SADECE gösterge panelleri var: en üstte tarih satırı + Menü/
+  WEICON logosu satırı (02.10.2026'dan beri — eski motivasyon sözü tamamen
+  kaldırıldı), İş Günü Kaldı + EUR Kur, koyu lacivert Eylül Satış/Prim kartı
+  (aylık hedefe göre GERÇEK ilerleme çubuğu — Ayarlar'da girilen
+  "weicon_hedef" değerine göre hesaplanır, hedef girilmemişse çubuk/rozet
+  hiç gösterilmez), Bugün Satış/Prim, ve Takip Gerekiyor + Günün Özeti liste
+  satırları ("Bugüne bakış" başlığı da 02.10.2026'da kaldırıldı). Tüm işlem kısayolları
   (Ürün Bul, Hızlı Hesapla, vb.) SADECE soldan açılan çekmece menüde
   (bkz. .as-drawer-*) — ana ekranda tekrar yok (Abdullah'ın açık isteği).
 
@@ -36,26 +37,25 @@
 <meta name="apple-mobile-web-app-title" content="WEICON ASİST">
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.021026.1245.709">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.021026.1245.709">
+<link rel="stylesheet" href="home-style.css?v=WG.021026.1510.710">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.021026.1510.710">
 </head>
 <body>
 
 <div class="app-ust-sabit">
-  <div class="as-selam-blok">
-    <span id="motivasyonSelam" class="as-selam-isim">Merhaba,</span>
-    <span id="motivasyonSoz" class="as-selam-soz"></span>
-  </div>
-  <div class="as-logo-satir">
-    <img class="as-logo-gorsel" src="anasayfa-logo-banner.jpg?v=WG.290926.2156.673" alt="WEICON">
-  </div>
-  <div class="as-tarih-satir">
+  <!-- YENİ ÜST BAR (02.10.2026, Abdullah'ın isteğiyle): motivasyon sözü
+       sistemi tamamen kaldırıldı (bkz. motivasyon-data.js artık yüklenmiyor,
+       home-render.js'deki motivasyonuGuncelle silindi). Üstte tarih tek
+       başına ortalı bir satır; altında Menü (satırın 1/3'ü) + WEICON
+       logosu (satırın 2/3'ü, zemin/kutu YOK, Menü ile aynı yükseklikte)
+       yan yana. -->
+  <div class="as-ust-tarih-satir" id="gunTarihi"></div>
+  <div class="as-ust-birlesik-satir">
     <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">
       <span class="as-menu-btn-cizgiler" aria-hidden="true"><span></span><span></span><span></span></span>
       <span class="as-menu-btn-etiket">Menü</span>
     </button>
-    <div class="as-tarih" id="gunTarihi"></div>
-    <div class="as-tarih-denge" aria-hidden="true"></div>
+    <img class="as-logo-gorsel-ustte" src="anasayfa-logo-banner.jpg?v=WG.290926.2156.673" alt="WEICON">
   </div>
 </div>
 
@@ -112,7 +112,6 @@
 
   <div class="as-liste-blok">
     <div class="as-liste-panel">
-      <div class="as-liste-baslik">Bugüne bakış</div>
       <div class="as-liste-satir as-liste-satir--uyari" id="bildirimBanner" hidden>
         <span class="as-liste-ikon-kutu"><span class="as-liste-ikon" aria-hidden="true">⚠️</span></span>
         <span class="as-liste-metin">
@@ -176,7 +175,7 @@
       <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#f5c451;" aria-hidden="true">🔒</span><span class="as-drawer-etiket">Kişisel</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
     </nav>
 
-    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.021026.1245.709 ***</div>
+    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.021026.1510.710 ***</div>
 
     <div class="as-drawer-ayarlar-blok">
       <a class="as-drawer-oge" href="menu.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">⚙️</span><span class="as-drawer-etiket">Ayarlar</span><span class="as-drawer-hata-rozet" id="asAyarlarHataRozeti" hidden>0</span></a>
@@ -205,16 +204,15 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=WG.021026.1245.709"></script>
-<script src="auth.js?v=WG.021026.1245.709"></script>
+<script src="firebase-config.js?v=WG.021026.1510.710"></script>
+<script src="auth.js?v=WG.021026.1510.710"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
 <script src="home-data.js?v=WG.150926.1241.572"></script>
 <script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="hata-log.js?v=WG.140926.1412.560"></script>
-<script src="motivasyon-data.js?v=WG.060926.1214.150"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.011026.0900.684"></script>
+<script src="home-render.js?v=WG.021026.1510.710"></script>
 </body>
 </html>

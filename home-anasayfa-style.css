@@ -11,29 +11,34 @@
 
 .sayfa.as-sayfa { padding: 0 6px 16px; }
 
-/* ---------- Üst selamlama (sade, sayfanın en üstü) ---------- */
-.as-selam-blok { padding: 18px 0 4px; }
-.as-selam-isim { font-size: 15px; font-weight: 700; color: #1c2430; margin-right: 5px; }
-.as-selam-soz { font-size: 12.5px; font-style: italic; color: #6b7280; }
-
-/* ---------- Üst bar: logo görseli (tam satır, kenardan kenara) + menü/tarih satırı ---------- */
-.as-logo-satir { padding: 8px 0 4px; }
-.as-logo-gorsel { display: block; width: 100%; height: 72px; object-fit: cover; }
-
-.as-tarih-satir {
-  padding: 2px 0 10px;
-  display: grid;
-  grid-template-columns: 84px 1fr 84px;
-  align-items: center;
+/* ---------- Üst bar (02.10.2026, Abdullah'ın isteğiyle yeniden tasarlandı):
+   eski motivasyon sözü + tam genişlik logo + ayrı menü/tarih satırı
+   düzeni kaldırıldı. Artık: tarih tek başına ortalı bir satır, altında
+   Menü (1/3 genişlik) + WEICON logosu (2/3 genişlik, zemin/kutu YOK),
+   ikisi AYNI YÜKSEKLİKTE yan yana. ---------- */
+.as-ust-tarih-satir {
+  text-align: center;
+  padding: 12px 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+}
+.as-ust-birlesik-satir {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0 10px 10px;
+  box-sizing: border-box;
 }
 /* Menü tuşu (30.09.2026, Abdullah'ın isteğiyle): eskiden 38x38 küçük
    daireydi, elini attığında gözü aramakta zorlanıyordu. Artık DİKEY
-   değil YATAY yönde büyüdü (satır yüksekliği hâlâ 38px, sayfayı
-   büyütmüyor) — kan kırmızısı zemin, kalın çizgili hamburger ikonu ve
-   yanında "Menü" yazısıyla göze çarpıyor. */
+   değil YATAY yönde büyüdü — kan kırmızısı zemin, kalın çizgili
+   hamburger ikonu ve yanında "Menü" yazısıyla göze çarpıyor. Genişliği
+   artık sabit değil, üst bar satırının 1/3'ü (bkz. .as-ust-birlesik-satir). */
 .as-menu-btn {
-  width: 84px;
-  height: 38px;
+  flex: 1 1 33.333%;
+  width: auto;
+  height: 44px;
   border-radius: 10px;
   background: #c1121f;
   border: none;
@@ -62,13 +67,17 @@
   font-weight: 700;
   line-height: 1;
 }
-.as-tarih {
-  font-size: 17px;
-  color: #1f2937;
-  font-weight: 600;
-  text-align: center;
+/* WEICON logosu — satırın 2/3'ü, Menü ile aynı yükseklikte, hiçbir zemin
+   rengi veya kutu yok (02.10.2026, Abdullah'ın isteğiyle: önce denenen
+   lacivert zeminli kutu beğenilmedi — sadece logonun kendisi, alanı
+   object-fit:cover ile tamamen dolduruyor). */
+.as-logo-gorsel-ustte {
+  flex: 1 1 66.666%;
+  height: 44px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
 }
-.as-tarih-denge { width: 84px; }
 
 /* ---------- İş günü kaldı + EUR kur satırı ---------- */
 .as-panel-satir {
@@ -192,7 +201,6 @@
   padding: 12px;
   box-sizing: border-box;
 }
-.as-liste-baslik { font-size: 12.5px; font-weight: 700; color: #8a94a6; margin-bottom: 8px; padding-left: 2px; }
 .as-liste-satir {
   display: flex;
   align-items: center;

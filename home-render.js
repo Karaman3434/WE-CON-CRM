@@ -161,6 +161,39 @@ function isGunuKutusunuGuncelle(){
   }catch(e){ hataGoster("İş günü göstergesi güncellenemedi: " + e.message); }
 }
 
+// Ayarlar'daki "okunmamış hata" rozeti (01.10.2026, Abdullah'ın isteğiyle).
+// Hata Kayıtları sayfası, kendisi ziyaret edildiğinde "weicon_hata_son_gorulen"
+// localStorage anahtarına en son gördüğü kaydın zaman damgasını yazar (bkz.
+// hata-kayitlari-render.js). Burada "hatalar" düğümünü dinleyip, bu zaman
+// damgasından SONRA oluşmuş kayıt sayısını buluyoruz — 0 ise rozet gizli,
+// 1+ ise "Ayarlar" etiketinin yanında kırmızı rozette sayı görünür.
+function hataRozetiGuncelle(){
+  try{
+    var rozet = document.getElementById("asAyarlarHataRozeti");
+    if(!rozet) return;
+    if(!firebase.apps.length){ firebase.initializeApp(WEICON_FIREBASE_CONFIG); }
+    firebase.database().ref("hatalar").on("value", function(snap){
+      try{
+        var veri = snap.val();
+        var sonGorulen = parseInt(localStorage.getItem("weicon_hata_son_gorulen"), 10) || 0;
+        var yeniSayisi = 0;
+        if(veri){
+          Object.keys(veri).forEach(function(anahtar){
+            var zaman = veri[anahtar].zaman || 0;
+            if(zaman > sonGorulen) yeniSayisi++;
+          });
+        }
+        if(yeniSayisi > 0){
+          rozet.hidden = false;
+          rozet.textContent = yeniSayisi > 99 ? "99+" : yeniSayisi;
+        }else{
+          rozet.hidden = true;
+        }
+      }catch(e){}
+    });
+  }catch(e){}
+}
+
 function asKurGuncelle(){
   try{
     var el = document.getElementById("asKurDeger");
@@ -298,25 +331,8 @@ window.addEventListener("error", function(ev){
 // Ana Sayfa'daki eski ayrı kur şeridi kaldırıldı — döviz kuru artık global
 // header'da gösteriliyor (bkz. ust-sabit-olcum.js: dovizKuruHeaderaEkle).
 
-function motivasyonuGuncelle(){
-  try{
-    if(typeof MOTIVASYON_SOZLERI === "undefined") return;
-    var simdi = new Date();
-    var selamEl = document.getElementById("motivasyonSelam");
-    var sozEl = document.getElementById("motivasyonSoz");
-    if(selamEl) selamEl.textContent = "Merhaba,";
-    if(sozEl) sozEl.textContent = "\u201c" + motivasyonSozunuGetir(simdi) + "\u201d";
-  }catch(e){}
-}
-
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  motivasyonuGuncelle();
-  // Saat başı/2 saatte bir değişimi yakalamak için hafif bir dakika
-  // kontrolü yeterli — saniyede bir çalışan gereksiz bir zamanlayıcı
-  // kurulmuyor (60 sn'de bir küçük bir metin güncellemesi, performansa
-  // etkisi yok).
-  setInterval(motivasyonuGuncelle, 60000);
   isGunuKutusunuGuncelle();
   setInterval(function(){
     if(new Date().getDate() !== isGunuSonHesaplananGun) isGunuKutusunuGuncelle();
@@ -333,9 +349,11 @@ document.addEventListener("DOMContentLoaded", function(){
   gununOzetiniGuncelle();
 
   asKurGuncelle();
+  hataRozetiGuncelle();
   window.addEventListener("storage", function(ev){
     if(ev.key === "weicon_kur") asKurGuncelle();
     if(ev.key === "weicon_hedef") kartlariGuncelle();
+    if(ev.key === "weicon_hata_son_gorulen") hataRozetiGuncelle();
   });
   if(typeof AyarlarSync !== "undefined") AyarlarSync.degistiginde(kartlariGuncelle);
   window.addEventListener("weiconAuthHazir", function(ev){
