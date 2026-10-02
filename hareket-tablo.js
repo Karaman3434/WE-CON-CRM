@@ -97,7 +97,16 @@ var HareketTablo = (function(){
     var etiketRenk = opts.etiketRenkOzel || "#ffffff";
     var etiketBg = opts.etiketBgOzel || (opts.zeminSinifi === "hareket-satir--sari" ? "#ff8a3d" : "#3bb273");
     var etiketRozetHtml = opts.etiketRozet ? ("<span class='hareket-grup-etiket-rozet" + (opts.etiketRozetSinifi ? " hareket-grup-etiket-rozet--" + opts.etiketRozetSinifi : (opts.etiketRozet==="WEICON" ? " hareket-grup-etiket-rozet--weicon" : "")) + "'>" + opts.etiketRozet + "</span>") : "";
-    var html = opts.etiket ? ("<div class='hareket-grup-etiket" + (opts.etiketOrtali ? " hareket-grup-etiket--ortali" : "") + "' style='background:" + etiketBg + ";color:" + etiketRenk + ";'><span>" + opts.etiket + "</span>" + etiketRozetHtml + "</div>") : "";
+    // ETİKET ORTADA + ROZET KENARDA (02.10.2026, Abdullah'ın isteğiyle): eskiden
+    // etiketOrtali:true verildiğinde rozet VARSA ikisi birlikte tek blok olarak
+    // ortalanıyordu. Artık rozet de verilmişse (SADECE bu durumda — cart-render.js'in
+    // HESAPLANDI grubu) etiket metni satırın TAM ortasında, rozet sağ kenarda sabit
+    // duruyor (bkz. belge-style.css .hareket-grup-etiket--ortali-kenar). Rozetsiz
+    // etiketOrtali kullanımları (Gönder ekranı önizlemesi vb.) HİÇ DEĞİŞMEDİ.
+    var ortaliVeRozetli = !!(opts.etiketOrtali && opts.etiketRozet);
+    var etiketSinifi = "hareket-grup-etiket" + (ortaliVeRozetli ? " hareket-grup-etiket--ortali-kenar" : (opts.etiketOrtali ? " hareket-grup-etiket--ortali" : ""));
+    var etiketMetinHtml = "<span" + (ortaliVeRozetli ? " class='hareket-grup-etiket-metin'" : "") + ">" + opts.etiket + "</span>";
+    var html = opts.etiket ? ("<div class='" + etiketSinifi + "' style='background:" + etiketBg + ";color:" + etiketRenk + ";'>" + etiketMetinHtml + etiketRozetHtml + "</div>") : "";
     var basHucreler = basit
       ? "<th style='width:46%;'>ÜRÜN BİLGİSİ</th><th style='width:12%;'>ADET</th><th style='width:19%;'>NET</th><th style='width:23%;'>TOPLAM</th>"
       : (primGizli

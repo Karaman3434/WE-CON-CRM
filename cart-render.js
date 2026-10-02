@@ -514,15 +514,8 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("btnMusterisizMail").onclick = musterisizMailGonder;
   document.getElementById("btnMusterisizVazgec").onclick = function(){ document.getElementById("musterisizGonderOverlay").hidden = true; };
 
-  // İşlemi İptal Onay Popup — hem "Geri" butonu hem de mevcut "İşlemi
-  // İptal Et" butonu için ortak (WG.080926.196).
-  function sepetVeyaMusteriVarMi(){
-    var sepetDolu = false;
-    try{ sepetDolu = (JSON.parse(localStorage.getItem("weiconv2_sepet")||"[]").length > 0); }catch(e){}
-    var musteriSecili = false;
-    try{ musteriSecili = !!JSON.parse(localStorage.getItem("weicon_secili_musteri")||"null"); }catch(e){}
-    return sepetDolu || musteriSecili;
-  }
+  // İşlemi İptal Onay Popup — SADECE "🗑️ İşlemi İptal Et" butonu kullanıyor
+  // (02.10.2026: "Geri" tuşu artık bunu tetiklemiyor, bkz. yukarısı).
   function herSeyiSifirlaVeGit(hedefUrl){
     localStorage.setItem("weiconv2_sepet", "[]");
     localStorage.removeItem("weiconv2_sepet_kur_override");
@@ -549,12 +542,19 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("iptalOnayOverlay").hidden = true;
     iptalOnayHedefUrl = null;
   };
+  // GERİ DÖN DÜZELTMESİ (02.10.2026, Abdullah'ın isteğiyle): "Geri" tuşu artık
+  // sepeti/müşteriyi SİLİP "İşlemi İptal Ediyorsunuz" uyarısı göstermiyor —
+  // gerçekten NEREDEN gelindiyse oraya (history.back()) dönüyor, hiçbir veri
+  // kaybı olmadan ("Ana Sayfa" tuşuyla aynı mantık: href="home.html" sadece
+  // JS çalışmazsa diye yedek). Sepeti silen TEK yer artık aşağıdaki
+  // "🗑️ İşlemi İptal Et" butonu — kendi onay penceresiyle DEĞİŞMEDİ.
   var geriLink = document.querySelector(".nav-btn--geri");
   if(geriLink){
     geriLink.addEventListener("click", function(ev){
-      if(!sepetVeyaMusteriVarMi()) return;
-      ev.preventDefault();
-      iptalOnayGoster(geriLink.getAttribute("href") || "product.html");
+      if(window.history.length > 1){
+        ev.preventDefault();
+        window.history.back();
+      }
     });
   }
   document.getElementById("btnSepetIptal").onclick = function(){

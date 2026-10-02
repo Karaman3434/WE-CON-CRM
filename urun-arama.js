@@ -38,12 +38,26 @@ function uaIzinleriUygula(){
   }catch(e){ hataGoster("Arama izinleri uygulanamadı: " + e.message); }
 }
 
+// YENİ ARAMA SATIRI (02.10.2026, Abdullah'ın isteğiyle): kutu boşken HİT/
+// YENİ tuşları kutunun sağında görünür; kutuya dokununca (odaklanınca) veya
+// bir şey yazılınca ikisi de gizlenip kutu tam satırı dolduruyor. Kutu
+// tekrar boşalır ve odak kaybedilirse (blur) tuşlar geri gelir.
+function uaAramaSatiriDurumunuGuncelle(odaklandiMi){
+  try{
+    var input = document.getElementById("searchInput");
+    var gizle = odaklandiMi || input.value.trim().length > 0;
+    document.getElementById("btnHitUrunler").hidden = gizle;
+    document.getElementById("btnYeniUrunAc").hidden = gizle;
+  }catch(e){}
+}
+
 function uaSonuclariCiz(){
   try{
     var q = document.getElementById("searchInput").value;
     var liste = document.getElementById("sonucListesi");
     var alan = document.getElementById("uaAramaSonucAlani");
     var bos = document.getElementById("bosMesaj");
+    uaAramaSatiriDurumunuGuncelle(document.activeElement === document.getElementById("searchInput"));
 
     if(q.trim().length === 0){
       liste.innerHTML = "";
@@ -232,6 +246,8 @@ function uaOzelListeyiAc(baslik, liste){
 
 document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("searchInput").addEventListener("input", uaSonuclariCiz);
+  document.getElementById("searchInput").addEventListener("focus", function(){ uaAramaSatiriDurumunuGuncelle(true); });
+  document.getElementById("searchInput").addEventListener("blur", function(){ uaAramaSatiriDurumunuGuncelle(false); });
 
   document.getElementById("btnHitUrunler").onclick = function(){
     uaOzelListeyiAc("🔥 Hit Ürünler (en çok satılan)", uaHitUrunleriHesapla());

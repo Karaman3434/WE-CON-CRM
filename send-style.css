@@ -94,6 +94,21 @@
   font-weight: 800;
   cursor: pointer;
 }
+/* ALT BUTON SATIRI (02.10.2026, Abdullah'ın isteğiyle) — "Geri Dön" ve
+   "İletişim" artık tam genişlik tek buton yerine yarı yarıya yan yana. */
+.gonder-alt-buton-satir { display: flex; gap: 8px; margin-top: 8px; }
+.gonder-alt-buton-satir .geri-duzelt-btn { flex: 1; }
+.iletisim-ac-btn {
+  flex: 1;
+  background: #003a70;
+  color: #ffffff;
+  border: 1.5px solid #004f99;
+  border-radius: 8px;
+  padding: 11px 6px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
 
 .adres-secim-grid {
   display: grid;

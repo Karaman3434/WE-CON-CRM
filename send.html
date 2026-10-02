@@ -23,8 +23,8 @@
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
 <link rel="stylesheet" href="cart-style.css?v=WG.011026.2240.704">
 <link rel="stylesheet" href="cari-kart-style.css?v=WG.011026.1317.691">
-<link rel="stylesheet" href="send-style.css?v=WG.011026.1532.694">
-<link rel="stylesheet" href="belge-style.css?v=WG.011026.2240.704">
+<link rel="stylesheet" href="send-style.css?v=WG.021026.1245.709">
+<link rel="stylesheet" href="belge-style.css?v=WG.021026.1245.709">
 <link rel="stylesheet" href="detail-style.css?v=WG.011026.1458.693">
 </head>
 <body>
@@ -47,46 +47,64 @@
   <section class="gonder-kutu" id="gonderKutu">
     <div class="gonder-baslik" id="gonderBaslikYazi">✓ Kaydedildi — İstersen müşteriye gönder</div>
 
-    <!-- 3 buton mesaj kutusunun ÜSTÜNDE (14.09.2026) — Mail / WhatsApp / Tablo. -->
-    <div class="iletisim-secenek-grid">
-      <div class="iletisim-secenek-mail-sarmal">
-        <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnUstMail">
-          <span class="iletisim-secenek-ikon">📧</span>
-          <span class="iletisim-secenek-metin">Mail</span>
-        </button>
-        <!-- MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) —
-             üstteki 3 buton satırı DEĞİŞMEDİ, sadece Mail'e dokununca bu
-             küçük kutu açılıyor: Yeni Mail (mevcut otomatik akış) / Zinciri
-             Cevapla (yeni — tek dokunuş, önizleme yok, panoya kopyalar). -->
-        <div class="mail-secenek-popover" id="mailSecenekPopover" hidden>
-          <button type="button" class="mail-secenek-popover-oge" id="mailSecenekYeniMail">
-            <span class="mail-secenek-popover-baslik">Yeni mail</span>
-            <span class="mail-secenek-popover-alt">Her şeyi otomatik doldurur</span>
-          </button>
-          <button type="button" class="mail-secenek-popover-oge" id="mailSecenekZincir">
-            <span class="mail-secenek-popover-baslik">Zinciri cevapla</span>
-            <span class="mail-secenek-popover-alt">Kopyalar, sen yapıştırırsın</span>
-          </button>
-        </div>
-      </div>
-      <button class="iletisim-secenek-btn iletisim-secenek-btn--whatsapp" id="btnUstWhatsapp">
-        <span class="iletisim-secenek-ikon">💬</span>
-        <span class="iletisim-secenek-metin">WhatsApp</span>
-      </button>
-      <button class="iletisim-secenek-btn iletisim-secenek-btn--kaydet" id="btnUstTablo">
-        <span class="iletisim-secenek-ikon">📋</span>
-        <span class="iletisim-secenek-metin">Tablo</span>
-      </button>
-    </div>
-
     <textarea id="gonderMetin" rows="2"></textarea>
     <input type="tel" id="gonderTelefon" hidden>
     <input type="email" id="gonderEposta" hidden>
 
     <div id="tamOnizlemeAlani"></div>
 
-    <button class="geri-duzelt-btn" id="btnGeriDuzelt" style="width:100%; margin-top:8px;">‹ Geri — Sepete Dön ve Düzelt</button>
+    <!-- ALT BUTON SATIRI (02.10.2026, Abdullah'ın isteğiyle) — eskiden tek
+         başına tam genişlik "Geri" butonu vardı; artık yarı yarıya "Geri
+         Dön" ve "İletişim" yan yana. İletişim, Mail/WhatsApp/Tablo'yu
+         (aşağıdaki #iletisimSheetOverlay içinde, HİÇ DEĞİŞTİRİLMEDEN) alttan
+         açan bir sayfa (sheet) açıyor. -->
+    <div class="gonder-alt-buton-satir">
+      <button class="geri-duzelt-btn" id="btnGeriDuzelt">‹ Geri Dön — Sepete Dön ve Düzelt</button>
+      <button class="iletisim-ac-btn" id="btnIletisimAc">📨 İletişim</button>
+    </div>
   </section>
+
+  <!-- İLETİŞİM SHEET (02.10.2026) — Mail/WhatsApp/Tablo butonları eskiden
+       formun ÜSTÜNDE sabit duruyordu, şimdi "İletişim" tuşuna dokununca
+       alttan açılan bu sayfaya taşındı. Butonların kendisi, id'leri ve
+       davranışları (send-render.js) BİREBİR AYNI — sadece yerleri değişti. -->
+  <div class="overlay" id="iletisimSheetOverlay" hidden>
+    <div class="sheet">
+      <div class="sheet-baslik" style="text-align:center;">📨 İletişim</div>
+      <div class="sheet-alt" style="text-align:center;">Göndermek istediğin kanalı seç</div>
+      <div class="iletisim-secenek-grid">
+        <div class="iletisim-secenek-mail-sarmal">
+          <button class="iletisim-secenek-btn iletisim-secenek-btn--mail" id="btnUstMail">
+            <span class="iletisim-secenek-ikon">📧</span>
+            <span class="iletisim-secenek-metin">Mail</span>
+          </button>
+          <!-- MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) —
+               Mail'e dokununca bu küçük kutu açılıyor: Yeni Mail (mevcut
+               otomatik akış) / Zinciri Cevapla (tek dokunuş, önizleme yok,
+               panoya kopyalar). -->
+          <div class="mail-secenek-popover" id="mailSecenekPopover" hidden>
+            <button type="button" class="mail-secenek-popover-oge" id="mailSecenekYeniMail">
+              <span class="mail-secenek-popover-baslik">Yeni mail</span>
+              <span class="mail-secenek-popover-alt">Her şeyi otomatik doldurur</span>
+            </button>
+            <button type="button" class="mail-secenek-popover-oge" id="mailSecenekZincir">
+              <span class="mail-secenek-popover-baslik">Zinciri cevapla</span>
+              <span class="mail-secenek-popover-alt">Kopyalar, sen yapıştırırsın</span>
+            </button>
+          </div>
+        </div>
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--whatsapp" id="btnUstWhatsapp">
+          <span class="iletisim-secenek-ikon">💬</span>
+          <span class="iletisim-secenek-metin">WhatsApp</span>
+        </button>
+        <button class="iletisim-secenek-btn iletisim-secenek-btn--kaydet" id="btnUstTablo">
+          <span class="iletisim-secenek-ikon">📋</span>
+          <span class="iletisim-secenek-metin">Tablo</span>
+        </button>
+      </div>
+      <button class="btn-vazgec" id="btnIletisimKapat" style="width:100%; margin-top:10px;">Kapat</button>
+    </div>
+  </div>
 
   <!-- Sadece Tablo önizlemesi (14.09.2026) — cari bilgi/mesaj metni yok,
        SADECE ürün tablosu + genel toplam. Devam eden bir mail zincirine
@@ -175,7 +193,7 @@
 <script src="auth.js?v=WG.021026.1150.708"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
-<script src="hareket-tablo.js?v=WG.011026.2240.704"></script>
+<script src="hareket-tablo.js?v=WG.021026.1245.709"></script>
 <script src="cart-data.js?v=WG.021026.1150.708"></script>
 <script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="send-data.js?v=WG.150926.1224.571"></script>
@@ -183,7 +201,7 @@
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("send.html", "📤 Gönder"); RotaTakip.ciz("rotaSeridi"); });</script>
 <script src="mesaj-data.js?v=WG.280926.1620.658"></script>
-<script src="send-render.js?v=WG.011026.2210.702"></script>
+<script src="send-render.js?v=WG.021026.1245.709"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>
 </html>

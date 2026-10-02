@@ -375,6 +375,18 @@
 /* Gönder ekranının tablo etiketi artık ortalı + belge tipi/tarih birlikte
    (27.09.2026) — rozet yok, bkz. send-render.js tamOnizlemeHtmlOlustur. */
 .hareket-grup-etiket--ortali { justify-content: center; }
+/* HESAPLANDI etiketi tam ortada, işlem tipi rozeti (FİYAT TEKLİFİ vb.) sağ
+   kenarda sabit (02.10.2026, Abdullah'ın isteğiyle) — SADECE etiketOrtali +
+   etiketRozet birlikte verildiğinde (bkz. hareket-tablo.js grupHtml),
+   yani tek kullanım yeri cart-render.js'in HESAPLANDI grubu. */
+.hareket-grup-etiket--ortali-kenar { position: relative; }
+.hareket-grup-etiket--ortali-kenar .hareket-grup-etiket-metin { flex: 1; text-align: center; }
+.hareket-grup-etiket--ortali-kenar .hareket-grup-etiket-rozet {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
 .hareket-satir--sari { background: #ffe6cc; }
 .hareket-satir--sari td,
 .hareket-satir--sari .rozet-net,

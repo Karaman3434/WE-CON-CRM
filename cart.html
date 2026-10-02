@@ -25,9 +25,9 @@
 <title>WEICON ASİST — Ürün Bul / Hesapla / Sepet</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.021026.1150.708">
-<link rel="stylesheet" href="product-style.css?v=WG.021026.1150.708">
+<link rel="stylesheet" href="product-style.css?v=WG.021026.1245.709">
 <link rel="stylesheet" href="calc-style.css?v=WG.021026.1150.708">
-<link rel="stylesheet" href="belge-style.css?v=WG.011026.2240.704">
+<link rel="stylesheet" href="belge-style.css?v=WG.021026.1245.709">
 <link rel="stylesheet" href="musteri-serit.css?v=WG.270926.0045.641">
 <link rel="stylesheet" href="cart-style.css?v=WG.021026.1150.708">
 <link rel="stylesheet" href="detail-style.css?v=WG.011026.1412.692">
@@ -60,14 +60,22 @@
        Çalışan erişiminde "sepetAramaGoster" izni kapalıysa tüm bölüm
        gizlenir (bkz. urun-arama.js uaIzinleriUygula). -->
   <div id="uaAramaBolumu">
-    <div class="arama-kutusu">
-      <input type="text" id="searchInput" placeholder="Ürün adı, Berta veya Abas kodu ara..." autocomplete="off">
-      <span class="arama-ikon">🔍</span>
-    </div>
-
-    <div class="ozel-liste-satiri">
-      <button class="ozel-liste-btn ozel-liste-btn--kirmizi" id="btnHitUrunler">🔥 Hit Ürünler</button>
-      <button class="yeni-urun-ac-buton yeni-urun-ac-buton--yanyana" id="btnYeniUrunAc">➕ Yeni Ürün Ekle</button>
+    <!-- YENİ ARAMA SATIRI (02.10.2026): kutu boşken HİT/YENİ küçük tuşlar
+         sağında duruyor; dokununca/yazılınca urun-arama.js ikisini gizleyip
+         kutuyu tam satıra büyütüyor (bkz. uaAramaSatiriDurumunuGuncelle). -->
+    <div class="yeni-arama-satiri">
+      <div class="arama-kutusu">
+        <input type="text" id="searchInput" placeholder="Ürün adı, Berta veya Abas kodu ara..." autocomplete="off">
+        <span class="arama-ikon">🔍</span>
+      </div>
+      <button class="mini-aksiyon-btn mini-aksiyon-btn--hit" id="btnHitUrunler" type="button">
+        <span class="mini-aksiyon-ust-etiket">HİT</span>
+        <span class="mini-aksiyon-ikon">🔥</span>
+      </button>
+      <button class="mini-aksiyon-btn mini-aksiyon-btn--ekle" id="btnYeniUrunAc" type="button">
+        <span class="mini-aksiyon-ust-etiket">YENİ</span>
+        <span class="mini-aksiyon-ikon">➕</span>
+      </button>
     </div>
 
     <div class="yeni-urun-overlay" id="yeniUrunOverlay" hidden>
@@ -246,7 +254,7 @@
 
   <div class="sepet-alt-buton-satir" id="sepetAltButonSatiri" hidden>
     <button class="sepet-kaydet-btn" id="btnSepetKaydet">✓ Kaydet</button>
-    <button class="sepet-gonder-btn" id="btnSepetGonder">📋 Formu Görüntüle</button>
+    <button class="sepet-gonder-btn" id="btnSepetGonder">👁️ Görüntüle ve Gönder</button>
   </div>
   <button class="sepet-iptal-btn" id="btnSepetIptal" hidden>🗑️ İşlemi İptal Et — Sepeti Boşalt</button>
   <p class="devam-uyari" id="devamUyari" hidden>⚠️ Devam etmeden önce sarı gruptaki tüm ürünleri hesapla.</p>
@@ -328,7 +336,7 @@
 <script src="auth.js?v=WG.021026.1150.708"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
-<script src="hareket-tablo.js?v=WG.011026.2240.704"></script>
+<script src="hareket-tablo.js?v=WG.021026.1245.709"></script>
 <script src="cart-data.js?v=WG.021026.1150.708"></script>
 <script src="product-data.js?v=WG.130926.2010.553"></script>
 <script src="customer-data.js?v=WG.300926.1130.675"></script>
@@ -339,8 +347,8 @@
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("cart.html", "🔍 Ürün Bul / Hesapla / Sepet"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="cart-render.js?v=WG.021026.1150.708"></script>
-<script src="urun-arama.js?v=WG.021026.1150.708"></script>
+<script src="cart-render.js?v=WG.021026.1245.709"></script>
+<script src="urun-arama.js?v=WG.021026.1245.709"></script>
 <script src="hesapla-popup.js?v=WG.021026.1150.708"></script>
 <script src="yarim-kalan-uyari.js?v=WG.100926.1021.435"></script>
 </body>

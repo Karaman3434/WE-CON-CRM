@@ -812,9 +812,23 @@ document.addEventListener("DOMContentLoaded", function(){
     window.location.href = "home.html";
   }
 
-  // Formun ÜSTÜNDEKİ 3 buton — Mail / WhatsApp / Tablo (14.09.2026,
-  // Abdullah'ın onayladığı akış). Ayrı bir "İletişim - Gönder" popup'ı
-  // artık yok — bu 3 buton doğrudan formun üstünde duruyor.
+  // İLETİŞİM SHEET (02.10.2026, Abdullah'ın isteğiyle) — Mail/WhatsApp/Tablo
+  // artık formun üstünde sabit değil, "📨 İletişim" tuşuna dokununca alttan
+  // açılan bu sheet içinde duruyor. Butonların kendi davranışı (altta)
+  // DEĞİŞMEDİ, sadece bu sheet açılıp kapanıyor.
+  document.getElementById("btnIletisimAc").onclick = function(){
+    document.getElementById("iletisimSheetOverlay").hidden = false;
+  };
+  document.getElementById("btnIletisimKapat").onclick = function(){
+    document.getElementById("iletisimSheetOverlay").hidden = true;
+  };
+  document.getElementById("iletisimSheetOverlay").addEventListener("click", function(ev){
+    if(ev.target === this) this.hidden = true;
+  });
+  // Mail/WhatsApp/Tablo'dan biri seçilince kendi önizlemesi açılmadan önce
+  // İletişim sheet'i kapanır — iki alttan-açılan sayfa üst üste durmasın diye.
+  function iletisimSheetiniKapat(){ document.getElementById("iletisimSheetOverlay").hidden = true; }
+
   // MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) — Mail
   // tuşu artık direkt önizleme açmıyor, önce "Yeni Mail / Zinciri Cevapla"
   // seçim kutusunu açıyor.
@@ -826,11 +840,13 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("mailSecenekYeniMail").onclick = function(ev){
     ev.stopPropagation();
     document.getElementById("mailSecenekPopover").hidden = true;
+    iletisimSheetiniKapat();
     mailOnizlemeAc();
   };
   document.getElementById("mailSecenekZincir").onclick = function(ev){
     ev.stopPropagation();
     document.getElementById("mailSecenekPopover").hidden = true;
+    iletisimSheetiniKapat();
     zinciriCevaplaKopyala();
   };
   document.addEventListener("click", function(ev){
@@ -840,8 +856,8 @@ document.addEventListener("DOMContentLoaded", function(){
       pop.hidden = true;
     }
   });
-  document.getElementById("btnUstWhatsapp").onclick = whatsappOnizlemeAc;
-  document.getElementById("btnUstTablo").onclick = tabloSadeceOnizlemeAc;
+  document.getElementById("btnUstWhatsapp").onclick = function(){ iletisimSheetiniKapat(); whatsappOnizlemeAc(); };
+  document.getElementById("btnUstTablo").onclick = function(){ iletisimSheetiniKapat(); tabloSadeceOnizlemeAc(); };
 
   document.getElementById("tabloSadeceKopyalaBtn").onclick = function(){ tabloSadeceKopyala(this); };
   document.getElementById("tabloSadeceAnaSayfaBtn").onclick = anaSayfayaDonVeTemizle;

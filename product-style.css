@@ -63,6 +63,32 @@ body {
   pointer-events: none;
 }
 
+/* YENİ ARAMA SATIRI (02.10.2026, Abdullah'ın isteğiyle): arama kutusu boşken
+   HİT ÜRÜNLER / YENİ ÜRÜN EKLE aynı satırda, kutunun sağında iki küçük tuş
+   olarak duruyor; kutuya yazılmaya başlanınca (uaAramaSatiriGenisletildiMi)
+   bu iki tuş gizlenip arama kutusu tam satırı dolduruyor — bkz. urun-arama.js. */
+.yeni-arama-satiri { display: flex; gap: 6px; align-items: stretch; margin-bottom: 8px; }
+.yeni-arama-satiri .arama-kutusu { flex: 1; margin-bottom: 0; }
+.mini-aksiyon-btn {
+  width: 52px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 2px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  font-weight: 900;
+  font-family: inherit;
+  padding: 0;
+}
+.mini-aksiyon-btn .mini-aksiyon-ust-etiket { font-size: 8px; letter-spacing: .3px; opacity: .85; }
+.mini-aksiyon-btn .mini-aksiyon-ikon { font-size: 17px; line-height: 1; }
+.mini-aksiyon-btn--hit { background: #fdeaea; color: #c0392b; border-color: #c0392b; }
+.mini-aksiyon-btn--ekle { background: #f0fdfa; color: #0e6b58; border-color: #0e6b58; }
+
 /* ---------- Sepet satırı ---------- */
 .ozel-liste-satiri {
   display: grid;
