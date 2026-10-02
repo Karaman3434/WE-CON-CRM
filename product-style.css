@@ -446,6 +446,31 @@ body {
   color: #c0392b;
 }
 
+/* Hızlı Hesapla butonu (02.10.2026, Birleşik Sayfa) — eskiden burada
+   WEICON sayfasını açan .btn-link-ac (🔗) duruyordu; o davranış artık
+   doğrudan ürün hücresine taşındı (bkz. birlesik-arama.js), bu buton
+   yerine HIZLI HESAPLA penceresini açıyor. Aynı kutu ölçüsü/şekli
+   (.btn-link-ac ile birebir aynı boy), sadece okunabilirlik için koyu
+   zemin + kalın beyaz "H" harfi (Abdullah'ın isteği, 02.10.2026). */
+.btn-hesapla-ac {
+  width: 34px;
+  height: 28px;
+  border: none;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: #1a2b3c;
+  color: #ffffff;
+}
+.btn-hesapla-ac:active { opacity: .6; }
+
 .bos-mesaj, .yukleniyor-mesaj {
   text-align: center;
   color: #44494f;

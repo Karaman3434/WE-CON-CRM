@@ -34,6 +34,14 @@ function htmlEsc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+// Çalışan erişimi — ince ayar izinleri (02.10.2026). auth.js kısıtlı
+// olmayan (Abdullah'ın kendi) oturumlarda izinVarMi hiç tanımlamaz/her
+// zaman true döner — bkz. auth.js SEPET_ALT_IZIN_ANAHTARLARI.
+function crIzinVarMi(anahtar){
+  try{ return (typeof izinVarMi !== "function") || izinVarMi(anahtar); }
+  catch(e){ return true; }
+}
+
 var TIP_ETIKET_ROZET = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
 var secilenTip = "siparis";
 var seciliAdresler = {};
@@ -121,9 +129,14 @@ function adresleriBelirle(musteri){
   }
 }
 
+// BİRLEŞİK SAYFA (02.10.2026, Abdullah'ın isteğiyle): artık calc.html'e
+// YÖNLENDİRMİYOR — "birebir aynı" hesaplama arayüzünü #hpOverlay popup'ı
+// olarak bu sayfanın içinde açıyor (bkz. hesapla-popup.js). Satır hem
+// HESAPLANACAK (sarı) hem HESAPLANDI (yeşil) grubunda aynı şekilde çalışır.
 function urunuHesaplamayaGonder(idx){
-  localStorage.setItem("weiconv2_hesapla_duzenle_idx", idx);
-  window.location.href = "calc.html";
+  var urun = CartData.liste().find(function(u){ return u.idx === idx; });
+  if(!urun) return;
+  if(typeof HesaplaPopup !== "undefined") HesaplaPopup.ac(urun, urun.idx);
 }
 
 // Cari Bilgi bilgisi artık standart .musteri-serit — işlem türü rozeti
@@ -148,7 +161,7 @@ function sayfayiCiz(){
       grupSariAlani.innerHTML = "";
       grupYesilAlani.innerHTML = "";
       bosMesaj.hidden = false;
-      bosMesaj.textContent = !musteri ? "Önce bir müşteri seçmelisiniz." : "Sepetiniz boş. Önce Ürün Bul'dan ürün seçin.";
+      bosMesaj.textContent = !musteri ? "Önce bir müşteri seçmelisiniz." : "Sepetiniz boş. Yukarıdaki arama kutusundan ürün bulup SEÇ'e dokunun.";
       altButonSatiri.hidden = true;
       document.getElementById("btnSepetIptal").hidden = true;
       devamUyari.hidden = true;
@@ -179,9 +192,11 @@ function sayfayiCiz(){
       zeminSinifi: "hareket-satir--sari"
     });
 
+    var hesaplandiGosterVarMi = crIzinVarMi("sepetHesaplandiGoster");
+
     var hesaplananToplam = 0;
     hesaplananlar.forEach(function(u){ hesaplananToplam += hesapla(u).toplamEuro; });
-    grupYesilAlani.innerHTML = hesaplananlar.length === 0 ? "" : HareketTablo.grupHtml({
+    grupYesilAlani.innerHTML = (hesaplananlar.length === 0 || !hesaplandiGosterVarMi) ? "" : HareketTablo.grupHtml({
       etiket: "🟢 HESAPLANDI",
       etiketOrtali: true,
       etiketRozet: TIP_ETIKET_ROZET[secilenTip],
@@ -233,10 +248,12 @@ function sayfayiCiz(){
       siraHucresineSilTiklamasiEkle(tr, urun);
     });
 
+    var gonderVarMi = crIzinVarMi("sepetGonder");
+    altButonSatiri.hidden = !gonderVarMi;
     var tamamMi = CartData.tamamHesaplandiMi();
     document.getElementById("btnSepetKaydet").disabled = !tamamMi;
     document.getElementById("btnSepetGonder").disabled = !tamamMi;
-    devamUyari.hidden = tamamMi;
+    devamUyari.hidden = tamamMi || !gonderVarMi;
   }catch(e){ hataGoster("Sepet çizilemedi: " + e.message); }
 }
 
@@ -545,5 +562,6 @@ document.addEventListener("DOMContentLoaded", function(){
   };
 
   CustomerData.listeDegistiginde(sayfayiCiz);
+  window.addEventListener("weiconAuthHazir", sayfayiCiz);
   sayfayiCiz();
 });

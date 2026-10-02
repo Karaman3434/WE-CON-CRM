@@ -1,152 +1,23 @@
 <!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.021026.1150.708 — product.html -->
 <!--
-  WEICON ASİST — ÜRÜN BUL v2
-  ===========================
-  home.html ile aynı desen: shell / style / data / render ayrımı, ağır CSS
-  efekti yok (gradyan/gölge yığılması yasak — bkz. product-style.css üst yorum).
-
-  Ürün kataloğu Firebase'in KÖK ("/") yolundan, eski uygulamayla AYNI
-  yöntemle çekiliyor — böylece iki sürüm aynı veriyi paylaşır, ayrı bir
-  veri taşıma işine gerek kalmaz.
+  ÜRÜN BUL — KÖPRÜ SAYFASI (02.10.2026, Abdullah'ın isteğiyle)
+  ================================================================
+  Ürün Bul artık ayrı bir sayfa değil: arama kutusu, Hit Ürünler, Yeni
+  Ürün Ekle ve ürün listesi doğrudan cart.html'in (Ürün Bul / Hesapla /
+  Sepet birleşik sayfası) içinde. Bu dosya SADECE eski bağlantıların
+  (yer imi, geçmiş, vb.) kırılmaması için duruyor — oturum/izin kontrolü
+  cart.html'in kendisinde yapılıyor.
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d3d8c">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="WEICON ASİST">
 <title>WEICON ASİST — Ürün Bul</title>
-<script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
-<link rel="stylesheet" href="product-style.css?v=WG.011026.2255.705">
-<link rel="stylesheet" href="belge-style.css?v=WG.011026.2240.704">
-<link rel="stylesheet" href="musteri-serit.css?v=WG.270926.0045.641">
+<meta http-equiv="refresh" content="0; url=cart.html">
+<script>window.location.replace("cart.html");</script>
 </head>
 <body>
-
-<div class="app-ust-sabit">
-<header class="app-header">
-  <div class="logo">WEICON</div>
-  <div class="tarih" id="gunTarihi"></div>
-</header>
-
-<nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="home.html"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></a>
-  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
-</nav>
-</div>
-<div class="sayfa-rota-serit" id="rotaSeridi"></div>
-
-<main class="sayfa">
-
-  <div class="arama-kutusu">
-    <input type="text" id="searchInput" placeholder="Ürün adı, Berta veya Abas kodu ara..." autocomplete="off">
-    <span class="arama-ikon">🔍</span>
-  </div>
-
-  <div class="ozel-liste-satiri">
-    <button class="ozel-liste-btn ozel-liste-btn--kirmizi" id="btnHitUrunler">🔥 Hit Ürünler</button>
-    <button class="yeni-urun-ac-buton yeni-urun-ac-buton--yanyana" id="btnYeniUrunAc">➕ Yeni Ürün Ekle</button>
-  </div>
-
-  <div class="yeni-urun-overlay" id="yeniUrunOverlay" hidden>
-    <section class="yeni-urun-form">
-      <div class="yeni-urun-form-baslik">Yeni Ürün Ekle</div>
-      <div class="form-satir-2">
-        <input type="text" id="yeniUrunBerta" placeholder="Berta Kodu">
-        <input type="text" id="yeniUrunAbas" placeholder="Abas Kodu">
-      </div>
-      <input type="text" id="yeniUrunAdi" placeholder="Ürün Adı *">
-      <input type="number" step="0.01" id="yeniUrunFiyat" placeholder="Liste Fiyatı (EUR) *">
-      <p class="yeni-urun-hata" id="yeniUrunHata" hidden></p>
-      <div class="form-buton-satir">
-        <button class="birlestir-vazgec-btn" id="btnYeniUrunVazgec">Kapat</button>
-        <button class="yeni-urun-kaydet-btn" id="btnYeniUrunKaydet">✓ Kaydet</button>
-      </div>
-    </section>
-  </div>
-
-  <!-- Sepet satırının hemen üstünde hangi müşteriye işlem yapıldığı
-       (22.09.2026) — sepet doluyken görünür, boşken sepet-goster-buton
-       gibi gizli kalır. -->
-  <div id="urunBulCariBilgi" hidden></div>
-  <div class="sepet-satir-row">
-    <button class="sepet-goster-buton" id="btnSepeteDevam" hidden>🛒 Sepet (<span id="sepetSayisi">0</span>)</button>
-    <button class="sepet-bosalt-buton" id="btnSepetiBosalt" hidden>🗑 Boşalt</button>
-  </div>
-
-  <div class="data-table-container" id="anaTabloAlani">
-    <table class="data-table">
-      <thead><tr>
-        <th class="col-urun">ÜRÜN</th>
-        <th class="col-islem">İŞLEM</th>
-      </tr></thead>
-      <tbody id="sonucListesi"></tbody>
-    </table>
-  </div>
-
-  <p class="bos-mesaj" id="bosMesaj" hidden>Sonuç bulunamadı.</p>
-  <p class="yukleniyor-mesaj" id="yukleniyorMesaj">Katalog yükleniyor...</p>
-
-  <!-- HİT ÜRÜNLER / EN ÇOK ARANAN — açılır bölüm -->
-  <section class="acilir-liste-bolum" id="ozelListeBolumu" hidden>
-    <div class="acilir-liste-baslik-satir">
-      <span id="ozelListeBaslik"></span>
-      <button class="acilir-liste-kapat" id="btnOzelListeKapat">✕</button>
-    </div>
-    <p class="acilir-liste-ipucu">💡 Bir ürüne dokunarak doğrudan sepete ekleyebilirsiniz.</p>
-    <div class="data-table-container">
-      <table class="data-table hit-urun-tablo">
-        <thead><tr><th>Ürün</th><th>Toplam Adet</th><th>Geçmiş</th></tr></thead>
-        <tbody id="ozelListeGovde"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ÜRÜN SATIŞ GEÇMİŞİ — açılır bölüm -->
-  <section class="urun-gecmis-bolum" id="urunGecmisBolumu" hidden>
-    <div class="urun-gecmis-ust-serit">
-      <div class="urun-gecmis-kod" id="urunGecmisKod"></div>
-      <div class="urun-gecmis-ad" id="urunGecmisAd"></div>
-    </div>
-    <div class="urun-gecmis-ozet-grid">
-      <div class="urun-gecmis-ozet-kutu">
-        <div class="urun-gecmis-ozet-sayi" id="urunGecmisMusteriSayisi">0</div>
-        <div class="urun-gecmis-ozet-etiket">FARKLI MÜŞTERİ</div>
-      </div>
-      <div class="urun-gecmis-ozet-kutu">
-        <div class="urun-gecmis-ozet-sayi urun-gecmis-ozet-sayi--yesil" id="urunGecmisToplamAdet">0 adet</div>
-        <div class="urun-gecmis-ozet-etiket">TOPLAM SATILAN</div>
-      </div>
-    </div>
-    <button class="urun-gecmis-kapat-btn" id="btnUrunGecmisKapat">✕ Kapat</button>
-    <div id="urunGecmisListesi"></div>
-  </section>
-
-</main>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=WG.011026.2340.706"></script>
-<script src="auth.js?v=WG.011026.2340.706"></script>
-<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="customer-data.js?v=WG.300926.1130.675"></script>
-<script src="musteri-serit.js?v=WG.220926.2300.603"></script>
-<script src="reports-data.js?v=WG.290926.2245.674"></script>
-<script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
-<script src="product-data.js?v=WG.220926.1030.595"></script>
-<script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="rota-takip.js?v=WG.150926.1300.573"></script>
-<script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("product.html", "🔍 Ürün Bul"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="product-render.js?v=WG.011026.2255.705"></script>
-<!-- yarim-kalan-uyari.js (22.09.2026): Bu sayfadan kaldırıldı — artık Geri/
-     Ana Sayfa/Menü'de SORMADAN sessizce temizleniyor (bkz. product-render.js
-     sepetiSessizceTemizle). Eski modül burada hâlâ dursaydı hem çakışan bir
-     ikinci dinleyici hem de istenmeyen bir onay penceresi olurdu. -->
+<p style="font-family:sans-serif;padding:20px;color:#44494f;">Ürün Bul artık Sepet sayfasıyla birleşti, yönlendiriliyorsunuz… <a href="cart.html">Devam etmek için dokunun</a>.</p>
 </body>
 </html>

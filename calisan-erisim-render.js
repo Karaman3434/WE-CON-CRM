@@ -23,10 +23,22 @@
 
 var IZIN_TANIMLARI = [
   { grup: "Satış İşlemleri", sayfalar: [
-    { anahtar: "hesapla", etiket: "🧮 Hızlı Hesapla" },
-    { anahtar: "urunBul", etiket: "🔍 Ürün Bul (müşteri kaydı gerektirir)" },
-    { anahtar: "sepet", etiket: "🛒 Sepet" },
+    { anahtar: "hesapla", etiket: "🧮 Hızlı Hesapla (bağımsız, müşterisiz)" },
+    { anahtar: "sepet", etiket: "🛒 Ürün Bul / Hesapla / Sepet (birleşik sayfa)" },
     { anahtar: "gonder", etiket: "📤 Gönder" }
+  ]},
+  // BİRLEŞİK SAYFA İNCE AYARI (02.10.2026) — bunlar "sepet" izni AÇIKKEN
+  // o sayfa içindeki belirli düğmeleri tek tek kapatmak için. "sepet"
+  // izni KAPALIYSA bu alt izinlerin hiçbir önemi yok, çalışan sayfaya
+  // zaten giremiyor. Eski çalışan kayıtlarında bu anahtarlar hiç yoktur —
+  // o yüzden auth.js'te "yoksa açık say" kuralı var (geriye dönük kırmaz).
+  { grup: "🛒 Sayfası İçin İnce Ayar", varsayilanAcik: true, sayfalar: [
+    { anahtar: "sepetAramaGoster", etiket: "🔍 Arama kutusu ve ürün listesini görebilsin" },
+    { anahtar: "sepetWebAc", etiket: "🌐 Ürüne dokununca WEICON sayfasını açabilsin" },
+    { anahtar: "sepetHesaplaAc", etiket: "🧮 \"H\" — Hızlı Hesapla penceresini açabilsin" },
+    { anahtar: "sepetSec", etiket: "➕ \"SEÇ\" — ürünü Hesaplanacak'a ekleyebilsin" },
+    { anahtar: "sepetHesaplandiGoster", etiket: "🟢 Hesaplandı listesini görebilsin" },
+    { anahtar: "sepetGonder", etiket: "✓ Kaydet / 📋 Formu Görüntüle yapabilsin" }
   ]},
   { grup: "Müşteri", sayfalar: [
     { anahtar: "musteriBul", etiket: "🔍 Müşteri Bul" },
@@ -101,7 +113,10 @@ function ceKullaniciOlustur(kullaniciAdiGirilen, sifre, cb){
 function ceGrupHtml(uid, izinler, aktifMi){
   return IZIN_TANIMLARI.map(function(grup, grupIdx){
     var satirlar = grup.sayfalar.map(function(sayfa){
-      var isaretli = izinler[sayfa.anahtar] === true;
+      // "İnce Ayar" grubu — anahtar izinler'de hiç yoksa (eski kayıtlar,
+      // veya "sepet" henüz hiç kaydedilmemiş) varsayılan AÇIK gösterilir;
+      // sadece admin bilerek işareti kaldırıp kaydederse false olur.
+      var isaretli = grup.varsayilanAcik ? (izinler[sayfa.anahtar] !== false) : (izinler[sayfa.anahtar] === true);
       return '<label class="ce-grup-satir">' +
         '<span>' + sayfa.etiket + '</span>' +
         '<input type="checkbox" data-anahtar="' + sayfa.anahtar + '" ' + (isaretli ? "checked" : "") + (aktifMi ? "" : " disabled") + '>' +
@@ -117,6 +132,7 @@ function ceGrupHtml(uid, izinler, aktifMi){
 function ceAcikSayfaSayisi(izinler){
   var sayac = 0;
   IZIN_TANIMLARI.forEach(function(grup){
+    if(grup.varsayilanAcik) return; // ince ayar — "sayfa" sayılmaz
     grup.sayfalar.forEach(function(sayfa){ if(izinler[sayfa.anahtar] === true) sayac++; });
   });
   return sayac;
@@ -215,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function(){
     tarihEl.textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
   }
   var surumEl = document.getElementById("surumBilgisi");
-  if(surumEl) surumEl.textContent = "Sürüm WG.011026.2340.706";
+  if(surumEl) surumEl.textContent = "Sürüm WG.021026.1150.708";
 
   firebase.database().ref("kisitliKullanicilar").on("value", function(snap){
     ceListeyiCiz(snap.val() || {});

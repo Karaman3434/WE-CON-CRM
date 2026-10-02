@@ -125,12 +125,28 @@
   // akışının kendisi oldukları için izin kontrolünden muaf tutulurlar.
   var KISITLI_MUSTESNA_SAYFALAR = ["login.html","pin.html","cihaz-engelli.html","erisim-reddedildi.html"];
 
+  // İNCE AYAR (BUTON BAZLI) İZİNLER (02.10.2026, Birleşik Sayfa) — sayfa
+  // seviyesinin altında, tek bir sayfa içindeki belirli düğmeleri açıp
+  // kapatmak için. window.WEICON_IZINLER = null demek "kısıtlı değil, her
+  // şey açık" (Abdullah'ın kendi hesabı); dolu bir obje demek kısıtlı bir
+  // çalışan demek — o objede YOKSA veya true İSE açık sayılır, SADECE
+  // açıkça false İSE gizlenir/pasifleşir (geriye dönük uyumluluk: eski
+  // çalışan kayıtlarında bu yeni anahtarlar hiç yok, hepsi "açık" kalmalı).
+  // YENİ BİR İNCE AYAR İZNİ EKLEMEK İSTERSEN: calisan-erisim-render.js'teki
+  // İZIN_TANIMLARI'na aynı anahtarla bir satır eklemen yeterli — burada
+  // ayrıca bir şey tanımlamana gerek yok.
+  window.WEICON_IZINLER = undefined; // henüz çözülmedi
+  window.izinVarMi = function(anahtar){
+    var iz = window.WEICON_IZINLER;
+    return !iz || iz[anahtar] !== false;
+  };
+
   function kisitliSayfaKontrolu(user, cb){
     var dosyaAdi = yol.split("/").pop() || "home.html";
     if(KISITLI_MUSTESNA_SAYFALAR.indexOf(dosyaAdi) >= 0){ cb(true); return; }
     try{
       firebase.database().ref("kisitliKullanicilar/" + user.uid).once("value").then(function(snap){
-        if(!snap.exists()){ cb(true); return; } // harita yok -> kısıtlı değil
+        if(!snap.exists()){ window.WEICON_IZINLER = null; cb(true); return; } // harita yok -> kısıtlı değil
         var veri = snap.val() || {};
         if(veri.aktif === false){
           document.documentElement.style.visibility = "hidden";
@@ -140,7 +156,7 @@
         }
         var izinler = veri.izinler || {};
         var gerekliAnahtar = SAYFA_IZIN_ANAHTARI[dosyaAdi];
-        if(gerekliAnahtar && izinler[gerekliAnahtar] === true){ cb(true); return; }
+        if(gerekliAnahtar && izinler[gerekliAnahtar] === true){ window.WEICON_IZINLER = izinler; cb(true); return; }
         // İzinsiz — izinli ilk sayfaya sessizce yönlendir, hiçbiri yoksa çıkış yap.
         var hedefAnahtar = null;
         for(var i=0; i<SAYFA_IZIN_SIRASI.length; i++){
@@ -154,8 +170,8 @@
         }
         window.location.replace(SAYFA_IZIN_DOSYA[hedefAnahtar]);
         cb(false);
-      }).catch(function(){ cb(true); }); // okunamazsa (çevrimdışı vb.) engelleme
-    }catch(e){ cb(true); }
+      }).catch(function(){ window.WEICON_IZINLER = null; cb(true); }); // okunamazsa (çevrimdışı vb.) engelleme
+    }catch(e){ window.WEICON_IZINLER = null; cb(true); }
   }
 
   function aktiviteZamaniniGuncelle(){

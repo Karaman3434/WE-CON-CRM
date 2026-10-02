@@ -566,7 +566,8 @@ document.addEventListener("DOMContentLoaded", function(){
       localStorage.setItem("weiconv2_onceden_secilen_tip", secilenTip);
       localStorage.setItem("weiconv2_secili_iletisim", JSON.stringify(secimler));
       localStorage.removeItem("weiconv2_islem_yap_akisi");
-      window.location.href = "product.html";
+      // Birleşik Sayfa (02.10.2026): Ürün Bul artık cart.html'in içinde.
+      window.location.href = "cart.html";
     }
 
     function acikBelgeUyariGoster(acikBelge){

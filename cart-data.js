@@ -30,6 +30,16 @@ var CartData = (function(){
     if(i>=0){ sepet.splice(i,1); kaydet(); }
   }
 
+  // Birleşik Sayfa (02.10.2026) — Ürün Bul'un SEÇ'i ve Hızlı Hesapla
+  // popup'ının "Listeye Ekle"si artık AYNI sayfada, aynı anda açık; ikisi
+  // de sepete yeni bir satır eklerken product-data.js'in KENDİ ayrı
+  // bellek kopyası yerine DOĞRUDAN bu modülün sepet dizisine yazmalı —
+  // yoksa CartData.liste() (sayfayiCiz'in okuduğu) taze veriyi göremez.
+  function ekle(urun){
+    sepet.push(urun);
+    kaydet();
+  }
+
   function alaniGuncelle(idx, alan, deger){
     var u = sepet.find(function(u){ return u.idx === idx; });
     if(u){
@@ -129,6 +139,7 @@ var CartData = (function(){
   return {
     liste: liste,
     sil: sil,
+    ekle: ekle,
     alaniGuncelle: alaniGuncelle,
     hesaplandiIsaretle: hesaplandiIsaretle,
     tamamHesaplandiMi: tamamHesaplandiMi,
