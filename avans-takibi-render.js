@@ -17,6 +17,15 @@
   (bkz. avCanliMi, avDonemBariCiz, MaasKayitData.degistiginde altındaki
   dinleyici). Geçmiş bir ayı inceliyorsan (avCanliMi=false), bir dönem
   kapanması seni oradan koparmaz.
+
+  02.10.2026 (Abdullah'ın isteğiyle, ikinci ek) — avGecmisAvanlarCiz():
+  kapanmış TÜM avans dönemlerini (AvansKayitData.tumKayitlar()), tutar ve
+  "bekliyor / hangi aya dahil edildi" durumuyla tek tabloda gösterir (bkz.
+  #avGecmisSection — avans-takibi.html). Hiçbir yeni veri yazmaz, sadece
+  var olan kayıtları (toplamKesinti, ozelAvansToplam, isAvansiBelgesizKalan,
+  maasaDahilEdildigiDonem) okuyup raporlar. AvansKayitData.degistiginde
+  dinleyicisinde çağrılır, avSeciliAy/avSeciliYil'den BAĞIMSIZDIR (hangi
+  dönem görüntüleniyor olursa olsun hep TÜM geçmişi gösterir).
 */
 
 var AY_ADLARI_AV = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
@@ -245,6 +254,45 @@ function avCiz(){
   document.getElementById("avToplamGenel").textContent = fmtTL_AV(t.toplamKesinti);
 }
 
+// GEÇMİŞ AVANSLAR (02.10.2026, Abdullah'ın isteğiyle) — bkz. dosya başı
+// not. avSeciliAy/avSeciliYil'den bağımsız: hep TÜM kapanmış dönemleri
+// gösterir, hangi ay o an görüntüleniyor olursa olsun.
+function avGecmisAvanlarCiz(){
+  var govde = document.getElementById("avGecmisTabloGovde");
+  var section = document.getElementById("avGecmisSection");
+  var ozet = document.getElementById("avGecmisOzet");
+  if(!govde || !section || !ozet || typeof AvansKayitData === "undefined") return;
+
+  var liste = AvansKayitData.tumKayitlar().filter(function(k){ return (k.toplamKesinti||0) > 0; });
+  if(!liste.length){ section.hidden = true; return; }
+  section.hidden = false;
+
+  var bekleyenToplam = 0, bekleyenSayisi = 0;
+  govde.innerHTML = liste.map(function(k){
+    var ozelTutar = k.ozelAvansToplam || 0;
+    var isBelgesizTutar = k.isAvansiBelgesizKalan || 0;
+    var durumHtml;
+    if(k.maasaDahilEdildigiDonem){
+      var p = (k.maasaDahilEdildigiDonem||"").split("-");
+      var hedefAy = parseInt(p[1], 10), hedefYil = p[0] || "";
+      var hedefAyKisa = AY_ADLARI_AV[hedefAy] ? AY_ADLARI_AV[hedefAy].slice(0,3) : "?";
+      durumHtml = "<span class='av-gecmis-durum av-gecmis-durum--tamam'>✓ " + hedefAyKisa + " " + hedefYil + "</span>";
+    } else {
+      bekleyenToplam += (k.toplamKesinti||0);
+      bekleyenSayisi++;
+      durumHtml = "<span class='av-gecmis-durum av-gecmis-durum--bekliyor'>⏳ Bekliyor</span>";
+    }
+    return "<tr><td>" + AY_ADLARI_AV[k.ay] + " " + k.yil
+      + "<span class='av-gecmis-ay-alt'>Özel " + fmtTL_AV(ozelTutar) + " · İş (belgesiz) " + fmtTL_AV(isBelgesizTutar) + "</span></td>"
+      + "<td>" + fmtTL_AV(k.toplamKesinti) + "</td>"
+      + "<td>" + durumHtml + "</td></tr>";
+  }).join("");
+
+  ozet.textContent = bekleyenSayisi > 0
+    ? "Toplam " + fmtTL_AV(bekleyenToplam) + " kesilmeyi bekliyor (" + bekleyenSayisi + " dönem)."
+    : "Tüm geçmiş avanslar bir maaş hesabına dahil edilmiş.";
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle_AV();
   var btnMenuEl = document.getElementById("btnMenu");
@@ -280,6 +328,7 @@ document.addEventListener("DOMContentLoaded", function(){
     avYuklemeKilidiniAc();
   }
   avIlkGecisiDeneVeYap();
+  avGecmisAvanlarCiz();
 
   // DÖNEM BARI (27.09.2026 tasarım, 02.10.2026 revize) — ‹ › okları +
   // kaydırma (swipe). KAPATILMIŞ aylar atlanmadan tek tek gösterilir (salt
@@ -394,6 +443,7 @@ document.addEventListener("DOMContentLoaded", function(){
   AvansKayitData.degistiginde(function(){
     avDonemBariCiz();
     avIlkGecisiDeneVeYap();
+    avGecmisAvanlarCiz();
     // KRİTİK HATA DÜZELTMESİ (24.09.2026): Firebase'den her yeni veri
     // paketi geldiğinde (özellikle SAYFA AÇILDIKTAN SONRA gelen İLK
     // paket), seçili dönemi TAZE veriyle yeniden değerlendir (açık mı

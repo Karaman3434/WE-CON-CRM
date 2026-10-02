@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST V2 — VERSİYON: WG.021026.1910.713 — avans-takibi.html
+  WEICON ASİST V2 — VERSİYON: WG.021026.1940.714 — avans-takibi.html
   =====================================================================
   AVANS TAKİBİ — Özel Avans ve İş Avansı (+ belgeleme harcamaları) için
   bağımsız, kendi "ay kapat" döngüsüne sahip manuel giriş sayfası. Her
@@ -14,6 +14,13 @@
   Hesaplama'nın resmi açık dönemini geçemez; yeni dönem sadece Maaş
   Hesaplama'daki "GEÇERLİ AYIN HESABI KAPANDI" ile açılır ve bu sayfa
   (canlı dönemi izliyorsa) otomatik olarak oraya geçer.
+
+  02.10.2026 (Abdullah'ın isteğiyle, ikinci ek) — sayfaya "GEÇMİŞ AVANSLAR"
+  tablosu eklendi: kapanmış TÜM avans dönemlerini (bekleyen + zaten maaşa
+  dahil edilmiş), tutar ve durumuyla tek tabloda gösterir (bkz.
+  avGecmisAvanlarCiz() — avans-takibi-render.js). Veri
+  AvansKayitData.tumKayitlar() + maasaDahilEdildigiDonem alanından okunur —
+  yeni bir veri yazılmıyor, sadece var olan bilgi burada da raporlanıyor.
 -->
 <html lang="tr">
 <head>
@@ -30,7 +37,7 @@
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
 <link rel="stylesheet" href="odenebilir-komisyon-style.css?v=WG.021026.1910.713">
 <link rel="stylesheet" href="maas-hesaplama-style.css?v=WG.021026.1910.713">
-<link rel="stylesheet" href="avans-takibi-style.css?v=WG.021026.1910.713">
+<link rel="stylesheet" href="avans-takibi-style.css?v=WG.021026.1940.714">
 </head>
 <body>
 
@@ -145,6 +152,18 @@
     <button type="button" id="btnAvManuelKaydet2" class="av-manuel-kaydet-btn">💾 Bilgileri Kaydet</button>
   </section>
 
+  <!-- GEÇMİŞ AVANSLAR (02.10.2026, Abdullah'ın isteğiyle) — kapanmış tüm
+       avans dönemlerini, tutar ve maaşa dahil edilip edilmediğiyle
+       (bekliyor / hangi aya dahil edildi) tek tabloda gösterir. -->
+  <section class="ok-kutu" id="avGecmisSection" hidden>
+    <div class="mh-kutu-baslik-satir">📋 GEÇMİŞ AVANSLAR — kesinti durumu</div>
+    <table class="mh-harcama-tablo av-gecmis-tablo">
+      <thead><tr><th>DÖNEM</th><th>TUTAR</th><th>DURUM</th></tr></thead>
+      <tbody id="avGecmisTabloGovde"></tbody>
+    </table>
+    <p class="bos-mesaj" id="avGecmisOzet"></p>
+  </section>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -155,6 +174,6 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="maas-kayit-data.js?v=WG.270926.2340.653"></script>
 <script src="avans-kayit-data.js?v=WG.021026.1835.712"></script>
-<script src="avans-takibi-render.js?v=WG.021026.1910.713"></script>
+<script src="avans-takibi-render.js?v=WG.021026.1940.714"></script>
 </body>
 </html>
