@@ -80,3 +80,69 @@
   color: #9aa5b1;
   margin-top: 18px;
 }
+
+/* ---------- "Her ayar kendi kutusu" nav-liste tasarımı (02.10.2026,
+   Abdullah'ın isteğiyle — eski tek-uzun-sayfa düzeni yerine) ---------- */
+.ay-bolum-baslik {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: #8a94a6;
+  letter-spacing: .3px;
+  margin: 18px 2px 8px;
+  text-transform: uppercase;
+}
+.ay-bolum-baslik:first-of-type { margin-top: 4px; }
+
+.ay-nav-liste { border: 1.5px solid #e3e7ee; border-radius: 14px; overflow: hidden; background: #fff; }
+.ay-nav-satir {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 14px;
+  background: #fff;
+  text-decoration: none;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #eef1f5;
+  box-sizing: border-box;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.ay-nav-satir:last-child { border-bottom: none; }
+.ay-nav-sol { display: flex; align-items: center; gap: 10px; }
+.ay-nav-ikon { font-size: 19px; }
+.ay-nav-metin-grup { display: flex; flex-direction: column; }
+.ay-nav-baslik { font-size: 14.5px; font-weight: 800; color: #1c2430; }
+.ay-nav-deger { font-size: 12px; color: #003a70; font-weight: 800; margin-top: 2px; }
+.ay-nav-alt { font-size: 11.5px; color: #8a94a6; margin-top: 1px; }
+.ay-nav-ok { color: #c7cdd6; font-size: 18px; }
+
+/* ---------- Açılır pencere (.overlay/.sheet) genel standardı — send-
+   style.css'teki ile BİREBİR AYNI (bkz. "genel .overlay standardı") ---------- */
+.overlay {
+  position: fixed;
+  top: var(--ust-sabit-yukseklik, 100px);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(10,20,35,0.5);
+  display: flex; align-items: flex-start; justify-content: center;
+  z-index: 900;
+}
+.overlay[hidden] { display: none; }
+.sheet {
+  background: #fff;
+  width: 100%; max-width: none;
+  border-radius: 0;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  max-height: 100%;
+  overflow-y: auto;
+}
+.sheet-baslik { font-size: 15px; font-weight: 900; color: #003a70; margin-bottom: 4px; }
+.sheet-alt { font-size: 12px; color: #6b7684; margin-bottom: 12px; }
+.sheet-buton-satir { display: flex; gap: 4px; margin-top: 11px; }
+.btn-kaydet, .btn-vazgec {
+  flex: 1; border-radius: 8px; padding: 12px; min-height: 44px;
+  font-size: 13px; font-weight: 900; cursor: pointer; border: none;
+}
+.btn-kaydet { background: #16a085; color: #fff; border: 1.5px solid #128770; }
+.btn-vazgec { background: #c0392b; color: #fff; border: 1.5px solid #9a2e22; }

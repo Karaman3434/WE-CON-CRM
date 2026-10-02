@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.021026.1510.710";
+var APP_VERSION = "WG.021026.1730.711";
 
 var AY_ADLARI_AYARLAR = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 
@@ -35,8 +35,38 @@ function ayarlariDoldur(){
     var hedefEl = document.getElementById("hedefInput");
     if(hedefEl) hedefEl.value = isNaN(hedef) ? "" : hedef;
     sonGuncellemeYazisiniGoster();
+    ayOzetleriGuncelle();
   }catch(e){ hataGoster("Ayarlar okunamadı: " + e.message); }
 }
+
+// "Her ayar kendi kutusu" nav-listesindeki satırlarda (02.10.2026) mevcut
+// değerin kısa özetini gösterir — kullanıcı sheet'i açmadan değeri görsün.
+function ayOzetleriGuncelle(){
+  try{
+    var kur = parseFloat(document.getElementById("kurInput").value);
+    var kdv = parseFloat(document.getElementById("kdvInput").value);
+    var hedefEl = document.getElementById("hedefInput");
+    var hedef = hedefEl ? parseFloat(hedefEl.value) : NaN;
+
+    var kurOzetEl = document.getElementById("ayKurOzet");
+    if(kurOzetEl) kurOzetEl.textContent = isNaN(kur) || !kur
+      ? "Henüz girilmedi"
+      : kur.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:4}) + " ₺";
+
+    var kdvOzetEl = document.getElementById("ayKdvOzet");
+    if(kdvOzetEl) kdvOzetEl.textContent = isNaN(kdv) ? "%20" : ("%" + kdv);
+
+    var hedefOzetEl = document.getElementById("ayHedefOzet");
+    if(hedefOzetEl) hedefOzetEl.textContent = (isNaN(hedef) || !hedef)
+      ? "Girilmedi"
+      : hedef.toLocaleString("tr-TR",{minimumFractionDigits:2}) + " EUR";
+  }catch(e){}
+}
+
+// "Her ayar kendi kutusu" açılır pencereleri (02.10.2026) — genel aç/kapat
+// yardımcıları, bkz. ayarlar.html'deki .overlay/.sheet yapısı.
+function ayarSheetAc(id){ var el = document.getElementById(id); if(el) el.hidden = false; }
+function ayarSheetKapat(id){ var el = document.getElementById(id); if(el) el.hidden = true; }
 
 function sonGuncellemeYazisiniGoster(){
   var el = document.getElementById("kurSonGuncelleme");
@@ -70,6 +100,7 @@ function ayarlariKaydet(){
       localStorage.setItem("weicon_kdv_orani", kdv);
       localStorage.setItem("weicon_hedef", hedef);
     }
+    ayOzetleriGuncelle();
     alert("✓ Ayarlar kaydedildi.");
   }catch(e){ hataGoster("Ayarlar kaydedilemedi: " + e.message); }
 }
@@ -81,9 +112,49 @@ window.addEventListener("error", function(ev){
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
   ayarlariDoldur();
-  document.getElementById("btnAyarKaydet").onclick = ayarlariKaydet;
   var btnMenuEl = document.getElementById("btnMenu");
   if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
+
+  // "Her ayar kendi kutusu" nav-liste satırları -> ilgili sheet'i açar.
+  [
+    ["ayNavKur", "ayKurSheetOverlay"],
+    ["ayNavKdv", "ayKdvSheetOverlay"],
+    ["ayNavHedef", "ayHedefSheetOverlay"],
+    ["ayNavBakim", "ayBakimListeSheetOverlay"]
+  ].forEach(function(pair){
+    var btn = document.getElementById(pair[0]);
+    if(btn) btn.onclick = function(){ ayarSheetAc(pair[1]); };
+  });
+
+  // Bakım Araçları listesindeki satırlar -> liste sheet'i kapanır, aracın
+  // kendi sheet'i açılır.
+  [
+    ["ayNavBakimKod", "ayBakimKodSheetOverlay"],
+    ["ayNavBakimYazim", "ayBakimYazimSheetOverlay"],
+    ["ayNavBakimAvans", "ayBakimAvansSheetOverlay"]
+  ].forEach(function(pair){
+    var btn = document.getElementById(pair[0]);
+    if(btn) btn.onclick = function(){
+      ayarSheetKapat("ayBakimListeSheetOverlay");
+      ayarSheetAc(pair[1]);
+    };
+  });
+
+  // data-sheet-kapat taşıyan her "Kapat" butonu kendi overlay'ini kapatır.
+  document.querySelectorAll("[data-sheet-kapat]").forEach(function(btn){
+    btn.onclick = function(){ ayarSheetKapat(this.getAttribute("data-sheet-kapat")); };
+  });
+
+  // Kur/KDV/Hedef sheet'lerindeki "✓ Kaydet" butonları -> hepsi aynı
+  // ayarlariKaydet()'i çağırır (eskisi gibi üçü birlikte kaydedilir),
+  // sonra sadece kendi sheet'ini kapatır.
+  document.querySelectorAll(".ay-sheet-kaydet-btn").forEach(function(btn){
+    btn.onclick = function(){
+      ayarlariKaydet();
+      var overlay = btn.closest(".overlay");
+      if(overlay) overlay.hidden = true;
+    };
+  });
   document.getElementById("btnKodlariStandartlastir").onclick = function(){
     var onay = confirm(
       "⚠️ Bu işlem TÜM müşteri kodlarını M-0001, M-0002... şeklinde yeniden numaralandırır ve geçmiş Numune/Teklif/Proforma/Sipariş kayıtlarındaki müşteri bağlantılarını buna göre günceller.\n\n" +

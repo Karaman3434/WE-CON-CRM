@@ -222,16 +222,152 @@ window.addEventListener("error", function(ev){
   ceHataGoster("HATA: " + ev.message + " (" + (ev.filename||"").split("/").pop() + ":" + ev.lineno + ")");
 });
 
-document.addEventListener("DOMContentLoaded", function(){
-  var tarihEl = document.getElementById("gunTarihi");
-  if(tarihEl){
-    var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
-    var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-    var d = new Date();
-    tarihEl.textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
+/* ---------- S22 + PIN kilidi (02.10.2026, Abdullah'ın isteğiyle) ----------
+   Cihazlarım'daki (cihazlar-render.js) akışın BİREBİR AYNISI — kasıtlı
+   olarak AYNI localStorage/Firebase anahtarları kullanılır
+   (weicon_cihaz_pin_hash, weicon_cihaz_pin_ok, cihazPin düğümü), böylece
+   bir oturumda Cihazlarım'da PIN zaten girilmişse burada tekrar sorulmaz. */
+function ceErisimKontrolEt(){
+  var s22Mi = CihazData.korumaliMi(CihazData.benimAdim());
+  document.getElementById("ceSadeceS22Notu").hidden = s22Mi;
+  document.getElementById("cePinAlani").hidden = true;
+  document.getElementById("ceYonetimAlani").hidden = true;
+
+  if(!s22Mi) return;
+
+  if(sessionStorage.getItem("weicon_cihaz_pin_ok") === "1"){
+    ceYonetimAlaniniGoster();
+  } else {
+    document.getElementById("cePinAlani").hidden = false;
+    cePinAkisiBaslat();
   }
-  var surumEl = document.getElementById("surumBilgisi");
-  if(surumEl) surumEl.textContent = "Sürüm WG.021026.1150.708";
+}
+
+var ceGirilenPin = "";
+var cePinAsama = "kontrolEdiliyor"; // kontrolEdiliyor -> giris | yeniPin1 -> yeniPin2 -> tamam
+var ceYeniPinIlkGiris = "";
+
+function cePinHashGetir(){ return localStorage.getItem("weicon_cihaz_pin_hash"); }
+
+function ceNoktalariGuncelle(){
+  var noktalar = document.querySelectorAll("#cePinNoktalar .pin-nokta");
+  noktalar.forEach(function(n, i){ n.classList.toggle("dolu", i < ceGirilenPin.length); });
+}
+function cePinEkraniniSifirla(){ ceGirilenPin = ""; ceNoktalariGuncelle(); }
+
+function ceRakamEkle(r){
+  if(ceGirilenPin.length >= 4) return;
+  ceGirilenPin += r;
+  ceNoktalariGuncelle();
+  if(ceGirilenPin.length === 4){
+    if(cePinAsama === "giris") cePinKontrolEt();
+    else if(cePinAsama === "yeniPin1") ceYeniPinIlkAdimiIsle();
+    else if(cePinAsama === "yeniPin2") ceYeniPinTekrarIsle();
+  }
+}
+function ceRakamSil(){
+  ceGirilenPin = ceGirilenPin.slice(0, -1);
+  ceNoktalariGuncelle();
+  document.getElementById("cePinHata").hidden = true;
+}
+
+function ceYeniPinAkisiniBaslat(){
+  cePinAsama = "yeniPin1";
+  cePinEkraniniSifirla();
+  document.getElementById("cePinBaslik").textContent = "🆕 Yönetim PIN'i Belirle";
+  var bilgi = document.getElementById("cePinBilgi");
+  bilgi.textContent = "Bu cihazdan çalışan hesaplarını yönetebilmek için 4 haneli AYRI bir PIN belirle (uygulama kilidinden farklı).";
+  bilgi.hidden = false;
+}
+
+function cePinKontrolEt(){
+  var mevcutHash = cePinHashGetir();
+  pinHashHesapla(ceGirilenPin).then(function(girilenHash){
+    if(girilenHash === mevcutHash){
+      sessionStorage.setItem("weicon_cihaz_pin_ok", "1");
+      ceYonetimAlaniniGoster();
+    } else {
+      document.getElementById("cePinHata").hidden = false;
+      cePinEkraniniSifirla();
+    }
+  });
+}
+
+function ceYeniPinIlkAdimiIsle(){
+  ceYeniPinIlkGiris = ceGirilenPin;
+  cePinAsama = "yeniPin2";
+  cePinEkraniniSifirla();
+  document.getElementById("cePinBaslik").textContent = "🆕 PIN'i Onayla";
+  document.getElementById("cePinBilgi").textContent = "Az önce girdiğin PIN'i onaylamak için tekrar gir.";
+}
+
+function ceYeniPinTekrarIsle(){
+  if(ceGirilenPin !== ceYeniPinIlkGiris){
+    document.getElementById("cePinHata").textContent = "PIN'ler eşleşmiyor, baştan deneyin.";
+    document.getElementById("cePinHata").hidden = false;
+    ceYeniPinIlkGiris = "";
+    ceYeniPinAkisiniBaslat();
+    return;
+  }
+  pinHashHesapla(ceGirilenPin).then(function(yeniHash){
+    localStorage.setItem("weicon_cihaz_pin_hash", yeniHash);
+    try{ firebase.database().ref("cihazPin").set({hash:yeniHash, zaman:Date.now()}); }catch(e){}
+    sessionStorage.setItem("weicon_cihaz_pin_ok", "1");
+    ceYonetimAlaniniGoster();
+  });
+}
+
+function ceTusTakiminiOlustur(){
+  var tuslar = ["1","2","3","4","5","6","7","8","9","","0","⌫"];
+  var grid = document.getElementById("cePinTusGrid");
+  grid.innerHTML = tuslar.map(function(t){
+    if(t === "") return "<button class='pin-tus pin-tus--bos'></button>";
+    if(t === "⌫") return "<button class='pin-tus pin-tus--sil' data-sil='1'>⌫</button>";
+    return "<button class='pin-tus' data-rakam='" + t + "'>" + t + "</button>";
+  }).join("");
+  grid.querySelectorAll("[data-rakam]").forEach(function(btn){
+    btn.onclick = function(){ ceRakamEkle(this.getAttribute("data-rakam")); };
+  });
+  grid.querySelector("[data-sil]").onclick = ceRakamSil;
+
+  var gizliInput = document.getElementById("cePinGizliInput");
+  gizliInput.addEventListener("input", function(){
+    var v = gizliInput.value.replace(/[^0-9]/g, "").slice(0,4);
+    gizliInput.value = "";
+    for(var i=0;i<v.length;i++) ceRakamEkle(v[i]);
+  });
+}
+
+function cePinAkisiBaslat(){
+  document.getElementById("cePinBaslik").textContent = "🔒 Çalışan Erişimi — Yönetim PIN'i";
+  document.getElementById("cePinBilgi").hidden = true;
+  cePinEkraniniSifirla();
+
+  if(cePinHashGetir()){
+    cePinAsama = "giris";
+    return;
+  }
+  // Yerelde yok — Firebase'de bu S22'nin daha önce belirlediği bir PIN
+  // var mı diye bak (localStorage temizlenmiş olabilir). Yoksa yeni belirle.
+  try{
+    firebase.database().ref("cihazPin/hash").once("value").then(function(snap){
+      if(snap.val()){
+        localStorage.setItem("weicon_cihaz_pin_hash", snap.val());
+        cePinAsama = "giris";
+      } else {
+        ceYeniPinAkisiniBaslat();
+      }
+    }).catch(function(){ ceYeniPinAkisiniBaslat(); });
+  }catch(e){ ceYeniPinAkisiniBaslat(); }
+}
+
+/* ---------- PIN doğrulandıktan sonra: asıl Çalışan Erişimi içeriği ---------- */
+function ceYonetimAlaniniGoster(){
+  document.getElementById("cePinAlani").hidden = true;
+  document.getElementById("ceYonetimAlani").hidden = false;
+
+  if(ceYonetimBaslatildiMi) return;
+  ceYonetimBaslatildiMi = true;
 
   firebase.database().ref("kisitliKullanicilar").on("value", function(snap){
     ceListeyiCiz(snap.val() || {});
@@ -259,4 +395,21 @@ document.addEventListener("DOMContentLoaded", function(){
       document.getElementById("ceSifre").value = "";
     });
   };
+}
+var ceYonetimBaslatildiMi = false;
+
+document.addEventListener("DOMContentLoaded", function(){
+  var tarihEl = document.getElementById("gunTarihi");
+  if(tarihEl){
+    var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+    var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+    var d = new Date();
+    tarihEl.textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
+  }
+  var surumEl = document.getElementById("surumBilgisi");
+  if(surumEl) surumEl.textContent = "Sürüm WG.021026.1730.711";
+
+  ceTusTakiminiOlustur();
+  ceErisimKontrolEt();
+  CihazData.kaydiGuncelle();
 });

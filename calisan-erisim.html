@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — ÇALIŞAN ERİŞİMİ v1
+  WEICON ASİST — ÇALIŞAN ERİŞİMİ v2
   ====================================
   Abdullah'ın kullanıcı adı + şifresini kendi belirleyip oluşturduğu,
   sınırlı erişimli çalışan hesapları. Her hesap için uygulamadaki hangi
@@ -11,6 +11,13 @@
 
   Hesap oluşturma, Abdullah'ın kendi oturumunu bozmadan ikincil bir Firebase
   app örneği üzerinden yapılır (ücretsiz, Cloud Function GEREKMEZ).
+
+  S22 + PIN KİLİDİ (02.10.2026, Abdullah'ın isteğiyle): "Tüm kullanıcıları
+  S22'den kontrol etmek istiyorum" — bu sayfa artık SADECE cihaz adı tam
+  olarak "Samsung S22" olan cihazdan açılabiliyor, ve o cihazda da önce
+  Cihazlarım'daki ile AYNI 4 haneli Yönetim PIN'i isteniyor (aynı
+  localStorage/Firebase anahtarları: weicon_cihaz_pin_hash, cihazPin —
+  bkz. cihazlar-render.js'teki orijinal akış, buraya BİREBİR taşındı).
 -->
 <html lang="tr">
 <head>
@@ -25,6 +32,8 @@
 <title>WEICON ASİST — Çalışan Erişimi</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2340.706">
+<link rel="stylesheet" href="pin-style.css">
+<link rel="stylesheet" href="cihazlar-style.css?v=WG.011026.2210.702">
 <link rel="stylesheet" href="calisan-erisim-style.css?v=WG.011026.2340.706">
 </head>
 <body>
@@ -47,18 +56,40 @@
 
 <main class="sayfa">
 
-  <section class="ce-kart">
-    <div class="ce-kart-baslik">➕ Yeni Kullanıcı</div>
-    <div class="ce-form-alan">
-      <input type="text" id="ceKullaniciAdi" placeholder="Kullanıcı adı" autocomplete="off" autocapitalize="off">
-      <input type="password" id="ceSifre" placeholder="Şifre (en az 6 karakter)" autocomplete="new-password">
-    </div>
-    <p class="ce-hata" id="ceOlusturHata" hidden></p>
-    <button class="ce-olustur-btn" id="btnCeOlustur">✓ Kullanıcı Oluştur</button>
-  </section>
+  <!-- SADECE S22 DEĞİLSE -->
+  <div class="cz-sadece-s22-kutu" id="ceSadeceS22Notu" hidden>
+    🔒 Çalışan Erişimi sadece "Samsung S22" adlı ana cihazdan açılabilir. Kullanıcıları buradan oluşturup yönetebilirsin.
+  </div>
 
-  <div id="ceKullaniciListesi"></div>
-  <p class="ce-bos-mesaj" id="ceBosMesaj" hidden>Henüz çalışan hesabı oluşturmadın.</p>
+  <!-- S22 İSE — ÖNCE AYRI PIN (Cihazlarım'daki ile AYNI) -->
+  <div id="cePinAlani" hidden>
+    <div class="cz-pin-kutu">
+      <h1 id="cePinBaslik">🔒 Çalışan Erişimi — Yönetim PIN'i</h1>
+      <p class="pin-bilgi" id="cePinBilgi" hidden></p>
+      <div class="pin-noktalar" id="cePinNoktalar">
+        <span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span>
+      </div>
+      <input type="tel" id="cePinGizliInput" class="pin-gizli-input" maxlength="4" inputmode="numeric" autocomplete="off">
+      <p class="giris-hata" id="cePinHata" hidden>PIN hatalı, tekrar deneyin.</p>
+      <div class="pin-tus-grid" id="cePinTusGrid"></div>
+    </div>
+  </div>
+
+  <!-- PIN DOĞRULANDIKTAN SONRA -->
+  <div id="ceYonetimAlani" hidden>
+    <section class="ce-kart">
+      <div class="ce-kart-baslik">➕ Yeni Kullanıcı</div>
+      <div class="ce-form-alan">
+        <input type="text" id="ceKullaniciAdi" placeholder="Kullanıcı adı" autocomplete="off" autocapitalize="off">
+        <input type="password" id="ceSifre" placeholder="Şifre (en az 6 karakter)" autocomplete="new-password">
+      </div>
+      <p class="ce-hata" id="ceOlusturHata" hidden></p>
+      <button class="ce-olustur-btn" id="btnCeOlustur">✓ Kullanıcı Oluştur</button>
+    </section>
+
+    <div id="ceKullaniciListesi"></div>
+    <p class="ce-bos-mesaj" id="ceBosMesaj" hidden>Henüz çalışan hesabı oluşturmadın.</p>
+  </div>
 
   <p class="surum-bilgisi" id="surumBilgisi"></p>
 </main>
@@ -69,7 +100,9 @@
 <script src="firebase-config.js?v=WG.011026.2340.706"></script>
 <script src="auth.js?v=WG.021026.1150.708"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="pin-utils.js?v=WG.150926.1241.572"></script>
+<script src="cihaz-data.js?v=WG.130926.2010.553"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="calisan-erisim-render.js?v=WG.021026.1150.708"></script>
+<script src="calisan-erisim-render.js?v=WG.021026.1730.711"></script>
 </body>
 </html>
