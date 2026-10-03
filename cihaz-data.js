@@ -94,13 +94,19 @@ var CihazData = (function(){
       adi = String(adi||"").trim();
       if(!adi){ cb(false); return; }
       localStorage.setItem("weicon_kullanici_adi", adi);
-      baslat();
-      var id = benimIdim();
-      var db = firebase.database();
-      db.ref("cihazlar/" + id).update({ kullaniciAdi: adi, sonGorulme: Date.now() })
-        .then(function(){ return db.ref("cihazlar/" + id + "/kullaniciAdiGecmisi").push({adi: adi, zaman: Date.now()}); })
-        .then(function(){ cb(true); })
-        .catch(function(){ cb(true); }); // yerel kayıt zaten oldu, çevrimdışı da olsa kullanıcıyı bekletme
+      // Yerel kayıt bu satırda tamamlandı — ekranı Firebase'in sunucudan
+      // onay dönmesini bekleterek kilitleme (zayıf/kesik mobil bağlantıda
+      // bu onay uzun süre gelmeyebilir, hatta hiç gelmeyebilir). Kullanıcıyı
+      // hemen serbest bırak, Firebase senkronunu arka planda sürdür.
+      cb(true);
+      try{
+        baslat();
+        var id = benimIdim();
+        var db = firebase.database();
+        db.ref("cihazlar/" + id).update({ kullaniciAdi: adi, sonGorulme: Date.now() })
+          .then(function(){ return db.ref("cihazlar/" + id + "/kullaniciAdiGecmisi").push({adi: adi, zaman: Date.now()}); })
+          .catch(function(){});
+      }catch(e){}
     }catch(e){ cb(false); }
   }
 

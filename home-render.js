@@ -328,13 +328,13 @@ function kaKullaniciAdiPenceresiniKapat(){
 }
 
 function kaKullaniciAdiKaydiTikla(){
+  var btn = document.getElementById("btnKaKaydet");
   try{
     var input = document.getElementById("kaInput");
     var hata = document.getElementById("kaHata");
     var adi = input.value.trim();
     if(!adi){ hata.hidden = false; return; }
     hata.hidden = true;
-    var btn = document.getElementById("btnKaKaydet");
     btn.disabled = true;
     btn.textContent = "Kaydediliyor...";
     CihazData.kullaniciAdiKaydet(adi, function(){
@@ -343,7 +343,10 @@ function kaKullaniciAdiKaydiTikla(){
       asDrawerIsimGuncelle();
       kaKullaniciAdiPenceresiniKapat();
     });
-  }catch(e){ hataGoster("Kullanıcı adı kaydedilemedi: " + e.message); }
+  }catch(e){
+    if(btn){ btn.disabled = false; btn.textContent = "✓ Kaydet ve Devam Et"; }
+    hataGoster("Kullanıcı adı kaydedilemedi: " + e.message);
+  }
 }
 
 function kaBaslatVeKontrolEt(){
