@@ -1,24 +1,34 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.031026.1710.720 — yillik-km-odeme.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.031026.1900.722 — yillik-km-odeme.html -->
 <!--
   YILLIK KM ÖDEME (03.10.2026, Abdullah'ın isteğiyle) — Araç KM alt
   menüsündeki 3. seçenek. Her ayki ÖZEL km karşılığı şirketten alınan
   geri ödemenin takibi:
-    - Toplam Özel KM: km-data.js'teki kmTakip kayıtlarından CANLI
-      hesaplanır (salt okunur).
+    - Toplam Özel KM: VARSAYILAN olarak km-data.js'teki kmTakip
+      kayıtlarından CANLI hesaplanır — elle düzeltilip silinebilir.
+    - Şirket KM Hakkı (YENİ, 03.10.2026): Abdullah'ın firmasının yılda
+      tanıdığı ücretsiz km hakkı, elle girilip yıl bazlı saklanır
+      ("kmSirketHakki/{YIL}"). KM Çarpanı gibi SADECE "✓ Kaydet" tuşuna
+      basınca kaydedilir.
+    - Ücretlendirilecek KM (YENİ, 03.10.2026): Toplam Özel KM − Şirket KM
+      Hakkı (negatifse 0) — otomatik hesaplanır, salt okunur.
     - KM Çarpanı: Abdullah'ın elle girdiği TL/km değeri, yıl bazlı
-      saklanır ("kmCarpanlari/{YIL}"). ARTIK blur'da değil, SADECE
-      yanındaki "✓ Kaydet" tuşuna basınca kaydedilir — Abdullah
-      değiştirip tuşa basmadıkça girilmiş/kayıtlı değer sabit kalır.
-    - Tutar: Toplam Özel KM × KM Çarpanı — OTOMATİK hesaplanır, salt okunur.
+      saklanır ("kmCarpanlari/{YIL}"). SADECE yanındaki "✓ Kaydet" tuşuna
+      basınca kaydedilir.
+    - Tutar (03.10.2026 güncellemesi): artık "o ayki özel km × çarpan"
+      DEĞİL — yıl başından BİRİKİMLİ hesaplanır: şirket hakkı dolana kadar
+      Tutar 0'dır, hak o ay içinde dolarsa sadece aşan kısım, sonraki
+      aylarda ise km'nin TAMAMI ücretlendirilir. Böylece aylık Tutar'ların
+      toplamı her zaman "Ücretlendirilecek KM × Çarpan"a eşittir. Elle
+      düzeltilip silinebilir (bkz. yillik-km-odeme-render.js koAySonuclari).
     - Ödeme Tarihi / Platform / Ödeme / Durum: elle girilir, serbest metin
       ("kmOdemeleri/{YYYY-MM}" altında saklanır). Durum artık OTOMATİK
       rozet DEĞİL — Abdullah'ın kendi yazdığı serbest bir hücre (03.10.2026,
       "ben kendim manuel gireceğim" isteğiyle).
-  Üstteki 4 pano (03.10.2026 güncellemesi): Toplam Özel KM / Toplam Tutar /
-  Toplam Ödenen / Kalan Ödeme (= yıllık toplam Tutar − yıllık toplam
-  Ödenen — ödeme yapıldıkça otomatik düşer). Tasarım km-kayitlar.html ile
-  AYNI bileşenleri kullanır (km-style.css).
+  Üstte TAM GENİŞLİK bir KM özet kartı (Toplam Özel KM / Şirket KM Hakkı /
+  Ücretlendirilecek KM) ve altında 3'lü pano (Toplam Tutar / Toplam Ödenen /
+  Kalan Ödeme = yıllık toplam Tutar − yıllık toplam Ödenen). Tasarım
+  km-kayitlar.html ile AYNI bileşenleri kullanır (km-style.css).
 -->
 <html lang="tr">
 <head>
@@ -33,7 +43,7 @@
 <title>WEICON ASİST — Yıllık KM Ödeme</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
-<link rel="stylesheet" href="km-style.css?v=WG.031026.1710.720">
+<link rel="stylesheet" href="km-style.css?v=WG.031026.1900.722">
 </head>
 <body>
 
@@ -71,22 +81,36 @@
     </div>
   </div>
 
-  <section class="km-toplam-satir ko-toplam-satir-4">
-    <div class="km-toplam-kutu km-toplam-kutu--ozel-dolu">
-      <div class="km-toplam-kutu-etiket">TOPLAM ÖZEL KM</div>
-      <div class="km-toplam-kutu-deger" id="koYilToplamOzelKm">0 km</div>
+  <div class="ko-km-ozet-kutu">
+    <div class="ko-km-ozet-satir ko-km-ozet-ana">
+      <span class="ko-km-ozet-etiket">TOPLAM ÖZEL KM</span>
+      <span class="ko-km-ozet-deger" id="koYilToplamOzelKm">0 km</span>
     </div>
+    <div class="ko-km-ozet-satir">
+      <span class="ko-km-ozet-etiket" id="koHakEtiket">🎯 2026 Şirket KM Hakkı</span>
+      <span class="ko-km-ozet-input-grup">
+        <input type="number" id="koHakInput" step="100" inputmode="decimal"> <span>km</span>
+        <button class="ko-hak-kaydet-btn" id="btnKoHakKaydet">✓ Kaydet</button>
+      </span>
+    </div>
+    <div class="ko-km-ozet-satir ko-km-ozet-ucret">
+      <span class="ko-km-ozet-etiket">ÜCRETLENDİRİLECEK KM</span>
+      <span class="ko-km-ozet-deger" id="koYilUcretlendirilecekKm">0 km</span>
+    </div>
+  </div>
+
+  <section class="km-toplam-satir ko-toplam-satir-3">
     <div class="km-toplam-kutu km-toplam-kutu--tutar-dolu">
       <div class="km-toplam-kutu-etiket">TOPLAM TUTAR</div>
-      <div class="km-toplam-kutu-deger" id="koYilToplamTutar">0 ₺</div>
+      <div class="km-toplam-kutu-deger" id="koYilToplamTutar">0,00 TL</div>
     </div>
     <div class="km-toplam-kutu km-toplam-kutu--is-dolu">
       <div class="km-toplam-kutu-etiket">TOPLAM ÖDENEN</div>
-      <div class="km-toplam-kutu-deger" id="koYilToplamOdeme">0 ₺</div>
+      <div class="km-toplam-kutu-deger" id="koYilToplamOdeme">0,00 TL</div>
     </div>
     <div class="km-toplam-kutu km-toplam-kutu--kalan">
       <div class="km-toplam-kutu-etiket">KALAN ÖDEME</div>
-      <div class="km-toplam-kutu-deger" id="koYilKalanOdeme">0 ₺</div>
+      <div class="km-toplam-kutu-deger" id="koYilKalanOdeme">0,00 TL</div>
     </div>
   </section>
 
@@ -98,6 +122,7 @@
       <tbody id="koTabloGovde"></tbody>
     </table>
   </div>
+  <p style="font-size:11px; color:#8a8f98; margin-top:8px;">↕ Her hücreye (Toplam Özel KM ve Tutar dahil) dokunup elle düzeltebilir ya da silebilirsin — sildiğinde otomatik hesaba geri döner. Yılın ilk km'leri Şirket KM Hakkı'na sayılır (Tutar = 0); hak dolduktan sonraki aylarda fazla km'nin tamamı Tutar'a yansır.</p>
 
 </main>
 
@@ -108,8 +133,8 @@
 <script src="firebase-config.js?v=WG.011026.2340.706"></script>
 <script src="auth.js?v=WG.021026.1150.708"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="km-data.js?v=WG.031026.1700.719"></script>
+<script src="km-data.js?v=WG.031026.1900.722"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="yillik-km-odeme-render.js?v=WG.031026.1710.720"></script>
+<script src="yillik-km-odeme-render.js?v=WG.031026.1900.722"></script>
 </body>
 </html>

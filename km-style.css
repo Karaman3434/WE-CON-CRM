@@ -503,7 +503,18 @@
    Durum hücresi (03.10.2026'da BAŞTA otomatik Ödendi/Bekliyor rozetiydi —
    Abdullah "ben kendim manuel gireceğim" dediği için SERBEST METİN
    hücresine çevrildi, bkz. yillik-km-odeme-render.js). */
-.km-td-tutar { color: #6c3fa8; font-weight: 800; }
+.km-td-tutar { color: #6c3fa8; font-weight: 800; white-space: nowrap; }
+
+/* Ay hücresi — ay adı üstte, yıl altta küçük gri (03.10.2026 isteği). */
+.ko-ay-hucre { line-height: 1.2; }
+.ko-ay-ad { display: block; font-weight: 800; }
+.ko-ay-yil { display: block; font-size: 10px; color: #9aa0a8; font-weight: 600; }
+
+/* 03.10.2026 güncellemesi: Abdullah OTOMATİK hesaplanan "Toplam Özel KM"
+   ve "Tutar" hücrelerine de elle müdahale edip düzeltebilmek/silebilmek
+   istiyor — ikisi de artık contenteditable (bkz. yillik-km-odeme-render.js
+   koAySonuclari). Boş bırakılırsa otomatik hesaba geri döner. */
+.km-td-ozel[contenteditable], .km-td-tutar[contenteditable] { cursor: text; }
 
 /* KM ÇARPANI şeridi — km-ay-secici ile aynı turuncu çerçeve dili.
    TEK satır: etiket + input + birim + Kaydet tuşu hepsi yan yana
@@ -533,13 +544,52 @@
   white-space: nowrap;
 }
 
-/* 4'lü üst pano satırı (Toplam Özel KM / Toplam Tutar / Toplam Ödenen /
-   Kalan Ödeme) — varsayılan .km-toplam-satir grid'i 2 kutu için sabit
-   (1fr 1fr); burada 4 eşit sütuna genişletilip yazı boyutları sığacak
-   şekilde küçültülüyor. */
-.ko-toplam-satir-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-.ko-toplam-satir-4 .km-toplam-kutu-etiket { font-size: 7px; letter-spacing: 0; }
-.ko-toplam-satir-4 .km-toplam-kutu-deger { font-size: 12px; }
-.ko-toplam-satir-4 .km-toplam-kutu { padding: 7px 4px; }
+/* 3'lü üst pano satırı (Toplam Tutar / Toplam Ödenen / Kalan Ödeme) —
+   "Toplam Özel KM" artık burada DEĞİL, aşağıdaki TAM GENİŞLİK
+   .ko-km-ozet-kutu kartına taşındı (03.10.2026, "Şirket KM Hakkı"
+   isteğiyle). Varsayılan .km-toplam-satir grid'i 2 kutu için sabit
+   (1fr 1fr); burada 3 eşit sütuna genişletilip yazı boyutları sığacak
+   şekilde büyütülüyor (4'lüden daha ferah). */
+.ko-toplam-satir-3 { grid-template-columns: 1fr 1fr 1fr; }
+.ko-toplam-satir-3 .km-toplam-kutu-etiket { font-size: 7.5px; letter-spacing: 0; }
+.ko-toplam-satir-3 .km-toplam-kutu-deger { font-size: 13px; }
+.ko-toplam-satir-3 .km-toplam-kutu { padding: 8px 5px; }
 .km-toplam-kutu--tutar-dolu { background: #b7601f; color: #fff; }
 .km-toplam-kutu--kalan { background: #c0392b; color: #fff; }
+
+/* YENİ (03.10.2026): "Toplam Özel KM" kutusu artık TAM GENİŞLİK bir kart —
+   içinde 3 satır: Toplam Özel KM (büyük) / Şirket KM Hakkı (elle girilir,
+   yıllık, "kmSirketHakki/{YIL}") / Ücretlendirilecek KM (otomatik hesaplanır
+   — Toplam − Hakkı, negatifse 0). Abdullah'ın isteği: "firmam yılda 3.000 km
+   hak tanıyor, üstü benden ödeme olarak kesiliyor" — Tutar artık bu
+   Ücretlendirilecek KM üzerinden (yıl başından BİRİKİMLİ) hesaplanıyor,
+   bkz. yillik-km-odeme-render.js koAySonuclari. */
+.ko-km-ozet-kutu {
+  border: 1.5px solid #8e44ad;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #faf5fc;
+}
+.ko-km-ozet-satir {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 0;
+}
+.ko-km-ozet-satir + .ko-km-ozet-satir { border-top: 1px dashed #e4d2ef; }
+.ko-km-ozet-etiket { font-size: 10.5px; font-weight: 800; color: #6c3483; white-space: nowrap; }
+.ko-km-ozet-ana .ko-km-ozet-etiket { color: #8e44ad; }
+.ko-km-ozet-ana .ko-km-ozet-deger { font-size: 17px; font-weight: 900; color: #8e44ad; }
+.ko-km-ozet-deger { font-size: 13px; font-weight: 800; color: #44494f; }
+.ko-km-ozet-ucret .ko-km-ozet-deger { color: #c0392b; }
+.ko-km-ozet-input-grup { display: flex; align-items: center; gap: 4px; }
+.ko-km-ozet-input-grup input {
+  width: 54px; border: 1.5px solid #cfa8e0; border-radius: 6px;
+  padding: 4px 5px; font-size: 12px; font-weight: 900; color: #6c3483;
+  text-align: right;
+}
+.ko-km-ozet-input-grup span { font-size: 10px; font-weight: 800; color: #6c3483; }
+.ko-hak-kaydet-btn {
+  background: #8e44ad; color: #fff; border: none; border-radius: 6px;
+  padding: 5px 7px; font-size: 9.5px; font-weight: 800; cursor: pointer;
+  white-space: nowrap;
+}

@@ -24,6 +24,8 @@ var KmData = (function(){
   var odemeDinleyicileri = [];
   var carpanlar = {};
   var carpanDinleyicileri = [];
+  var hakkilar = {};
+  var hakkiDinleyicileri = [];
 
   function baslat(){
     try{
@@ -54,6 +56,16 @@ var KmData = (function(){
         carpanDinleyicileri.forEach(function(fn){ fn(); });
       }, function(err){
         console.error("KM çarpanı okuma hatası:", err);
+      });
+      // Yıl bazlı ŞİRKET KM HAKKI (03.10.2026, "firmam yılda 3.000 km hak
+      // tanıyor, üstü benden ödeme olarak kesiliyor" isteğiyle) — Abdullah'ın
+      // elle girdiği, o yıl için ücretsiz (hak kapsamı) özel km miktarı.
+      // "Ücretlendirilecek KM" = Toplam Özel KM − bu hak (negatifse 0).
+      db.ref("kmSirketHakki").on("value", function(snap){
+        hakkilar = snap.val() || {};
+        hakkiDinleyicileri.forEach(function(fn){ fn(); });
+      }, function(err){
+        console.error("KM şirket hakkı okuma hatası:", err);
       });
       // HATIRLATMA NOTU (24.09.2026) — Araç KM sayfasında, "Bu Ayın
       // Kayıtları" butonunun üstünde duran, Abdullah'ın elle yazdığı tek
@@ -322,12 +334,30 @@ var KmData = (function(){
 
   function odemeOku(yilAy){ return odemeler[yilAy] || {}; }
 
-  var ODEME_ALAN_HARITA = { odemeTarihi: "odemeTarihi", odemePlatformu: "odemePlatformu", odeme: "odeme", durum: "durum" };
+  var ODEME_ALAN_HARITA = { odemeTarihi: "odemeTarihi", odemePlatformu: "odemePlatformu", odeme: "odeme", durum: "durum", ozelKm: "ozelKm", tutar: "tutar" };
+  // 03.10.2026 güncellemesi: "ozelKm" ve "tutar" OTOMATİK hesaplanan
+  // değerlerin elle DÜZELTİLEBİLMESİ/SİLİNEBİLMESİ için eklendi. Bu ikisi
+  // (ve "odeme") sayısaldır — hücre BOŞ bırakılırsa alan Firebase'den
+  // tamamen SİLİNİR (null), böylece yillik-km-odeme-render.js otomatik
+  // hesaba geri döner. 0 girilmesi ile BOŞ bırakılması farklı şeylerdir:
+  // 0 = "gerçekten sıfır", boş = "otomatik hesaba güven".
+  var ODEME_SAYISAL_ALANLAR = { odeme: true, ozelKm: true, tutar: true };
   function odemeGuncelle(yilAy, alanAdi, deger, geriBildir){
     try{
       var firebaseAlan = ODEME_ALAN_HARITA[alanAdi];
       if(!firebaseAlan){ geriBildir(false, "Bilinmeyen alan"); return; }
-      var yaziliDeger = (firebaseAlan==="odeme") ? (parseFloat(deger)||0) : (deger||"");
+      var yaziliDeger;
+      if(ODEME_SAYISAL_ALANLAR[firebaseAlan]){
+        if(deger==="" || deger===null || deger===undefined){
+          yaziliDeger = null; // alanı tamamen sil — otomatik hesaba dön
+        }else{
+          var sayi = parseFloat(deger);
+          if(isNaN(sayi)){ geriBildir(false, "Geçersiz sayı"); return; }
+          yaziliDeger = sayi;
+        }
+      }else{
+        yaziliDeger = deger || "";
+      }
       firebase.database().ref("kmOdemeleri/" + yilAy + "/" + firebaseAlan).set(yaziliDeger).then(function(){
         geriBildir(true);
       }).catch(function(err){ geriBildir(false, err); });
@@ -355,6 +385,26 @@ var KmData = (function(){
       var yaziliDeger = parseFloat(deger);
       if(isNaN(yaziliDeger)){ cb(false, "Geçersiz sayı"); return; }
       firebase.database().ref("kmCarpanlari/" + yil).set(yaziliDeger).then(function(){
+        cb(true);
+      }).catch(function(err){ cb(false, err); });
+    }catch(e){ if(typeof geriBildir==="function") geriBildir(false, e); }
+  }
+
+  // ---------- ŞİRKET KM HAKKI (03.10.2026) ----------
+  // KM Çarpanı ile AYNI desen: yıl bazlı saklanır, SADECE tuşla kaydedilir.
+  function hakkiDegistiginde(fn){ hakkiDinleyicileri.push(fn); }
+
+  function hakkiOku(yil){
+    var deger = hakkilar[String(yil)];
+    return (deger!=null && deger!=="") ? deger : "";
+  }
+
+  function hakkiKaydet(yil, deger, geriBildir){
+    try{
+      var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+      var yaziliDeger = parseFloat(deger);
+      if(isNaN(yaziliDeger)){ cb(false, "Geçersiz sayı"); return; }
+      firebase.database().ref("kmSirketHakki/" + yil).set(yaziliDeger).then(function(){
         cb(true);
       }).catch(function(err){ cb(false, err); });
     }catch(e){ if(typeof geriBildir==="function") geriBildir(false, e); }
@@ -392,7 +442,10 @@ var KmData = (function(){
     ayinOzelKmToplami: ayinOzelKmToplami,
     carpanDegistiginde: carpanDegistiginde,
     carpanOku: carpanOku,
-    carpanKaydet: carpanKaydet
+    carpanKaydet: carpanKaydet,
+    hakkiDegistiginde: hakkiDegistiginde,
+    hakkiOku: hakkiOku,
+    hakkiKaydet: hakkiKaydet
   };
 
 })();
