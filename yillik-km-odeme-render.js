@@ -2,11 +2,16 @@
   yillik-km-odeme-render.js
   ==========================
   Araç KM alt menüsündeki "Yıllık KM Ödeme" (03.10.2026, Abdullah'ın
-  isteğiyle). "Toplam Özel KM" sütunu km-data.js'teki kmTakip kayıtlarından
-  CANLI hesaplanır (salt okunur); Ödeme Tarihi/Platformu/Ödeme hücreleri
-  elle girilir ve km-data.js'in odemeGuncelle()'i ile "kmOdemeleri/{YYYY-MM}"
-  altına kaydedilir. Tablo/Excel düzeni km-kayitlar-render.js ile aynı
-  desenleri (contenteditable + blur'da otomatik kayıt) kullanır.
+  isteğiyle; 03.10.2026 içinde birkaç kez güncellendi):
+    - Toplam Özel KM: km-data.js'teki kmTakip kayıtlarından CANLI
+      hesaplanır (salt okunur).
+    - KM Çarpanı: elle girilen TL/km değeri, yıl bazlı ("kmCarpanlari/{YIL}").
+    - Tutar: Toplam Özel KM × KM Çarpanı — OTOMATİK hesaplanır (salt okunur).
+    - Ödeme Tarihi / Platform / Ödeme / Durum: serbest metin, elle girilir
+      ve blur'da otomatik kaydedilir ("kmOdemeleri/{YYYY-MM}"). Durum
+      BAŞTA otomatik Ödendi/Bekliyor rozetiydi, Abdullah'ın isteğiyle
+      serbest metin hücresine çevrildi — artık hiçbir otomatik mantık yok.
+  Yıl seçici YOK (bilerek) — sayfa her zaman BU YILI gösterir.
 */
 
 function hataGoster(mesaj){
@@ -28,61 +33,61 @@ function tarihiGuncelle(){
   if(el) el.textContent = GUNLER_KO[d.getDay()] + ", " + d.getDate() + " " + AYLAR_KO[d.getMonth()] + " " + d.getFullYear();
 }
 
-var koSeciliYil = null; // null = bu yıl (varsayılan)
+function koPad2(n){ return ("0"+n).slice(-2); }
+function koBuYil(){ return String(new Date().getFullYear()); }
 
-// Yıl seçiciyi, kayıtlı km ayları + ödeme kayıtlarındaki yıllar + bu yıl
-// birleşiminden doldurur — ileride yıl değişince seçenek olarak çıksın diye.
-function koYilSeciciyiDoldur(){
-  var yilSeti = {};
-  KmData.kayitliAylar().forEach(function(ya){ yilSeti[ya.slice(0,4)] = true; });
-  var simdi = new Date();
-  var buYil = String(simdi.getFullYear());
-  yilSeti[buYil] = true;
-  var yillar = Object.keys(yilSeti).sort().reverse();
-  var secici = document.getElementById("koYilSecici");
-  secici.innerHTML = yillar.map(function(y){
-    return "<option value='" + y + "'>" + y + (y===buYil ? " (bu yıl)" : "") + "</option>";
-  }).join("");
-  secici.value = koSeciliYil || buYil;
+// Sayı ₺ gösterimi — tam sayıysa ondalıksız, küsuratlıysa virgülle 1 hane.
+function koSayiGoster(n){
+  if(!n) return "0";
+  var yuvarlak = Math.round(n*10)/10;
+  return (yuvarlak % 1 === 0) ? String(yuvarlak) : String(yuvarlak).replace(".", ",");
 }
 
-function koPad2(n){ return ("0"+n).slice(-2); }
+function koCarpaniGuncelle(){
+  var yil = koBuYil();
+  document.getElementById("koCarpanEtiket").textContent = "📐 " + yil + " KM Çarpanı";
+  var input = document.getElementById("koCarpanInput");
+  // Kullanıcı o an yazıyorsa (odakta) üzerine yazıp imleci sıçratma.
+  if(document.activeElement !== input){
+    var mevcut = KmData.carpanOku(yil);
+    input.value = (mevcut !== "") ? mevcut : "";
+  }
+}
 
 function tabloyuCiz(){
   try{
-    var simdi = new Date();
-    var yil = koSeciliYil || String(simdi.getFullYear());
-    document.getElementById("koYilEtiket").textContent = yil;
+    var yil = koBuYil();
     document.getElementById("koTabloBaslik").textContent = yil + " — Aylık Ödeme Tablosu";
+    var carpan = parseFloat(KmData.carpanOku(yil)) || 0;
 
     var govde = document.getElementById("koTabloGovde");
-    var toplamOzelYil = 0, toplamOdemeYil = 0;
+    var toplamOzelYil = 0, toplamOdemeYil = 0, toplamTutarYil = 0;
 
     govde.innerHTML = AYLAR_KO.map(function(ayAdi, i){
       var yilAy = yil + "-" + koPad2(i+1);
       var toplamOzel = KmData.ayinOzelKmToplami(yilAy);
+      var tutar = toplamOzel * carpan;
       var odemeKaydi = KmData.odemeOku(yilAy);
       var odemeTutari = (odemeKaydi.odeme!=null && odemeKaydi.odeme!=="") ? odemeKaydi.odeme : "";
-      toplamOzelYil += toplamOzel;
-      if(typeof odemeTutari === "number") toplamOdemeYil += odemeTutari;
 
-      var odendiMi = odemeTutari !== "" && odemeTutari > 0;
-      var durumHtml = odendiMi
-        ? "<span class='ko-durum ko-durum--odendi'>✓ Ödendi</span>"
-        : "<span class='ko-durum ko-durum--bekliyor'>Bekliyor</span>";
+      toplamOzelYil += toplamOzel;
+      toplamTutarYil += tutar;
+      if(typeof odemeTutari === "number") toplamOdemeYil += odemeTutari;
 
       return "<tr data-yilay='" + yilAy + "'>"
         + "<td>" + ayAdi + "</td>"
         + "<td class='km-td-ozel'>" + toplamOzel + "</td>"
+        + "<td class='km-td-tutar'>" + koSayiGoster(tutar) + "</td>"
         + "<td contenteditable='true' data-alan='odemeTarihi'>" + (odemeKaydi.odemeTarihi || "-") + "</td>"
         + "<td class='km-td-metin' contenteditable='true' data-alan='odemePlatformu'>" + (odemeKaydi.odemePlatformu || "-") + "</td>"
         + "<td contenteditable='true' data-alan='odeme'>" + (odemeTutari!==""?odemeTutari:"-") + "</td>"
-        + "<td data-durum-hucresi='1'>" + durumHtml + "</td>"
+        + "<td class='km-td-metin' contenteditable='true' data-alan='durum'>" + (odemeKaydi.durum || "-") + "</td>"
         + "</tr>";
     }).join("");
 
     document.getElementById("koYilToplamOzelKm").textContent = toplamOzelYil + " km";
-    document.getElementById("koYilToplamOdeme").textContent = toplamOdemeYil + " ₺";
+    document.getElementById("koYilToplamOdeme").textContent = koSayiGoster(toplamOdemeYil) + " ₺";
+    document.getElementById("koYilKalanOdeme").textContent = koSayiGoster(toplamTutarYil - toplamOdemeYil) + " ₺";
 
     govde.querySelectorAll("[contenteditable]").forEach(function(td){
       td.addEventListener("blur", function(){
@@ -94,9 +99,9 @@ function tabloyuCiz(){
         // km-kayitlar-render.js'teki hucreGuncelle kullanımıyla AYNI desen:
         // ekranı burada elle güncellemiyoruz — "kmOdemeleri" üzerindeki
         // canlı dinleyici (KmData.odemeDegistiginde, aşağıda bağlı) zaten
-        // her değişiklikte tabloyuCiz()'i tetikleyip rozet/toplamları
-        // tazeliyor. Firebase JS SDK kendi yazdığımız değeri sunucu onayı
-        // beklemeden hemen yerel olarak yansıttığı için bu gecikmesiz olur.
+        // her değişiklikte tabloyuCiz()'i tetikleyip toplamları tazeliyor.
+        // Firebase JS SDK kendi yazdığımız değeri sunucu onayı beklemeden
+        // hemen yerel olarak yansıttığı için bu gecikmesiz olur.
         KmData.odemeGuncelle(yilAy, alan, deger, function(basarili, err){
           if(!basarili) hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
         });
@@ -111,24 +116,27 @@ function excelAktar(){
       hataGoster("Excel kütüphanesi yüklenemedi, internet bağlantınızı kontrol edin.");
       return;
     }
-    var yil = koSeciliYil || String(new Date().getFullYear());
-    var basliklar = ["Ay","Toplam Özel KM","Ödeme Tarihi","Platform","Ödeme"];
-    var toplamOzelXl = 0, toplamOdemeXl = 0;
+    var yil = koBuYil();
+    var carpan = parseFloat(KmData.carpanOku(yil)) || 0;
+    var basliklar = ["Ay","Toplam Özel KM","Tutar","Ödeme Tarihi","Platform","Ödeme","Durum"];
+    var toplamOzelXl = 0, toplamOdemeXl = 0, toplamTutarXl = 0;
     var veriSatirlari = AYLAR_KO.map(function(ayAdi, i){
       var yilAy = yil + "-" + koPad2(i+1);
       var toplamOzel = KmData.ayinOzelKmToplami(yilAy);
+      var tutar = toplamOzel * carpan;
       var odemeKaydi = KmData.odemeOku(yilAy);
       var odemeTutari = (odemeKaydi.odeme!=null && odemeKaydi.odeme!=="") ? odemeKaydi.odeme : 0;
       toplamOzelXl += toplamOzel;
+      toplamTutarXl += tutar;
       toplamOdemeXl += odemeTutari;
-      return [ayAdi, toplamOzel, odemeKaydi.odemeTarihi||"", odemeKaydi.odemePlatformu||"", odemeTutari||""];
+      return [ayAdi, toplamOzel, tutar, odemeKaydi.odemeTarihi||"", odemeKaydi.odemePlatformu||"", odemeTutari||"", odemeKaydi.durum||""];
     });
 
     var aoa = [basliklar].concat(veriSatirlari);
-    aoa.push(["TOPLAM", toplamOzelXl, "", "", toplamOdemeXl]);
+    aoa.push(["TOPLAM", toplamOzelXl, toplamTutarXl, "", "", toplamOdemeXl, ""]);
 
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = [{wch:12},{wch:14},{wch:14},{wch:18},{wch:12}];
+    ws["!cols"] = [{wch:12},{wch:14},{wch:12},{wch:14},{wch:18},{wch:12},{wch:14}];
 
     var KENAR_INCE = { style:"thin", color:{rgb:"333333"} };
     var KENAR_ORTA = { style:"medium", color:{rgb:"505050"} };
@@ -179,18 +187,22 @@ document.addEventListener("DOMContentLoaded", function(){
       setTimeout(function(){ btn.textContent = eskiMetin; btn.disabled = false; }, 1500);
     }, 150);
   };
-  document.getElementById("koYilSecici").onchange = function(){
-    koSeciliYil = this.value;
-    tabloyuCiz();
-  };
 
-  koYilSeciciyiDoldur();
-  tabloyuCiz();
-  KmData.degistiginde(function(){
-    koYilSeciciyiDoldur();
-    tabloyuCiz();
+  document.getElementById("koCarpanInput").addEventListener("blur", function(){
+    var yil = koBuYil();
+    var deger = this.value.trim();
+    if(deger === ""){ koCarpaniGuncelle(); return; } // boş bırakılırsa dokunma
+    KmData.carpanKaydet(yil, deger, function(basarili, err){
+      if(!basarili) hataGoster("KM çarpanı kaydedilemedi: " + (err && err.message ? err.message : "geçersiz değer"));
+    });
   });
-  KmData.odemeDegistiginde(function(){
+
+  koCarpaniGuncelle();
+  tabloyuCiz();
+  KmData.degistiginde(tabloyuCiz);
+  KmData.odemeDegistiginde(tabloyuCiz);
+  KmData.carpanDegistiginde(function(){
+    koCarpaniGuncelle();
     tabloyuCiz();
   });
 });

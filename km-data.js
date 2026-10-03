@@ -22,6 +22,8 @@ var KmData = (function(){
   var hatirlatmaDinleyicileri = [];
   var odemeler = {};
   var odemeDinleyicileri = [];
+  var carpanlar = {};
+  var carpanDinleyicileri = [];
 
   function baslat(){
     try{
@@ -43,6 +45,15 @@ var KmData = (function(){
         odemeDinleyicileri.forEach(function(fn){ fn(); });
       }, function(err){
         console.error("KM ödeme okuma hatası:", err);
+      });
+      // Yıl bazlı KM ÇARPANI (03.10.2026) — "Toplam Özel KM × Çarpan =
+      // Tutar" hesabında kullanılan, Abdullah'ın elle girdiği TL/km değeri.
+      // Yıl değişince çarpan da değişebileceği için yıla göre saklanır.
+      db.ref("kmCarpanlari").on("value", function(snap){
+        carpanlar = snap.val() || {};
+        carpanDinleyicileri.forEach(function(fn){ fn(); });
+      }, function(err){
+        console.error("KM çarpanı okuma hatası:", err);
       });
       // HATIRLATMA NOTU (24.09.2026) — Araç KM sayfasında, "Bu Ayın
       // Kayıtları" butonunun üstünde duran, Abdullah'ın elle yazdığı tek
@@ -311,7 +322,7 @@ var KmData = (function(){
 
   function odemeOku(yilAy){ return odemeler[yilAy] || {}; }
 
-  var ODEME_ALAN_HARITA = { odemeTarihi: "odemeTarihi", odemePlatformu: "odemePlatformu", odeme: "odeme" };
+  var ODEME_ALAN_HARITA = { odemeTarihi: "odemeTarihi", odemePlatformu: "odemePlatformu", odeme: "odeme", durum: "durum" };
   function odemeGuncelle(yilAy, alanAdi, deger, geriBildir){
     try{
       var firebaseAlan = ODEME_ALAN_HARITA[alanAdi];
@@ -329,6 +340,24 @@ var KmData = (function(){
     var toplam = 0;
     ayinKayitlari(yilAy).forEach(function(k){ if(k.ozelKm!=null) toplam += k.ozelKm; });
     return toplam;
+  }
+
+  function carpanDegistiginde(fn){ carpanDinleyicileri.push(fn); }
+
+  function carpanOku(yil){
+    var deger = carpanlar[String(yil)];
+    return (deger!=null && deger!=="") ? deger : "";
+  }
+
+  function carpanKaydet(yil, deger, geriBildir){
+    try{
+      var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+      var yaziliDeger = parseFloat(deger);
+      if(isNaN(yaziliDeger)){ cb(false, "Geçersiz sayı"); return; }
+      firebase.database().ref("kmCarpanlari/" + yil).set(yaziliDeger).then(function(){
+        cb(true);
+      }).catch(function(err){ cb(false, err); });
+    }catch(e){ if(typeof geriBildir==="function") geriBildir(false, e); }
   }
 
   return {
@@ -360,7 +389,10 @@ var KmData = (function(){
     odemeDegistiginde: odemeDegistiginde,
     odemeOku: odemeOku,
     odemeGuncelle: odemeGuncelle,
-    ayinOzelKmToplami: ayinOzelKmToplami
+    ayinOzelKmToplami: ayinOzelKmToplami,
+    carpanDegistiginde: carpanDegistiginde,
+    carpanOku: carpanOku,
+    carpanKaydet: carpanKaydet
   };
 
 })();

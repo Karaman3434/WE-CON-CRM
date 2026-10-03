@@ -500,16 +500,36 @@
 }
 
 /* ---------- YILLIK KM ÖDEME (03.10.2026) ----------
-   "Ödendi/Bekliyor" rozeti — Avans Takibi'ndeki .av-gecmis-durum ile
-   BİREBİR aynı görsel dil (tasarım tutarlılığı için), bağımsız sınıf
-   adlarıyla (km-style.css avans-takibi-style.css'e bağımlı olmasın). */
-.ko-durum {
-  display: inline-block;
-  font-size: 9px;
-  font-weight: 900;
-  padding: 3px 7px;
-  border-radius: 5px;
-  white-space: nowrap;
+   Durum hücresi (03.10.2026'da BAŞTA otomatik Ödendi/Bekliyor rozetiydi —
+   Abdullah "ben kendim manuel gireceğim" dediği için SERBEST METİN
+   hücresine çevrildi, bkz. yillik-km-odeme-render.js). */
+.km-td-tutar { color: #6c3fa8; font-weight: 800; }
+
+/* KM ÇARPANI şeridi — km-ay-secici ile aynı turuncu çerçeve dili. */
+.ko-carpan-serit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.5px solid #b7601f;
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  background: #fffaf3;
 }
-.ko-durum--bekliyor { background: #fdf2e3; color: #b7601f; border: 1.5px solid #e0a94a; }
-.ko-durum--odendi { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34; }
+.ko-carpan-etiket { font-size: 12px; font-weight: 800; color: #7a4a14; }
+.ko-carpan-input-grup { display: flex; align-items: center; gap: 5px; }
+.ko-carpan-input-grup input {
+  width: 64px; border: 1.5px solid #e0a94a; border-radius: 6px;
+  padding: 5px 7px; font-size: 14px; font-weight: 900; color: #b7601f;
+  text-align: right;
+}
+.ko-carpan-input-grup span { font-size: 12px; font-weight: 800; color: #b7601f; }
+
+/* 3'lü üst pano satırı (Toplam Özel KM / Toplam Ödenen / Kalan Ödeme) —
+   varsayılan .km-toplam-satir grid'i 2 kutu için sabit (1fr 1fr); burada
+   3 eşit sütuna genişletilip yazı boyutları sığacak şekilde küçültülüyor. */
+.ko-toplam-satir-3 { grid-template-columns: 1fr 1fr 1fr; }
+.ko-toplam-satir-3 .km-toplam-kutu-etiket { font-size: 7.5px; letter-spacing: 0; }
+.ko-toplam-satir-3 .km-toplam-kutu-deger { font-size: 13px; }
+.ko-toplam-satir-3 .km-toplam-kutu { padding: 8px 5px; }
+.km-toplam-kutu--kalan { background: #c0392b; color: #fff; }
