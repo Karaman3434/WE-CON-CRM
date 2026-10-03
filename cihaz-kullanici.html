@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.031026.0930.715 — cihaz-kullanici.html -->
+<!--
+  CİHAZLAR VE KULLANICILAR (03.10.2026, Abdullah'ın isteğiyle)
+  ================================================================
+  Eskiden İKİ AYRI sayfa/panel vardı: "Cihazlarım" (menu.html'den,
+  cihazlar.html) ve "Çalışan Erişimi" (ayarlar.html'den, calisan-erisim.html)
+  — Abdullah'ın kendi sözleriyle "2 farklı denetleme sayfası olmasın"
+  isteğiyle TEK sayfada, TEK S22+PIN kilidinin arkasında birleştirildi.
+
+  İki bölüm var, birbirine KARIŞMAZ:
+    📱 CİHAZLAR — fiziksel cihazların kendi adı (Abdullah'ın S22'den verdiği
+       "iPhone 13" gibi bir etiket) + o cihazı kullanan kişinin KENDİ
+       tanımladığı "kullanıcı adı" (örn. "ANKARA BOLGE 19" — bkz. home.html
+       ilk-kullanım ekranı) + bu ismin değişim geçmişi. Şifre/giriş İLE
+       İLGİSİ YOKTUR, sadece kendini tanıtan bir etikettir.
+    👥 KULLANICILAR — şifreli, sınırlı erişimli GİRİŞ HESAPLARI (eski
+       Çalışan Erişimi, calisan-erisim-render.js'ten birebir taşındı).
+       Şifreyi SADECE Abdullah belirler — hesap sahibi kendi şifresini asla
+       değiştiremez (bu sayfada hiçbir şifre değiştirme arayüzü yoktur,
+       bilerek).
+
+  cihazlar.html ve calisan-erisim.html dosyaları SİLİNMEDİ (geriye dönük
+  bozulma olmasın diye) ama artık ikisi de bu sayfaya yönlendiriyor
+  (bkz. kendi dosyalarındaki <meta refresh> notu) — menu.html'deki
+  "📱 Cihazlarım" ve ayarlar.html'deki "Çalışan Erişimi" satırları da
+  doğrudan buraya bağlandı.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3d8c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WEICON ASİST">
+<title>WEICON ASİST — Cihazlar ve Kullanıcılar</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.011026.2340.706">
+<link rel="stylesheet" href="pin-style.css">
+<link rel="stylesheet" href="cihazlar-style.css?v=WG.031026.0930.715">
+<link rel="stylesheet" href="calisan-erisim-style.css?v=WG.011026.2340.706">
+<link rel="stylesheet" href="ayarlar-style.css?v=WG.021026.1910.713">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="ayarlar.html"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+</nav>
+</div>
+<div class="sayfa-rota-serit">
+  <span class="sayfa-rota-serit-isim">📡 Cihazlar ve Kullanıcılar</span>
+  <span class="sayfa-rota-serit-rota">Ayarlar › Yönetim</span>
+</div>
+
+<main class="sayfa">
+
+  <!-- "Bu Cihaz" kartı — HERKES (PIN gerekmeden) kendi cihazının adını
+       buradan verebilir, eskiden olduğu gibi. -->
+  <div class="cz-bu-cihaz-kutu">
+    <span class="cz-bu-cihaz-etiket">📱 BU CİHAZ</span>
+    <div class="cz-bu-cihaz-satir">
+      <input type="text" id="czBuCihazAdi" placeholder="Örn. Samsung S22, iPhone 13, iPad 9">
+      <button class="cz-bu-cihaz-kaydet-btn" id="btnCzAdKaydet">Kaydet</button>
+    </div>
+    <div class="cz-bu-cihaz-ok" id="czAdKaydedildi" hidden>✓ Kaydedildi</div>
+  </div>
+
+  <!-- SADECE S22 DEĞİLSE -->
+  <div class="cz-sadece-s22-kutu" id="ckSadeceS22Notu" hidden>
+    🔒 Cihaz ve kullanıcı yönetimi sadece "Samsung S22" adlı ana cihazdan açılabilir. Kendi cihazını yukarıdan adlandırabilirsin.
+  </div>
+
+  <!-- S22 İSE — ÖNCE TEK PIN (hem cihazlar hem kullanıcılar için ORTAK) -->
+  <div id="ckPinAlani" hidden>
+    <div class="cz-pin-kutu">
+      <h1 id="ckPinBaslik">🔒 Cihazlar ve Kullanıcılar — Yönetim PIN'i</h1>
+      <p class="pin-bilgi" id="ckPinBilgi" hidden></p>
+      <div class="pin-noktalar" id="ckPinNoktalar">
+        <span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span>
+      </div>
+      <input type="tel" id="ckPinGizliInput" class="pin-gizli-input" maxlength="4" inputmode="numeric" autocomplete="off">
+      <p class="giris-hata" id="ckPinHata" hidden>PIN hatalı, tekrar deneyin.</p>
+      <div class="pin-tus-grid" id="ckPinTusGrid"></div>
+    </div>
+  </div>
+
+  <!-- PIN DOĞRULANDIKTAN SONRA — İKİ BÖLÜM BİRDEN -->
+  <div id="ckYonetimAlani" hidden>
+
+    <div class="ay-bolum-baslik">📱 Cihazlar</div>
+    <div id="czListe"></div>
+    <p class="bos-mesaj" id="czBos" hidden>Henüz hiçbir cihaz kayıt olmadı.</p>
+
+    <div class="ay-bolum-baslik">👥 Kullanıcılar (şifreli giriş hesapları)</div>
+    <section class="ce-kart">
+      <div class="ce-kart-baslik">➕ Yeni Kullanıcı</div>
+      <div class="ce-form-alan">
+        <input type="text" id="ceKullaniciAdi" placeholder="Kullanıcı adı" autocomplete="off" autocapitalize="off">
+        <input type="password" id="ceSifre" placeholder="Şifre (en az 6 karakter)" autocomplete="new-password">
+      </div>
+      <div class="ck-sifre-not">🔒 Şifreyi sadece sen belirlersin — kullanıcı kendi şifresini değiştiremez.</div>
+      <p class="ce-hata" id="ceOlusturHata" hidden></p>
+      <button class="ce-olustur-btn" id="btnCeOlustur">✓ Kullanıcı Oluştur</button>
+    </section>
+
+    <div id="ceKullaniciListesi"></div>
+    <p class="ce-bos-mesaj" id="ceBosMesaj" hidden>Henüz çalışan hesabı oluşturmadın.</p>
+  </div>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.011026.2340.706"></script>
+<script src="auth.js?v=WG.021026.1150.708"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="pin-utils.js?v=WG.150926.1241.572"></script>
+<script src="cihaz-data.js?v=WG.031026.0930.715"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="cihaz-kullanici-render.js?v=WG.031026.0930.715"></script>
+</body>
+</html>

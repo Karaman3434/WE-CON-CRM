@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.021026.1940.714 — ayarlar.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.031026.0930.715 — ayarlar.html -->
 <!--
   AYARLAR — "her ayar kendi kutusu" tasarımı (02.10.2026, Abdullah'ın isteğiyle)
   ================================================================================
@@ -10,8 +10,11 @@
   AÇILIR PENCEREYE (.overlay/.sheet, genel standart) taşınıyor. "Bakım
   Araçları" satırı önce 3 aracın listesini gösteren bir sheet açıyor,
   oradan birine dokununca o sheet kapanıp aracın kendi sheet'i açılıyor.
-  "Çalışan Erişimi" değişmedi — hâlâ ayrı sayfaya (calisan-erisim.html)
-  gidiyor (o sayfa artık S22+PIN ile kilitli, bkz. calisan-erisim.html).
+  "Çalışan Erişimi" satırı 03.10.2026'da "Cihazlar ve Kullanıcılar" olarak
+  yeniden adlandırıldı ve eski "Cihazlarım" sayfasıyla TEK platformda
+  birleştirildi (Abdullah'ın isteği: "2 farklı denetleme sayfası olmasın")
+  — hâlâ ayrı sayfaya (cihaz-kullanici.html) gidiyor, o sayfa tek bir
+  S22+PIN ile kilitli (bkz. cihaz-kullanici.html).
 
   Tüm input id'leri (kurInput, kdvInput, hedefInput, vb.) ve buton id'leri
   BİREBİR AYNI kaldı — ayarlar-render.js'teki okuma/kaydetme mantığı
@@ -88,12 +91,12 @@
 
   <div class="ay-bolum-baslik">Yönetim</div>
   <div class="ay-nav-liste">
-    <a class="ay-nav-satir" href="calisan-erisim.html">
+    <a class="ay-nav-satir" href="cihaz-kullanici.html">
       <span class="ay-nav-sol">
-        <span class="ay-nav-ikon">👤</span>
+        <span class="ay-nav-ikon">📡</span>
         <span class="ay-nav-metin-grup">
-          <span class="ay-nav-baslik">Çalışan Erişimi</span>
-          <span class="ay-nav-alt">Kullanıcı hesapları ve izinler</span>
+          <span class="ay-nav-baslik">Cihazlar ve Kullanıcılar</span>
+          <span class="ay-nav-alt">Cihaz listesi, kullanıcı adları, hesaplar ve izinler</span>
         </span>
       </span>
       <span class="ay-nav-ok">›</span>
@@ -266,6 +269,6 @@
 <script src="customer-data.js?v=WG.300926.1155.676"></script>
 <script src="maas-kayit-data.js?v=WG.270926.2340.653"></script>
 <script src="avans-kayit-data.js?v=WG.021026.1835.712"></script>
-<script src="ayarlar-render.js?v=WG.021026.1940.714"></script>
+<script src="ayarlar-render.js?v=WG.031026.0930.715"></script>
 </body>
 </html>

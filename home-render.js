@@ -290,6 +290,81 @@ function asDrawerKapat(){
     setTimeout(function(){ overlay.hidden = true; }, 250);
   }catch(e){}
 }
+/* ---------- KULLANICI ADI (03.10.2026, Abdullah'ın isteğiyle) ----------
+   Drawer'daki "Hesabım" satırını CihazData.benimKullaniciAdim() ile
+   doldurur; boşsa "Hesabım" yazılı kalır (henüz tanımlanmadıysa). Aynı
+   pencere hem MECBURİ ilk-kullanım ekranı hem de drawer'daki ✏️'den açılan
+   DÜZENLEME ekranı olarak kullanılır — tek fark: mecburi modda kapat
+   butonu gizli ve input boş zorunlu, düzenleme modunda kapat butonu
+   görünür ve input mevcut adla dolu gelir. */
+function asDrawerIsimGuncelle(){
+  try{
+    var el = document.getElementById("asDrawerIsim");
+    if(!el) return;
+    var adi = (typeof CihazData !== "undefined") ? CihazData.benimKullaniciAdim() : "";
+    el.textContent = adi || "Hesabım";
+  }catch(e){}
+}
+
+function kaKullaniciAdiPenceresiniAc(mecburiMi){
+  try{
+    var overlay = document.getElementById("kaOverlay");
+    var kapatBtn = document.getElementById("kaKapatBtn");
+    var input = document.getElementById("kaInput");
+    var hata = document.getElementById("kaHata");
+    if(!overlay || !input) return;
+    hata.hidden = true;
+    kapatBtn.hidden = !!mecburiMi;
+    input.value = mecburiMi ? "" : CihazData.benimKullaniciAdim();
+    overlay.hidden = false;
+    if(mecburiMi) document.body.style.overflow = "hidden";
+    setTimeout(function(){ input.focus(); }, 50);
+  }catch(e){ hataGoster("Kullanıcı adı penceresi açılamadı: " + e.message); }
+}
+
+function kaKullaniciAdiPenceresiniKapat(){
+  document.getElementById("kaOverlay").hidden = true;
+  document.body.style.overflow = "";
+}
+
+function kaKullaniciAdiKaydiTikla(){
+  try{
+    var input = document.getElementById("kaInput");
+    var hata = document.getElementById("kaHata");
+    var adi = input.value.trim();
+    if(!adi){ hata.hidden = false; return; }
+    hata.hidden = true;
+    var btn = document.getElementById("btnKaKaydet");
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+    CihazData.kullaniciAdiKaydet(adi, function(){
+      btn.disabled = false;
+      btn.textContent = "✓ Kaydet ve Devam Et";
+      asDrawerIsimGuncelle();
+      kaKullaniciAdiPenceresiniKapat();
+    });
+  }catch(e){ hataGoster("Kullanıcı adı kaydedilemedi: " + e.message); }
+}
+
+function kaBaslatVeKontrolEt(){
+  try{
+    if(typeof CihazData === "undefined") return;
+    asDrawerIsimGuncelle();
+    document.getElementById("btnKaKaydet").onclick = kaKullaniciAdiKaydiTikla;
+    document.getElementById("kaInput").addEventListener("keydown", function(ev){
+      if(ev.key === "Enter") kaKullaniciAdiKaydiTikla();
+    });
+    var kapatBtn = document.getElementById("kaKapatBtn");
+    if(kapatBtn) kapatBtn.onclick = kaKullaniciAdiPenceresiniKapat;
+    var duzenleBtn = document.getElementById("btnAsKullaniciDuzenle");
+    if(duzenleBtn) duzenleBtn.onclick = function(){ kaKullaniciAdiPenceresiniAc(false); };
+
+    if(!CihazData.benimKullaniciAdim()){
+      kaKullaniciAdiPenceresiniAc(true);
+    }
+  }catch(e){ hataGoster("Kullanıcı adı kontrolü başarısız: " + e.message); }
+}
+
 function asDrawerBagla(){
   try{
     document.getElementById("btnAsMenuAc").onclick = asDrawerAc;
@@ -338,6 +413,8 @@ document.addEventListener("DOMContentLoaded", function(){
     if(new Date().getDate() !== isGunuSonHesaplananGun) isGunuKutusunuGuncelle();
   }, 60000);
   asDrawerBagla();
+  kaBaslatVeKontrolEt();
+  try{ if(typeof CihazData !== "undefined") CihazData.kaydiGuncelle(); }catch(e){}
   WeiconData.veriDegistiginde(kartlariGuncelle);
   WeiconData.bildirimDegistiginde(bildirimBanneriGuncelle);
   WeiconData.bildirimDegistiginde(gununOzetiniGuncelle);

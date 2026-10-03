@@ -1,108 +1,19 @@
 <!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.031026.0930.715 — calisan-erisim.html -->
 <!--
-  WEICON ASİST — ÇALIŞAN ERİŞİMİ v2
-  ====================================
-  Abdullah'ın kullanıcı adı + şifresini kendi belirleyip oluşturduğu,
-  sınırlı erişimli çalışan hesapları. Her hesap için uygulamadaki hangi
-  sayfaların açık olacağı burada tek tek işaretlenir (bkz. calisan-erisim-
-  render.js içindeki İZIN_TANIMLARI — yeni bir sayfa izni eklemek istersen
-  SADECE o listeye eklenir, auth.js'teki SAYFA_IZIN_ANAHTARI ile eşleşen
-  anahtarı kullanmalı).
-
-  Hesap oluşturma, Abdullah'ın kendi oturumunu bozmadan ikincil bir Firebase
-  app örneği üzerinden yapılır (ücretsiz, Cloud Function GEREKMEZ).
-
-  S22 + PIN KİLİDİ (02.10.2026, Abdullah'ın isteğiyle): "Tüm kullanıcıları
-  S22'den kontrol etmek istiyorum" — bu sayfa artık SADECE cihaz adı tam
-  olarak "Samsung S22" olan cihazdan açılabiliyor, ve o cihazda da önce
-  Cihazlarım'daki ile AYNI 4 haneli Yönetim PIN'i isteniyor (aynı
-  localStorage/Firebase anahtarları: weicon_cihaz_pin_hash, cihazPin —
-  bkz. cihazlar-render.js'teki orijinal akış, buraya BİREBİR taşındı).
+  03.10.2026 (Abdullah'ın isteğiyle) — bu sayfa "Cihazlarım" ile birleştirilip
+  "Cihazlar ve Kullanıcılar"a taşındı (tek platform, tek S22+PIN kilidi —
+  bkz. cihaz-kullanici.html). Eski linkler kırılmasın diye bu dosya
+  SİLİNMEDİ, sadece oraya yönlendiriyor.
 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d3d8c">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="WEICON ASİST">
+<meta http-equiv="refresh" content="0; url=cihaz-kullanici.html">
 <title>WEICON ASİST — Çalışan Erişimi</title>
-<script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.011026.2340.706">
-<link rel="stylesheet" href="pin-style.css">
-<link rel="stylesheet" href="cihazlar-style.css?v=WG.011026.2210.702">
-<link rel="stylesheet" href="calisan-erisim-style.css?v=WG.011026.2340.706">
 </head>
 <body>
-
-<div class="app-ust-sabit">
-<header class="app-header">
-  <div class="logo">WEICON</div>
-  <div class="tarih" id="gunTarihi"></div>
-</header>
-
-<nav class="app-nav">
-  <a class="nav-btn nav-btn--geri" href="ayarlar.html"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></a>
-  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
-</nav>
-</div>
-<div class="sayfa-rota-serit">
-  <span class="sayfa-rota-serit-isim">🔐 Çalışan Erişimi</span>
-  <span class="sayfa-rota-serit-rota">Ayarlar</span>
-</div>
-
-<main class="sayfa">
-
-  <!-- SADECE S22 DEĞİLSE -->
-  <div class="cz-sadece-s22-kutu" id="ceSadeceS22Notu" hidden>
-    🔒 Çalışan Erişimi sadece "Samsung S22" adlı ana cihazdan açılabilir. Kullanıcıları buradan oluşturup yönetebilirsin.
-  </div>
-
-  <!-- S22 İSE — ÖNCE AYRI PIN (Cihazlarım'daki ile AYNI) -->
-  <div id="cePinAlani" hidden>
-    <div class="cz-pin-kutu">
-      <h1 id="cePinBaslik">🔒 Çalışan Erişimi — Yönetim PIN'i</h1>
-      <p class="pin-bilgi" id="cePinBilgi" hidden></p>
-      <div class="pin-noktalar" id="cePinNoktalar">
-        <span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span><span class="pin-nokta"></span>
-      </div>
-      <input type="tel" id="cePinGizliInput" class="pin-gizli-input" maxlength="4" inputmode="numeric" autocomplete="off">
-      <p class="giris-hata" id="cePinHata" hidden>PIN hatalı, tekrar deneyin.</p>
-      <div class="pin-tus-grid" id="cePinTusGrid"></div>
-    </div>
-  </div>
-
-  <!-- PIN DOĞRULANDIKTAN SONRA -->
-  <div id="ceYonetimAlani" hidden>
-    <section class="ce-kart">
-      <div class="ce-kart-baslik">➕ Yeni Kullanıcı</div>
-      <div class="ce-form-alan">
-        <input type="text" id="ceKullaniciAdi" placeholder="Kullanıcı adı" autocomplete="off" autocapitalize="off">
-        <input type="password" id="ceSifre" placeholder="Şifre (en az 6 karakter)" autocomplete="new-password">
-      </div>
-      <p class="ce-hata" id="ceOlusturHata" hidden></p>
-      <button class="ce-olustur-btn" id="btnCeOlustur">✓ Kullanıcı Oluştur</button>
-    </section>
-
-    <div id="ceKullaniciListesi"></div>
-    <p class="ce-bos-mesaj" id="ceBosMesaj" hidden>Henüz çalışan hesabı oluşturmadın.</p>
-  </div>
-
-  <p class="surum-bilgisi" id="surumBilgisi"></p>
-</main>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js?v=WG.011026.2340.706"></script>
-<script src="auth.js?v=WG.021026.1150.708"></script>
-<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="pin-utils.js?v=WG.150926.1241.572"></script>
-<script src="cihaz-data.js?v=WG.130926.2010.553"></script>
-<script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="calisan-erisim-render.js?v=WG.021026.1730.711"></script>
+<p>Bu sayfa taşındı — yönlendiriliyorsun: <a href="cihaz-kullanici.html">Cihazlar ve Kullanıcılar</a></p>
+<script>window.location.replace("cihaz-kullanici.html");</script>
 </body>
 </html>

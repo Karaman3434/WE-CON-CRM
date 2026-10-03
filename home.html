@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.021026.1940.714 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.031026.0930.715 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
@@ -24,6 +24,17 @@
     home-anasayfa-style.css    — SADECE bu sayfaya özel yeni tasarım stilleri
     home-data.js                — Firebase bağlantısı + veri çekme/hesaplama
     home-render.js              — veriyi okuyup DOM'a yazma + çekmece menü mantığı
+
+  KULLANICI ADI (03.10.2026, Abdullah'ın isteğiyle): bu cihazda hiç
+  "kullanıcı adı" tanımlanmamışsa (CihazData.benimKullaniciAdim() boş),
+  sayfa açılır açılmaz #kaZorunluOverlay tam ekran gösterilir — isim
+  girilmeden kapatılamaz. Bir kere girilince drawer'daki "Hesabım"
+  kartında görünür ve ✏️ ile istenildiğinde değiştirilebilir (bkz.
+  #kaDuzenleOverlay — aynı bileşen, sadece kapatılabilir hali). Bu isim
+  Firebase'de cihazın kendi kaydına (cihazlar/{id}/kullaniciAdi) yazılır
+  — cihaz adından (Abdullah'ın S22'den verdiği "iPhone 13" gibi etiket)
+  AYRI bir alandır, "Cihazlar ve Kullanıcılar" sayfasında ikisi birlikte
+  görünür (bkz. cihaz-kullanici.html).
 -->
 <html lang="tr">
 <head>
@@ -38,7 +49,7 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.021026.1510.710">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.021026.1730.711">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.031026.0930.715">
 </head>
 <body>
 
@@ -153,7 +164,10 @@
     <div class="as-drawer-profil">
       <div class="as-drawer-avatar" aria-hidden="true">👤</div>
       <div class="as-drawer-isim-blok">
-        <div class="as-drawer-isim" id="asDrawerIsim">Hesabım</div>
+        <div class="as-drawer-kullanici-satir">
+          <div class="as-drawer-isim" id="asDrawerIsim">Hesabım</div>
+          <button type="button" class="as-drawer-duzenle-btn" id="btnAsKullaniciDuzenle" title="Kullanıcı adını düzenle">✏️</button>
+        </div>
         <div class="as-drawer-eposta" id="asDrawerEposta">…</div>
       </div>
     </div>
@@ -175,7 +189,7 @@
       <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#f5c451;" aria-hidden="true">🔒</span><span class="as-drawer-etiket">Kişisel</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
     </nav>
 
-    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.021026.1940.714 ***</div>
+    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.031026.0930.715 ***</div>
 
     <div class="as-drawer-ayarlar-blok">
       <a class="as-drawer-oge" href="menu.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">⚙️</span><span class="as-drawer-etiket">Ayarlar</span><span class="as-drawer-hata-rozet" id="asAyarlarHataRozeti" hidden>0</span></a>
@@ -201,6 +215,22 @@
   </div>
 </div>
 
+<!-- KULLANICI ADI PENCERESİ (03.10.2026, Abdullah'ın isteğiyle) — TEK
+     bileşen, iki modda kullanılır: MECBURİ (ilk kullanım — #kaKapatBtn
+     gizli, kapatılamaz) ve DÜZENLEME (drawer'daki ✏️'den — kapatılabilir).
+     Hangi modda olduğu home-render.js'de kaKullaniciAdiPenceresiniAc(mecburiMi)
+     ile belirlenir. -->
+<div class="ka-overlay" id="kaOverlay" hidden>
+  <button type="button" class="ka-kapat-btn" id="kaKapatBtn" hidden aria-label="Kapat">✕</button>
+  <div class="ka-ikon" aria-hidden="true">👤</div>
+  <div class="ka-baslik" id="kaBaslik">Kullanıcı Adını Tanımla</div>
+  <div class="ka-alt" id="kaAlt">Devam etmeden önce bu cihazı kimin kullandığını belirtmen gerekiyor. Bu ad, Ayarlar › Cihazlar ve Kullanıcılar panelinde bu cihazın yanında görünecek.</div>
+  <input type="text" class="ka-input" id="kaInput" placeholder="örn. ANKARA BOLGE 19" autocomplete="off">
+  <p class="ka-hata" id="kaHata" hidden>Lütfen bir isim gir.</p>
+  <div class="ka-ornek">Örnek: ANKARA BOLGE 19</div>
+  <button type="button" class="ka-kaydet-btn" id="btnKaKaydet">✓ Kaydet ve Devam Et</button>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -208,11 +238,12 @@
 <script src="auth.js?v=WG.021026.1510.710"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
+<script src="cihaz-data.js?v=WG.130926.2010.553"></script>
 <script src="home-data.js?v=WG.150926.1241.572"></script>
 <script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="hata-log.js?v=WG.140926.1412.560"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.021026.1510.710"></script>
+<script src="home-render.js?v=WG.031026.0930.715"></script>
 </body>
 </html>

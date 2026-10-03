@@ -73,6 +73,37 @@ var CihazData = (function(){
     }catch(e){ cb(false); }
   }
 
+  /* ---------- KULLANICI ADI (03.10.2026, Abdullah'ın isteğiyle) ----------
+     Cihazın kendi adından (ad — Abdullah'ın S22'den verdiği "iPhone 13" gibi
+     bir etiket) AYRI bir alan: bu cihazı o an KULLANAN kişinin kendi
+     tanımladığı isim (örn. "ANKARA BOLGE 19"). İlk kullanımda zorunlu
+     girilir (bkz. home.html/home-render.js), sonradan drawer'daki "Hesabım"
+     kartından istenildiği zaman değiştirilebilir. Hiçbir şifre/giriş
+     hesabıyla İLGİSİ YOKTUR — sadece kendini tanıtan bir etikettir.
+     Her değişiklik "cihazlar/{id}/kullaniciAdiGecmisi" altına da (silinmeden,
+     tarih damgasıyla) eklenir — Abdullah S22'den "Cihazlar ve Kullanıcılar"
+     sayfasında hangi cihazın/kişinin adını ne zaman değiştirdiğini görebilsin
+     diye. */
+  function benimKullaniciAdim(){
+    try{ return localStorage.getItem("weicon_kullanici_adi") || ""; }catch(e){ return ""; }
+  }
+
+  function kullaniciAdiKaydet(adi, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    try{
+      adi = String(adi||"").trim();
+      if(!adi){ cb(false); return; }
+      localStorage.setItem("weicon_kullanici_adi", adi);
+      baslat();
+      var id = benimIdim();
+      var db = firebase.database();
+      db.ref("cihazlar/" + id).update({ kullaniciAdi: adi, sonGorulme: Date.now() })
+        .then(function(){ return db.ref("cihazlar/" + id + "/kullaniciAdiGecmisi").push({adi: adi, zaman: Date.now()}); })
+        .then(function(){ cb(true); })
+        .catch(function(){ cb(true); }); // yerel kayıt zaten oldu, çevrimdışı da olsa kullanıcıyı bekletme
+    }catch(e){ cb(false); }
+  }
+
   function tumCihazlariDinle(fn){
     try{
       baslat();
@@ -123,6 +154,8 @@ var CihazData = (function(){
     korumaliMi: korumaliMi,
     kaydiGuncelle: kaydiGuncelle,
     adiKaydet: adiKaydet,
+    benimKullaniciAdim: benimKullaniciAdim,
+    kullaniciAdiKaydet: kullaniciAdiKaydet,
     tumCihazlariDinle: tumCihazlariDinle,
     engelle: engelle,
     engeliKaldir: engeliKaldir,
