@@ -347,6 +347,9 @@ body.as-drawer-kilit { overflow: hidden; }
 
 /* KULLANICI ADI PENCERESİ (03.10.2026) — tam ekran, iki modda kullanılır
    (bkz. home.html'deki yorum + home-render.js: kaKullaniciAdiPenceresiniAc). */
+.ka-overlay[hidden] {
+  display: none;
+}
 .ka-overlay {
   position: fixed;
   inset: 0;
