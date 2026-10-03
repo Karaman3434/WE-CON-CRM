@@ -220,6 +220,23 @@ var DRAWER_ALT_MENULERI = {
       {ikon:"📆", etiket:"Ziyaret Takvimi", href:"ziyaret.html"},
       {ikon:"❌", etiket:"Kaçan Satışlar", href:"kacan-satislar.html"}
     ]
+  },
+  // 03.10.2026, Abdullah'ın isteğiyle — "Yeni Müşteri" yeşil zeminle vurgulu
+  // (bkz. .as-drawer-altmenu-oge--yesil, home-anasayfa-style.css).
+  musteri: {
+    baslik: "Müşteri",
+    ogeler: [
+      {ikon:"📋", etiket:"Müşteri Listesi", href:"customer.html"},
+      {ikon:"➕", etiket:"Yeni Müşteri", href:"customer-add.html", sinif:"as-drawer-altmenu-oge--yesil"}
+    ]
+  },
+  arackm: {
+    baslik: "Araç KM",
+    ogeler: [
+      {ikon:"🚗", etiket:"Günlük KM", href:"km.html"},
+      {ikon:"📋", etiket:"Aylık KM / Excel", href:"km-kayitlar.html"},
+      {ikon:"💳", etiket:"Yıllık KM Ödeme", href:"yillik-km-odeme.html"}
+    ]
   }
 };
 
@@ -244,7 +261,7 @@ function altMenuAc(anahtar, tetikleyiciEl){
     var panel = document.getElementById("asDrawerAltMenu");
     document.getElementById("asDrawerAltMenuBaslik").textContent = tanim.baslik;
     document.getElementById("asDrawerAltMenuListe").innerHTML = tanim.ogeler.map(function(o){
-      return "<a class='as-drawer-altmenu-oge' href='" + o.href + "'>"
+      return "<a class='as-drawer-altmenu-oge" + (o.sinif ? " " + o.sinif : "") + "' href='" + o.href + "'>"
         + "<span class='as-drawer-altmenu-oge-ikon' aria-hidden='true'>" + o.ikon + "</span>"
         + "<span>" + o.etiket + "</span></a>";
     }).join("");

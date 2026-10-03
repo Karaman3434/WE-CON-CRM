@@ -20,6 +20,8 @@ var KmData = (function(){
   var dinleyiciler = [];
   var hatirlatmaNotu = "";
   var hatirlatmaDinleyicileri = [];
+  var odemeler = {};
+  var odemeDinleyicileri = [];
 
   function baslat(){
     try{
@@ -30,6 +32,17 @@ var KmData = (function(){
         dinleyiciler.forEach(function(fn){ fn(); });
       }, function(err){
         console.error("KM okuma hatası:", err);
+      });
+      // YILLIK KM ÖDEME (03.10.2026, Abdullah'ın isteğiyle) — her ayki
+      // ÖZEL km karşılığı şirketten alınan geri ödemenin takibi. Günlük
+      // km kayıtlarından (kmTakip) TAMAMEN AYRI bir node: "Toplam Özel KM"
+      // sütunu kmTakip'ten CANLI hesaplanır, burada sadece elle girilen
+      // Ödeme Tarihi/Platformu/Tutarı saklanır — bkz. yillik-km-odeme.html.
+      db.ref("kmOdemeleri").on("value", function(snap){
+        odemeler = snap.val() || {};
+        odemeDinleyicileri.forEach(function(fn){ fn(); });
+      }, function(err){
+        console.error("KM ödeme okuma hatası:", err);
       });
       // HATIRLATMA NOTU (24.09.2026) — Araç KM sayfasında, "Bu Ayın
       // Kayıtları" butonunun üstünde duran, Abdullah'ın elle yazdığı tek
@@ -293,6 +306,31 @@ var KmData = (function(){
     }catch(e){ geriBildir(false, e); }
   }
 
+  // ---------- YILLIK KM ÖDEME (03.10.2026) ----------
+  function odemeDegistiginde(fn){ odemeDinleyicileri.push(fn); }
+
+  function odemeOku(yilAy){ return odemeler[yilAy] || {}; }
+
+  var ODEME_ALAN_HARITA = { odemeTarihi: "odemeTarihi", odemePlatformu: "odemePlatformu", odeme: "odeme" };
+  function odemeGuncelle(yilAy, alanAdi, deger, geriBildir){
+    try{
+      var firebaseAlan = ODEME_ALAN_HARITA[alanAdi];
+      if(!firebaseAlan){ geriBildir(false, "Bilinmeyen alan"); return; }
+      var yaziliDeger = (firebaseAlan==="odeme") ? (parseFloat(deger)||0) : (deger||"");
+      firebase.database().ref("kmOdemeleri/" + yilAy + "/" + firebaseAlan).set(yaziliDeger).then(function(){
+        geriBildir(true);
+      }).catch(function(err){ geriBildir(false, err); });
+    }catch(e){ geriBildir(false, e); }
+  }
+
+  // Belirli bir "YYYY-MM" ayının TOPLAM ÖZEL KM'si — kmTakip kayıtlarından
+  // canlı hesaplanır (Yıllık KM Ödeme sayfasındaki "Toplam Özel KM" sütunu).
+  function ayinOzelKmToplami(yilAy){
+    var toplam = 0;
+    ayinKayitlari(yilAy).forEach(function(k){ if(k.ozelKm!=null) toplam += k.ozelKm; });
+    return toplam;
+  }
+
   return {
     baslat: baslat,
     degistiginde: degistiginde,
@@ -318,7 +356,11 @@ var KmData = (function(){
     baslangicKaydet: baslangicKaydet,
     hatirlatmaNotunuOku: hatirlatmaNotunuOku,
     hatirlatmaNotuDegistiginde: hatirlatmaNotuDegistiginde,
-    hatirlatmaNotunuKaydet: hatirlatmaNotunuKaydet
+    hatirlatmaNotunuKaydet: hatirlatmaNotunuKaydet,
+    odemeDegistiginde: odemeDegistiginde,
+    odemeOku: odemeOku,
+    odemeGuncelle: odemeGuncelle,
+    ayinOzelKmToplami: ayinOzelKmToplami
   };
 
 })();

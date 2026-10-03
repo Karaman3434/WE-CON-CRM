@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.031026.1610.718 — yillik-km-odeme.html -->
+<!--
+  YILLIK KM ÖDEME (03.10.2026, Abdullah'ın isteğiyle) — Araç KM alt
+  menüsündeki 3. seçenek. Her ayki ÖZEL km karşılığı şirketten alınan
+  geri ödemenin takibi: Toplam Özel KM sütunu km-data.js'teki kmTakip
+  kayıtlarından CANLI hesaplanır (salt okunur); Ödeme Tarihi/Platformu/
+  Tutarı elle girilir ve "kmOdemeleri/{YYYY-MM}" altında saklanır.
+  Durum rozeti (Ödendi/Bekliyor) Ödeme tutarına göre otomatik belirlenir.
+  Tasarım km-kayitlar.html ile AYNI bileşenleri kullanır (km-style.css).
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3d8c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WEICON ASİST">
+<title>WEICON ASİST — Yıllık KM Ödeme</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
+<link rel="stylesheet" href="km-style.css?v=WG.031026.1610.718">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="km.html"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+</nav>
+</div>
+<div class="sayfa-rota-serit">
+  <span class="sayfa-rota-serit-isim">💳 Yıllık KM Ödeme</span>
+  <span class="sayfa-rota-serit-rota">Araç KM</span>
+</div>
+
+<main class="sayfa kmk-sayfa">
+
+  <div class="km-toplam-grup-baslik">YILLIK TOPLAM · <span id="koYilEtiket">2026</span></div>
+  <section class="km-toplam-satir">
+    <div class="km-toplam-kutu km-toplam-kutu--ozel-dolu">
+      <div class="km-toplam-kutu-etiket">TOPLAM ÖZEL KM</div>
+      <div class="km-toplam-kutu-deger" id="koYilToplamOzelKm">0 km</div>
+    </div>
+    <div class="km-toplam-kutu km-toplam-kutu--is-dolu">
+      <div class="km-toplam-kutu-etiket">TOPLAM ÖDENEN</div>
+      <div class="km-toplam-kutu-deger" id="koYilToplamOdeme">0 ₺</div>
+    </div>
+  </section>
+
+  <select class="km-ay-secici" id="koYilSecici"></select>
+
+  <div class="km-tablo-baslik-satir">
+    <div class="km-tablo-baslik" id="koTabloBaslik">2026 — Aylık Ödeme Tablosu</div>
+    <div class="km-tablo-baslik-butonlar">
+      <button class="km-tablo-kaydet-buton" id="btnKoKaydet">✓ Kaydet</button>
+      <button class="excel-buton" id="btnKoExcel">📊 Excel'e Aktar</button>
+    </div>
+  </div>
+
+  <div class="data-table-container">
+    <table class="data-table km-veri-tablo">
+      <thead><tr>
+        <th>Ay</th><th>Toplam Özel KM</th><th>Ödeme Tarihi</th><th>Platform</th><th>Ödeme</th><th>Durum</th>
+      </tr></thead>
+      <tbody id="koTabloGovde"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js?v=WG.011026.2340.706"></script>
+<script src="auth.js?v=WG.021026.1150.708"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="km-data.js?v=WG.031026.1610.718"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="yillik-km-odeme-render.js?v=WG.031026.1610.718"></script>
+</body>
+</html>

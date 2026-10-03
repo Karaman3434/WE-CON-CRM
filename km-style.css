@@ -498,3 +498,18 @@
   flex: 1; padding: 12px; border-radius: 8px; border: none;
   background: #b7601f; color: #fff; font-weight: 800; font-size: 13px; cursor: pointer;
 }
+
+/* ---------- YILLIK KM ÖDEME (03.10.2026) ----------
+   "Ödendi/Bekliyor" rozeti — Avans Takibi'ndeki .av-gecmis-durum ile
+   BİREBİR aynı görsel dil (tasarım tutarlılığı için), bağımsız sınıf
+   adlarıyla (km-style.css avans-takibi-style.css'e bağımlı olmasın). */
+.ko-durum {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 3px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.ko-durum--bekliyor { background: #fdf2e3; color: #b7601f; border: 1.5px solid #e0a94a; }
+.ko-durum--odendi { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34; }

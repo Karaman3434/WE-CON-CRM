@@ -497,6 +497,10 @@ body.as-drawer-kilit { overflow: hidden; }
 }
 .as-drawer-altmenu-oge:active { background: #f1f3f7; }
 .as-drawer-altmenu-oge-ikon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+/* "Yeni Müşteri" yeşil vurgu (03.10.2026, Abdullah'ın isteğiyle). */
+.as-drawer-altmenu-oge--yesil { background: #eafaf0; }
+.as-drawer-altmenu-oge--yesil:active { background: #d7f3e2; }
+.as-drawer-altmenu-oge--yesil span:last-child { color: #0e6b34; font-weight: 800; }
 
 .as-drawer-versiyon {
   padding: 0 12px 8px;
