@@ -6,11 +6,15 @@
     - Toplam Özel KM: km-data.js'teki kmTakip kayıtlarından CANLI
       hesaplanır (salt okunur).
     - KM Çarpanı: elle girilen TL/km değeri, yıl bazlı ("kmCarpanlari/{YIL}").
+      03.10.2026 güncellemesi: blur'da DEĞİL, SADECE "✓ Kaydet" tuşuna
+      basınca kaydedilir (bkz. btnKoCarpanKaydet click dinleyicisi).
     - Tutar: Toplam Özel KM × KM Çarpanı — OTOMATİK hesaplanır (salt okunur).
     - Ödeme Tarihi / Platform / Ödeme / Durum: serbest metin, elle girilir
       ve blur'da otomatik kaydedilir ("kmOdemeleri/{YYYY-MM}"). Durum
       BAŞTA otomatik Ödendi/Bekliyor rozetiydi, Abdullah'ın isteğiyle
       serbest metin hücresine çevrildi — artık hiçbir otomatik mantık yok.
+  Üst pano (03.10.2026): Toplam Özel KM / Toplam Tutar / Toplam Ödenen /
+  Kalan Ödeme — 4 panel yan yana.
   Yıl seçici YOK (bilerek) — sayfa her zaman BU YILI gösterir.
 */
 
@@ -86,6 +90,7 @@ function tabloyuCiz(){
     }).join("");
 
     document.getElementById("koYilToplamOzelKm").textContent = toplamOzelYil + " km";
+    document.getElementById("koYilToplamTutar").textContent = koSayiGoster(toplamTutarYil) + " ₺";
     document.getElementById("koYilToplamOdeme").textContent = koSayiGoster(toplamOdemeYil) + " ₺";
     document.getElementById("koYilKalanOdeme").textContent = koSayiGoster(toplamTutarYil - toplamOdemeYil) + " ₺";
 
@@ -188,12 +193,24 @@ document.addEventListener("DOMContentLoaded", function(){
     }, 150);
   };
 
-  document.getElementById("koCarpanInput").addEventListener("blur", function(){
+  // 03.10.2026 güncellemesi: çarpan artık blur'da DEĞİL, SADECE "✓ Kaydet"
+  // tuşuna basınca kaydediliyor — Abdullah değiştirip tuşa basmadıkça
+  // yazılı/kayıtlı değer olduğu gibi kalır.
+  document.getElementById("btnKoCarpanKaydet").addEventListener("click", function(){
+    var btn = this;
     var yil = koBuYil();
-    var deger = this.value.trim();
+    var input = document.getElementById("koCarpanInput");
+    var deger = input.value.trim();
     if(deger === ""){ koCarpaniGuncelle(); return; } // boş bırakılırsa dokunma
     KmData.carpanKaydet(yil, deger, function(basarili, err){
-      if(!basarili) hataGoster("KM çarpanı kaydedilemedi: " + (err && err.message ? err.message : "geçersiz değer"));
+      if(!basarili){
+        hataGoster("KM çarpanı kaydedilemedi: " + (err && err.message ? err.message : "geçersiz değer"));
+        return;
+      }
+      var eskiMetin = btn.textContent;
+      btn.textContent = "✓ Kaydedildi";
+      btn.disabled = true;
+      setTimeout(function(){ btn.textContent = eskiMetin; btn.disabled = false; }, 1500);
     });
   });
 

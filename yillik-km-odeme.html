@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.031026.1700.719 — yillik-km-odeme.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.031026.1710.720 — yillik-km-odeme.html -->
 <!--
   YILLIK KM ÖDEME (03.10.2026, Abdullah'ın isteğiyle) — Araç KM alt
   menüsündeki 3. seçenek. Her ayki ÖZEL km karşılığı şirketten alınan
@@ -7,15 +7,18 @@
     - Toplam Özel KM: km-data.js'teki kmTakip kayıtlarından CANLI
       hesaplanır (salt okunur).
     - KM Çarpanı: Abdullah'ın elle girdiği TL/km değeri, yıl bazlı
-      saklanır ("kmCarpanlari/{YIL}").
+      saklanır ("kmCarpanlari/{YIL}"). ARTIK blur'da değil, SADECE
+      yanındaki "✓ Kaydet" tuşuna basınca kaydedilir — Abdullah
+      değiştirip tuşa basmadıkça girilmiş/kayıtlı değer sabit kalır.
     - Tutar: Toplam Özel KM × KM Çarpanı — OTOMATİK hesaplanır, salt okunur.
     - Ödeme Tarihi / Platform / Ödeme / Durum: elle girilir, serbest metin
       ("kmOdemeleri/{YYYY-MM}" altında saklanır). Durum artık OTOMATİK
       rozet DEĞİL — Abdullah'ın kendi yazdığı serbest bir hücre (03.10.2026,
       "ben kendim manuel gireceğim" isteğiyle).
-  Üstteki 3 pano: Toplam Özel KM / Toplam Ödenen / Kalan Ödeme (= yıllık
-  toplam Tutar − yıllık toplam Ödenen). Tasarım km-kayitlar.html ile AYNI
-  bileşenleri kullanır (km-style.css).
+  Üstteki 4 pano (03.10.2026 güncellemesi): Toplam Özel KM / Toplam Tutar /
+  Toplam Ödenen / Kalan Ödeme (= yıllık toplam Tutar − yıllık toplam
+  Ödenen — ödeme yapıldıkça otomatik düşer). Tasarım km-kayitlar.html ile
+  AYNI bileşenleri kullanır (km-style.css).
 -->
 <html lang="tr">
 <head>
@@ -30,7 +33,7 @@
 <title>WEICON ASİST — Yıllık KM Ödeme</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
-<link rel="stylesheet" href="km-style.css?v=WG.031026.1700.719">
+<link rel="stylesheet" href="km-style.css?v=WG.031026.1710.720">
 </head>
 <body>
 
@@ -64,13 +67,18 @@
     <span class="ko-carpan-etiket" id="koCarpanEtiket">📐 2026 KM Çarpanı</span>
     <div class="ko-carpan-input-grup">
       <input type="number" id="koCarpanInput" step="0.1" inputmode="decimal"> <span>₺/km</span>
+      <button class="ko-carpan-kaydet-btn" id="btnKoCarpanKaydet">✓ Kaydet</button>
     </div>
   </div>
 
-  <section class="km-toplam-satir ko-toplam-satir-3">
+  <section class="km-toplam-satir ko-toplam-satir-4">
     <div class="km-toplam-kutu km-toplam-kutu--ozel-dolu">
       <div class="km-toplam-kutu-etiket">TOPLAM ÖZEL KM</div>
       <div class="km-toplam-kutu-deger" id="koYilToplamOzelKm">0 km</div>
+    </div>
+    <div class="km-toplam-kutu km-toplam-kutu--tutar-dolu">
+      <div class="km-toplam-kutu-etiket">TOPLAM TUTAR</div>
+      <div class="km-toplam-kutu-deger" id="koYilToplamTutar">0 ₺</div>
     </div>
     <div class="km-toplam-kutu km-toplam-kutu--is-dolu">
       <div class="km-toplam-kutu-etiket">TOPLAM ÖDENEN</div>
@@ -102,6 +110,6 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="km-data.js?v=WG.031026.1700.719"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="yillik-km-odeme-render.js?v=WG.031026.1700.719"></script>
+<script src="yillik-km-odeme-render.js?v=WG.031026.1710.720"></script>
 </body>
 </html>
