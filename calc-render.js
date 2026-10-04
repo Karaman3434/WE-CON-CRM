@@ -1,5 +1,5 @@
 /*
-  calc-render.js — WG.041026.0905.724
+  calc-render.js — WG.041026.0943.725
   ====================================
   04.10.2026 (Abdullah'ın isteğiyle, İKİNCİ büyük değişiklik) — bu sayfanın
   KENDİ hesaplama kopyası (eski hesaplaVeGoster/kur seçimi/geçmiş alım
@@ -42,23 +42,57 @@ function aramaSonuclariniCiz(){
   try{
     var q = document.getElementById("searchInput").value;
     var liste = document.getElementById("sonucListesi");
-    if(q.trim().length === 0){ liste.innerHTML = ""; return; }
+    var alan = document.getElementById("aramaSonucAlani");
+    var bos = document.getElementById("bosMesaj");
+
+    if(q.trim().length === 0){
+      liste.innerHTML = "";
+      alan.hidden = true;
+      bos.hidden = true;
+      return;
+    }
 
     var sonuclar = ProductData.ara(q).slice(0, 15);
+    if(sonuclar.length === 0){
+      liste.innerHTML = "";
+      alan.hidden = true;
+      bos.hidden = false;
+      return;
+    }
+    bos.hidden = true;
+    alan.hidden = false;
+
+    // Ürün hücresine dokununca WEICON sayfası açılır — cart.html'in Ürün
+    // Bul'uyla BİREBİR AYNI davranış (bkz. urun-arama.js uaSonuclariCiz).
     liste.innerHTML = sonuclar.map(function(s){
+      var idx = s.idx;
       var bilgi = ProductData.urunBilgisi(s.item);
-      return "<div class='hesapla-arama-karti' data-idx='" + s.idx + "'>"
-        + "<div class='hesapla-arama-bilgi'><div class='hesapla-arama-kod'>Berta: " + htmlEsc(bilgi.berta||"-") + "</div><div class='hesapla-arama-ad'>" + htmlEsc(bilgi.ad) + "</div></div>"
-        + "<div class='hesapla-arama-fiyat'>" + bilgi.fiyat.toFixed(2) + " EUR</div>"
-        + "</div>";
+      return "<tr>"
+        + "<td class='product-cell product-cell--tikla' data-idx='" + idx + "' title='dokununca WEICON sayfası açılır'>"
+        + "<div class='tablo-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(bilgi.berta||"-") + "</span> <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(bilgi.abas||"-") + "</span></div>"
+        + "<div class='urun-adi'>" + htmlEsc(bilgi.ad) + "</div>"
+        + "</td>"
+        + "<td class='urun-islem-hucre'><div class='urun-islem-grup'>"
+        + "<span class='urun-fiyat-yazi'>" + bilgi.fiyat.toFixed(2) + " €</span>"
+        + "<button class='btn-add' data-idx='" + idx + "'>SEÇ</button>"
+        + "</div></td>"
+        + "</tr>";
     }).join("");
 
-    liste.querySelectorAll(".hesapla-arama-karti").forEach(function(kart, i){
-      kart.onclick = function(){
+    liste.querySelectorAll(".product-cell--tikla").forEach(function(td, i){
+      td.onclick = function(){
+        var bilgi = ProductData.urunBilgisi(sonuclar[i].item);
+        var aramaKodu = bilgi.abas || bilgi.berta || bilgi.ad;
+        window.open("https://www.weicon.com.tr/search?search=" + encodeURIComponent(aramaKodu), "_blank");
+      };
+    });
+    liste.querySelectorAll(".btn-add").forEach(function(btn, i){
+      btn.onclick = function(){
         var bilgi = ProductData.urunBilgisi(sonuclar[i].item);
         HesaplaPopup.ac({ad:bilgi.ad, berta:bilgi.berta, abas:bilgi.abas, fiyat:bilgi.fiyat}, null);
         document.getElementById("searchInput").value = "";
         liste.innerHTML = "";
+        alan.hidden = true;
       };
     });
   }catch(e){ hataGoster("Arama sonuçları çizilemedi: " + e.message); }

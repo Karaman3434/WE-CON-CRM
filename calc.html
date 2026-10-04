@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.041026.0905.724 — calc.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.041026.0943.725 — calc.html -->
 <!--
   WEICON ASİST — HIZLI HESAPLA v4 (04.10.2026, Abdullah'ın isteğiyle — ORTAK
   HESAPLAMA ARACI)
@@ -59,7 +59,23 @@
     <input type="text" id="searchInput" placeholder="Ürün Bul — katalogda ara..." autocomplete="off">
     <span class="arama-ikon">🔍</span>
   </div>
-  <div class="sonuc-listesi" id="sonucListesi"></div>
+
+  <!-- YENİ (04.10.2026, Abdullah'ın isteğiyle — düzeltme) — arama sonuçları
+       artık cart.html'in Ürün Bul tablosuyla BİREBİR AYNI: ürün hücresine
+       dokununca WEICON web sayfası açılır (önceki sürümde kazara doğrudan
+       hesaplama popup'ı açılır hale gelmişti). SEÇ butonu bu sayfada
+       doğrudan hesaplama popup'ını açar — ayrı bir "H" butonuna gerek yok,
+       bu sayfanın tek amacı zaten hesaplamak. -->
+  <div class="data-table-container" id="aramaSonucAlani" hidden>
+    <table class="data-table">
+      <thead><tr>
+        <th class="col-urun">ÜRÜN</th>
+        <th class="col-islem">İŞLEM</th>
+      </tr></thead>
+      <tbody id="sonucListesi"></tbody>
+    </table>
+  </div>
+  <p class="bos-mesaj" id="bosMesaj" hidden>Sonuç bulunamadı.</p>
 
   <!-- HIZLI HESAPLA POPUP — cart.html'deki #hpOverlay ile BİREBİR AYNI
        (hesapla-popup.js bu ID'leri kullanıyor). Bir arama sonucuna
@@ -186,6 +202,6 @@
 <script src="cart-data.js?v=WG.021026.1150.708"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="hesapla-popup.js?v=WG.041026.0905.724"></script>
-<script src="calc-render.js?v=WG.041026.0905.724"></script>
+<script src="calc-render.js?v=WG.041026.0943.725"></script>
 </body>
 </html>
