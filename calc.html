@@ -1,11 +1,21 @@
 <!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.041026.0905.724 — calc.html -->
 <!--
-  WEICON ASİST — HIZLI HESAPLA v3
-  ==================================
-  Eski uygulamanın "hesaplaPopupModal"ıyla BİREBİR aynı: Döviz Kuru kartı +
-  Temizle butonu, Ürün Bul, seçili ürün kartı, 2x2 fiyat/iskonto/adet
-  kartları, İsk.Birim/TL Birim (turuncu) kartları, Toplam Euro / Fatura
-  Toplam (navy) kartları, Prim EUR/TL, alt Kapat + Sepete Ekle.
+  WEICON ASİST — HIZLI HESAPLA v4 (04.10.2026, Abdullah'ın isteğiyle — ORTAK
+  HESAPLAMA ARACI)
+  ================================================================
+  Bu sayfa HER ZAMAN bağımsız ve müşterisizdir ("hesapla" izni — Çalışan
+  Erişimi'nde "🧮 Hızlı Hesapla (bağımsız, müşterisiz)" olarak tanımlı,
+  cart.html'in "sepet" izninden TAMAMEN AYRI). Önceden burada cart.html'deki
+  #hpOverlay popup'ının BİREBİR AYNI mantığının (farklı ID'lerle) ikinci bir
+  kopyası vardı — iki ayrı dosyada iki ayrı hesaplama kodu aynı anda
+  bakımı gerektiriyordu. Artık bu sayfa da cart.html'in kullandığı AYNI
+  paylaşılan hesaplama bileşenini (hesapla-popup.js + #hpOverlay popup
+  markup'ı) kullanıyor — tek kod, tek tasarım, iki ayrı giriş/izin.
+
+  Bu sayfada müşteriyle ilgili HİÇBİR kod/veri yok (customer-data.js,
+  reports-data.js, musteri-serit.js bilerek YÜKLENMİYOR) — "hesapla"
+  izni olan bir çalışan bu sayfada müşteri bilgisine asla erişemez/göremez.
 -->
 <html lang="tr">
 <head>
@@ -19,10 +29,11 @@
 <meta name="apple-mobile-web-app-title" content="WEICON ASİST">
 <title>WEICON ASİST — Hızlı Hesapla</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
+<link rel="stylesheet" href="home-style.css?v=WG.041026.0905.724">
 <link rel="stylesheet" href="product-style.css?v=WG.021026.1245.709">
-<link rel="stylesheet" href="musteri-serit.css?v=WG.270926.0045.641">
-<link rel="stylesheet" href="calc-style.css?v=WG.011026.2210.702">
+<link rel="stylesheet" href="calc-style.css?v=WG.041026.0905.724">
+<link rel="stylesheet" href="cart-style.css?v=WG.041026.0905.724">
+<link rel="stylesheet" href="detail-style.css?v=WG.011026.1412.692">
 </head>
 <body>
 
@@ -44,133 +55,121 @@
 
 <main class="sayfa">
 
-  <!-- Müşteri şeridi (25.09.2026) — Hesapla sayfası bir müşteri
-       bağlamında açıldıysa (İşlem Yap → Sepete Git → Hesapla), kimin
-       için hesaplandığı her zaman görünsün. Sadece "Hızlı Hesapla"
-       tek başına kullanılıyorsa (müşteri seçili değilse) hiç görünmez. -->
-  <div id="hesaplaCariBilgi" hidden></div>
-
   <div class="arama-kutusu">
     <input type="text" id="searchInput" placeholder="Ürün Bul — katalogda ara..." autocomplete="off">
     <span class="arama-ikon">🔍</span>
   </div>
   <div class="sonuc-listesi" id="sonucListesi"></div>
 
-  <div id="seciliUrunKutu" hidden>
-    <div class="hc-secili-urun-baslik">Hesaplanacak Ürün</div>
-    <div class="hc-secili-urun-kutu">
-      <div class="hc-secili-urun-ad-satir">
-        <span id="seciliUrunAd"></span>
-        <button id="btnUrunTemizle">✕</button>
+  <!-- HIZLI HESAPLA POPUP — cart.html'deki #hpOverlay ile BİREBİR AYNI
+       (hesapla-popup.js bu ID'leri kullanıyor). Bir arama sonucuna
+       dokununca açılır. -->
+  <div class="hesapla-overlay" id="hpOverlay" hidden>
+    <div class="hesapla-kutu">
+      <div class="hesapla-baslik" id="hpUrunAd">Ürün</div>
+      <div class="hesapla-kod" id="hpUrunKod"></div>
+
+      <div id="hpGecmisAlimIpucu" class="gecmis-alim-ipucu" hidden></div>
+
+      <div class="hc-grid-2">
+        <div class="hc-kutu">
+          <div class="hc-kutu-etiket">Liste Fiyatı (EUR)</div>
+          <input type="number" step="0.01" id="hpListeFiyat" value="0">
+        </div>
+        <div class="hc-kutu">
+          <input type="number" step="0.01" id="hpDipFiyat" value="0">
+          <div class="hc-kutu-etiket">Dip (Maliyet) (EUR)</div>
+        </div>
+      </div>
+
+      <div class="hc-grid-2">
+        <div class="hc-kutu">
+          <div class="hc-kutu-etiket">Adet</div>
+          <input type="number" step="1" min="1" id="hpAdet" value="1">
+        </div>
+        <div class="hc-kutu hc-kutu--isk">
+          <input type="number" step="0.1" id="hpIskonto" value="0">
+          <div class="hc-kutu-etiket">İsk (%)</div>
+        </div>
+      </div>
+
+      <button class="kur-secenek-btn" id="hpKurRozetBtn" style="margin-bottom:9px;">💱 Kur: <span id="hpKurDeger">-</span> — değiştirmek için dokun</button>
+
+      <div class="hc-grid-2">
+        <div class="hc-turuncu-kart">
+          <div class="hc-turuncu-etiket">İSK EURO BİRİM FİYAT</div>
+          <div class="hc-turuncu-deger" id="hpIskontoluFiyat">-</div>
+        </div>
+        <div class="hc-turuncu-kart">
+          <div class="hc-turuncu-etiket">İSK TL BİRİM FİYAT</div>
+          <div class="hc-turuncu-deger" id="hpTlBirimFiyat">-</div>
+        </div>
+      </div>
+
+      <div class="hc-grid-2">
+        <div class="hc-kutu hc-kutu--toplam">
+          <div class="hc-kutu-etiket">Toplam (EUR)</div>
+          <div class="hc-kutu-deger" id="hpToplamEuro">-</div>
+        </div>
+        <div class="hc-kutu hc-kutu--toplam hc-kutu--fatura">
+          <div class="hc-kutu-etiket hc-kutu-etiket--nowrap">Fatura Toplam TL (KDV Dahil)</div>
+          <div class="hc-kutu-deger" id="hpFaturaToplam">-</div>
+        </div>
+      </div>
+
+      <div class="hc-kutu" style="margin-bottom:10px;">
+        <div class="hc-kutu-etiket">PRİM</div>
+        <div class="hc-kutu-deger" id="hpPrimTL">-</div>
+      </div>
+
+      <div class="hc-alt-buton-satir">
+        <button class="hc-kapat-buton" id="hpBtnKapat">✕ Kapat</button>
+        <button class="hc-listeye-ekle-buton hc-listeye-ekle-buton--bekliyor" id="hpBtnListeyeEkle">➕ LİSTEYE EKLE</button>
       </div>
     </div>
   </div>
 
-  <!-- Geçmiş alım ipucu (15.09.2026) — bu müşteri bu ürünü daha önce aldıysa
-       otomatik, engelleyici olmayan bir şerit olarak gösterilir. -->
-  <div id="gecmisAlimIpucu" class="gecmis-alim-ipucu" hidden></div>
-
-  <div class="hc-grid-2">
-    <div class="hc-kutu">
-      <div class="hc-kutu-etiket">Liste Fiyatı (EUR)</div>
-      <input type="number" step="0.01" id="hesListeFiyat" value="0">
-    </div>
-    <div class="hc-kutu">
-      <input type="number" step="0.01" id="hesDipFiyat" value="0">
-      <div class="hc-kutu-etiket">Dip (Maliyet) (EUR)</div>
-    </div>
-  </div>
-
-  <div class="hc-grid-2">
-    <div class="hc-kutu">
-      <div class="hc-kutu-etiket">Adet</div>
-      <input type="number" step="1" min="1" id="hesAdet" value="1">
-    </div>
-    <div class="hc-kutu hc-kutu--isk">
-      <input type="number" step="0.1" id="hesIskonto" value="0">
-      <div class="hc-kutu-etiket">İsk (%)</div>
+  <!-- Hesapla popup — Döviz Kuru seçimi (cart.html ile BİREBİR AYNI ID/yapı). -->
+  <div class="tip-secim-overlay" id="hpKurSecimOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">💱 Döviz Kuru Seçimi</div>
+      <button class="kur-secenek-btn" id="hpBtnKurGunluk">📅 Günlük Kuru Kullan (<span id="hpKurGunlukDeger">-</span>)</button>
+      <button class="kur-secenek-btn" id="hpBtnKurManuelAc">✏️ Manuel Gir</button>
+      <div id="hpKurManuelAlan" hidden>
+        <input type="number" step="0.01" id="hpKurManuelInput" class="kur-manuel-input" placeholder="Örn. 50">
+        <button class="tip-secim-vazgec-btn" id="hpBtnKurManuelKaydet" style="background:#16a085;color:#fff;">✓ Kaydet ve Bu İşlemde Kullan</button>
+      </div>
+      <button class="tip-secim-vazgec-btn" id="hpBtnKurSecimVazgec">Kapat</button>
     </div>
   </div>
 
-  <div class="hc-grid-2">
-    <div class="hc-turuncu-kart">
-      <div class="hc-turuncu-etiket">İSK EURO BİRİM FİYAT</div>
-      <div class="hc-turuncu-deger" id="rIskontoluFiyat">-</div>
-    </div>
-    <div class="hc-turuncu-kart">
-      <div class="hc-turuncu-etiket">İSK TL BİRİM FİYAT</div>
-      <div class="hc-turuncu-deger" id="rTlBirimFiyat">-</div>
-    </div>
-  </div>
-
-  <div class="hc-grid-2">
-    <div class="hc-kutu hc-kutu--toplam">
-      <div class="hc-kutu-etiket">Toplam (EUR)</div>
-      <div class="hc-kutu-deger" id="rToplamEuro">-</div>
-    </div>
-
-    <div class="hc-kutu hc-kutu--toplam">
-      <div class="hc-kutu-etiket">Fatura Toplam<br>(KDV Dahil)</div>
-      <div class="hc-kutu-deger" id="rFaturaToplam">-</div>
+  <!-- Hesapla popup — Geçmiş Alımlar detayı (bu sayfada müşteri olmadığı
+       için ipucu zaten hep gizli kalır, ama hesapla-popup.js ortak kodu
+       bu overlay'in DOM'da bulunmasını bekliyor). -->
+  <div class="tip-secim-overlay" id="hpGecmisAlimOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">🕓 Geçmiş Alımlar</div>
+      <div id="hpGecmisAlimListesi"></div>
+      <button class="tip-secim-vazgec-btn" id="hpGecmisAlimKapatBtn" style="margin-top:10px;">Kapat</button>
     </div>
   </div>
 
-  <div class="hc-kutu" style="margin-bottom:10px;">
-    <div class="hc-kutu-etiket">PRİM</div>
-    <div class="hc-kutu-deger" id="rPrimTL">-</div>
-  </div>
-
-  <div class="hc-alt-buton-satir">
-    <a class="hc-kapat-buton" id="btnHesapKapat" href="home.html">✕ Kapat</a>
-    <button class="hc-listeye-ekle-buton" id="btnHesapSepeteEkle">➕ LİSTEYE EKLE</button>
+  <!-- Hesapla popup — Bedelsiz / Özel Fiyat seçimi -->
+  <div class="tip-secim-overlay" id="hpBedelsizOzelFiyatOverlay" hidden>
+    <div class="tip-secim-kutu">
+      <div class="tip-secim-baslik">Bu ürün %100 iskontolu</div>
+      <div style="font-size:12px;color:#556170;text-align:center;margin-bottom:4px;">Tabloda nasıl etiketlensin?</div>
+      <button class="kur-secenek-btn" id="hpBtnOzelFiyatSec" style="background:#eafaf0;border-color:#0e6b34;color:#0e6b34;">Ö.F — Özel Fiyat</button>
+      <button class="kur-secenek-btn" id="hpBtnBedelsizSec" style="background:#faeeda;border-color:#b7601f;color:#b7601f;">🎁 Bedelsiz</button>
+    </div>
   </div>
 
   <div class="iptal-onay-overlay" id="iptalOnayOverlay" hidden>
     <div class="iptal-onay-kutu">
       <div class="iptal-onay-baslik">⚠️ İşlemi İptal Ediyorsunuz</div>
-      <p class="iptal-onay-mesaj">Seçili müşteri, bulunan ürün ve yaptığınız hesaplama silinecek. Emin misiniz?</p>
+      <p class="iptal-onay-mesaj">Bulunan ürün ve yaptığınız hesaplama silinecek. Emin misiniz?</p>
       <button class="iptal-onay-evet-btn" id="btnIptalOnayEvet">Evet, Sil ve Çık</button>
       <button class="iptal-onay-vazgec-btn" id="btnIptalOnayVazgec">Vazgeç, Devam Et</button>
-    </div>
-  </div>
-
-  <!-- Döviz Kuru seçimi (WG.100926.196) — üst header'daki kur alanına
-       dokununca açılır. Sadece Hızlı Hesapla ekranına özel: seçilen
-       manuel kur sadece O AN hesaplanmakta olan işlemde kullanılır, kalıcı
-       değildir ve genel/günlük kuru DEĞİŞTİRMEZ. Yeni bir ürün seçilince
-       otomatik olarak günlük kura döner. -->
-  <div class="iptal-onay-overlay" id="kurSecimOverlay" hidden>
-    <div class="iptal-onay-kutu">
-      <div class="iptal-onay-baslik">💱 Döviz Kuru Seçimi</div>
-      <button class="kur-secenek-btn" id="btnKurGunluk">📅 Günlük Kuru Kullan (<span id="kurGunlukDeger">-</span>)</button>
-      <button class="kur-secenek-btn" id="btnKurManuelAc">✏️ Manuel Gir</button>
-      <div id="kurManuelAlan" hidden>
-        <input type="number" step="0.01" id="kurManuelInput" class="kur-manuel-input" placeholder="Örn. 50">
-        <button class="iptal-onay-evet-btn" id="btnKurManuelKaydet" style="background:#16a085;">✓ Kaydet ve Bu İşlemde Kullan</button>
-      </div>
-      <button class="kur-kapat-btn" id="btnKurSecimVazgec">Kapat</button>
-    </div>
-  </div>
-
-  <!-- Geçmiş alım detayı (15.09.2026) — ipucu şeridine dokununca, bu
-       müşterinin bu üründeki TÜM geçmiş alımları listelenir. -->
-  <div class="iptal-onay-overlay" id="gecmisAlimOverlay" hidden>
-    <div class="iptal-onay-kutu">
-      <div class="iptal-onay-baslik">🕓 Geçmiş Alımlar</div>
-      <div id="gecmisAlimListesi"></div>
-      <button class="kur-kapat-btn" id="gecmisAlimKapatBtn" style="margin-top:10px;">Kapat</button>
-    </div>
-  </div>
-
-  <!-- Bedelsiz / Özel Fiyat seçimi (15.09.2026) — iskonto %100 olduğunda
-       "Listeye Ekle" öncesi sorulur; tabloda hangi etiketin görüneceğini
-       belirler (Ö.F = özel fiyat, 🎁 = bedelsiz). -->
-  <div class="iptal-onay-overlay" id="bedelsizOzelFiyatOverlay" hidden>
-    <div class="iptal-onay-kutu">
-      <div class="iptal-onay-baslik">Bu ürün %100 iskontolu</div>
-      <div style="font-size:12px;color:#556170;text-align:center;margin-bottom:4px;">Tabloda nasıl etiketlensin?</div>
-      <button class="kur-secenek-btn" id="btnOzelFiyatSec" style="background:#eafaf0;border-color:#0e6b34;color:#0e6b34;">Ö.F — Özel Fiyat</button>
-      <button class="kur-secenek-btn" id="btnBedelsizSec" style="background:#faeeda;border-color:#b7601f;color:#b7601f;">🎁 Bedelsiz</button>
     </div>
   </div>
 
@@ -185,13 +184,8 @@
 <script src="ayarlar-sync.js?v=WG.280926.2358.664"></script>
 <script src="product-data.js?v=WG.130926.2010.553"></script>
 <script src="cart-data.js?v=WG.021026.1150.708"></script>
-<script src="customer-data.js?v=WG.300926.1130.675"></script>
-<script src="reports-data.js?v=WG.290926.2245.674"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="musteri-serit.js?v=WG.220926.2300.603"></script>
-<script src="calc-render.js?v=WG.290926.1816.671"></script>
-<!-- yarim-kalan-uyari.js (22.09.2026): Bu sayfadan kaldırıldı — artık Geri/
-     Ana Sayfa/Menü/Kapat'ta SORMADAN sessizce temizleniyor (bkz.
-     calc-render.js sepetiSessizceTemizle). -->
+<script src="hesapla-popup.js?v=WG.041026.0905.724"></script>
+<script src="calc-render.js?v=WG.041026.0905.724"></script>
 </body>
 </html>

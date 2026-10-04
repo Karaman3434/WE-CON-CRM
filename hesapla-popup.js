@@ -1,5 +1,5 @@
 /*
-  hesapla-popup.js — WG.041026.0356.723
+  hesapla-popup.js — WG.041026.0356.724
   =======================================
   Birleşik Sayfa (cart.html) için Hızlı Hesapla'nın POPUP hâli — 02.10.2026,
   Abdullah'ın isteğiyle: "ürünün üzerine tıkladığımda popup gibi hesaplama
@@ -10,11 +10,26 @@
   "Listeye Ekle" sonrası cart-render.js'teki sayfayiCiz()'i çağırıp aynı
   sayfada kalıyor (navigasyon YOK).
 
-  calc.html / calc-render.js dosyalarına DOKUNULMADI — menüdeki bağımsız
-  "Hızlı Hesapla" kısayolu (?hizli=1) hâlâ o sayfayı kullanıyor.
+  04.10.2026 (Abdullah'ın isteğiyle, İKİNCİ büyük değişiklik) — artık BU
+  DOSYA tek/ortak hesaplama bileşeni: calc.html (bağımsız, müşterisiz Hızlı
+  Hesapla, "hesapla" izni) da AYNI #hpOverlay popup'ını ve BU dosyayı
+  kullanıyor — calc-render.js'teki eski ayrı hesaplama kopyası tamamen
+  kaldırıldı. İki sayfa hâlâ AYRI dosya/izin (calc.html="hesapla",
+  cart.html="sepet") — sadece hesaplama ARACI ortak, sayfa/izin sınırı
+  değişmedi. calc.html'de müşteri bağlamı HİÇBİR ZAMAN yok (o sayfa her
+  zaman CustomerData seçimini temizleyerek açılıyor) — bu yüzden
+  gecmisAlimIpucunuGuncelle() calc.html'de her zaman gizli kalır.
 
-  NOT: hataGoster / tarihiGuncelle / htmlEsc burada tanımlanmaz, cart-render.js
-  zaten global olarak sağlıyor. sayfayiCiz() de cart-render.js'te tanımlı.
+  "onEklendi" kancası (04.10.2026): "Listeye Ekle" tamamlandıktan sonra
+  sayfaya özel bir davranış gerekebilir — cart.html bunu KULLANMIYOR
+  (sayfayiCiz() zaten popup'ı kapatıp aynı sayfada tabloyu tazeliyor);
+  calc.html kendi küçük betiğinde HesaplaPopup.onEklendi(fn) ile "sepete
+  gidip devam etmek ister misin?" sorusunu bağlıyor.
+
+  NOT: hataGoster / tarihiGuncelle / htmlEsc burada tanımlanmaz — hem
+  cart-render.js hem de calc-render.js kendi sayfalarında bunları global
+  olarak sağlıyor. sayfayiCiz() sadece cart-render.js'te tanımlı (typeof
+  kontrolüyle çağrılıyor, calc.html'de no-op).
 */
 
 var HesaplaPopup = (function(){
@@ -24,6 +39,11 @@ var HesaplaPopup = (function(){
   var kurOverride = null;       // sadece bu hesaplama için geçici kur
   var gecmisAlimKayitlari = null;
   var bekleyenListeyeEkleIskonto100 = false;
+  var onEklendiCallback = null; // calc.html gibi sayfaların "Listeye Ekle" sonrası kanca bağlaması için
+
+  function onEklendi(fn){
+    onEklendiCallback = (typeof fn === "function") ? fn : null;
+  }
 
   function dipFiyatiOner(){
     var liste = parseFloat(document.getElementById("hpListeFiyat").value)||0;
@@ -186,6 +206,7 @@ var HesaplaPopup = (function(){
       }
       kapat();
       if(typeof sayfayiCiz === "function") sayfayiCiz();
+      if(typeof onEklendiCallback === "function") onEklendiCallback();
     }catch(e){ hataGoster("Listeye eklenemedi: " + e.message); }
   }
 
@@ -243,6 +264,6 @@ var HesaplaPopup = (function(){
     };
   });
 
-  return { ac: ac, kapat: kapat };
+  return { ac: ac, kapat: kapat, onEklendi: onEklendi };
 
 })();

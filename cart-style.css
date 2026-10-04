@@ -514,10 +514,15 @@
   text-align: center;
 }
 
-/* ---------- Hızlı Hesapla popup — kutu tasarımı (04.10.2026, Abdullah'ın
-   isteğiyle) — SADECE bu popup'a (.hesapla-kutu içine) özel. calc.html'in
-   bağımsız "Hızlı Hesapla" sayfası aynı .hc-kutu sınıflarını kullanıyor
-   ama calc-style.css'i DEĞİŞTİRMİYORUZ, bu yüzden o sayfa ETKİLENMİYOR.
+/* ---------- Hızlı Hesapla — ortak hesaplama popup'ı kutu tasarımı
+   (04.10.2026, Abdullah'ın isteğiyle) — .hesapla-kutu kapsamında.
+   04.10.2026 (ikinci değişiklik): calc.html (bağımsız, müşterisiz Hızlı
+   Hesapla) ve cart.html (Sepet içindeki "H" popup'ı) artık AYNI paylaşılan
+   hesaplama bileşenini (hesapla-popup.js + bu .hesapla-kutu markup'ı)
+   kullanıyor — bu yüzden bu kurallar HER İKİ sayfada da aynı şekilde
+   geçerli (calc.html artık cart-style.css'i de yüklüyor). calc.html'in
+   KENDİ arama/ürün listesi stilleri (calc-style.css'teki .arama-kutusu,
+   .hesapla-arama-karti vb.) BURADAN ETKİLENMİYOR.
 
    1) Etiket artık sayının ÜSTÜNDE, ortalı — kutu YÜKSEKLİĞİ aynı kalsın
       diye dikey boşluk (padding) daraltıldı. DOM sırası ne olursa olsun
@@ -532,7 +537,7 @@
   order: -1;
   width: 100%;
   text-align: center;
-  font-size: 8.5px;
+  font-size: 12.75px;  /* 04.10.2026: 8.5px * 1.5 (Abdullah'ın isteğiyle) */
   line-height: 1.15;
 }
 .hesapla-kutu .hc-kutu input,
@@ -549,8 +554,19 @@
    YÜKSEKLİĞİ yukarıdaki .hc-kutu kuralından geliyor, bu etiket değiştirmiyor. */
 .hesapla-kutu .hc-kutu-etiket--nowrap {
   white-space: nowrap;
-  font-size: 7.3px;
+  font-size: 10.95px;  /* 04.10.2026: 7.3px * 1.5 (Abdullah'ın isteğiyle) */
   letter-spacing: -0.1px;
+}
+
+/* "Fatura Toplam TL (KDV Dahil)" kutusu — kırmızı zemin, etiket VE değer
+   beyaz (04.10.2026, Abdullah'ın isteğiyle — okunurluk için ikisi de beyaz). */
+.hesapla-kutu .hc-kutu--fatura {
+  background: #c0392b;
+  border: 1.5px solid #922b21;
+}
+.hesapla-kutu .hc-kutu--fatura .hc-kutu-etiket,
+.hesapla-kutu .hc-kutu--fatura .hc-kutu-deger {
+  color: #ffffff;
 }
 
 /* 2) Kur rozeti — asıl BİLGİ olan kur SAYISI %50 büyüdü (13px→19,5px).
