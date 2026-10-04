@@ -1,5 +1,5 @@
 /*
-  hesapla-popup.js — WG.021026.1150.708
+  hesapla-popup.js — WG.041026.0356.723
   =======================================
   Birleşik Sayfa (cart.html) için Hızlı Hesapla'nın POPUP hâli — 02.10.2026,
   Abdullah'ın isteğiyle: "ürünün üzerine tıkladığımda popup gibi hesaplama
@@ -70,7 +70,33 @@ var HesaplaPopup = (function(){
       document.getElementById("hpToplamEuro").textContent = CartData.fmt(h.toplamEuro) + " EURO";
       document.getElementById("hpFaturaToplam").textContent = CartData.fmt(h.faturaToplam) + " TL";
       var kur2 = kur||0;
-      document.getElementById("hpPrimTL").textContent = (h.mudurPrim===0 && urun.iskonto>60) ? "ÖZEL FİYAT" : (h.mudurPrim<0 ? "Yok" : CartData.fmt(h.mudurPrim*kur2)+" TL");
+      var primTL = h.mudurPrim*kur2;
+      var primKutu = document.getElementById("hpPrimTL");
+      if(h.mudurPrim===0 && urun.iskonto>60){
+        primKutu.innerHTML = "ÖZEL FİYAT";
+      } else if(h.mudurPrim<0){
+        primKutu.innerHTML = "Yok";
+      } else {
+        // 04.10.2026 (Abdullah'ın isteğiyle): Prim TL tutarının BAŞINDA
+        // satış üzerinden kaç yüzde prim hakedildiğini de gösteriyoruz
+        // (Prim TL ÷ Fatura Toplam × 100).
+        var primYuzde = h.faturaToplam > 0 ? (primTL / h.faturaToplam * 100) : 0;
+        primKutu.innerHTML = "<span class='hc-prim-yuzde'>% " + CartData.fmt(primYuzde) + "</span>" + CartData.fmt(primTL) + " TL";
+      }
+
+      // 04.10.2026 (Abdullah'ın isteğiyle): bu popup'ta ayrı bir "hesapla"
+      // butonu yok — hesaplama her girişte otomatik/canlı çalışıyor. Bu
+      // yüzden Listeye Ekle butonu geçerli bir sonuç olup olmamasına göre
+      // turuncu ("bekliyor") / yeşil ("hazır") arasında geçiş yapıyor.
+      var listeyeEkleBtn = document.getElementById("hpBtnListeyeEkle");
+      var sonucHazirMi = listeFiyat > 0 && urun.adet > 0;
+      if(sonucHazirMi){
+        listeyeEkleBtn.className = "hc-listeye-ekle-buton hc-listeye-ekle-buton--hazir";
+        listeyeEkleBtn.textContent = "✓ HESAPLANDI LİSTEYE EKLE";
+      } else {
+        listeyeEkleBtn.className = "hc-listeye-ekle-buton hc-listeye-ekle-buton--bekliyor";
+        listeyeEkleBtn.textContent = "➕ LİSTEYE EKLE";
+      }
       kurDegeriniGoster();
     }catch(e){ hataGoster("Hesaplama yapılamadı: " + e.message); }
   }

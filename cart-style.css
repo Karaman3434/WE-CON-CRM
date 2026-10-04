@@ -514,6 +514,71 @@
   text-align: center;
 }
 
+/* ---------- Hızlı Hesapla popup — kutu tasarımı (04.10.2026, Abdullah'ın
+   isteğiyle) — SADECE bu popup'a (.hesapla-kutu içine) özel. calc.html'in
+   bağımsız "Hızlı Hesapla" sayfası aynı .hc-kutu sınıflarını kullanıyor
+   ama calc-style.css'i DEĞİŞTİRMİYORUZ, bu yüzden o sayfa ETKİLENMİYOR.
+
+   1) Etiket artık sayının ÜSTÜNDE, ortalı — kutu YÜKSEKLİĞİ aynı kalsın
+      diye dikey boşluk (padding) daraltıldı. DOM sırası ne olursa olsun
+      (Dip/İsk'te input önce gelse bile) etiket "order:-1" ile hep üstte. */
+.hesapla-kutu .hc-kutu {
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 8px;
+  gap: 1px;
+}
+.hesapla-kutu .hc-kutu-etiket {
+  order: -1;
+  width: 100%;
+  text-align: center;
+  font-size: 8.5px;
+  line-height: 1.15;
+}
+.hesapla-kutu .hc-kutu input,
+.hesapla-kutu .hc-kutu-deger {
+  order: 1;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+/* "Fatura Toplam (KDV Dahil)" tek satırda yan yana (eski <br> kaldırıldı) —
+   tek satıra sığması için bu etikete özel biraz daha küçük punto. Kutu
+   YÜKSEKLİĞİ yukarıdaki .hc-kutu kuralından geliyor, bu etiket değiştirmiyor. */
+.hesapla-kutu .hc-kutu-etiket--nowrap {
+  white-space: nowrap;
+  font-size: 7.3px;
+  letter-spacing: -0.1px;
+}
+
+/* 2) Kur rozeti — asıl BİLGİ olan kur SAYISI %50 büyüdü (13px→19,5px).
+      Tüm satırı büyütmek "değiştirmek için dokun" ile birlikte tek
+      satıra sığmayıp kutuyu 2 satıra, dolayısıyla daha yüksek yapıyordu —
+      kutu YÜKSEKLİĞİNİ sabit tutmak için sadece sayı büyütüldü. */
+.hesapla-kutu #hpKurRozetBtn {
+  padding: 8px 10px;
+}
+.hesapla-kutu #hpKurRozetBtn #hpKurDeger {
+  font-size: 19.5px;
+  font-weight: 900;
+}
+
+/* 3) PRİM kutusu — TL tutarının BAŞINDA "% 11,67" gibi bir prim yüzdesi
+      (Prim TL ÷ Fatura Toplam × 100). */
+.hesapla-kutu .hc-prim-yuzde {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0e6b34;
+  margin-right: 6px;
+}
+
+/* 4) Listeye Ekle — hesaplanmadan ÖNCE (geçerli bir sonuç yokken) turuncu,
+      geçerli bir hesaplama sonucu varken yeşil + "HESAPLANDI" etiketi. */
+.hesapla-kutu .hc-listeye-ekle-buton--bekliyor { background: #FC8D33; }
+.hesapla-kutu .hc-listeye-ekle-buton--hazir { background: #0e6b34; }
+
 /* ---------- Müşterisiz Gönder — gerçek Gönder ekranıyla aynı görünüm
    (WG.290926.1651.670, Abdullah'ın isteğiyle) ---------- */
 .musterisiz-onizleme-kutu { max-height: 88vh; overflow-y: auto; }
