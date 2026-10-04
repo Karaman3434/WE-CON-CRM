@@ -1,6 +1,10 @@
 /*
-  urun-arama.js — WG.021026.1150.708
+  urun-arama.js — WG.041026.1121.726
   ===================================
+  04.10.2026 (Abdullah'ın isteğiyle) — Ürün Satış Geçmişi / Hit Ürünler
+  listesi açıkken sepetin "boş" mesajı ve Kaydet/Görüntüle ve Gönder
+  butonları artık gizleniyor (bkz. uaAltAlanlariGizle); bu bölümler
+  kapanınca sayfayiCiz() ile doğru duruma geri dönülüyor.
   Birleşik Sayfa (cart.html): Ürün Bul'un arama/Hit Ürünler/Yeni Ürün Ekle
   mantığı — product-render.js'ten taşındı, 02.10.2026 (Abdullah'ın isteği):
   Ürün Bul, Hızlı Hesapla ve Sepet artık TEK sayfa.
@@ -201,7 +205,20 @@ function uaUrunSatisGecmisiniAc(berta, abas, ad){
     document.getElementById("ozelListeBolumu").hidden = true;
     document.getElementById("urunGecmisBolumu").hidden = false;
     document.getElementById("urunGecmisBolumu").scrollIntoView({behavior:"smooth", block:"start"});
+    uaAltAlanlariGizle();
   }catch(e){ hataGoster("Ürün satış geçmişi açılamadı: " + e.message); }
+}
+
+// YENİ (04.10.2026, Abdullah'ın isteğiyle): Ürün Satış Geçmişi veya Hit
+// Ürünler listesi açıkken sepetin "Sepetiniz boş" mesajı ve Kaydet/
+// Görüntüle ve Gönder butonları EKRANDA GÖRÜNMESİN — bu bölümler kapanınca
+// sayfayiCiz() çağrılıp doğru (sepet durumuna göre) hale geri dönülür.
+function uaAltAlanlariGizle(){
+  try{
+    document.getElementById("sepetBosMesaj").hidden = true;
+    document.getElementById("sepetAltButonSatiri").hidden = true;
+    document.getElementById("btnSepetIptal").hidden = true;
+  }catch(e){}
 }
 
 function uaHitUrunleriHesapla(){
@@ -234,6 +251,7 @@ function uaOzelListeyiAc(baslik, liste){
   }
   document.getElementById("urunGecmisBolumu").hidden = true;
   document.getElementById("ozelListeBolumu").hidden = false;
+  uaAltAlanlariGizle();
 
   govde.querySelectorAll("tr[data-i]").forEach(function(tr){
     tr.onclick = function(){
@@ -254,9 +272,11 @@ document.addEventListener("DOMContentLoaded", function(){
   };
   document.getElementById("btnOzelListeKapat").onclick = function(){
     document.getElementById("ozelListeBolumu").hidden = true;
+    if(typeof sayfayiCiz === "function") sayfayiCiz();
   };
   document.getElementById("btnUrunGecmisKapat").onclick = function(){
     document.getElementById("urunGecmisBolumu").hidden = true;
+    if(typeof sayfayiCiz === "function") sayfayiCiz();
   };
 
   document.getElementById("btnYeniUrunAc").onclick = function(){

@@ -356,7 +356,11 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     + "<div class='data-table-container'><table class='belge-urun-tablo belge-urun-tablo--giden'>"
     + "<thead><tr>" + (basit
         ? "<th style='width:38%;'>ÜRÜN BİLGİSİ</th><th style='width:14%;'>AD</th><th style='width:24%;'>NET</th><th style='width:24%;'>TOPLAM</th>"
-        : "<th style='width:4%;'>#</th><th style='width:28%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>AD</th><th style='width:11%;'>LİST</th><th style='width:10%;'>İSK</th><th style='width:18%;'>NET</th><th style='width:22%;'>TOPLAM</th>") + "</tr></thead>"
+        // DÜZELTME (04.10.2026, Abdullah'ın isteğiyle): gönderilen mailin
+        // görsel tablosunda TOPLAM sütunu aşırı genişti. TOPLAM 22% → 14%'e
+        // DARALTILDI (büyütülmedi), fark ÜRÜN BİLGİSİ'ne eklendi (28% → 36%).
+        // Diğer sütunlar (#, AD, LİST, İSK, NET) DEĞİŞMEDİ.
+        : "<th style='width:4%;'>#</th><th style='width:36%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>AD</th><th style='width:11%;'>LİST</th><th style='width:10%;'>İSK</th><th style='width:18%;'>NET</th><th style='width:14%;'>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
     + "<div class='belge-genel-toplam-serit'>"
@@ -417,12 +421,21 @@ function tabloyuPanoyaKopyala(kanal, btnEl){
   });
 }
 
+// YENİ (04.10.2026) — konu metni artık tek yerden hesaplanıyor: hem
+// (artık hiçbir yerden açılmayan, dokunulmadan bırakılan) mailOnizlemeAc
+// hem de "Yeni mail"in doğrudan-gönder akışı (bkz. DOMContentLoaded içindeki
+// mailSecenekYeniMail.onclick) bunu kullanıyor.
+function mailKonuOlustur(){
+  var g = gonderBaglam;
+  var TIP_ETIKET5 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
+  var sehirEk = (g.musteri.sehir && g.musteri.sehir.trim()) ? (" - " + g.musteri.sehir.trim()) : "";
+  return "*** " + TIP_ETIKET5[g.tip] + " *** " + g.musteri.ad + sehirEk;
+}
+
 function mailOnizlemeAc(){
   try{
     var g = gonderBaglam;
-    var TIP_ETIKET5 = {numune:"NUMUNE", teklif:"FİYAT TEKLİFİ", proforma:"PROFORMA FATURA", siparis:"SİPARİŞ"};
-    var sehirEk = (g.musteri.sehir && g.musteri.sehir.trim()) ? (" - " + g.musteri.sehir.trim()) : "";
-    var konu = "*** " + TIP_ETIKET5[g.tip] + " *** " + g.musteri.ad + sehirEk;
+    var konu = mailKonuOlustur();
     document.getElementById("mailOnizlemeKonu").value = konu;
     document.getElementById("mailOnizlemeMetin").textContent = document.getElementById("gonderMetin").value;
     document.getElementById("mailOnizlemeTablo").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv, null);
@@ -816,32 +829,64 @@ document.addEventListener("DOMContentLoaded", function(){
   // artık formun üstünde sabit değil, "📨 İletişim" tuşuna dokununca alttan
   // açılan bu sheet içinde duruyor. Butonların kendi davranışı (altta)
   // DEĞİŞMEDİ, sadece bu sheet açılıp kapanıyor.
+  // DÜZELTME (04.10.2026, Abdullah'ın isteğiyle): İletişim popup'ı açıkken
+  // arkadaki sayfa kaymasın — uygulamanın geri kalanında zaten kullanılan
+  // "as-drawer-kilit" tekniğiyle (bkz. home-anasayfa-style.css/home-render.js).
   document.getElementById("btnIletisimAc").onclick = function(){
     document.getElementById("iletisimSheetOverlay").hidden = false;
+    document.body.classList.add("as-drawer-kilit");
   };
   document.getElementById("btnIletisimKapat").onclick = function(){
     document.getElementById("iletisimSheetOverlay").hidden = true;
+    document.getElementById("mailSecenekPopover").hidden = true;
+    document.body.classList.remove("as-drawer-kilit");
   };
   document.getElementById("iletisimSheetOverlay").addEventListener("click", function(ev){
-    if(ev.target === this) this.hidden = true;
+    if(ev.target === this){
+      this.hidden = true;
+      document.getElementById("mailSecenekPopover").hidden = true;
+      document.body.classList.remove("as-drawer-kilit");
+    }
   });
   // Mail/WhatsApp/Tablo'dan biri seçilince kendi önizlemesi açılmadan önce
   // İletişim sheet'i kapanır — iki alttan-açılan sayfa üst üste durmasın diye.
-  function iletisimSheetiniKapat(){ document.getElementById("iletisimSheetOverlay").hidden = true; }
+  function iletisimSheetiniKapat(){
+    document.getElementById("iletisimSheetOverlay").hidden = true;
+    document.body.classList.remove("as-drawer-kilit");
+  }
 
   // MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) — Mail
   // tuşu artık direkt önizleme açmıyor, önce "Yeni Mail / Zinciri Cevapla"
   // seçim kutusunu açıyor.
+  // DÜZELTME (04.10.2026): kutu artık "position:fixed" (bkz. send-style.css)
+  // — konumu burada, butona göre, her açılışta yeniden hesaplanıyor, böylece
+  // hiçbir ebeveynin kaydırma alanı tarafından kesilmiyor.
   document.getElementById("btnUstMail").onclick = function(ev){
     ev.stopPropagation();
     var pop = document.getElementById("mailSecenekPopover");
+    var aciliyorMu = pop.hidden;
     pop.hidden = !pop.hidden;
+    if(aciliyorMu){
+      var r = this.getBoundingClientRect();
+      pop.style.top = (r.bottom + 4) + "px";
+      pop.style.left = r.left + "px";
+    }
   };
+  // DÜZELTME (04.10.2026, Abdullah'ın isteğiyle): "Yeni mail" artık ayrı
+  // "Mail Önizleme" ekranını/"✓ Gönder (yeni mail aç)" butonunu HİÇ
+  // göstermeden, doğrudan mail uygulamasını açar (mailOnizlemeGonderBtn'in
+  // daha önce yaptığıyla AYNI: konu hesaplanır, güvenlik ağı olarak panoya
+  // kopyalanır, gonderTiklandi("mail", konu) çağrılır). Eski ara ekran
+  // (mailOnizlemeOverlay) koddan silinmedi — artık hiçbir yerden açılmıyor.
   document.getElementById("mailSecenekYeniMail").onclick = function(ev){
     ev.stopPropagation();
     document.getElementById("mailSecenekPopover").hidden = true;
     iletisimSheetiniKapat();
-    mailOnizlemeAc();
+    var konu = mailKonuOlustur();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(konu).catch(function(){});
+    }
+    gonderTiklandi("mail", konu);
   };
   document.getElementById("mailSecenekZincir").onclick = function(ev){
     ev.stopPropagation();

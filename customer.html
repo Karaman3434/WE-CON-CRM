@@ -19,7 +19,7 @@
 <title>WEICON ASİST — Müşteriler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
-<link rel="stylesheet" href="customer-style.css?v=WG.011026.2210.702">
+<link rel="stylesheet" href="customer-style.css?v=WG.041026.1121.726">
 </head>
 <body>
 
@@ -38,14 +38,17 @@
 
 <main class="sayfa">
 
-  <div class="arama-kutusu">
-    <input type="text" id="musteriAra" placeholder="Müşteri adı veya şehir ara..." autocomplete="off">
-    <span class="arama-ikon">🔍</span>
-  </div>
-
-  <div class="musteri-filtre-satiri">
-    <input type="text" id="musteriSehirFiltre" placeholder="Şehir yazarak filtrele...">
-    <a class="musteri-yeni-ekle-btn" href="customer-add.html">➕ Yeni Müşteri Ekle</a>
+  <!-- 04.10.2026 (Abdullah'ın isteğiyle): arama + şehir filtresi AYNI satırda
+       (2/1 oranı). "Yeni Müşteri Ekle" kutusu kaldırıldı — açılır menü →
+       Müşteri → Yeni Müşteri'de zaten var, burada tekrar göstermeye gerek yok. -->
+  <div class="musteri-arama-satiri">
+    <div class="arama-kutusu">
+      <input type="text" id="musteriAra" placeholder="Müşteri adı veya şehir ara..." autocomplete="off">
+      <span class="arama-ikon">🔍</span>
+    </div>
+    <div class="musteri-sehir-filtre-kutu">
+      <input type="text" id="musteriSehirFiltre" placeholder="Şehir / İlçe...">
+    </div>
   </div>
 
   <p class="liste-bilgi-notu" id="listeBilgiNotu" hidden></p>

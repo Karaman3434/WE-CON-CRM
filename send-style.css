@@ -1,21 +1,34 @@
 /* send-style.css — aynı kural: gradyan/gölge yığılması yok. */
 
+/* YENİ (04.10.2026, Abdullah'ın isteğiyle): İletişim popup'ı açıkken arka
+   sayfa kaymasın — uygulamanın başka yerinde (açılır menü) zaten kullanılan
+   "as-drawer-kilit" tekniğinin AYNISI (bkz. home-anasayfa-style.css/
+   home-render.js). O kural sadece home.html'de yüklü olduğu için burada
+   send.html için ayrıca tanımlandı. */
+body.as-drawer-kilit { overflow: hidden; }
+
 /* MAİL SEÇENEK AÇILIR KUTUSU (01.10.2026, Abdullah'ın isteğiyle) — üst 3
    buton satırı aynı kalıyor, Mail'e dokununca altında bu küçük kutu açılır:
    Yeni Mail / Zinciri Cevapla. */
 .iletisim-secenek-mail-sarmal { position: relative; }
 .iletisim-secenek-mail-sarmal .iletisim-secenek-btn { width: 100%; }
+/* DÜZELTME (04.10.2026, Abdullah'ın bildirdiği hata): kutu önceden
+   "position:absolute" idi ve ebeveyni olan .sheet'in "overflow-y:auto"
+   özelliği yüzünden alt kısmı kırpılıyordu (sheet kısa olduğunda kutu
+   sheet'in sınırının dışına taşıp kesiliyordu). Artık "position:fixed" —
+   konumu butona göre JS ile hesaplanıyor (bkz. send-render.js
+   btnUstMail.onclick) — hiçbir ebeveynin overflow'undan etkilenmiyor,
+   her zaman tam görünüyor. */
 .mail-secenek-popover {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
+  position: fixed;
   width: 190px;
+  max-height: 60vh;
+  overflow-y: auto;
   background: #ffffff;
   border: 1px solid #d7dce3;
   border-radius: 10px;
   box-shadow: 0 4px 14px rgba(0,0,0,.16);
-  z-index: 50;
-  overflow: hidden;
+  z-index: 950;
 }
 .mail-secenek-popover-oge {
   display: block;
