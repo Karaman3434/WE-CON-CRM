@@ -1,8 +1,19 @@
 /*
-  cart-style.css
+  cart-style.css — WG.041026.1345.728
   ==============
   home-style.css'in üzerine eklenir. Aynı kural: gradyan/gölge yığılması yok.
 */
+
+/* YENİ (04.10.2026, Abdullah'ın isteğiyle — Ana Sayfa'dan sonraki 1. grup):
+   SADECE geniş ekranlarda (iPad/tablet, >640px) bu dosyayı paylaşan ÜÇ
+   sayfa da (cart.html, calc.html, send.html) artık kenardan kenara —
+   home-style.css'teki genel "body{max-width:640px}" sınırı burada
+   geçersiz kılınıyor. Telefon genişliği (≤640px) hiç etkilenmiyor. Tek
+   satır CSS, JS yok — sorun çıkarsa bu @media bloğunu kaldırmak yeterli.
+   (Ana Sayfa'daki aynı kuralın birebir aynısı, bkz. home-anasayfa-style.css) */
+@media (min-width: 641px) {
+  body { max-width: none; }
+}
 
 .sayfa { padding: 4px 6px 16px; }
 
