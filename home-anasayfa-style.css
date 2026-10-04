@@ -1,5 +1,5 @@
 /*
-  home-anasayfa-style.css
+  home-anasayfa-style.css — WG.041026.1335.727
   ========================
   SADECE home.html'e özel — Abdullah'ın paylaştığı referans fotoğrafa göre
   yeniden tasarlanan Ana Sayfa (canlı mavi/yeşil, kartlı, çekmece menülü).
@@ -10,6 +10,19 @@
 */
 
 .sayfa.as-sayfa { padding: 0 6px 16px; }
+
+/* YENİ (04.10.2026, Abdullah'ın isteğiyle) — SADECE geniş ekranlarda (iPad/
+   tablet, >640px) Ana Sayfa artık kenardan kenara: home-style.css'teki
+   genel "body{max-width:640px}" sınırı burada geçersiz kılınıyor. Telefon
+   genişliği (≤640px — S22/iPhone 13 dahil) HİÇ ETKİLENMİYOR, kural orada
+   hiç çalışmıyor. Bilerek SADECE bu dosyada (home.html'e özel) — diğer
+   20+ sayfa aynı 640px sınırını korumaya devam ediyor; önce burada
+   denenip onaylandıktan sonra istenirse başka sayfalara da uygulanacak.
+   Risk notu: bu kural tamamen CSS'tir, hiçbir JS/mantık değişmiyor — bir
+   sorun çıkarsa bu @media bloğunu kaldırmak tek başına yeterli. */
+@media (min-width: 641px) {
+  body { max-width: none; }
+}
 
 /* ---------- Üst bar (02.10.2026, Abdullah'ın isteğiyle yeniden tasarlandı):
    eski motivasyon sözü + tam genişlik logo + ayrı menü/tarih satırı
