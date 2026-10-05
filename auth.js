@@ -1,5 +1,5 @@
 /*
-  auth.js
+  auth.js — WG.051026.1055.730
   =======
   TÜM sayfalar tarafından paylaşılan tek görevi: Firebase oturumunun açık
   olup olmadığını kontrol etmek. Oturum yoksa login.html'e yönlendirir.
@@ -242,6 +242,23 @@
   // yenileniyordu. Artık ekrana dokunma/kaydırma/tuş vuruşu da (en fazla 2 sn'de
   // bir yazılarak) yeniler. PIN ekranında yenilenmez — aksi hâlde PIN ekranına
   // dokunmak kilidi kırardı.
+  //
+  // DÜZELTME (05.10.2026, Abdullah'ın iPad 9/iOS'ta bildirdiği hata — video
+  // ile doğrulandı): iOS, arka plana alınan bir sekme/PWA'da JS
+  // zamanlayıcılarını (setInterval dahil) durduruyor — yani yukarıdaki
+  // 20 saniyelik "geriDonusKilitKontrolu" güvenlik ağı da, "visibilitychange"/
+  // "focus" olayları da (bkz. yukarıdaki not) tam güvenmemiz gereken anda
+  // (uygulama arka plandan öne geldiğinde) çalışmayabiliyor. Eskiden bu
+  // durumda kullanıcının ekrana attığı İLK dokunuş sadece zaman damgasını
+  // ("son aktivite") olduğu gibi şimdiye güncelliyordu — kilit kontrolünü
+  // HİÇ çalıştırmadan — böylece gerçekte PIN/şifre istenmesi gereken bir
+  // dönüş, sanki hiç boşluk yokmuş gibi sessizce "temizleniyor" ve program
+  // şifre/PIN sormadan doğrudan açık kalıyordu. Şimdi her etkileşimde ÖNCE
+  // kilit kontrolü (geriDonusKilitKontrolu) çalıştırılıyor — kilitliyse
+  // PIN/login'e yönlendirir ve zaman damgası GÜNCELLENMEZ; kilitli değilse
+  // (normal kullanım) hiçbir şey değişmez, zaman damgası her zamanki gibi
+  // tazelenir. Böylece setInterval/visibilitychange çalışmasa bile, ilk
+  // dokunuş kendisi güvenlik kontrolünü garantiliyor.
   if(!buSayfaPin){
     var sonEtkilesimYazimi = 0;
     var etkilesimKaydet = function(){
@@ -249,6 +266,8 @@
       if(t - sonEtkilesimYazimi < 2000) return;
       if(kilitleniyor) return;
       sonEtkilesimYazimi = t;
+      geriDonusKilitKontrolu();
+      if(kilitleniyor) return; // kilit tetiklendi (PIN/login'e yönlendiriliyor) — aktiviteyi güncelleme
       aktiviteZamaniniGuncelle();
     };
     ["touchstart","pointerdown","mousedown","keydown","scroll","input"].forEach(function(ad){
