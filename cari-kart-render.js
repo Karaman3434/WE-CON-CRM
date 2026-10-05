@@ -1,5 +1,5 @@
 /*
-  cari-kart-render.js
+  cari-kart-render.js — WG.051026.0940.729
   ====================
   Cari Kart v6 — ana sayfa TAMAMEN salt-görüntüleme (isim/şehir,
   Vade/Fatura/Kargo, Fatura Adresi/Yetkili Kişi/Teslimat Adresi/Not
@@ -228,13 +228,19 @@ function eylemBaslat(bolumId, eylem){
 
   var liste = kayitlariGetir(musteriVerisi, bolumId);
   if(liste.length === 0){ toastGoster("Henüz kayıtlı " + TIP_META[bolumId].tekil + " yok."); return; }
-  // Yetkili Kişi ve Teslimat Adresi'nde de "cari" ile aynı sadeleştirme:
-  // Düzenle her zaman doğrudan ilk (tek) kayda gider — ara "hangisini
-  // düzenlemek istiyorsun?" sorusu yok. Birden fazla kayıt varsa bile
-  // en son eklenen/ilk kayıt üzerinden devam edilir; farklı bir kayıt
-  // için önce Sil, sonra Ekle kullanılabilir. Silme işleminde (birden
-  // fazla kayıt olması nadir olduğu için) seçim ekranı hâlâ geçerli.
-  if(eylem === "duzenle"){ formAc(bolumId, "duzenle", 0); return; }
+  // DÜZELTME (05.10.2026, Abdullah'ın bildirdiği hata): eskiden Düzenle
+  // her zaman doğrudan İLK kayda gidiyordu (ara seçim yoktu) — birden
+  // fazla kayıt olduğunda (örn. 3-4 yetkili kişi) istenen kaydı
+  // düzenlemek imkânsızdı, hep ilk kayıt açılıyordu. Artık Sil'de zaten
+  // var olan "hangisini istiyorsun?" seçim ekranı Düzenle'de de kullanılıyor.
+  if(eylem === "duzenle"){
+    if(liste.length === 1){ formAc(bolumId, "duzenle", 0); return; }
+    var duzenleOgeler = liste.map(function(k, i){
+      return {baslik: kayitBaslik(bolumId,k), alt: kayitAltMetin(bolumId,k), onSecim:function(){ formAc(bolumId, "duzenle", i); }};
+    });
+    pickerGoster("✏️ Hangisini düzenlemek istiyorsun?", TIP_META[bolumId].baslik + " — bir kayıt seç", duzenleOgeler);
+    return;
+  }
 
   if(liste.length === 1){ silSor(bolumId, 0); return; }
   var ogeler2 = liste.map(function(k, i){

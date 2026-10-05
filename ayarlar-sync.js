@@ -1,5 +1,5 @@
 /*
-  ayarlar-sync.js
+  ayarlar-sync.js — WG.051026.0940.729
   ===============
   Kur ve KDV oranı SADECE localStorage'da tutulmuyor — Firebase'in
   "ayarlar/" yoluna da yazılıyor ki bir cihazda (örn. Samsung S22) girilen
@@ -93,24 +93,34 @@ var AyarlarSync = (function(){
     return satisNode ? parseFloat(satisNode.textContent.replace(",",".")) : null;
   }
 
+  // DÜZELTME (05.10.2026, Abdullah'ın isteğiyle): otomatik çekilen kur
+  // (TCMB sitesine tarayıcıdan CORS kısıtı yüzünden çoğunlukla erişilemiyor,
+  // bu yüzden pratikte genelde Frankfurter/yedek kaynağa düşülüyor), TCMB'nin
+  // kendi Döviz Satış kurundan gözlemle ~10 kuruş düşük geliyordu. Otomatik
+  // çekme mantığı AYNEN kalıyor — SADECE sonuca bu sabit düzeltme ekleniyor,
+  // ki gösterilen/kullanılan kur TCMB günlük kuruyla eşleşsin. Manuel girilen
+  // kur (ayarlar-render.js / cart-render.js'teki kurKaydet çağrıları) buna
+  // dahil DEĞİL — sadece otomatik çekilen kur düzeltiliyor.
+  var OTOMATIK_KUR_DUZELTME = 0.10;
+
   function otomatikKurGetir(zorlaMi, geriBildir){
     if(!zorlaMi && !kurBayatMi()){ if(geriBildir) geriBildir(true); return; }
     tekKaynaktanDene(
       "https://www.tcmb.gov.tr/kurlar/today.xml",
       {xml: tcmbXmldenKurAyikla},
-      function(kur){ kurKaydet(kur,"tcmb"); if(geriBildir) geriBildir(true, kur, "tcmb"); },
+      function(kur){ kur = kur + OTOMATIK_KUR_DUZELTME; kurKaydet(kur,"tcmb"); if(geriBildir) geriBildir(true, kur, "tcmb"); },
       function(errTcmb){
         console.error("TCMB'den kur çekilemedi (CORS/ağ olabilir), Frankfurter deneniyor:", errTcmb);
         tekKaynaktanDene(
           "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=TRY",
           function(v){ return v && v.rates && v.rates.TRY; },
-          function(kur){ kurKaydet(kur,"frankfurter"); if(geriBildir) geriBildir(true, kur, "frankfurter"); },
+          function(kur){ kur = kur + OTOMATIK_KUR_DUZELTME; kurKaydet(kur,"frankfurter"); if(geriBildir) geriBildir(true, kur, "frankfurter"); },
           function(err1){
             console.error("Frankfurter'dan da kur çekilemedi, yedek kaynak deneniyor:", err1);
             tekKaynaktanDene(
               "https://open.er-api.com/v6/latest/EUR",
               function(v){ return v && v.rates && v.rates.TRY; },
-              function(kur){ kurKaydet(kur,"yedek"); if(geriBildir) geriBildir(true, kur, "yedek"); },
+              function(kur){ kur = kur + OTOMATIK_KUR_DUZELTME; kurKaydet(kur,"yedek"); if(geriBildir) geriBildir(true, kur, "yedek"); },
               function(err2){
                 console.error("Yedek kaynaktan da kur çekilemedi:", err2);
                 if(geriBildir) geriBildir(false, null, err2);
