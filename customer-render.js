@@ -1,5 +1,5 @@
 /*
-  customer-render.js
+  customer-render.js — WG.051026.1500.731
   ==================
   Eski uygulamanın musteriListesiniRenderEt() mantığıyla BİREBİR aynı:
   - Arama yokken: sadece en son eklenen 12 müşteri (dizinin başı, çünkü yeni
@@ -231,14 +231,146 @@ function listeyiCiz(){
         // seçim moduna (İşleme Devam Et) açılıyordu. Doğrudan listeden gelen
         // her ziyaret düz görüntüleme modunda başlamalı.
         localStorage.removeItem("weiconv2_islem_yap_akisi");
-        // ROTA DEĞİŞİKLİĞİ (22.09.2026): Müşteri listesinden seçim artık
-        // önce Müşteri Hub'a gider — "CARİ" (ad/adres/yetkili) ve
-        // "İŞLEMLER" (Temas/Fatura Takip/Geçmiş/Görevler) kutucukları
-        // buradan seçilir (bkz. customer-hub.html).
-        window.location.href = "customer-hub.html";
+        // ROTA DEĞİŞİKLİĞİ (05.10.2026, Abdullah'ın isteğiyle): Müşteri
+        // listesinden bir isme dokununca artık Hub/İşlemler sayfalarına
+        // GİTMİYOR — tam burada, arama satırının altında küçük bir pencere
+        // açılıyor (bkz. hizliPencereyiAc). Hub/İşlemler sayfaları SİLİNMEDİ
+        // (Bildirimler ve Takip Gerekenler hâlâ customer-detail.html'e
+        // doğrudan gidiyor, bkz. bildirimler-render.js/takip-gerekenler-render.js)
+        // — bu pencere sadece Müşteri Bul akışı için bir kısayol.
+        hizliPencereyiAc(sonuclar[i]);
       };
     });
   }catch(e){ hataGoster("Liste çizilemedi: " + e.message); }
+}
+
+// ============================================================
+// MÜŞTERİ HIZLI PENCERESİ (05.10.2026)
+// ============================================================
+// customer-detail.html'deki ayniMusteriKaydiMi ile BİREBİR AYNI — işlem
+// geçmişi sayacı için kayıt/müşteri eşleşmesi (ID varsa ID, yoksa isim).
+function cmAyniMusteriKaydiMi(kayitMusteriAdi, kayitMusteriId, seciliAd, seciliId){
+  if(seciliId && kayitMusteriId) return kayitMusteriId === seciliId;
+  var a = (kayitMusteriAdi||"").toLocaleLowerCase("tr-TR").trim();
+  var b = (seciliAd||"").toLocaleLowerCase("tr-TR").trim();
+  if(!a || !b) return false;
+  if(a === b) return true;
+  return a.indexOf(b) === 0 || b.indexOf(a) === 0;
+}
+
+// Rozet sayıları — detail-render.js'teki ustBilgiyiCiz/siparisGecmisiniCiz/
+// musteriGorevleriniCiz/faturaTakipOzetiGuncelle/urunGecmisiniAc'taki AYNI
+// hesaplamalar, sadece TEK (tıklanan) müşteri için, pencere açılırken.
+function cmRozetSayilariniHesapla(m){
+  var sonuc = {temas:0, gecmis:0, gorev:0, fatura:0, urun:0};
+  try{ sonuc.temas = (m.ziyaretGecmisi||[]).length; }catch(e){}
+  try{
+    if(typeof ReportsData !== "undefined"){
+      var tumu = ReportsData.sonIslemler();
+      sonuc.gecmis = tumu.filter(function(k){ return cmAyniMusteriKaydiMi(k.musteri, k.musteriId, m.ad, m.id); }).length;
+    }
+  }catch(e){}
+  try{
+    if(typeof ReportsData !== "undefined" && ReportsData.gorevleriGetir){
+      var adAnahtar = (m.ad||"").toLocaleLowerCase("tr-TR");
+      sonuc.gorev = ReportsData.gorevleriGetir().filter(function(g){
+        return (g.musteriAd||"").toLocaleLowerCase("tr-TR").indexOf(adAnahtar) >= 0;
+      }).length;
+    }
+  }catch(e){}
+  try{
+    if(typeof VadeTakip !== "undefined"){
+      var ogeler = VadeTakip.musteriIcin(m.id, m.ad);
+      var acikTakipte = ogeler.filter(function(o){ return o.durum !== "vadesiz" && !o.odendi; });
+      sonuc.fatura = acikTakipte.length;
+    }
+  }catch(e){}
+  try{
+    if(typeof ReportsData !== "undefined" && ReportsData.musteriUrunGecmisi){
+      sonuc.urun = ReportsData.musteriUrunGecmisi(m.ad, m.id).length;
+    }
+  }catch(e){}
+  return sonuc;
+}
+
+function cmRozetHTML(sayi){
+  return sayi > 0 ? "<span class='cm-altmenu-rozet'>" + sayi + "</span>" : "";
+}
+
+var cmAcikMusteri = null;
+
+function hizliPencereyiAc(musteri){
+  try{
+    cmAcikMusteri = musteri;
+    var panel = document.getElementById("cmAltMenu");
+    var rozetler = cmRozetSayilariniHesapla(musteri);
+
+    document.getElementById("cmAltMenuBaslik").innerHTML =
+      "<span><span class='ms-kod'>" + htmlEsc(musteri.id||"—") + "</span></span>"
+      + "<span class='ms-ad'>" + htmlEsc(musteri.ad||"") + "</span>"
+      + (musteri.sehir ? "<span class='ms-sehir'>" + htmlEsc(musteri.sehir) + "</span>" : "");
+
+    var ogeler = [
+      {ikon:"🏢", etiket:"Cari", aksiyon:"cari"},
+      {ikon:"📍", etiket:"Temas", aksiyon:"temas", rozet:rozetler.temas},
+      {ikon:"🔍", etiket:"İşlem Yap", aksiyon:"islemyap"},
+      {ikon:"📄", etiket:"Fatura Takip", aksiyon:"fatura", rozet:rozetler.fatura},
+      {ikon:"🕐", etiket:"İşlem Geçmişi", aksiyon:"gecmis", rozet:rozetler.gecmis},
+      {ikon:"📋", etiket:"Görevlerim", aksiyon:"gorev", rozet:rozetler.gorev},
+      {ikon:"📦", etiket:"Ürün Geçmişi", aksiyon:"urun", rozet:rozetler.urun}
+    ];
+    document.getElementById("cmAltMenuListe").innerHTML = ogeler.map(function(o){
+      return "<button type='button' class='cm-altmenu-oge' data-aksiyon='" + o.aksiyon + "'>"
+        + "<span class='cm-altmenu-oge-sol'><span class='cm-altmenu-oge-ikon' aria-hidden='true'>" + o.ikon + "</span><span>" + o.etiket + "</span></span>"
+        + cmRozetHTML(o.rozet||0)
+        + "</button>";
+    }).join("");
+
+    document.getElementById("cmAltMenuListe").querySelectorAll(".cm-altmenu-oge").forEach(function(btn){
+      btn.onclick = function(){ cmAksiyonuUygula(this.getAttribute("data-aksiyon")); };
+    });
+
+    panel.hidden = false;
+  }catch(e){ hataGoster("Hızlı pencere açılamadı: " + e.message); }
+}
+
+function hizliPencereyiKapat(){
+  var panel = document.getElementById("cmAltMenu");
+  if(panel) panel.hidden = true;
+  cmAcikMusteri = null;
+}
+
+// Her aksiyon customer-hub-render.js/detail-render.js'teki İLGİLİ tuşun
+// yaptığı AYNI şeyi yapıyor — sadece aradaki Hub/İşlemler sayfası atlanıyor.
+// Fatura Takip/Görevlerim/Ürün Geçmişi için customer-detail.html'e "?ac=..."
+// ile gidiliyor — o sayfa AYNEN kalıyor, sadece açılışta ilgili paneli
+// otomatik açması için küçük bir ek (bkz. detail-render.js).
+function cmAksiyonuUygula(aksiyon){
+  if(!cmAcikMusteri) return;
+  switch(aksiyon){
+    case "cari":
+      window.location.href = "customer-cari-kart.html";
+      break;
+    case "temas":
+      window.location.href = "customer-temas.html";
+      break;
+    case "islemyap":
+      localStorage.setItem("weiconv2_islem_yap_akisi", "1");
+      window.location.href = "customer-cari-kart.html";
+      break;
+    case "fatura":
+      window.location.href = "customer-detail.html?ac=fatura";
+      break;
+    case "gecmis":
+      window.location.href = "gecmis.html";
+      break;
+    case "gorev":
+      window.location.href = "customer-detail.html?ac=gorev";
+      break;
+    case "urun":
+      window.location.href = "customer-detail.html?ac=urun";
+      break;
+  }
 }
 
 window.addEventListener("error", function(ev){
@@ -247,8 +379,20 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
-  document.getElementById("musteriAra").addEventListener("input", listeyiCiz);
+  document.getElementById("musteriAra").addEventListener("input", function(){
+    hizliPencereyiKapat(); // Abdullah'ın isteğiyle: yeni arama yazılınca pencere otomatik kapanır.
+    listeyiCiz();
+  });
   document.getElementById("musteriSehirFiltre").addEventListener("input", listeyiCiz);
+  // Pencere dışına (liste alanına veya herhangi bir yere) dokununca kapat —
+  // panelin/satırların kendi dokunuşları bubbling ile buraya gelmeden önce
+  // yakalanmasın diye closest() ile içeride mi dışarıda mı kontrol ediliyor.
+  document.addEventListener("click", function(ev){
+    var panel = document.getElementById("cmAltMenu");
+    if(!panel || panel.hidden) return;
+    if(ev.target.closest("#cmAltMenu") || ev.target.closest(".musteri-karti")) return;
+    hizliPencereyiKapat();
+  });
   document.getElementById("btnTumMusteriler").onclick = function(){
     tumMusterilerModuAktif = true;
     listeyiCiz();

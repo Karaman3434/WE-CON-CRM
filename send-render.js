@@ -1,5 +1,5 @@
 /*
-  send-render.js
+  send-render.js — WG.051026.1500.731
   ==============
   ARTIK SADECE gönderme paneli — kaydetme işi cart.html'e taşındı. Sayfa
   açılışında "weiconv2_son_kaydedilen_belge" localStorage anahtarını okur
@@ -634,7 +634,20 @@ function gonderTiklandi(kanal, ozelKonu){
         // Android mail uygulamasinda (Gmail/Outlook) HIC satir atlamiyor -
         // Merhaba, ile devami bitisik gorunuyordu. navigator.share'e giden
         // metin artik normal \n ile, oldugu gibi gidiyor.
-        var paylasimMetni = metin;
+        //
+        // DÜZELTME (05.10.2026, Abdullah'ın iPad 9'da bildirdiği hata —
+        // ekran görüntüsüyle doğrulandı): iOS'ta bazı mail uygulamaları
+        // navigator.share()'deki "title"ı yok sayıp Konu alanını "text"in
+        // İLK SATIRIYLA dolduruyor (bilinen bir iOS Web Share API kısıtı —
+        // Apple henüz düzeltmedi) — bu yüzden Konu kutusunda hesaplanan
+        // konuMetni yerine mesajın ilk satırı ("Merhaba,") görünüyordu.
+        // Çözüm: SADECE mail kanalında, gövdenin (text) İLK SATIRI olarak
+        // konuMetni de eklendi — "title" doğru çalışan cihazlarda (Android/
+        // Gmail, yukarıdaki nottaki gibi) bu sadece gövdenin en üstünde bir
+        // satır fazlalık yapar, ama "title" yok sayılan cihazlarda Konu
+        // artık yanlış "Merhaba," yerine doğru metni gösterir. WhatsApp
+        // metni DEĞİŞMEDİ (konu kavramı yok, sorun da bildirilmedi).
+        var paylasimMetni = (kanal === "mail") ? (konuMetni + "\n\n" + metin) : metin;
 
         if(navigator.canShare && navigator.canShare({files:[dosya]})){
           navigator.share({files:[dosya], title:konuMetni, text:paylasimMetni}).then(function(){

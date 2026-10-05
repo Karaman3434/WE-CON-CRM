@@ -19,7 +19,7 @@
 <title>WEICON ASİST — Müşteriler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
-<link rel="stylesheet" href="customer-style.css?v=WG.041026.1121.726">
+<link rel="stylesheet" href="customer-style.css?v=WG.051026.1500.731">
 </head>
 <body>
 
@@ -41,13 +41,23 @@
   <!-- 04.10.2026 (Abdullah'ın isteğiyle): arama + şehir filtresi AYNI satırda
        (2/1 oranı). "Yeni Müşteri Ekle" kutusu kaldırıldı — açılır menü →
        Müşteri → Yeni Müşteri'de zaten var, burada tekrar göstermeye gerek yok. -->
-  <div class="musteri-arama-satiri">
-    <div class="arama-kutusu">
-      <input type="text" id="musteriAra" placeholder="Müşteri adı veya şehir ara..." autocomplete="off">
-      <span class="arama-ikon">🔍</span>
+  <div class="cm-altmenu-sarmalayici">
+    <div class="musteri-arama-satiri">
+      <div class="arama-kutusu">
+        <input type="text" id="musteriAra" placeholder="Müşteri adı veya şehir ara..." autocomplete="off">
+        <span class="arama-ikon">🔍</span>
+      </div>
+      <div class="musteri-sehir-filtre-kutu">
+        <input type="text" id="musteriSehirFiltre" placeholder="Şehir / İlçe...">
+      </div>
     </div>
-    <div class="musteri-sehir-filtre-kutu">
-      <input type="text" id="musteriSehirFiltre" placeholder="Şehir / İlçe...">
+
+    <!-- MÜŞTERİ HIZLI PENCERESİ (05.10.2026) — bir isme dokununca JS ile
+         dolduruluyor ve gösteriliyor (bkz. customer-render.js
+         hizliPencereyiAc). Arama satırının HEMEN ALTINDA, dar bir kutu. -->
+    <div class="cm-altmenu" id="cmAltMenu" hidden>
+      <div class="cm-altmenu-musteri-baslik" id="cmAltMenuBaslik"></div>
+      <div id="cmAltMenuListe"></div>
     </div>
   </div>
 
@@ -68,9 +78,12 @@
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="reports-data.js?v=WG.290926.2245.674"></script>
+<!-- YENİ (05.10.2026) — müşteri hızlı penceresindeki "Fatura Takip" rozeti
+     için (bkz. customer-render.js hizliPencereyiAc). -->
+<script src="vade-takip-data.js?v=WG.220926.0900.593"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>document.addEventListener("DOMContentLoaded", function(){ RotaTakip.kaydet("customer.html", "🔍 Müşteri Bul"); RotaTakip.ciz("rotaSeridi"); });</script>
-<script src="customer-render.js?v=WG.300926.1400.677"></script>
+<script src="customer-render.js?v=WG.051026.1500.731"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /*
-  detail-render.js
+  detail-render.js — WG.051026.1500.731
   ================
   Seçili müşterinin bilgilerini, sipariş geçmişini (ReportsData.sonIslemler
   üzerinden filtrelenmiş) ve ziyaret geçmişini gösterir.
@@ -297,4 +297,17 @@ document.addEventListener("DOMContentLoaded", function(){
   // hemen taze veriyle güncelle.
   var tazeMusteriIlk = CustomerData.musteriBul(seciliMusteriAdi);
   if(tazeMusteriIlk) ustBilgiyiCiz(tazeMusteriIlk);
+
+  // OTOMATİK AÇILIŞ (05.10.2026, Abdullah'ın isteğiyle) — Müşteri Bul'daki
+  // hızlı pencereden "Fatura Takip"/"Görevlerim"/"Ürün Geçmişi" seçilince
+  // buraya "?ac=fatura" / "?ac=gorev" / "?ac=urun" ile geliniyor; sayfa
+  // kendi tuşuna tıklanmış gibi davranıp ilgili pencereyi/satırı HEMEN
+  // açıyor. Panel/liste verisi yukarıdaki satırlarla zaten hazırlandığı
+  // için burada sadece tuşun click'ini tetiklemek yeterli.
+  try{
+    var acParam = new URLSearchParams(window.location.search).get("ac");
+    if(acParam === "fatura"){ document.getElementById("tileFaturaTakip").click(); }
+    else if(acParam === "gorev"){ document.getElementById("tileGorevler").click(); }
+    else if(acParam === "urun"){ document.getElementById("tileUrunGecmisi").click(); }
+  }catch(e){ hataGoster("Otomatik açılış başarısız: " + e.message); }
 });
