@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.061026.0935.732 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.061026.1240.733 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
@@ -49,30 +49,37 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.021026.1510.710">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.041026.1335.727">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.061026.1240.733">
 </head>
 <body>
 
 <div class="app-ust-sabit">
-  <!-- YENİ ÜST BAR (02.10.2026, Abdullah'ın isteğiyle): motivasyon sözü
-       sistemi tamamen kaldırıldı (bkz. motivasyon-data.js artık yüklenmiyor,
-       home-render.js'deki motivasyonuGuncelle silindi). Üstte tarih tek
-       başına ortalı bir satır; altında Menü (satırın 1/3'ü) + WEICON
-       logosu (satırın 2/3'ü, zemin/kutu YOK, Menü ile aynı yükseklikte)
-       yan yana. -->
-  <div class="as-ust-tarih-satir" id="gunTarihi"></div>
+  <!-- ÜST BAR (06.10.2026, Abdullah'ın isteğiyle güncellendi): ayrı tarih
+       satırı kaldırıldı, tarih artık aşağıdaki panel satırında İş Günü
+       Kaldı/EUR Kur ile aynı satırda üçüncü bir kutu (bkz. #asTarihGun/
+       #asTarihTarih, home-render.js tarihiGuncelle). Menü (satırın 1/3'ü)
+       + WEICON logosu (satırın 2/3'ü, zemin/kutu YOK) yan yana, ikisi de
+       60px yükseklikte (eskiden 44px — Abdullah'ın isteğiyle büyütüldü,
+       logo bozuk eski banner yerine temiz/net PNG kullanıyor). -->
   <div class="as-ust-birlesik-satir">
     <button class="as-menu-btn" id="btnAsMenuAc" aria-label="Menüyü aç">
       <span class="as-menu-btn-cizgiler" aria-hidden="true"><span></span><span></span><span></span></span>
       <span class="as-menu-btn-etiket">Menü</span>
     </button>
-    <img class="as-logo-gorsel-ustte" src="anasayfa-logo-banner.jpg?v=WG.290926.2156.673" alt="WEICON">
+    <img class="as-logo-gorsel-ustte" src="weicon-logo-temiz.png?v=WG.061026.1240.733" alt="WEICON">
   </div>
 </div>
 
 <main class="sayfa as-sayfa" id="page8">
 
   <div class="as-panel-satir">
+    <div class="as-tarih-panel">
+      <span class="as-tarih-ikon" aria-hidden="true">📅</span>
+      <div class="as-tarih-metin">
+        <div class="as-tarih-gun" id="asTarihGun">-</div>
+        <div class="as-tarih-tarih" id="asTarihTarih">-</div>
+      </div>
+    </div>
     <div class="as-isgunu-panel">
       <div>
         <span class="as-isgunu-ikon" aria-hidden="true">📅</span>
@@ -189,7 +196,7 @@
       <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#f5c451;" aria-hidden="true">🔒</span><span class="as-drawer-etiket">Kişisel</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
     </nav>
 
-    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.061026.0935.732 ***</div>
+    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.061026.1240.733 ***</div>
 
     <div class="as-drawer-ayarlar-blok">
       <a class="as-drawer-oge" href="menu.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">⚙️</span><span class="as-drawer-etiket">Ayarlar</span><span class="as-drawer-hata-rozet" id="asAyarlarHataRozeti" hidden>0</span></a>
@@ -244,6 +251,6 @@
 <script src="hata-log.js?v=WG.140926.1412.560"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.031026.1610.718"></script>
+<script src="home-render.js?v=WG.061026.1240.733"></script>
 </body>
 </html>

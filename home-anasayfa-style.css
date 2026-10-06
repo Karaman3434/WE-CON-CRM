@@ -24,18 +24,11 @@
   body { max-width: none; }
 }
 
-/* ---------- Üst bar (02.10.2026, Abdullah'ın isteğiyle yeniden tasarlandı):
-   eski motivasyon sözü + tam genişlik logo + ayrı menü/tarih satırı
-   düzeni kaldırıldı. Artık: tarih tek başına ortalı bir satır, altında
-   Menü (1/3 genişlik) + WEICON logosu (2/3 genişlik, zemin/kutu YOK),
-   ikisi AYNI YÜKSEKLİKTE yan yana. ---------- */
-.as-ust-tarih-satir {
-  text-align: center;
-  padding: 12px 0 6px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #1f2937;
-}
+/* ---------- Üst bar (02.10.2026'da yeniden tasarlandı; 06.10.2026'da
+   Abdullah'ın isteğiyle güncellendi: ayrı tarih satırı kaldırıldı — tarih
+   artık aşağıdaki .as-panel-satir'de üçüncü bir kutu, bkz. .as-tarih-panel).
+   Üstte sadece Menü (1/3 genişlik) + WEICON logosu (2/3 genişlik, zemin/
+   kutu YOK), ikisi AYNI YÜKSEKLİKTE yan yana. ---------- */
 .as-ust-birlesik-satir {
   display: flex;
   align-items: stretch;
@@ -51,7 +44,7 @@
 .as-menu-btn {
   flex: 1 1 33.333%;
   width: auto;
-  height: 44px;
+  height: 60px;
   border-radius: 10px;
   background: #c1121f;
   border: none;
@@ -83,37 +76,64 @@
 /* WEICON logosu — satırın 2/3'ü, Menü ile aynı yükseklikte, hiçbir zemin
    rengi veya kutu yok (02.10.2026, Abdullah'ın isteğiyle: önce denenen
    lacivert zeminli kutu beğenilmedi — sadece logonun kendisi, alanı
-   object-fit:cover ile tamamen dolduruyor). */
+   object-fit:cover ile tamamen dolduruyor). min-width:0 ŞART — yoksa
+   flex item img kendi orijinal piksel genişliğinden küçülmeyi reddedip
+   satırı taşırıyor (06.10.2026'da bulunan gerçek bir dar-ekran hatası). */
 .as-logo-gorsel-ustte {
   flex: 1 1 66.666%;
-  height: 44px;
+  min-width: 0;
+  height: 60px;
   width: 100%;
   object-fit: cover;
   border-radius: 10px;
 }
 
-/* ---------- İş günü kaldı + EUR kur satırı ---------- */
+/* ---------- Tarih + İş günü kaldı + EUR kur satırı (06.10.2026,
+   Abdullah'ın isteğiyle: eskiden ayrı tek satırlık tarih + 2'li panel
+   satırıydı, artık ÜÇÜ aynı satırda). Üç kutu da aynı dar düzeni
+   paylaşıyor, bu yüzden iç boşluk/yazı boyutları eski 2'li haline göre
+   küçültüldü (kutu YÜKSEKLİĞİ değişmedi, sadece daha dar). ---------- */
 .as-panel-satir {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   padding: 0 0 8px;
   box-sizing: border-box;
 }
+.as-tarih-panel {
+  flex: 1;
+  min-width: 0;
+  background: #eaf1fb;
+  border: 1.5px solid #1257c7;
+  border-radius: 14px;
+  padding: 8px 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.as-tarih-ikon { font-size: 15px; line-height: 1; flex-shrink: 0; }
+.as-tarih-metin { line-height: 1.05; text-align: left; min-width: 0; }
+/* Abdullah'ın isteğiyle (06.10.2026): panel boyutu AYNI kaldı, sadece
+   içindeki gün/tarih yazısı ~%100 büyütüldü (eskiden 11.5px/10.5px). */
+.as-tarih-gun { font-size: 23px; font-weight: 800; color: #1257c7; white-space: nowrap; }
+.as-tarih-tarih { font-size: 21px; font-weight: 700; color: #1257c7; white-space: nowrap; }
+
 .as-isgunu-panel {
   flex: 1;
   min-width: 0;
   background: #fdeceb;
   border: 1.5px solid #c0392b;
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 8px 8px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.as-isgunu-ikon { font-size: 16px; line-height: 1; }
-.as-isgunu-etiket { font-size: 13.5px; font-weight: 700; color: #c0392b; line-height: 1.2; margin-top: 3px; }
-.as-isgunu-deger { font-size: 32px; font-weight: 800; color: #c0392b; line-height: 1; }
+.as-isgunu-ikon { font-size: 14px; line-height: 1; }
+.as-isgunu-etiket { font-size: 10px; font-weight: 700; color: #c0392b; line-height: 1.2; margin-top: 2px; }
+.as-isgunu-deger { font-size: 21px; font-weight: 800; color: #c0392b; line-height: 1; }
 
 .as-kur-panel {
   flex: 1;
@@ -121,14 +141,14 @@
   background: #e3f5ec;
   border: 1.5px solid #1a8a5e;
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 8px 8px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.as-kur-etiket { font-size: 13.5px; font-weight: 700; color: #1a8a5e; line-height: 1.2; }
-.as-kur-deger { font-size: 32px; font-weight: 800; color: #0e5c3e; line-height: 1; }
+.as-kur-etiket { font-size: 10px; font-weight: 700; color: #1a8a5e; line-height: 1.2; }
+.as-kur-deger { font-size: 21px; font-weight: 800; color: #0e5c3e; line-height: 1; }
 
 /* ---------- Hedef kartı (koyu lacivert) ---------- */
 .as-hedef-blok { padding: 0 0 8px; box-sizing: border-box; }

@@ -18,14 +18,19 @@ function hataGoster(mesaj){
   setTimeout(function(){ kutu.remove(); }, 8000);
 }
 
+// DÜZELTME (06.10.2026, Abdullah'ın isteğiyle): eski tek satırlık #gunTarihi
+// kaldırıldı — tarih artık İş Günü Kaldı/EUR Kur ile aynı satırdaki küçük
+// kutuda, iki satır halinde (#asTarihGun: gün adı, #asTarihTarih: gün+ay).
 function tarihiGuncelle(){
   try{
-    var el = document.getElementById("gunTarihi");
-    if(!el) return;
+    var gunEl = document.getElementById("asTarihGun");
+    var tarihEl = document.getElementById("asTarihTarih");
+    if(!gunEl || !tarihEl) return;
     var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
     var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
     var d = new Date();
-    el.textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
+    gunEl.textContent = gunler[d.getDay()];
+    tarihEl.textContent = d.getDate() + " " + aylar[d.getMonth()];
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
