@@ -1,7 +1,7 @@
 {
   "name": "WEICON ASİST",
   "short_name": "WEICON ASİST",
-  "start_url": "https://karaman3434.github.io/WE-CON-CRM/",
+  "start_url": "https://karaman3434.github.io/WE-CON-CRM/home.html",
   "scope": "https://karaman3434.github.io/WE-CON-CRM/",
   "display": "standalone",
   "theme_color": "#0d3d8c",
