@@ -1,5 +1,5 @@
 /*
-  cihaz-kullanici-render.js — VERSİYON: WG.031026.0930.715
+  cihaz-kullanici-render.js — VERSİYON: WG.061026.1620.737
   ============================================================
   "Cihazlar ve Kullanıcılar" sayfasının TEK render dosyası — eski
   cihazlar-render.js (cihaz listesi/engelleme) ve calisan-erisim-render.js
@@ -267,6 +267,78 @@ function ckYonetimAlaniniGoster(){
    📱 CİHAZLAR — cihazlar-render.js'ten taşındı; YENİ: her kartta artık
    kendi kendini tanımladığı "kullanıcı adı" ve değişim geçmişi de var.
    ======================================================================== */
+// 06.10.2026 (Abdullah'ın isteğiyle) — Engellenen cihazlar artık ANA
+// listede gösterilmiyor; ayrı, kapalı başlayan "Engellenen cihazlar"
+// alanına taşınıyor. Bu, o alanın kullanıcı tarafından açık/kapalı
+// bırakıldığı durumu render'lar arasında hatırlamak için.
+var czEngellenenlerAcikMi = false;
+
+function czKullaniciSatiriHtml(c){
+  var kullaniciSatiri = c.kullaniciAdi
+    ? "<div class='cz-kart-kullanici' id='czAd-" + htmlEsc(c.id) + "'>👤 " + htmlEsc(c.kullaniciAdi) + "</div>"
+    : "<div class='cz-kart-kullanici cz-kart-kullanici--bos' id='czAd-" + htmlEsc(c.id) + "'>— kullanıcı adı tanımlanmadı —</div>";
+  return "<div class='cz-kart-kullanici-satir'>" + kullaniciSatiri
+    + "<button type='button' class='cz-mini-ikon-btn cz-ad-duzenle-ac-btn' data-id='" + htmlEsc(c.id) + "' title='İsmi düzenle'>✏️</button>"
+    + "</div>"
+    + "<div class='cz-ad-duzenle-alan' id='czAdDuzenle-" + htmlEsc(c.id) + "' hidden>"
+    + "<input type='text' class='cz-ad-duzenle-input' id='czAdInput-" + htmlEsc(c.id) + "' value='" + htmlEsc(c.kullaniciAdi||"") + "' placeholder='Kullanıcı adı'>"
+    + "<button type='button' class='cz-ad-duzenle-kaydet-btn' data-id='" + htmlEsc(c.id) + "'>✓ Kaydet</button>"
+    + "</div>";
+}
+
+function czPinSatiriHtml(c){
+  var pinVarMi = !!c.pinHash;
+  return "<div class='cz-pin-satir'>"
+    + "<span>🔑 PIN" + (pinVarMi ? ": <span class='cz-pin-deger'>••••</span>" : " <span class='cz-pin-tanimsiz'>tanımlanmadı</span>") + "</span>"
+    + "<button type='button' class='cz-pin-belirle-btn' data-id='" + htmlEsc(c.id) + "'>" + (pinVarMi ? "Değiştir" : "Belirle") + "</button>"
+    + "</div>"
+    + "<div class='cz-pin-duzenle-alan' id='czPinDuzenle-" + htmlEsc(c.id) + "' hidden>"
+    + "<input type='tel' inputmode='numeric' maxlength='4' class='cz-pin-duzenle-input' id='czPinInput-" + htmlEsc(c.id) + "' placeholder='4 haneli PIN'>"
+    + "<button type='button' class='cz-pin-duzenle-kaydet-btn' data-id='" + htmlEsc(c.id) + "'>✓ Kaydet</button>"
+    + "</div>";
+}
+
+function czGecmisHtml(c){
+  var gecmisDizi = c.kullaniciAdiGecmisi ? Object.keys(c.kullaniciAdiGecmisi).map(function(k){ return c.kullaniciAdiGecmisi[k]; }) : [];
+  gecmisDizi.sort(function(a,b){ return (b.zaman||0) - (a.zaman||0); });
+  if(!gecmisDizi.length) return "";
+  return "<button type='button' class='cz-gecmis-ac-btn' data-id='" + htmlEsc(c.id) + "'>Kullanıcı adı geçmişi (" + gecmisDizi.length + ") ▾</button>"
+    + "<div class='cz-gecmis-liste' id='czGecmis-" + htmlEsc(c.id) + "' hidden>"
+    + gecmisDizi.map(function(g){
+        return "<div class='cz-gecmis-satir'><b>" + htmlEsc(g.adi) + "</b><span>" + tarihSaatGoster(g.zaman) + "</span></div>";
+      }).join("")
+    + "</div>";
+}
+
+function czAktifKartHtml(c, benimId){
+  var buCihazMi = c.id === benimId;
+  var rozet = buCihazMi ? "<span class='cz-kart-rozet cz-kart-rozet--bu'>Bu cihaz</span>" : "";
+  var alt = buCihazMi
+    ? ""
+    : "<div class='cz-kart-alt'><button class='cz-engelle-btn' data-id='" + htmlEsc(c.id) + "' data-ad='" + htmlEsc(c.ad||"") + "'>🚫 Engelle</button></div>";
+
+  return "<div class='cz-kart'>"
+    + "<div class='cz-kart-ust'><span class='cz-kart-ad'>" + htmlEsc(c.ad || "Adsız Cihaz") + "</span>" + rozet + "</div>"
+    + czKullaniciSatiriHtml(c)
+    + czPinSatiriHtml(c)
+    + "<div class='cz-kart-son-gorulme'>Son görülme: " + zamanGoster(c.sonGorulme) + "</div>"
+    + czGecmisHtml(c)
+    + alt
+    + "</div>";
+}
+
+function czEngellenmisKartHtml(c){
+  var kullaniciSatiri = c.kullaniciAdi
+    ? "<div class='cz-kart-kullanici'>👤 " + htmlEsc(c.kullaniciAdi) + "</div>"
+    : "<div class='cz-kart-kullanici cz-kart-kullanici--bos'>— kullanıcı adı tanımlanmadı —</div>";
+  return "<div class='cz-kart'>"
+    + "<div class='cz-kart-ust'><span class='cz-kart-ad'>" + htmlEsc(c.ad || "Adsız Cihaz") + "</span> <span class='cz-kart-rozet cz-kart-rozet--engelli'>Engelli</span></div>"
+    + kullaniciSatiri
+    + "<div class='cz-kart-son-gorulme'>Son görülme: " + zamanGoster(c.sonGorulme) + "</div>"
+    + "<div class='cz-kart-alt'><button class='cz-kaldir-btn' data-id='" + htmlEsc(c.id) + "'>✓ Engeli Kaldır</button></div>"
+    + "</div>";
+}
+
 function cihazListesiniCiz(liste){
   try{
     var kapsayici = document.getElementById("czListe");
@@ -275,49 +347,19 @@ function cihazListesiniCiz(liste){
     bos.hidden = true;
 
     var benimId = CihazData.benimIdim();
+    var aktifler = liste.filter(function(c){ return !c.engelli; });
+    var engellenenler = liste.filter(function(c){ return c.engelli; });
 
-    kapsayici.innerHTML = liste.map(function(c){
-      var buCihazMi = c.id === benimId;
-      var korumaliMi = CihazData.korumaliMi(c.ad);
-      var rozetler = "";
-      if(buCihazMi) rozetler += "<span class='cz-kart-rozet cz-kart-rozet--bu'>Bu cihaz</span>";
-      if(c.engelli) rozetler += " <span class='cz-kart-rozet cz-kart-rozet--engelli'>Engelli</span>";
+    var html = aktifler.map(function(c){ return czAktifKartHtml(c, benimId); }).join("");
 
-      var kullaniciSatiri = c.kullaniciAdi
-        ? "<div class='cz-kart-kullanici'>👤 " + htmlEsc(c.kullaniciAdi) + "</div>"
-        : "<div class='cz-kart-kullanici cz-kart-kullanici--bos'>— kullanıcı adı tanımlanmadı —</div>";
-
-      var gecmisDizi = c.kullaniciAdiGecmisi ? Object.keys(c.kullaniciAdiGecmisi).map(function(k){ return c.kullaniciAdiGecmisi[k]; }) : [];
-      gecmisDizi.sort(function(a,b){ return (b.zaman||0) - (a.zaman||0); });
-      var gecmisHtml = "";
-      if(gecmisDizi.length){
-        gecmisHtml = "<button type='button' class='cz-gecmis-ac-btn' data-id='" + htmlEsc(c.id) + "'>Kullanıcı adı geçmişi (" + gecmisDizi.length + ") ▾</button>"
-          + "<div class='cz-gecmis-liste' id='czGecmis-" + htmlEsc(c.id) + "' hidden>"
-          + gecmisDizi.map(function(g){
-              return "<div class='cz-gecmis-satir'><b>" + htmlEsc(g.adi) + "</b><span>" + tarihSaatGoster(g.zaman) + "</span></div>";
-            }).join("")
-          + "</div>";
-      }
-
-      var alt;
-      if(buCihazMi){
-        alt = "";
-      } else if(korumaliMi){
-        alt = "<div class='cz-kart-alt cz-korumali-not'>🔒 Korumalı ana cihaz — engellenemez.</div>";
-      } else if(c.engelli){
-        alt = "<div class='cz-kart-alt'><button class='cz-kaldir-btn' data-id='" + htmlEsc(c.id) + "'>✓ Engeli Kaldır</button></div>";
-      } else {
-        alt = "<div class='cz-kart-alt'><button class='cz-engelle-btn' data-id='" + htmlEsc(c.id) + "' data-ad='" + htmlEsc(c.ad||"") + "'>🚫 Engelle</button></div>";
-      }
-
-      return "<div class='cz-kart'>"
-        + "<div class='cz-kart-ust'><span class='cz-kart-ad'>" + htmlEsc(c.ad || "Adsız Cihaz") + "</span>" + rozetler + "</div>"
-        + kullaniciSatiri
-        + "<div class='cz-kart-son-gorulme'>Son görülme: " + zamanGoster(c.sonGorulme) + "</div>"
-        + gecmisHtml
-        + alt
+    if(engellenenler.length){
+      html += "<button type='button' class='cz-engellenenler-toggle' id='czEngellenenlerToggle'>🚫 Engellenen cihazlar (" + engellenenler.length + ") " + (czEngellenenlerAcikMi ? "▴" : "▾") + "</button>"
+        + "<div class='cz-engellenenler-alan' id='czEngellenenlerAlan'" + (czEngellenenlerAcikMi ? "" : " hidden") + ">"
+        + engellenenler.map(czEngellenmisKartHtml).join("")
         + "</div>";
-    }).join("");
+    }
+
+    kapsayici.innerHTML = html;
 
     kapsayici.querySelectorAll(".cz-gecmis-ac-btn").forEach(function(btn){
       btn.onclick = function(){
@@ -328,11 +370,22 @@ function cihazListesiniCiz(liste){
         this.textContent = this.textContent.replace(/[▾▴]/, liste2.hidden ? "▾" : "▴");
       };
     });
+
+    var toggleBtn = document.getElementById("czEngellenenlerToggle");
+    if(toggleBtn){
+      toggleBtn.onclick = function(){
+        czEngellenenlerAcikMi = !czEngellenenlerAcikMi;
+        var alan = document.getElementById("czEngellenenlerAlan");
+        if(alan) alan.hidden = !czEngellenenlerAcikMi;
+        this.textContent = this.textContent.replace(/[▾▴]/, czEngellenenlerAcikMi ? "▴" : "▾");
+      };
+    }
+
     kapsayici.querySelectorAll(".cz-engelle-btn").forEach(function(btn){
       btn.onclick = function(){
         var id = this.getAttribute("data-id");
         var ad = this.getAttribute("data-ad");
-        if(!confirm("\"" + ad + "\" cihazı engellensin mi? O cihazda oturum kapatılacak.")) return;
+        if(!confirm("\"" + ad + "\" cihazı engellensin mi? O cihazda oturum kapatılacak ve liste dışına alınacak.")) return;
         CihazData.engelle(id, ad, function(basarili, hata){
           if(!basarili) hataGoster(hata || "Cihaz engellenemedi.");
         });
@@ -343,6 +396,68 @@ function cihazListesiniCiz(liste){
         var id = this.getAttribute("data-id");
         CihazData.engeliKaldir(id, function(basarili, hata){
           if(!basarili) hataGoster(hata || "Engel kaldırılamadı.");
+        });
+      };
+    });
+
+    // ✏️ İsim düzenle (admin, panelden)
+    kapsayici.querySelectorAll(".cz-ad-duzenle-ac-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var id = this.getAttribute("data-id");
+        var alan = document.getElementById("czAdDuzenle-" + id);
+        if(!alan) return;
+        alan.hidden = !alan.hidden;
+        if(!alan.hidden){
+          var girdi = document.getElementById("czAdInput-" + id);
+          if(girdi){ girdi.focus(); girdi.select(); }
+        }
+      };
+    });
+    kapsayici.querySelectorAll(".cz-ad-duzenle-kaydet-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var id = this.getAttribute("data-id");
+        var girdi = document.getElementById("czAdInput-" + id);
+        if(!girdi) return;
+        var yeniAd = girdi.value.trim();
+        if(!yeniAd){ hataGoster("İsim boş olamaz."); return; }
+        btn.disabled = true; btn.textContent = "⏳ Kaydediliyor...";
+        CihazData.adiniDegistir(id, yeniAd, function(basarili, hata){
+          btn.disabled = false; btn.textContent = "✓ Kaydet";
+          if(!basarili) hataGoster(hata || "İsim kaydedilemedi.");
+          // başarılıysa Firebase dinleyicisi listeyi zaten yeniden çizecek
+        });
+      };
+    });
+
+    // 🔑 PIN belirle/değiştir (admin, panelden)
+    kapsayici.querySelectorAll(".cz-pin-belirle-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var id = this.getAttribute("data-id");
+        var alan = document.getElementById("czPinDuzenle-" + id);
+        if(!alan) return;
+        alan.hidden = !alan.hidden;
+        if(!alan.hidden){
+          var girdi = document.getElementById("czPinInput-" + id);
+          if(girdi){ girdi.value = ""; girdi.focus(); }
+        }
+      };
+    });
+    kapsayici.querySelectorAll(".cz-pin-duzenle-kaydet-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var id = this.getAttribute("data-id");
+        var girdi = document.getElementById("czPinInput-" + id);
+        if(!girdi) return;
+        var pin = girdi.value.trim();
+        if(!/^\d{4}$/.test(pin)){ hataGoster("PIN 4 haneli rakam olmalı."); return; }
+        btn.disabled = true; btn.textContent = "⏳ Kaydediliyor...";
+        pinHashHesapla(pin).then(function(hash){
+          CihazData.pinKaydet(id, hash, function(basarili, hata){
+            btn.disabled = false; btn.textContent = "✓ Kaydet";
+            if(!basarili) hataGoster(hata || "PIN kaydedilemedi.");
+          });
+        }).catch(function(e){
+          btn.disabled = false; btn.textContent = "✓ Kaydet";
+          hataGoster("PIN hesaplanamadı: " + e.message);
         });
       };
     });

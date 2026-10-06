@@ -94,6 +94,81 @@
 .cz-gecmis-satir { display: flex; justify-content: space-between; font-size: 10.5px; color: #8b95a1; padding: 2px 0; }
 .cz-gecmis-satir b { color: #445; font-weight: 700; }
 
+/* İSİM DÜZENLE + PIN (06.10.2026, Abdullah'ın isteğiyle) — admin bu
+   paneldeki herhangi bir cihazın kullanıcı adını ve PIN'ini buradan
+   değiştirebiliyor. */
+.cz-kart-kullanici-satir { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.cz-kart-kullanici-satir .cz-kart-kullanici { margin-top: 0; }
+.cz-mini-ikon-btn {
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  border-radius: 7px;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.cz-ad-duzenle-alan, .cz-pin-duzenle-alan { display: flex; gap: 6px; margin-top: 6px; }
+/* DÜZELTME: display:flex yukarıda tarayıcının varsayılan [hidden] davranışını
+   (display:none) eziyor — bu satır [hidden] durumunu geri kazandırıyor
+   (codebase'deki diğer overlay'lerle aynı, kanıtlanmış düzeltme deseni). */
+.cz-ad-duzenle-alan[hidden], .cz-pin-duzenle-alan[hidden] { display: none; }
+.cz-ad-duzenle-input, .cz-pin-duzenle-input {
+  flex: 1;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #111;
+}
+.cz-ad-duzenle-input:focus, .cz-pin-duzenle-input:focus { outline: none; border-color: #003a70; }
+.cz-ad-duzenle-kaydet-btn, .cz-pin-duzenle-kaydet-btn {
+  background: #003a70;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cz-pin-satir { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: #556170; }
+.cz-pin-satir .cz-pin-deger { font-weight: 800; color: #0c2f66; letter-spacing: 2px; }
+.cz-pin-satir .cz-pin-tanimsiz { color: #aab2bd; font-style: italic; font-weight: 600; }
+.cz-pin-belirle-btn {
+  margin-left: auto;
+  border: 1.5px solid #9ebde0;
+  background: #e6eef7;
+  color: #003a70;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ENGELLENEN CİHAZLAR (06.10.2026, Abdullah'ın isteğiyle) — ana listede
+   artık görünmüyorlar, bu açılır alana taşınıyorlar. */
+.cz-engellenenler-toggle {
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  color: #8b95a1;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.cz-engellenenler-alan { border-top: 1px dashed #dfe3e9; margin-top: 4px; padding-top: 4px; }
+
 /* "Cihazlar ve Kullanıcılar" birleşik sayfasına özel küçük not kutusu */
 .ck-sifre-not {
   background: #fff8e6;

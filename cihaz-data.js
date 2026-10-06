@@ -10,10 +10,13 @@
   tanımlamalı). İlk kullanımda "Adsız Cihaz" olarak kaydolur; Abdullah
   "Cihazlarım" ekranından her cihaza kendi üzerindeyken bir ad verir.
 
-  GÜVENLİK NOTU: "Samsung S22" adını taşıyan cihaz (ana/yetkili cihaz,
-  daha önce kritik bir GPU render hatası yaşamıştı) hiçbir zaman
-  engellenemez — bu koruma hem burada (engelle fonksiyonu) hem de
-  cihazlar-render.js'teki arayüzde (buton hiç gösterilmez) uygulanır.
+  GÜVENLİK NOTU: "Samsung S22" adı (KORUMALI_AD), Cihazlar ve Kullanıcılar
+  yönetim panelinin SADECE o adı taşıyan cihazdan açılabilmesi için hâlâ
+  kullanılıyor (bkz. cihaz-kullanici-render.js → ckErisimKontrolEt). AMA
+  06.10.2026'dan itibaren (Abdullah'ın isteğiyle) bu ad artık "engellenemez"
+  anlamına GELMİYOR — istisnasız her cihaz (bu ad dahil, başka bir cihazdan)
+  engellenebilir; tek istisna, üzerinde bulunduğun cihazı kendi kendine
+  engelleyememen (aşağıdaki id === benimIdim() kontrolü).
 */
 
 var CihazData = (function(){
@@ -110,6 +113,37 @@ var CihazData = (function(){
     }catch(e){ cb(false); }
   }
 
+  /* ---------- ADMİN DÜZENLEMESİ (06.10.2026, Abdullah'ın isteğiyle) ----------
+     kullaniciAdiKaydet() SADECE cihazın kendisi (benimIdim()) için çalışır.
+     Aşağıdaki ikisi ise "Cihazlar ve Kullanıcılar" panelinden, Abdullah'ın
+     BAŞKA bir cihazın adını/PIN'ini kendi S22'sinden değiştirebilmesi için —
+     id parametresiyle, cihazın üzerinde olmaya gerek kalmadan çalışır. */
+  function adiniDegistir(id, yeniAd, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    try{
+      yeniAd = String(yeniAd||"").trim();
+      if(!id || !yeniAd){ cb(false, "İsim boş olamaz."); return; }
+      baslat();
+      var db = firebase.database();
+      db.ref("cihazlar/" + id).update({ kullaniciAdi: yeniAd })
+        .then(function(){ return db.ref("cihazlar/" + id + "/kullaniciAdiGecmisi").push({adi: yeniAd, zaman: Date.now()}); })
+        .then(function(){ cb(true); })
+        .catch(function(err){ cb(false, err.message); });
+    }catch(e){ cb(false, e.message); }
+  }
+
+  // pinHashDegeri: pin-utils.js'teki pinHashHesapla(pin) ile üretilmiş
+  // SHA-256 hash'i — düz metin PIN hiçbir yerde saklanmaz/gönderilmez.
+  function pinKaydet(id, pinHashDegeri, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    try{
+      if(!id || !pinHashDegeri){ cb(false, "PIN kaydedilemedi."); return; }
+      baslat();
+      firebase.database().ref("cihazlar/" + id).update({ pinHash: pinHashDegeri, pinZaman: Date.now() })
+        .then(function(){ cb(true); }).catch(function(err){ cb(false, err.message); });
+    }catch(e){ cb(false, e.message); }
+  }
+
   function tumCihazlariDinle(fn){
     try{
       baslat();
@@ -125,7 +159,6 @@ var CihazData = (function(){
 
   function engelle(id, ad, geriBildir){
     var cb = typeof geriBildir === "function" ? geriBildir : function(){};
-    if(korumaliMi(ad)){ cb(false, "Bu cihaz korumalı, engellenemez."); return; }
     if(id === benimIdim()){ cb(false, "Şu an üzerinde olduğun cihazı engelleyemezsin."); return; }
     try{
       baslat();
@@ -162,6 +195,8 @@ var CihazData = (function(){
     adiKaydet: adiKaydet,
     benimKullaniciAdim: benimKullaniciAdim,
     kullaniciAdiKaydet: kullaniciAdiKaydet,
+    adiniDegistir: adiniDegistir,
+    pinKaydet: pinKaydet,
     tumCihazlariDinle: tumCihazlariDinle,
     engelle: engelle,
     engeliKaldir: engeliKaldir,
