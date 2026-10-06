@@ -179,6 +179,7 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 4px;
   padding: 12px 6px 9px;
+  align-items: flex-start; /* 06.10.2026 — Geri kutusu kısaldığı için iki kutu üstten aynı hizada başlasın */
 }
 .nav-btn {
   background: #eef2f8;
@@ -198,27 +199,53 @@ body {
   gap: 1.6px;
   text-decoration: none;
 }
+/* 06.10.2026 (Abdullah'ın isteğiyle) — "Geri" butonu parlak/3D mavi zemine
+   geçti (referans görsel). Dış boyut: yükseklik .nav-btn'in 54px'inden
+   dikeyde %10 küçültülerek 49px'e indirildi (genişlik/grid hücresi aynı —
+   "Ana Sayfa" kutusuyla aynı sütun genişliği). İçindeki ok + "Geri" etiketi,
+   eski haline göre %30 büyütüldü (ok 26px→34px, etiket 17px→22px) ve kutu
+   içinde tam ortalı/simetrik (justify-content:center + eşit gap). İkinci
+   "buyuk" ok span'ı (eskiden aynı anda görünen ikinci bir ok) artık
+   gösterilmiyor — tek, temiz bir ok kullanılıyor. */
 .nav-btn--geri {
-  color: #c0392b;
+  height: 49px;
+  background: linear-gradient(180deg, #4f8bf0 0%, #2a6bea 32%, #1452d6 70%, #0d3fb8 100%);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 #0a2f8c, 0 5px 12px rgba(10,40,120,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  position: relative;
+  overflow: hidden;
   flex-direction: row;
-  gap: 4px;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+.nav-btn--geri::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+  pointer-events: none;
 }
 .nav-btn--geri .nav-ikon--geri-kucuk {
-  font-size: 50px;
+  font-size: 34px;
+  font-weight: 900;
   line-height: 1;
+  color: #fff;
+  margin: 0;
 }
-.nav-btn--geri .nav-ikon--geri-kucuk::before {
-  content: "";
-  display: inline-block;
-  width: 14px;
-  height: 4px;
-  background: currentColor;
-  border-radius: 2px;
-  vertical-align: middle;
-  margin-right: 3px;
+.nav-btn--geri .nav-ikon--geri-kucuk::before { content: none; }
+.nav-btn--geri .nav-ikon--geri-buyuk { display: none; }
+.nav-btn--geri .nav-etiket {
+  position: relative;
+  margin: 0;
+  padding-left: 12px;
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  border-left: 1.5px solid rgba(255,255,255,.55);
 }
-.nav-btn--geri .nav-ikon--geri-buyuk { font-size: 62px; line-height: 1; margin-left: 0; }
-.nav-btn--geri .nav-etiket { margin-left: 2px; font-size: 24px; }
 .nav-btn--ana { color: #003a70; }
 .nav-btn--ana .nav-ikon { font-size: 32px; }
 .nav-btn--ana .nav-etiket { font-size: 14px; }
