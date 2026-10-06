@@ -1,5 +1,5 @@
 /*
-  customer-render.js — WG.051026.1500.731
+  customer-render.js — WG.061026.0935.732
   ==================
   Eski uygulamanın musteriListesiniRenderEt() mantığıyla BİREBİR aynı:
   - Arama yokken: sadece en son eklenen 12 müşteri (dizinin başı, çünkü yeni
@@ -340,6 +340,26 @@ function hizliPencereyiKapat(){
   cmAcikMusteri = null;
 }
 
+// DÖNÜŞ ROTASI (06.10.2026, Abdullah'ın isteğiyle — "kesin kural": program
+// hangi rotadan gidiyorsa o rotadan mutlaka dönmeli). Küçük pencereden
+// HERHANGİ bir aksiyona girilirken burada kaydedilen bayrak, akışın
+// İÇİNDEKİ her Kapat/Geri noktasında (cari-kart, cart.html, customer-
+// temas.html, gecmis.html) kontrol ediliyor — varsa en fazla buraya
+// (customer.html) dönülüyor, arama kutusu + şehir filtresi de geri
+// yükleniyor ki aranan müşteri listede yeniden görünsün. Bayrak yoksa
+// (Bildirimler/Takip Gerekenler gibi eski girişler) hiçbir şey değişmiyor.
+function cmDonusRotasiniKaydet(){
+  try{
+    localStorage.setItem("weiconv2_musteri_donus_sayfa", "customer.html");
+    var araEl = document.getElementById("musteriAra");
+    var sehirEl = document.getElementById("musteriSehirFiltre");
+    localStorage.setItem("weiconv2_musteri_arama_durumu", JSON.stringify({
+      ara: araEl ? araEl.value : "",
+      sehir: sehirEl ? sehirEl.value : ""
+    }));
+  }catch(e){}
+}
+
 // Her aksiyon customer-hub-render.js/detail-render.js'teki İLGİLİ tuşun
 // yaptığı AYNI şeyi yapıyor — sadece aradaki Hub/İşlemler sayfası atlanıyor.
 // Fatura Takip/Görevlerim/Ürün Geçmişi için customer-detail.html'e "?ac=..."
@@ -347,6 +367,7 @@ function hizliPencereyiKapat(){
 // otomatik açması için küçük bir ek (bkz. detail-render.js).
 function cmAksiyonuUygula(aksiyon){
   if(!cmAcikMusteri) return;
+  cmDonusRotasiniKaydet();
   switch(aksiyon){
     case "cari":
       window.location.href = "customer-cari-kart.html";
@@ -379,6 +400,23 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
+
+  // DÖNÜŞ ROTASI — yukarıdaki cmDonusRotasiniKaydet() ile bırakılan
+  // bayrağın TÜKETİLDİĞİ nokta: akışın içinden (cari-kart/cart/temas/
+  // gecmis) Kapat/Geri ile buraya dönülmüşse arama kutusu + şehir
+  // filtresi eski haline getirilir. Bayrak burada silinir — sonraki
+  // normal ziyaretleri etkilemez.
+  try{
+    if(localStorage.getItem("weiconv2_musteri_donus_sayfa") === "customer.html"){
+      var donusDurumu = {};
+      try{ donusDurumu = JSON.parse(localStorage.getItem("weiconv2_musteri_arama_durumu") || "{}"); }catch(e2){}
+      if(donusDurumu.ara) document.getElementById("musteriAra").value = donusDurumu.ara;
+      if(donusDurumu.sehir) document.getElementById("musteriSehirFiltre").value = donusDurumu.sehir;
+      localStorage.removeItem("weiconv2_musteri_donus_sayfa");
+      localStorage.removeItem("weiconv2_musteri_arama_durumu");
+    }
+  }catch(e){}
+
   document.getElementById("musteriAra").addEventListener("input", function(){
     hizliPencereyiKapat(); // Abdullah'ın isteğiyle: yeni arama yazılınca pencere otomatik kapanır.
     listeyiCiz();

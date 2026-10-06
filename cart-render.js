@@ -371,7 +371,8 @@ function kaydetSonrasiAnaSayfayaGit(){
   try{ CustomerData.secimiKaldir(); }catch(e){}
   ["weiconv2_sepet_kur_override","weiconv2_onceden_secilen_tip","weiconv2_hesapla_duzenle_idx",
    "weiconv2_ilerlet_kaynak","weiconv2_islem_yap_akisi","weiconv2_secili_iletisim",
-   "weiconv2_son_kaydedilen_belge","weiconv2_gonderim_kanali","weicon_secili_musteri"].forEach(function(k){
+   "weiconv2_son_kaydedilen_belge","weiconv2_gonderim_kanali","weicon_secili_musteri",
+   "weiconv2_musteri_donus_sayfa","weiconv2_musteri_arama_durumu"].forEach(function(k){
     try{ localStorage.removeItem(k); }catch(e){}
   });
   window.location.href = "home.html";
@@ -548,9 +549,21 @@ document.addEventListener("DOMContentLoaded", function(){
   // kaybı olmadan ("Ana Sayfa" tuşuyla aynı mantık: href="home.html" sadece
   // JS çalışmazsa diye yedek). Sepeti silen TEK yer artık aşağıdaki
   // "🗑️ İşlemi İptal Et" butonu — kendi onay penceresiyle DEĞİŞMEDİ.
+  // DÖNÜŞ ROTASI (06.10.2026, Abdullah'ın isteğiyle — "kesin kural"):
+  // küçük pencereden (Müşteri Bul) bu akışa girildiyse, Geri/İptal Et
+  // artık tarayıcı geçmişine (history.back()) güvenmek yerine doğrudan
+  // customer.html'e dönüyor — "en fazla müşteri arama motoru sayfasına
+  // döner" kuralı. Bayrak yoksa (eski giriş noktaları) davranış DEĞİŞMEDİ.
+  var cartDonusRotasi = null;
+  try{ cartDonusRotasi = localStorage.getItem("weiconv2_musteri_donus_sayfa"); }catch(e){}
   var geriLink = document.querySelector(".nav-btn--geri");
   if(geriLink){
     geriLink.addEventListener("click", function(ev){
+      if(cartDonusRotasi === "customer.html"){
+        ev.preventDefault();
+        window.location.href = "customer.html";
+        return;
+      }
       if(window.history.length > 1){
         ev.preventDefault();
         window.history.back();
@@ -558,7 +571,7 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   }
   document.getElementById("btnSepetIptal").onclick = function(){
-    iptalOnayGoster("home.html");
+    iptalOnayGoster(cartDonusRotasi === "customer.html" ? "customer.html" : "home.html");
   };
 
   CustomerData.listeDegistiginde(sayfayiCiz);

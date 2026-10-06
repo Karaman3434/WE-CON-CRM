@@ -1,5 +1,5 @@
 /*
-  cari-kart-render.js — WG.051026.0940.729
+  cari-kart-render.js — WG.061026.0935.732
   ====================
   Cari Kart v6 — ana sayfa TAMAMEN salt-görüntüleme (isim/şehir,
   Vade/Fatura/Kargo, Fatura Adresi/Yetkili Kişi/Teslimat Adresi/Not
@@ -606,7 +606,16 @@ document.addEventListener("DOMContentLoaded", function(){
     });
     // "İşlem Yap" akışından gelindiyse Kapat eskisi gibi müşteri listesine
     // döner (hub'a değil) — o akışta hub'ın bir anlamı yok.
-    if(akistanGeldiMi) cariKapatBtnEl.setAttribute("href", "customer.html");
+    // DÜZELTME (06.10.2026, Abdullah'ın bildirdiği hata): akistanGeldiMi
+    // bayrağı, belge türü seçilir seçilmez (cart.html'e geçerken, bkz.
+    // siparisAkisinaDevamEt) siliniyor — bu sayfaya GERİ dönüldüğünde
+    // (taze yüklenince) bayrak artık yok diye Kapat yanlışlıkla eski
+    // hub'a dönüyordu. Küçük pencereden girildiyse kalıcı olarak set
+    // edilen "dönüş rotası" bayrağı (customer-render.js
+    // cmDonusRotasiniKaydet) da burada ayrıca kontrol ediliyor.
+    var donusRotasi = null;
+    try{ donusRotasi = localStorage.getItem("weiconv2_musteri_donus_sayfa"); }catch(e){}
+    if(akistanGeldiMi || donusRotasi === "customer.html") cariKapatBtnEl.setAttribute("href", "customer.html");
   }
 
   // Firebase'den taze veri gelince ana sayfayı ve (açıksa) akordiyonu tazele.

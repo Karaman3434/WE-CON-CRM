@@ -100,6 +100,20 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("temasMusteriAd").textContent = secili.ad;
   ziyaretGecmisiniCiz(secili);
 
+  // DÖNÜŞ ROTASI (06.10.2026, Abdullah'ın isteğiyle — "kesin kural"):
+  // Geri/Kapat eskiden KOŞULSUZ customer-detail.html'e gidiyordu. Küçük
+  // pencereden (Müşteri Bul) "Temas" seçilerek buraya gelindiyse, artık
+  // customer.html'e dönüyor. Bayrak yoksa (customer-detail.html'in kendi
+  // "Temas" kutucuğundan gelindiyse) davranış DEĞİŞMEDİ.
+  try{
+    if(localStorage.getItem("weiconv2_musteri_donus_sayfa") === "customer.html"){
+      var temasGeriEl = document.querySelector(".nav-btn--geri");
+      var temasKapatEl = document.getElementById("temasKapatBtn");
+      if(temasGeriEl) temasGeriEl.setAttribute("href", "customer.html");
+      if(temasKapatEl) temasKapatEl.setAttribute("href", "customer.html");
+    }
+  }catch(e){}
+
   // "➕ Temas Gir": tür seç → not yaz → kaydet.
   document.getElementById("btnTemasGir").onclick = function(){
     document.getElementById("temasTurOverlay").hidden = false;

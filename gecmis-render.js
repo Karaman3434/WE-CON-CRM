@@ -225,6 +225,18 @@ document.addEventListener("DOMContentLoaded", function(){
   seciliMusteriAdi = secili.ad;
   document.getElementById("gecmisMusteriAd").textContent = secili.ad;
 
+  // DÖNÜŞ ROTASI (06.10.2026, Abdullah'ın isteğiyle — "kesin kural"):
+  // Geri eskiden KOŞULSUZ customer-detail.html'e gidiyordu. Küçük
+  // pencereden (Müşteri Bul) "İşlem Geçmişi" seçilerek buraya
+  // gelindiyse, artık customer.html'e dönüyor. Bayrak yoksa (customer-
+  // detail.html'in kendi kutucuğundan gelindiyse) davranış DEĞİŞMEDİ.
+  try{
+    if(localStorage.getItem("weiconv2_musteri_donus_sayfa") === "customer.html"){
+      var gecmisGeriEl = document.querySelector(".nav-btn--geri");
+      if(gecmisGeriEl) gecmisGeriEl.setAttribute("href", "customer.html");
+    }
+  }catch(e){}
+
   document.getElementById("gecmisFiltreSatiri").querySelectorAll(".gecmis-filtre-cip").forEach(function(btn){
     btn.onclick = function(){
       document.querySelectorAll(".gecmis-filtre-cip").forEach(function(b){ b.classList.remove("gecmis-filtre-cip--aktif"); });

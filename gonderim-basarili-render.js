@@ -23,6 +23,11 @@ document.addEventListener("DOMContentLoaded", function(){
     try{ localStorage.removeItem("weiconv2_onceden_secilen_tip"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_son_kaydedilen_belge"); }catch(e){}
     try{ localStorage.removeItem("weiconv2_gonderim_kanali"); }catch(e){}
+    // DÖNÜŞ ROTASI (06.10.2026): işlem başarıyla tamamlandı, Ana Sayfa'ya
+    // gidiliyor — Müşteri Bul'a kalıntı bir "dönüş rotası" bayrağı
+    // bırakmayalım.
+    try{ localStorage.removeItem("weiconv2_musteri_donus_sayfa"); }catch(e){}
+    try{ localStorage.removeItem("weiconv2_musteri_arama_durumu"); }catch(e){}
     window.location.href = "home.html";
   }
 
