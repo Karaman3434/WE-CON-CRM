@@ -301,7 +301,24 @@
 /* İSK ve NET artık ayrı bir rozet/kutu DEĞİL — sadece renk taşıyor, LİSTE ve
    TOPLAM ile birebir aynı yapı/boyut/hiza. % işareti, EURO/TL gibi rakamın
    ALTINDA küçük birim satırı. */
-.belge-isk-metin, .belge-isk-metin .belge-para-birim { color: #c0392b; }
+/* İSKONTO ROZETİ (06.10.2026, Abdullah'ın isteğiyle) — sayı artık düz
+   renkli metin değil, açık kırmızı zeminli küçük bir rozet içinde BEYAZ
+   rakam/% olarak gösteriliyor. Rozet SADECE sayının kendisini sarıyor,
+   hücrenin tamamını kaplamıyor. Gönder ekranının kendi sayı/birim
+   sınıfları (.belge-td-sayi/.belge-td-birim, bkz. send-render.js) da aynı
+   rozetin içine sarılıyor, o yüzden renk kuralı ikisini de kapsıyor.
+   Satır rengine göre (sarı/yeşil, aşağıdaki .hareket-satir--sari/--yesil
+   kuralları) ezilmesin diye !important. */
+.belge-isk-metin {
+  display: inline-block;
+  background: #e74c3c;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.belge-isk-metin .belge-para-sayi,
+.belge-isk-metin .belge-para-birim,
+.belge-isk-metin .belge-td-sayi,
+.belge-isk-metin .belge-td-birim { color: #fff !important; }
 .rozet-net { color: #0e6b34; }
 
 /* NET TL SATIRI (01.10.2026, Abdullah'ın isteğiyle) — NET hücresinin

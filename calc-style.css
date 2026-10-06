@@ -65,9 +65,11 @@
 .hc-kutu--toplam .hc-kutu-deger { color: #1a2a3a; }
 
 /* İsk (%) kutusu — yeşil zemin, biraz daha koyu ton. */
-.hc-kutu--isk { background: #eafaf0; border: 1.5px solid #0e6b34;}
-.hc-kutu--isk .hc-kutu-etiket { color: #0e6b58; }
-.hc-kutu--isk input { color: #0e6b58; font-weight: 800; }
+/* 06.10.2026, Abdullah'ın isteğiyle: zemin koyulaştırıldı, paylaştığı
+   yeşil örnekten (#00FE81) türetilen koyu ton — metin beyaza çevrildi. */
+.hc-kutu--isk { background: #00994d; border: 1.5px solid #00662f;}
+.hc-kutu--isk .hc-kutu-etiket { color: #ffffff; }
+.hc-kutu--isk input { color: #ffffff; font-weight: 800; }
 #hesDipFiyat, #hesIskonto { text-align: left; }
 #hesDipFiyat + .hc-kutu-etiket, #hesIskonto + .hc-kutu-etiket { text-align: right; }
 

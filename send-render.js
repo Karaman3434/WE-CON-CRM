@@ -283,7 +283,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
     var toplamHucreIcerik = (u.ozelEtiket === "bedelsiz")
       ? "<div class='belge-td-sayi'>NUMUNE</div>"
       : sayiDivHtml(fmtG2(h.toplamEuro), "EURO");
-    var iskHucreIcerik = iskYuz100 ? "<div class='belge-td-sayi'>-</div>" : sayiDivHtml((u.iskonto||0), "%");
+    var iskHucreIcerik = iskYuz100 ? "<div class='belge-td-sayi'>-</div>" : ("<span class='belge-isk-metin'>" + sayiDivHtml((u.iskonto||0), "%") + "</span>");
     if(basit){
       satirlarHtml += "<tr>"
         + urunHucre
@@ -640,14 +640,16 @@ function gonderTiklandi(kanal, ozelKonu){
         // navigator.share()'deki "title"ı yok sayıp Konu alanını "text"in
         // İLK SATIRIYLA dolduruyor (bilinen bir iOS Web Share API kısıtı —
         // Apple henüz düzeltmedi) — bu yüzden Konu kutusunda hesaplanan
-        // konuMetni yerine mesajın ilk satırı ("Merhaba,") görünüyordu.
-        // Çözüm: SADECE mail kanalında, gövdenin (text) İLK SATIRI olarak
-        // konuMetni de eklendi — "title" doğru çalışan cihazlarda (Android/
-        // Gmail, yukarıdaki nottaki gibi) bu sadece gövdenin en üstünde bir
-        // satır fazlalık yapar, ama "title" yok sayılan cihazlarda Konu
-        // artık yanlış "Merhaba," yerine doğru metni gösterir. WhatsApp
-        // metni DEĞİŞMEDİ (konu kavramı yok, sorun da bildirilmedi).
-        var paylasimMetni = (kanal === "mail") ? (konuMetni + "\n\n" + metin) : metin;
+        // konuMetni yerine mesajın ilk satırı ("Merhaba,") görünüyordu. O
+        // zaman çözüm olarak SADECE mail kanalında, gövdenin (text) İLK
+        // SATIRI olarak konuMetni de eklenmişti.
+        // GERİ ALINDI (06.10.2026, Abdullah'ın bildirdiği hata — Outlook
+        // ekran görüntüsüyle doğrulandı): KONU metni zaten ayrıca panoya
+        // düz metin olarak kopyalanıyor (bkz. yukarıdaki
+        // navigator.clipboard.writeText(konu) çağrıları) — gövdeye bir de
+        // burada eklenince mail gövdesinde KONU metni İKİ KEZ görünüyordu.
+        // Gövde artık kanal farketmeksizin SADECE mesaj metni.
+        var paylasimMetni = metin;
 
         if(navigator.canShare && navigator.canShare({files:[dosya]})){
           navigator.share({files:[dosya], title:konuMetni, text:paylasimMetni}).then(function(){

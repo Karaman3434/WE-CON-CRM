@@ -339,6 +339,11 @@
   gap: 8px;
   margin-top: 16px;
 }
+/* 06.10.2026, Abdullah'ın bildirdiği hata: display:flex kuralı [hidden]
+   özniteliğinin native display:none kuralını eziyordu, bu yüzden sepet
+   boşken Kaydet/Görüntüle butonları JS "hidden=true" yapsa da görünmeye
+   devam ediyordu — bkz. codebase'teki aynı desenin diğer örnekleri. */
+.sepet-alt-buton-satir[hidden] { display: none; }
 .sepet-kaydet-btn {
   flex: 1;
   background: #16a085;
