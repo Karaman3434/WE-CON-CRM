@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.061026.0935.732 — gonderim-basarili.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.061026.1410.735 — gonderim-basarili.html -->
 <!--
   Mail/WhatsApp gönderimi tetiklendikten sonra artık aynı önizleme/paylaşım
   ekranları tekrar tekrar açık kalmıyor — buraya, sade bir "gönderiliyor"
@@ -22,6 +22,11 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.011026.2210.702">
 <link rel="stylesheet" href="gonderim-basarili-style.css?v=WG.021026.0900.707">
+<!-- YENİ (06.10.2026, Abdullah'ın isteğiyle) — SADECE bu sayfada: iPad/tablet
+     genişliğinde (>640px) içerik artık home.html'deki kuralla AYNI şekilde
+     kenardan kenara — genel "body{max-width:640px}" burada geçersiz
+     kılınıyor. Telefon genişliği HİÇ ETKİLENMİYOR. -->
+<style>@media (min-width:641px){ body{ max-width:none !important; } } </style>
 </head>
 <body>
 <div class="sayfa-rota-serit">
