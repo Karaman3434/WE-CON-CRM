@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.061026.1655.738 — home.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.061026.1825.739 — home.html -->
 <!--
   WEICON ASİST — ANA SAYFA v5 (sade "flat" tasarım + gerçek hedef ilerlemesi)
   =============================================================================
@@ -49,7 +49,7 @@
 <title>WEICON ASİST — Ana Sayfa</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.061026.1655.738">
-<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.061026.1550.736">
+<link rel="stylesheet" href="home-anasayfa-style.css?v=WG.061026.1825.739">
 </head>
 <body>
 
@@ -81,11 +81,16 @@
 <main class="sayfa as-sayfa" id="page8">
 
   <div class="as-panel-satir">
+    <!-- YENİ TARİH PANELİ (06.10.2026, Abdullah'ın isteğiyle, referans
+         görsele göre) — kutu boyutu (flex:1, satırdaki diğer 2 kutuyla
+         aynı yükseklik) DEĞİŞMEDİ, sadece görünüm: solda büyük gün
+         rakamı (asTarihGunSayi), sağda GÜN ADI / ince ayraç / AY YIL. -->
     <div class="as-tarih-panel">
-      <span class="as-tarih-ikon" aria-hidden="true">📅</span>
-      <div class="as-tarih-metin">
-        <div class="as-tarih-gun" id="asTarihGun">-</div>
-        <div class="as-tarih-tarih" id="asTarihTarih">-</div>
+      <span class="as-tarih-gun-sayi" id="asTarihGunSayi">-</span>
+      <div class="as-tarih-metin-yeni">
+        <div class="as-tarih-gun-yeni" id="asTarihGun">-</div>
+        <div class="as-tarih-ayirac"></div>
+        <div class="as-tarih-ayyil" id="asTarihAyYil">-</div>
       </div>
     </div>
     <div class="as-isgunu-panel">
@@ -204,7 +209,7 @@
       <a class="as-drawer-oge" href="kisisel.html"><span class="as-drawer-ikon" style="color:#f5c451;" aria-hidden="true">🔒</span><span class="as-drawer-etiket">Kişisel</span><span class="as-drawer-ok" aria-hidden="true">›</span></a>
     </nav>
 
-    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.061026.1655.738 ***</div>
+    <div class="as-drawer-versiyon" id="versiyonEtiketi">*** WEİCON ASİST WG.061026.1825.739 ***</div>
 
     <div class="as-drawer-ayarlar-blok">
       <a class="as-drawer-oge" href="menu.html"><span class="as-drawer-ikon" style="color:#5dade2;" aria-hidden="true">⚙️</span><span class="as-drawer-etiket">Ayarlar</span><span class="as-drawer-hata-rozet" id="asAyarlarHataRozeti" hidden>0</span></a>
@@ -259,6 +264,6 @@
 <script src="hata-log.js?v=WG.140926.1412.560"></script>
 <script src="rota-takip.js?v=WG.150926.1300.573"></script>
 <script>RotaTakip.kaydet("home.html", "🏠 Ana Sayfa", true);</script>
-<script src="home-render.js?v=WG.061026.1550.736"></script>
+<script src="home-render.js?v=WG.061026.1825.739"></script>
 </body>
 </html>

@@ -127,25 +127,50 @@
   padding: 0 0 8px;
   box-sizing: border-box;
 }
+/* YENİ TARİH PANELİ (06.10.2026, Abdullah'ın isteğiyle, referans görsele
+   göre) — kutunun dış boyutu (flex:1, padding, border-radius, satırdaki
+   diğer 2 kutuyla aynı yükseklik) DEĞİŞMEDİ; eski açık mavi zemin/📅 ikonlu
+   görünüm yerine koyu mavi gradyan + beyaz yazı geldi. */
 .as-tarih-panel {
   flex: 1;
   min-width: 0;
-  background: #eaf1fb;
-  border: 1.5px solid #1257c7;
+  background: linear-gradient(180deg, #4f8bf0 0%, #1452d6 60%, #0d3fb8 100%);
+  border: none;
   border-radius: 14px;
   padding: 8px 4px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
+  color: #fff;
 }
-.as-tarih-ikon { font-size: 15px; line-height: 1; flex-shrink: 0; }
-.as-tarih-metin { line-height: 1.05; text-align: left; min-width: 0; }
-/* Abdullah'ın isteğiyle (06.10.2026): panel boyutu AYNI kaldı, sadece
-   içindeki gün/tarih yazısı ~%100 büyütüldü (eskiden 11.5px/10.5px). */
-.as-tarih-gun { font-size: 23px; font-weight: 800; color: #1257c7; white-space: nowrap; }
-.as-tarih-tarih { font-size: 21px; font-weight: 700; color: #1257c7; white-space: nowrap; }
+.as-tarih-gun-sayi {
+  font-size: 31px; /* eski gün-adı yazısından (23px) %20 büyük büyük rakam */
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.as-tarih-metin-yeni { line-height: 1.15; text-align: left; min-width: 0; }
+.as-tarih-gun-yeni {
+  font-size: 10.2px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .2px;
+  white-space: nowrap;
+}
+.as-tarih-ayirac {
+  border-top: 1px solid rgba(255,255,255,.55);
+  margin: 2px 0;
+  width: 100%;
+}
+.as-tarih-ayyil {
+  font-size: 10.2px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
 
 .as-isgunu-panel {
   flex: 1;

@@ -21,16 +21,22 @@ function hataGoster(mesaj){
 // DÜZELTME (06.10.2026, Abdullah'ın isteğiyle): eski tek satırlık #gunTarihi
 // kaldırıldı — tarih artık İş Günü Kaldı/EUR Kur ile aynı satırdaki küçük
 // kutuda, iki satır halinde (#asTarihGun: gün adı, #asTarihTarih: gün+ay).
+// 06.10.2026 (Abdullah'ın isteğiyle, referans görsele göre) — panel artık
+// 3 ayrı alan dolduruyor: #asTarihGunSayi (büyük, 2 haneli gün rakamı,
+// örn. "06"), #asTarihGun (gün adı, BÜYÜK HARF, örn. "PAZARTESİ") ve
+// #asTarihAyYil (ay adı + yıl, BÜYÜK HARF, örn. "EKİM 2026").
 function tarihiGuncelle(){
   try{
+    var gunSayiEl = document.getElementById("asTarihGunSayi");
     var gunEl = document.getElementById("asTarihGun");
-    var tarihEl = document.getElementById("asTarihTarih");
-    if(!gunEl || !tarihEl) return;
+    var ayYilEl = document.getElementById("asTarihAyYil");
+    if(!gunSayiEl || !gunEl || !ayYilEl) return;
     var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
     var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
     var d = new Date();
-    gunEl.textContent = gunler[d.getDay()];
-    tarihEl.textContent = d.getDate() + " " + aylar[d.getMonth()];
+    gunSayiEl.textContent = String(d.getDate()).padStart(2, "0");
+    gunEl.textContent = gunler[d.getDay()].toLocaleUpperCase("tr-TR");
+    ayYilEl.textContent = aylar[d.getMonth()].toLocaleUpperCase("tr-TR") + " " + d.getFullYear();
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
