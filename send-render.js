@@ -19,6 +19,18 @@ function hataGoster(mesaj){
   setTimeout(function(){ kutu.remove(); }, 8000);
 }
 
+// BİLGİ BALONU (07.10.2026, Abdullah'ın isteğiyle) — "Konu panoya
+// kopyalandı" güvenlik ağı eskiden sessizce çalışıyordu, kullanıcı bunun
+// farkında olmuyordu. Mail Gönder'e her basıldığında kısa süreliğine
+// gösterilir (hataGoster ile AYNI konum/stil, sadece renk mavi/bilgi).
+function bilgiGoster(mesaj){
+  var kutu = document.createElement("div");
+  kutu.textContent = "✓ " + mesaj;
+  kutu.style.cssText = "position:fixed;top:8px;left:8px;right:8px;background:#0c5fb0;color:#fff;padding:10px;border-radius:8px;font-size:13px;z-index:99999;text-align:center;";
+  document.body.appendChild(kutu);
+  setTimeout(function(){ kutu.remove(); }, 3000);
+}
+
 function tarihiGuncelle(){
   try{
     var el = document.getElementById("gunTarihi");
@@ -748,6 +760,15 @@ document.addEventListener("DOMContentLoaded", function(){
       document.getElementById("gonderBaslikYazi").textContent = "🔄 Aynı ürünlerle mevcut kayıt bulundu — REVİZE olarak güncellendi.";
     }
     gonderKutusunuGoster(musteri, kayitliBaglam.sepet, kayitliBaglam.tip, kayitliBaglam.kur, kayitliBaglam.kdv);
+    // DÜZELTME (07.10.2026, Abdullah'ın bildirdiği hata — bu ekranda birkaç
+    // defadır tekrarlanmış): "Kaydedildi" özetindeki VADE/FATURA/KARGO
+    // kutuları eskiden SADECE sayfa ilk açılırken, Firebase'den taze müşteri
+    // verisi gelmeden ÖNCE bir kez çiziliyordu ve bir daha YENİDEN
+    // ÇİZİLMİYORDU — bu yüzden müşteri kartında bu bilgiler dolu olsa bile
+    // ekranda "-" takılı kalabiliyordu (mail/WhatsApp görseli gönderim
+    // anında yeniden hesaplandığı için orada doğru çıkıyordu). Artık taze
+    // veri her geldiğinde bu özet de yeniden çiziliyor.
+    tamOnizlemeyiCiz();
   }
   if(kayitliBaglam.musteri.id && typeof CustomerData !== "undefined"){
     CustomerData.listeDegistiginde(function(){
@@ -767,11 +788,15 @@ document.addEventListener("DOMContentLoaded", function(){
   // MAIL GÖNDER/WHATSAPP GÖNDER kutucukları ve "Ana Sayfa'ya Dön" butonu
   // kaldırıldı (14.09.2026, Abdullah'ın onayladığı sade tasarım). Tüm
   // gönderme/çıkış eylemleri artık tek yerde: "📧💬 İletişim - Gönder" popup'ı.
-  (function(){
+  // DÜZELTME (07.10.2026): artık tek seferlik bir IIFE değil, adlandırılmış
+  // bir fonksiyon — musteriyleDevamEt() taze müşteri verisi geldiğinde bunu
+  // tekrar çağırıyor (yukarıdaki yorum).
+  function tamOnizlemeyiCiz(){
     var g = gonderBaglam;
     document.getElementById("tamOnizlemeAlani").innerHTML = tamOnizlemeHtmlOlustur(g.musteri, g.sepet, g.tip, g.kur, g.kdv);
     kosulSatirlariniSigdir(document.getElementById("tamOnizlemeAlani"));
-  })();
+  }
+  tamOnizlemeyiCiz();
 
   document.getElementById("mailOnizlemeVazgecBtn").onclick = function(){ document.getElementById("mailOnizlemeOverlay").hidden = true; };
   // KONU alanı bazı mail uygulamalarında (Outlook Android vb.) resim ekiyle
@@ -806,7 +831,9 @@ document.addEventListener("DOMContentLoaded", function(){
     // kopyalanır — mail uygulaması konuyu yanlış/boş getirirse tek yapman
     // gereken konu kutusuna yapıştırmak.
     if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(konu).catch(function(){});
+      navigator.clipboard.writeText(konu).then(function(){
+        bilgiGoster("Konu panoya kopyalandı — Konu kutusu yanlış/boş gelirse yapıştır");
+      }).catch(function(){});
     }
     document.getElementById("mailOnizlemeOverlay").hidden = true;
     gonderTiklandi("mail", konu);
@@ -899,7 +926,9 @@ document.addEventListener("DOMContentLoaded", function(){
     iletisimSheetiniKapat();
     var konu = mailKonuOlustur();
     if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(konu).catch(function(){});
+      navigator.clipboard.writeText(konu).then(function(){
+        bilgiGoster("Konu panoya kopyalandı — Konu kutusu yanlış/boş gelirse yapıştır");
+      }).catch(function(){});
     }
     gonderTiklandi("mail", konu);
   };
