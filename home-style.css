@@ -30,6 +30,13 @@ body {
   background: #ffffff;
   min-height: 100vh;
 }
+/* iPad yatay/dikey genişlik artışı (07.10.2026, Abdullah'ın isteğiyle) —
+   SADECE >=768px genişlikte devreye girer, telefon görünümü hiç
+   değişmez. iPad 9 yatayda (1080px CSS genişliği) içerik artık 640px
+   yerine 900px kullanıyor. */
+@media (min-width: 768px) {
+  body { max-width: 900px; }
+}
 
 /* ---------- Başlık ---------- */
 .app-header {
@@ -246,9 +253,39 @@ body {
   color: #fff;
   border-left: 1.5px solid rgba(255,255,255,.55);
 }
-.nav-btn--ana { color: #003a70; }
-.nav-btn--ana .nav-ikon { font-size: 32px; }
-.nav-btn--ana .nav-etiket { font-size: 14px; }
+/* 07.10.2026 (Abdullah'ın isteğiyle) — "Ana Sayfa" butonu da "Geri" ile
+   BİREBİR aynı parlak/3D mavi zemine (aynı gradient/gölge/radius/yükseklik)
+   geçti. Paylaşılan ev ikonu görselinin arka planı temizlenip (şeffaf PNG)
+   zemin üstüne ortalandı — gerip bozma yok, kırpma yok, dikiş/çizgi yok.
+   Emoji ikon + "Ana Sayfa" etiketi artık gösterilmiyor. */
+.nav-btn--ana {
+  height: 49px;
+  background: linear-gradient(180deg, #4f8bf0 0%, #2a6bea 32%, #1452d6 70%, #0d3fb8 100%);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 #0a2f8c, 0 5px 12px rgba(10,40,120,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  position: relative;
+  overflow: hidden;
+}
+.nav-btn--ana::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+  pointer-events: none;
+}
+.nav-btn--ana::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('icon-ana-sayfa-ev.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: auto 78%;
+}
+.nav-btn--ana .nav-ikon,
+.nav-btn--ana .nav-etiket { display: none; }
 .nav-ikon {
   font-size: 22.5px;
   line-height: 1;
