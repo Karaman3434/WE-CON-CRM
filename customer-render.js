@@ -262,7 +262,7 @@ function cmAyniMusteriKaydiMi(kayitMusteriAdi, kayitMusteriId, seciliAd, seciliI
 // musteriGorevleriniCiz/faturaTakipOzetiGuncelle/urunGecmisiniAc'taki AYNI
 // hesaplamalar, sadece TEK (tıklanan) müşteri için, pencere açılırken.
 function cmRozetSayilariniHesapla(m){
-  var sonuc = {temas:0, gecmis:0, gorev:0, fatura:0, urun:0};
+  var sonuc = {temas:0, gecmis:0, gorev:0, fatura:0, urun:0, bekleyen:0};
   try{ sonuc.temas = (m.ziyaretGecmisi||[]).length; }catch(e){}
   try{
     if(typeof ReportsData !== "undefined"){
@@ -288,6 +288,14 @@ function cmRozetSayilariniHesapla(m){
   try{
     if(typeof ReportsData !== "undefined" && ReportsData.musteriUrunGecmisi){
       sonuc.urun = ReportsData.musteriUrunGecmisi(m.ad, m.id).length;
+    }
+  }catch(e){}
+  // BAKİYE (07.10.2026) — bu müşteriye ait, bakiyede bekleyen ürün satırı sayısı.
+  try{
+    if(typeof ReportsData !== "undefined" && ReportsData.bakiyedekiUrunler){
+      sonuc.bekleyen = ReportsData.bakiyedekiUrunler().filter(function(s){
+        return cmAyniMusteriKaydiMi(s.musteri, s.musteriId, m.ad, m.id);
+      }).length;
     }
   }catch(e){}
   return sonuc;
@@ -317,7 +325,8 @@ function hizliPencereyiAc(musteri){
       {ikon:"📄", etiket:"Fatura Takip", aksiyon:"fatura", rozet:rozetler.fatura},
       {ikon:"🕐", etiket:"İşlem Geçmişi", aksiyon:"gecmis", rozet:rozetler.gecmis},
       {ikon:"📋", etiket:"Görevlerim", aksiyon:"gorev", rozet:rozetler.gorev},
-      {ikon:"📦", etiket:"Ürün Geçmişi", aksiyon:"urun", rozet:rozetler.urun}
+      {ikon:"📦", etiket:"Ürün Geçmişi", aksiyon:"urun", rozet:rozetler.urun},
+      {ikon:"📦", etiket:"Bekleyen Ürünler", aksiyon:"bekleyen", rozet:rozetler.bekleyen}
     ];
     document.getElementById("cmAltMenuListe").innerHTML = ogeler.map(function(o){
       return "<button type='button' class='cm-altmenu-oge' data-aksiyon='" + o.aksiyon + "'>"
@@ -390,6 +399,10 @@ function cmAksiyonuUygula(aksiyon){
       break;
     case "urun":
       window.location.href = "customer-detail.html?ac=urun";
+      break;
+    case "bekleyen":
+      try{ localStorage.setItem("weiconv2_bakiye_musteri_filtre", JSON.stringify({id:cmAcikMusteri.id||null, ad:cmAcikMusteri.ad||""})); }catch(e){}
+      window.location.href = "bakiye-urunler.html";
       break;
   }
 }

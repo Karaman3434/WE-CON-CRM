@@ -145,19 +145,6 @@ var HesaplaPopup = (function(){
       document.getElementById("hpIskonto").value = (duzenlenenIdx !== null) ? (urun.iskonto||0) : 0;
       document.getElementById("hpAdet").value = (duzenlenenIdx !== null) ? (urun.adet||1) : 1;
 
-      // BAKİYE (07.10.2026) — düzenlenen üründe zaten bakiye varsa kutuyu
-      // açık ve dolu göster; yeni üründe/bakiyesiz üründe kapalı başlar.
-      // SADECE cart.html'de var — calc.html'in #hpOverlay'inde bu alanlar
-      // yok (müşterisiz/bağlamsız hesaplamada "bakiye" kavramı anlamsız),
-      // bu yüzden varlık kontrolüyle no-op geçiyoruz.
-      if(document.getElementById("hpBakiyeAdet")){
-        var bakiyeVarMi = duzenlenenIdx !== null && urun.bakiyeAdet > 0;
-        document.getElementById("hpBakiyeAdet").value = bakiyeVarMi ? urun.bakiyeAdet : "";
-        document.getElementById("hpBakiyeNot").value = bakiyeVarMi ? (urun.bakiyeNot||"") : "";
-        document.getElementById("hpBakiyeLink").hidden = bakiyeVarMi;
-        document.getElementById("hpBakiyeAlan").hidden = !bakiyeVarMi;
-      }
-
       gecmisAlimIpucunuGuncelle(seciliUrunBilgi);
       hesaplaVeGoster();
       document.getElementById("hpOverlay").hidden = false;
@@ -197,16 +184,11 @@ var HesaplaPopup = (function(){
       var dipFiyat = parseFloat(document.getElementById("hpDipFiyat").value)||0;
       var iskonto = parseFloat(document.getElementById("hpIskonto").value)||0;
       var adet = parseFloat(document.getElementById("hpAdet").value)||1;
-      // BAKİYE — bkz. ac()'teki varlık kontrolü notu (calc.html'de yok).
-      var hpBakiyeAlanEl = document.getElementById("hpBakiyeAlan");
-      var bakiyeAlaniAcikMi = hpBakiyeAlanEl ? !hpBakiyeAlanEl.hidden : false;
-      var bakiyeAdet = bakiyeAlaniAcikMi ? (parseFloat(document.getElementById("hpBakiyeAdet").value)||0) : 0;
-      var bakiyeNot = bakiyeAlaniAcikMi ? document.getElementById("hpBakiyeNot").value.trim() : "";
 
       if(kurOverride!=null) localStorage.setItem("weiconv2_sepet_kur_override", kurOverride);
 
       if(duzenlenenIdx !== null){
-        CartData.hesaplandiIsaretle(duzenlenenIdx, listeFiyat, dipFiyat, iskonto, adet, ozelEtiket, bakiyeAdet, bakiyeNot);
+        CartData.hesaplandiIsaretle(duzenlenenIdx, listeFiyat, dipFiyat, iskonto, adet, ozelEtiket);
       } else {
         var yeniUrun = {
           idx: "manuel_" + Date.now(),
@@ -220,7 +202,6 @@ var HesaplaPopup = (function(){
           hesaplandi: true
         };
         if(ozelEtiket) yeniUrun.ozelEtiket = ozelEtiket;
-        if(bakiyeAdet>0){ yeniUrun.bakiyeAdet = bakiyeAdet; yeniUrun.bakiyeNot = bakiyeNot; }
         CartData.ekle(yeniUrun);
       }
       kapat();
@@ -238,24 +219,6 @@ var HesaplaPopup = (function(){
         hesaplaVeGoster();
       });
     });
-
-    // BAKİYE (07.10.2026) — "Stokta yok, bakiye bırak" dokununca kutu açılır,
-    // kapatma butonu değerleri sıfırlayıp kapatır (zaten listeyeEkleyiTamamla
-    // sadece kutu AÇIKSA bakiyeAdet okuyor, kapalıyken otomatik 0 sayılır).
-    // SADECE cart.html'de var (bkz. ac()'teki not) — calc.html'de no-op.
-    if(document.getElementById("hpBakiyeLink")){
-      document.getElementById("hpBakiyeLink").onclick = function(){
-        document.getElementById("hpBakiyeLink").hidden = true;
-        document.getElementById("hpBakiyeAlan").hidden = false;
-        document.getElementById("hpBakiyeAdet").focus();
-      };
-      document.getElementById("hpBakiyeKapatBtn").onclick = function(){
-        document.getElementById("hpBakiyeAdet").value = "";
-        document.getElementById("hpBakiyeNot").value = "";
-        document.getElementById("hpBakiyeAlan").hidden = true;
-        document.getElementById("hpBakiyeLink").hidden = false;
-      };
-    }
 
     document.getElementById("hpGecmisAlimIpucu").onclick = gecmisAlimTumunuGoster;
     document.getElementById("hpGecmisAlimKapatBtn").onclick = function(){ document.getElementById("hpGecmisAlimOverlay").hidden = true; };

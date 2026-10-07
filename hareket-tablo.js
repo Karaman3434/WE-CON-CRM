@@ -39,6 +39,18 @@ var HareketTablo = (function(){
     return "<div class='belge-net-tl'>≈ " + Math.round(netEuro*kur).toLocaleString("tr-TR") + " TL</div>";
   }
 
+  // BAKİYE NOTU (07.10.2026, Abdullah'ın isteğiyle) — ürün satırının altına
+  // DEĞİL, TÜM tablonun altına, tek ve tek seferlik bir not: siparişte
+  // bakiyede bırakılan herhangi bir ürün varsa gösterilir. Hangi ürün/kaç
+  // adet olduğu burada YAZILMAZ — o bilgi zaten "Düzenle" ekranında/kayıtta
+  // duruyor, bu sadece "dikkat, bu siparişte bekleyen var" uyarısıdır.
+  function bakiyeNotuGerekliMi(urunler){
+    return (urunler||[]).some(function(u){ return (u.bakiyeAdet||0) > 0; });
+  }
+  function bakiyeNotuHtml(urunler){
+    return bakiyeNotuGerekliMi(urunler) ? "<div class='belge-siparis-bakiye-not'>📦 Bu siparişte bekleyen ürün var</div>" : "";
+  }
+
   function satirlarHtml(urunler, hesapla, zeminSinifi, basit, primGizli, kur){
     return (urunler||[]).map(function(u, i){
       var h = hesapla(u);
@@ -49,13 +61,7 @@ var HareketTablo = (function(){
       var iskYuz100 = (u.iskonto||0) === 100;
       var toplamHucreIcerik = !toplamVarMi ? "-" : ((u.ozelEtiket === "bedelsiz") ? "NUMUNE" : paraHtml(fmt(h.toplamEuro),"EURO"));
       var netTl = toplamVarMi ? netTlHtml(h.iskontoluFiyat, kur) : "";
-      // BAKİYE ROZETİ (07.10.2026, Abdullah'ın isteğiyle) — stokta tam
-      // yoksa müşteride bakiyede bırakılan adet, ürün adının altında küçük
-      // turuncu bir rozetle gösterilir. Bu fonksiyon TEK paylaşılan tablo
-      // kaynağı olduğu için Sepet/Gönder/Belge Önizleme/mail-WhatsApp
-      // görseli HEPSİNDE otomatik aynı anda görünür.
-      var bakiyeRozetHtml = (u.bakiyeAdet>0) ? "<div class='belge-td-urun-bakiye'>📦 Bakiye: " + htmlEsc(u.bakiyeAdet) + " adet</div>" : "";
-      var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div>" + bakiyeRozetHtml + "</td>";
+      var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
       if(basit){
         return "<tr class='" + (zeminSinifi||"") + "'>"
           + urunHucre
@@ -120,7 +126,8 @@ var HareketTablo = (function(){
           : "<th style='width:3.6%;'>SR</th><th style='width:29.2%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:11.2%;'>PRİM</th>");
     html += "<div class='data-table-container'><table class='belge-urun-tablo'>"
       + "<thead><tr>" + basHucreler + "</tr></thead>"
-      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli, opts.kur) + "</tbody></table></div>";
+      + "<tbody>" + satirlarHtml(opts.urunler, opts.hesapla, opts.zeminSinifi, basit, primGizli, opts.kur) + "</tbody></table></div>"
+      + bakiyeNotuHtml(opts.urunler);
     if(opts.genelToplam != null){
       // Manuel kur girilmişse (opts.kurManuelMi) etiket "Hesaplanan Kur" yerine
       // kısa "✏️ Manuel Kur" olur — böylece bu işlemde günlük kur DEĞİL, elle
@@ -188,6 +195,7 @@ var HareketTablo = (function(){
     grupHtml: grupHtml,
     kosulKutusuHtml: kosulKutusuHtml,
     yetkiliSatiriHtml: yetkiliSatiriHtml,
+    bakiyeNotuHtml: bakiyeNotuHtml,
     fmt: fmt,
     htmlEsc: htmlEsc
   };

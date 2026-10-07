@@ -337,6 +337,36 @@
   padding: 8px;
   margin-bottom: 8px;
 }
+/* BAKİYE (07.10.2026, Abdullah'ın isteğiyle) — merkez "stokta yok / şu kadar
+   gönderebiliriz" dedikten SONRA, siparişi İşlem Geçmişi'nden açıp Düzenle'ye
+   girince burada, her ürünün altında, kalan bakiye adedi + not girilir.
+   Sepet/Hızlı Hesapla'daki eski turuncu kutuyla AYNI renk dili. */
+.duzenle-bakiye-link {
+  display: flex; align-items: center; gap: 6px;
+  background: #faeeda; color: #b7601f;
+  border: 1.5px dashed #b7601f; border-radius: 8px;
+  padding: 8px 10px; font-size: 11.5px; font-weight: 800;
+  margin-top: 8px; cursor: pointer;
+}
+.duzenle-bakiye-alan {
+  background: #fff; border: 1.5px solid #b7601f; border-radius: 8px;
+  padding: 9px; margin-top: 8px;
+}
+.duzenle-bakiye-alan-baslik {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10.5px; font-weight: 800; color: #b7601f; margin-bottom: 6px;
+}
+.duzenle-bakiye-kapat {
+  border: none; background: none; color: #b7601f; font-size: 13px;
+  font-weight: 900; line-height: 1; padding: 2px 4px; cursor: pointer;
+}
+.duzenle-bakiye-alan input {
+  width: 100%; box-sizing: border-box; border: 1.5px solid #e7c89a;
+  border-radius: 7px; padding: 8px; font-size: 13px; font-weight: 700;
+  color: #1a2733;
+}
+.duzenle-bakiye-alan input.duzenle-bakiye-adet { margin-bottom: 7px; text-align: center; }
+.duzenle-bakiye-alan input.duzenle-bakiye-not { font-weight: 500; font-size: 12px; }
 .duzenle-urun-arama-input {
   width: 100%;
   box-sizing: border-box;
@@ -876,6 +906,9 @@
   white-space: nowrap;
 }
 .tl-kanal-harf { margin-right: 2px; }
+/* BAKİYE (07.10.2026) — müşteriye özel "Bekleyen Ürünler" listesinde kodun
+   altında tarih gösterilir (bkz. bakiye-urunler-render.js). */
+.tl-kod-tarih { font-size: 10px; font-weight: 400; color: #8a94a3; white-space: nowrap; margin-top: 2px; }
 .tl-sag { display: flex; align-items: center; gap: 8px; padding: 0 4px 0 4px; flex-shrink: 0; margin-left: auto; }
 .tl-tutar { font-size: 11.7px; font-weight: 400; color: #042c53; white-space: nowrap; }
 .tl-divider { width: 1px; height: 26px; background: #d8dee6; flex-shrink: 0; border: 1.5px solid #a2b0c3;}

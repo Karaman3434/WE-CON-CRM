@@ -383,6 +383,7 @@ function belgeGorselHtmlOlustur(musteri, sepet, tip, kur, kdv, kod, kanal, oriji
         : "<th style='width:4%;'>#</th><th style='width:36%;'>ÜRÜN BİLGİSİ</th><th style='width:7%;'>AD</th><th style='width:11%;'>LİST</th><th style='width:10%;'>İSK</th><th style='width:18%;'>NET</th><th style='width:14%;'>TOPLAM</th>") + "</tr></thead>"
     + "<tbody>" + satirlarHtml + "</tbody>"
     + "</table></div>"
+    + (typeof HareketTablo !== "undefined" ? HareketTablo.bakiyeNotuHtml(sepet) : "")
     + "<div class='belge-genel-toplam-serit'>"
     + "<span class='belge-gt-etiket-deger-grup'>"
     + "<span class='belge-gt-etiket'>GENEL TOPLAM</span>"

@@ -88,12 +88,16 @@ function kosulKutusuHtml(ikon, etiket, deger){
     + "</div>";
 }
 
+// DÜZELTME (07.10.2026, Abdullah'ın isteğiyle): isim önündeki 👤 ikonu
+// kaldırıldı — ikon artık sadece üstteki "👤 YETKİLİ BİLGİSİ" etiketinde
+// var, isim etiketle aynı sol kenardan değil ~3mm daha içeriden başlıyor
+// (bkz. belge-style.css .belge-yetkili-satir).
 function yetkiliSatiriHtml(isim, tel, eposta){
   if(!isim && !tel && !eposta) return "";
   var parcalar = [];
   if(tel) parcalar.push("📞 " + tel);
   if(eposta) parcalar.push("✉️ " + eposta);
-  return "<div class='belge-yetkili-satir'>👤 <b>" + htmlEsc(isim||"-") + "</b>"
+  return "<div class='belge-yetkili-satir'><b>" + htmlEsc(isim||"-") + "</b>"
     + (parcalar.length ? " — <span class='belge-yetkili-detay'>" + htmlEsc(parcalar.join(" · ")) + "</span>" : "")
     + "</div>";
 }
@@ -177,10 +181,15 @@ function belgeyiCiz(kayit, musteri){
 
     var musteriBlokHtml = "<div class='belge-musteri-baslik belge-musteri-baslik--logolu'><span>" + (TIP_ETIKET_BELGE[kayit.tip]||"SİPARİŞ") + "</span><span class='belge-logo-mini'>WEICON</span></div>"
       + "<div class='belge-musteri-govde'>"
-      + "<div class='belge-musteri-ad'>" + htmlEsc(kayit.musteri) + "</div>"
+      // DÜZELTME (07.10.2026, Abdullah'ın isteğiyle, mockup üzerinden
+      // onaylandı): firma ismi başına kalın • işareti + etiketler satır
+      // başında sabit kalırken değerler (firma ismi, açık adres) ~3mm
+      // daha içeriden başlıyor (bkz. belge-style.css .belge-musteri-ad /
+      // .belge-adres-govde).
+      + "<div class='belge-musteri-ad'><b class='ck-isim-nokta'>•</b> " + htmlEsc(kayit.musteri) + "</div>"
       + ((vade||faturaTuru||kargo) ? "<div class='belge-kosul-grid'>" + kosulKutusuHtml("📅","VADE",vade) + kosulKutusuHtml("📄","FATURA",faturaTuru) + kosulKutusuHtml("🚚","KARGO",kargo) + "</div>" : "")
-      + (faturaAdr ? "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b>" + htmlEsc(faturaAdr) + (sehir?", "+htmlEsc(sehir):"") + "</div>" : "")
-      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b>" + htmlEsc(teslimatAdr) + "</div>" : "")
+      + (faturaAdr ? "<div class='belge-adres-blok'><b class='belge-adres-etiket-fatura'>🧾 FATURA ADRESİ</b><span class='belge-adres-govde'>" + htmlEsc(faturaAdr) + (sehir?", "+htmlEsc(sehir):"") + "</span></div>" : "")
+      + (teslimatAdr ? "<div class='belge-adres-blok-teslimat'><b class='belge-adres-etiket-teslimat'>🚚 TESLİMAT ADRESİ</b><span class='belge-adres-govde'>" + htmlEsc(teslimatAdr) + "</span></div>" : "")
       + (yetkiliBilgiHtml ? "<div class='belge-yetkili-blok'><b class='belge-adres-etiket-yetkili'>👤 YETKİLİ BİLGİSİ</b>" + yetkiliBilgiHtml + "</div>" : "")
       + "</div>";
 
@@ -198,6 +207,7 @@ function belgeyiCiz(kayit, musteri){
       + "<thead><tr><th style='width:3.6%;'>SR</th><th style='width:29.2%;'>ÜRÜN BİLGİSİ</th><th style='width:10%;'>ADET</th><th style='width:10%;'>LİSTE</th><th style='width:10%;'>İSK</th><th style='width:13%;'>NET</th><th style='width:13%;'>TOPLAM</th><th style='width:11.2%;'>PRİM</th></tr></thead>"
       + "<tbody>" + satirlarHtml + "</tbody>"
       + "</table></div>"
+      + (typeof HareketTablo !== "undefined" ? HareketTablo.bakiyeNotuHtml(urunler) : "")
       + "<div class='belge-genel-toplam-serit'>"
       + (kayit.kur ? "<span class='belge-gt-kur" + (kayit.kurManuel ? " belge-gt-kur--manuel" : "") + "'>Bu işlemde " + fmt(kayit.kur) + " kuru kullanıldı</span>" : "")
       + "<span class='belge-gt-etiket-deger-grup'>"
@@ -350,6 +360,20 @@ var duzenlemeSilinenIndeksler = [];
 
 var duzenlemeUrunDegisiklikleri = {}; // { i: {ad, berta, abas} } — "🔄 Ürünü Değiştir" ile seçilenler
 
+// BAKİYE (07.10.2026, Abdullah'ın isteğiyle) — Sepet'teki girişin YERİNE,
+// merkez "stokta yok / şu kadar gönderebiliriz" dedikten SONRA, siparişi
+// İşlem Geçmişi'nden açıp Düzenle'ye girince burada girilir. "Adet" alanı
+// HER ZAMAN gönderilen/faturalanan miktar olarak kalır, bakiye ayrı metadata.
+function bakiyeAlaniHtml(u, i){
+  var varMi = u.bakiyeAdet > 0;
+  return "<div class='duzenle-bakiye-link' id='duzenleBakiyeLink-" + i + "' data-bakiye-i='" + i + "'" + (varMi ? " hidden" : "") + ">📦 Bakiyede kalan var</div>"
+    + "<div class='duzenle-bakiye-alan' id='duzenleBakiyeAlan-" + i + "'" + (varMi ? "" : " hidden") + ">"
+    + "<div class='duzenle-bakiye-alan-baslik'><span>📦 Bakiyede Kalan Adet</span><button type='button' class='duzenle-bakiye-kapat' data-bakiye-i='" + i + "'>✕</button></div>"
+    + "<input type='number' step='1' min='0' class='duzenle-bakiye-adet' id='duzenleBakiyeAdet-" + i + "' placeholder='0' value='" + (varMi ? u.bakiyeAdet : "") + "'>"
+    + "<input type='text' class='duzenle-bakiye-not' id='duzenleBakiyeNot-" + i + "' placeholder='Not (opsiyonel) — örn. ne zaman tamamlanacak' value='" + htmlEsc(u.bakiyeNot||"") + "'>"
+    + "</div>";
+}
+
 function duzenlemeAc(k){
   duzenlenenKayit = k;
   duzenlemeSilinenIndeksler = [];
@@ -372,8 +396,27 @@ function duzenlemeAc(k){
       + "<div class='duzenle-alan'><label class='duzenle-etiket'>Adet</label><input type='number' step='1' data-alan='adet' data-i='" + i + "' value='" + (u.adet||1) + "'></div>"
       + "<div class='duzenle-alan'><label class='duzenle-etiket'>Dip Fiyat</label><input type='number' step='0.01' data-alan='dipFiyat' data-i='" + i + "' value='" + (u.dipFiyat||0) + "'></div>"
       + "</div>"
+      + bakiyeAlaniHtml(u, i)
       + "</div>";
   }).join("");
+
+  kapsayici.querySelectorAll(".duzenle-bakiye-link").forEach(function(link){
+    link.onclick = function(){
+      var i = this.getAttribute("data-bakiye-i");
+      document.getElementById("duzenleBakiyeLink-" + i).hidden = true;
+      document.getElementById("duzenleBakiyeAlan-" + i).hidden = false;
+      document.getElementById("duzenleBakiyeAdet-" + i).focus();
+    };
+  });
+  kapsayici.querySelectorAll(".duzenle-bakiye-kapat").forEach(function(btn){
+    btn.onclick = function(){
+      var i = this.getAttribute("data-bakiye-i");
+      document.getElementById("duzenleBakiyeAdet-" + i).value = "";
+      document.getElementById("duzenleBakiyeNot-" + i).value = "";
+      document.getElementById("duzenleBakiyeAlan-" + i).hidden = true;
+      document.getElementById("duzenleBakiyeLink-" + i).hidden = false;
+    };
+  });
 
   kapsayici.querySelectorAll(".duzenle-urun-sil-btn").forEach(function(btn){
     btn.onclick = function(){
@@ -442,13 +485,19 @@ function duzenlemeKaydet(){
       var dipFiyat = parseFloat(document.querySelector("[data-alan='dipFiyat'][data-i='"+i+"']").value)||0;
       var iskontoluFiyat = listeFiyat - (listeFiyat*iskonto/100);
       var degisen = duzenlemeUrunDegisiklikleri[i];
+      // BAKİYE — kutu açıksa gir, kapalıysa (hiç açılmadıysa veya kapatılmışsa) 0/boş.
+      var bakiyeAlanEl = document.getElementById("duzenleBakiyeAlan-" + i);
+      var bakiyeAcikMi = bakiyeAlanEl ? !bakiyeAlanEl.hidden : false;
+      var bakiyeAdet = bakiyeAcikMi ? (parseFloat(document.getElementById("duzenleBakiyeAdet-" + i).value)||0) : 0;
+      var bakiyeNot = bakiyeAcikMi ? document.getElementById("duzenleBakiyeNot-" + i).value.trim() : "";
       yeniUrunler.push({
         ad: degisen ? degisen.ad : u.ad,
         berta: degisen ? degisen.berta : u.berta,
         abas: degisen ? degisen.abas : u.abas,
         listeFiyat: listeFiyat, iskonto: iskonto, adet: adet, dipFiyat: dipFiyat,
         iskBirim: iskontoluFiyat,
-        toplamEuro: iskontoluFiyat * adet
+        toplamEuro: iskontoluFiyat * adet,
+        bakiyeAdet: bakiyeAdet, bakiyeNot: bakiyeNot
       });
     });
     var btn = document.getElementById("btnDuzenleKaydet");

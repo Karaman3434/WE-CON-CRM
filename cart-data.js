@@ -53,7 +53,7 @@ var CartData = (function(){
 
   // Hesapla popup'ından "Listeye Ekle" ile kesin olarak hesaplandı sayılır
   // (değerler 0 olsa bile — kullanıcı gözden geçirip onayladı demektir).
-  function hesaplandiIsaretle(idx, listeFiyat, dipFiyat, iskonto, adet, ozelEtiket, bakiyeAdet, bakiyeNot){
+  function hesaplandiIsaretle(idx, listeFiyat, dipFiyat, iskonto, adet, ozelEtiket){
     var u = sepet.find(function(u){ return u.idx === idx; });
     if(!u) return;
     u.listeFiyat = listeFiyat;
@@ -62,11 +62,6 @@ var CartData = (function(){
     u.adet = adet;
     u.hesaplandi = true;
     if(ozelEtiket) u.ozelEtiket = ozelEtiket; else delete u.ozelEtiket;
-    // BAKİYE (07.10.2026, Abdullah'ın isteğiyle) — stokta olmayıp müşteride
-    // bakiyede bırakılan adet + opsiyonel not. "Adet" alanı HER ZAMAN
-    // gönderilen/faturalanan miktar olarak kalır — bakiye sadece metadata.
-    if(bakiyeAdet>0){ u.bakiyeAdet = bakiyeAdet; u.bakiyeNot = bakiyeNot||""; }
-    else { delete u.bakiyeAdet; delete u.bakiyeNot; }
     kaydet();
   }
 

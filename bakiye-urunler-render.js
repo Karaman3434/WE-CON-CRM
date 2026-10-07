@@ -54,14 +54,18 @@ function kodHTML(kod, tip){
   return "<span style='color:" + (HARF_RENK[tip] || HARF_RENK.siparis) + ";'>" + htmlEsc(harf) + "</span>" + htmlEsc(kalan);
 }
 
-// ADET YAZILMAZ — sadece ürün adı + (varsa) rep'in kendi notu.
+// ADET YAZILMAZ — sadece ürün adı + (varsa) rep'in kendi notu. Tarih,
+// müşteri satırının sağında, kodun altında küçük/soluk gösterilir
+// (07.10.2026, Abdullah'ın isteğiyle — "tarihiyle birlikte").
 function bakiyeKartHTML(s){
   return "<div class='tl-kart tl-kart--bekleyen' data-i='" + s._i + "'>"
     + "<div class='tl-serit' style='background:#faeeda;'></div>"
     + "<div class='tl-govde'>"
     + "<div class='tl-satir'>" + "<div class='tl-ust'>" + cariSatirHTML(s.musteriId, s.musteri, s.sehir) + "</div>"
     + "<div class='tl-sagblok'><div class='tl-kod-satir'>"
-    + "<span class='tl-kod'>" + kodHTML(s.kod, s.tip) + "</span></div></div>"
+    + "<span class='tl-kod'>" + kodHTML(s.kod, s.tip) + "</span></div>"
+    + (s.tarih ? "<div class='tl-kod-tarih'>" + htmlEsc(s.tarih) + "</div>" : "")
+    + "</div></div>"
     + "<button class='tl-ok' aria-label='Siparişin tam tablosunu aç'>" + OK_SVG + "</button>"
     + "</div>"
     + "<div class='bekleyen-not'>📦 " + htmlEsc(s.urunAd) + (s.bakiyeNot ? " — " + htmlEsc(s.bakiyeNot) : "") + "</div>"
@@ -69,16 +73,51 @@ function bakiyeKartHTML(s){
     + "</div>";
 }
 
+// Müşteri kartından "Bekleyen Ürünler" ile gelindiyse SADECE o müşterinin
+// kayıtları gösterilir (07.10.2026, Abdullah'ın isteğiyle). Filtre bir kerelik
+// kullanılır — okunduktan sonra temizlenir ki Raporlar'daki genel giriş
+// (hiç filtresiz) her zaman tüm listeyi göstersin.
+function musteriFiltresiniAlVeTemizle(){
+  try{
+    var ham = localStorage.getItem("weiconv2_bakiye_musteri_filtre");
+    if(!ham) return null;
+    localStorage.removeItem("weiconv2_bakiye_musteri_filtre");
+    return JSON.parse(ham);
+  }catch(e){ return null; }
+}
+function ayniMusteriMi(kayitAd, kayitId, seciliAd, seciliId){
+  if(seciliId && kayitId) return kayitId === seciliId;
+  var a = (kayitAd||"").toLocaleLowerCase("tr-TR").trim();
+  var b = (seciliAd||"").toLocaleLowerCase("tr-TR").trim();
+  return !!a && !!b && a === b;
+}
+
 function listeyiCiz(){
   try{
-    var satirlar = ReportsData.bakiyedekiUrunler();
+    var tumSatirlar = ReportsData.bakiyedekiUrunler();
     var kapsayici = document.getElementById("buListe");
     var bos = document.getElementById("buBos");
     var baslik = document.getElementById("buBaslik");
-    if(!satirlar.length){ kapsayici.innerHTML = ""; baslik.hidden = true; bos.hidden = false; return; }
+
+    var musteriFiltre = musteriFiltresiniAlVeTemizle();
+    var satirlar = musteriFiltre
+      ? tumSatirlar.filter(function(s){ return ayniMusteriMi(s.musteri, s.musteriId, musteriFiltre.ad, musteriFiltre.id); })
+      : tumSatirlar;
+
+    if(!satirlar.length){
+      kapsayici.innerHTML = "";
+      baslik.hidden = true;
+      bos.hidden = false;
+      bos.textContent = musteriFiltre
+        ? (musteriFiltre.ad + " için bakiyede bekleyen ürün yok.")
+        : "Bakiyede bekleyen ürün yok.";
+      return;
+    }
     bos.hidden = true;
     baslik.hidden = false;
-    baslik.textContent = "📦 BAKİYEDE BEKLEYEN ÜRÜNLER — " + satirlar.length + " kayıt";
+    baslik.textContent = musteriFiltre
+      ? ("📦 " + musteriFiltre.ad.toLocaleUpperCase("tr-TR") + " — BEKLEYEN ÜRÜNLER — " + satirlar.length + " kayıt")
+      : "📦 BAKİYEDE BEKLEYEN ÜRÜNLER — " + satirlar.length + " kayıt";
 
     satirlar.forEach(function(s, i){ s._i = i; });
     kapsayici.innerHTML = "<div class='tl-liste-kutu'>" + satirlar.map(bakiyeKartHTML).join("<div class='tl-arasi'></div>") + "</div>";

@@ -290,15 +290,15 @@
 .kod-blok--b { color: #c0392b; }
 .kod-blok--a { color: #003a70; }
 .belge-td-urun-ad { font-weight: 700; color: #101828; margin-top: 2px; font-size: 12.15px; line-height: 1.25; }
-/* BAKİYE ROZETİ (07.10.2026, Abdullah'ın isteğiyle) — stokta olmayıp
-   müşteride bırakılan adet, ürün adının altında küçük turuncu rozet.
-   Diğer "bekleyen/bakiye" renkleriyle (#b7601f/#faeeda) aynı dil. */
-.belge-td-urun-bakiye {
-  display: inline-block; margin-top: 3px;
-  background: #faeeda; color: #b7601f; border: 1px solid #b7601f;
-  border-radius: 5px; padding: 1px 6px; font-size: 9.5px; font-weight: 800;
-}
 .belge-td-toplam { color: #101828; font-weight: 700; }
+/* BAKİYE NOTU (07.10.2026, Abdullah'ın isteğiyle) — artık ürün satırının
+   altında DEĞİL, TÜM tablonun altında tek bir uyarı (bkz. hareket-tablo.js
+   bakiyeNotuHtml / belge-render.js / send-render.js — üç yerde de aynı sınıf). */
+.belge-siparis-bakiye-not {
+  margin: 8px 10px 0 10px;
+  background: #faeeda; color: #b7601f; border: 1px solid #b7601f;
+  border-radius: 7px; padding: 7px 10px; font-size: 11.5px; font-weight: 800;
+}
 /* KURAL (24.09.2026): PRİM sütunu %20 küçültüldü (hücre yazısı + rakam +
    birim) — SR ile birlikte ÜRÜN BİLGİSİ/kodlara alan açmak için. */
 .belge-td-prim { font-size: 7.92px; font-weight: 600; }
