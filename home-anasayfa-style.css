@@ -237,6 +237,12 @@
 }
 .as-hedef-birim { font-size: 22px; font-weight: 700; letter-spacing: .5px; color: #e8c46a; opacity: .75; }
 .as-hedef-tutar { font-size: 44px; font-weight: 800; color: #e8c46a; line-height: 1; }
+/* TL KARŞILIĞI (07.10.2026, Abdullah'ın isteğiyle) — EURO toplamının
+   altında, sağa yaslı, soluk/küçük altın renkte. */
+.as-hedef-tl-karsilik {
+  font-size: 13px; font-weight: 700; color: #e8c46a; opacity: .55;
+  text-align: right; margin-top: 6px;
+}
 .as-hedef-bar-track {
   height: 6px;
   background: rgba(255,255,255,.16);
