@@ -230,7 +230,8 @@ var DRAWER_ALT_MENULERI = {
       {ikon:"📋", etiket:"Son İşlemler", href:"son-islemler.html"},
       {ikon:"📌", etiket:"Görevlerim", href:"gorevler.html"},
       {ikon:"📆", etiket:"Ziyaret Takvimi", href:"ziyaret.html"},
-      {ikon:"❌", etiket:"Kaçan Satışlar", href:"kacan-satislar.html"}
+      {ikon:"❌", etiket:"Kaçan Satışlar", href:"kacan-satislar.html"},
+      {ikon:"📦", etiket:"Bakiyedeki Ürünler", href:"bakiye-urunler.html"}
     ]
   },
   // 03.10.2026, Abdullah'ın isteğiyle — "Yeni Müşteri" yeşil zeminle vurgulu
