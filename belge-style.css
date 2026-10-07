@@ -226,6 +226,31 @@
   justify-content: center;
 }
 
+/* ÜST BİLGİ ŞERİDİ (08.10.2026, Abdullah'ın isteğiyle) — belge-onizleme.html'de
+   (belgeyiCiz) SİPARİŞ/TEKLİF başlığı + "Bu işlemde X kuru kullanıldı" notu +
+   WEICON logosu artık .belge-belge-baslik-serit YERİNE bu kompakt şeride
+   taşındı (eskisinden daha az dikey yer kaplasın diye). SADECE bu sayfada
+   kullanılıyor — send-render.js'in giden görseli .belge-belge-baslik-serit'i
+   (yukarıda) hâlâ kullanıyor, ETKİLENMEDİ. */
+.belge-ust-bilgi-serit {
+  background: #eafaf0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 16px;
+  gap: 8px;
+}
+.belge-ust-bilgi-metin { min-width: 0; }
+.belge-ust-bilgi-baslik {
+  font-size: 12px; font-weight: 700; color: #0e6b34; line-height: 1.15;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.belge-ust-kur-notu {
+  margin-top: 1px; line-height: 1.1; white-space: nowrap;
+  font-size: 10px; font-weight: 700; color: #185fa5;
+}
+.belge-ust-kur-birim { display: inline; font-size: 8px; font-weight: 700; margin: 0 1px; }
+
 
 .data-table-container { overflow-x: auto; width: 100%; }
 .belge-urun-tablo { width: 100%; border-collapse: collapse; font-size: 11.25px; table-layout: fixed; }
@@ -432,6 +457,11 @@
 .hareket-satir--sari .belge-td-urun-ad,
 .hareket-satir--sari .belge-net-tl,
 .hareket-satir--sari .belge-para-birim { color: #3d1f00; }
+/* DÜZELTME (08.10.2026, profesyonel inceleme sırasında bulundu): TOPLAM
+   hücresinin altındaki küçük "EURO" birim yazısı (.belge-td-birim) kendi
+   açık gri rengini koruyordu — turuncu/yeşil zeminde neredeyse okunmuyordu.
+   Üstteki satır sadece .belge-td-toplam'ı (büyük sayıyı) kapsıyordu. */
+.hareket-satir--sari .belge-td-birim { color: #3d1f00; }
 
 .hareket-satir--yesil { background: #ddf5e8; }
 .hareket-satir--yesil td,
@@ -443,6 +473,7 @@
 .hareket-satir--yesil .belge-td-urun-ad,
 .hareket-satir--yesil .belge-net-tl,
 .hareket-satir--yesil .belge-para-birim { color: #061f10; }
+.hareket-satir--yesil .belge-td-birim { color: #061f10; }
 
 /* Sepet ekranındaki kompakt Cari Bilgi başlığı — firma adı+şehir tek
    satırda, sağda işlem türü rozeti (SİPARİŞ/TEKLİF/vb). */
@@ -493,6 +524,11 @@
   border-radius: 10px;
 }
 .belge-genel-toplam-serit--altduz { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+/* DÜZ VARYANT (08.10.2026, Abdullah'ın isteğiyle) — SADECE belge-render.js'in
+   belgeyiCiz() çıktısında: ürün tablosunun hemen altına, köşesiz/bitişik
+   oturması için. send-render.js'in (Sepet/Gönder giden görseli) kullandığı
+   TEMEL .belge-genel-toplam-serit (yuvarlak köşeli) hiç değişmedi. */
+.belge-genel-toplam-serit--duz { border-radius: 0; }
 /* DÜZENLEME (27.09.2026, Abdullah'ın isteğiyle): kur bilgisi artık ayrı bir
    şerit DEĞİL — GENEL TOPLAM ile aynı satırda (solda), beyaz yazı, zemin
    yok (mavi kutunun kendi rengi görünür). .belge-gt-kutu SADECE
@@ -563,6 +599,34 @@
 }
 .belge-prim-etiket { font-size: 13px; font-weight: 900; white-space: nowrap; }
 .belge-prim-deger { font-size: 15px; font-weight: 900; white-space: nowrap; }
+
+/* BAKİYE ÜRÜN BLOĞU (08.10.2026, Abdullah'ın isteğiyle) — PRİM şeridinin
+   altında, kendi içinde bütün: küçük etiket + ana tabloyla birebir aynı
+   sütunlarda ikinci bir tablo (sadece zemin rengi .hareket-satir--sari) +
+   kendi toplam şeridi. SADECE belge-render.js'in belgeyiCiz() çıktısında. */
+.belge-bakiye-disblok { margin-top: 6px; }
+.belge-bakiye-kucuk-etiket {
+  display: block;
+  background: #faeeda; color: #b7601f;
+  padding: 8px 10px;
+  font-size: 10.35px; font-weight: 800;
+}
+.belge-bakiye-blok { margin: 0 10px; border-radius: 8px; overflow: hidden; }
+/* DÜZELTME (08.10.2026, profesyonel inceleme sırasında bulundu): paylaşılan
+   .data-table-container sınıfı reports-style.css'te 1px mavi çerçeve +
+   8px köşe + alt boşluk taşıyor (aylık özet tablosu için) ve bu, belge-
+   style.css'te override edilmediği için belge-onizleme.html'deki HER
+   tabloya (ana tablo dahil) zaten sızıyordu. Bakiye bloğunda "çerçeveyi
+   kaldır" isteği gerçek anlamda uygulansın diye, burada özel olarak
+   sıfırlanıyor. */
+.belge-bakiye-blok .data-table-container { border: none; border-radius: 0; margin-bottom: 0; }
+.belge-bakiye-toplam-serit {
+  background: #faeeda; color: #b7601f;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 10px;
+}
+.belge-bakiye-toplam-etiket { font-size: 10.5px; font-weight: 800; }
+.belge-bakiye-toplam-deger { font-size: 11.5px; font-weight: 900; }
 
 .belge-alt-buton-satir {
   display: flex;
