@@ -19,18 +19,38 @@ function tarihiGuncelle(){
   }catch(e){ hataGoster("Tarih güncellenemedi: " + e.message); }
 }
 
-// Mesaj Ayarları — tamamen manuel: yazılan metin olduğu gibi kaydedilir,
-// hiçbir yer tutucu/şart yok (bkz. mesaj-data.js).
+// HAREKET BAZLI METİNLER (07.10.2026, Abdullah'ın isteğiyle) — artık TEK
+// ortak mail/WhatsApp metni yok, üstteki seçiciyle (cart.html'deki hareket
+// seçimiyle birebir aynı .tip-btn'ler) seçilen hareketin KENDİ metni
+// gösterilir/düzenlenir/kaydedilir (bkz. mesaj-data.js — MesajData.oku/
+// kaydet artık ikinci parametre olarak "tip" alıyor).
 var KUTULAR = {
   mail:     {alan: "sablonMailMetni",     btn: "btnMailKaydet",     durum: "mailDurum"},
   whatsapp: {alan: "sablonWhatsappMetni", btn: "btnWhatsappKaydet", durum: "whatsappDurum"}
 };
-var kullaniciDuzenledi = {mail: false, whatsapp: false};
+var HAREKET_BASLIK = {numune:"🎁 NUMUNE metinleri", teklif:"💰 FİYAT TEKLİFİ metinleri", proforma:"🧾 PROFORMA FATURA metinleri", siparis:"📦 SİPARİŞ metinleri"};
+var secilenTip = "siparis";
+// Her hareket için ayrı "kullanıcı düzenledi" bayrağı — bir hareketteki
+// yarım kalan düzenleme, başka hareket seçilip geri dönülünce ezilmesin.
+var kullaniciDuzenledi = {};
+MesajData.TIPLER.forEach(function(t){ kullaniciDuzenledi[t] = {mail:false, whatsapp:false}; });
+
+function seciciyiCiz(){
+  var grup = document.getElementById("mesajTipSecim");
+  if(!grup) return;
+  Array.prototype.forEach.call(grup.querySelectorAll(".tip-btn"), function(btn){
+    btn.classList.toggle("tip-btn--secili", btn.getAttribute("data-tip") === secilenTip);
+  });
+  var baslikEl = document.getElementById("mesajHareketBaslik");
+  if(baslikEl) baslikEl.textContent = HAREKET_BASLIK[secilenTip] || "";
+}
 
 function metinleriDoldur(){
   Object.keys(KUTULAR).forEach(function(k){
     var el = document.getElementById(KUTULAR[k].alan);
-    if(el && !kullaniciDuzenledi[k]) el.value = MesajData.oku(k);
+    if(el && !kullaniciDuzenledi[secilenTip][k]) el.value = MesajData.oku(k, secilenTip);
+    var durum = document.getElementById(KUTULAR[k].durum);
+    if(durum) durum.textContent = "";
   });
 }
 
@@ -40,8 +60,8 @@ function metniKaydet(kanal){
     var durum = document.getElementById(k.durum);
     durum.style.color = "#556170";
     durum.textContent = "Kaydediliyor…";
-    MesajData.kaydet(kanal, document.getElementById(k.alan).value, function(fbTamam){
-      kullaniciDuzenledi[kanal] = false;
+    MesajData.kaydet(kanal, secilenTip, document.getElementById(k.alan).value, function(fbTamam){
+      kullaniciDuzenledi[secilenTip][kanal] = false;
       if(fbTamam){
         durum.style.color = "#16803c";
         durum.textContent = "✓ Kaydedildi — tüm cihazlarda geçerli";
@@ -59,10 +79,21 @@ window.addEventListener("error", function(ev){
 
 document.addEventListener("DOMContentLoaded", function(){
   tarihiGuncelle();
+  seciciyiCiz();
   metinleriDoldur();
+  var grup = document.getElementById("mesajTipSecim");
+  if(grup){
+    Array.prototype.forEach.call(grup.querySelectorAll(".tip-btn"), function(btn){
+      btn.onclick = function(){
+        secilenTip = this.getAttribute("data-tip");
+        seciciyiCiz();
+        metinleriDoldur();
+      };
+    });
+  }
   Object.keys(KUTULAR).forEach(function(k){
     document.getElementById(KUTULAR[k].alan).addEventListener("input", function(){
-      kullaniciDuzenledi[k] = true;
+      kullaniciDuzenledi[secilenTip][k] = true;
       document.getElementById(KUTULAR[k].durum).textContent = "";
     });
     document.getElementById(KUTULAR[k].btn).onclick = function(){ metniKaydet(k); };

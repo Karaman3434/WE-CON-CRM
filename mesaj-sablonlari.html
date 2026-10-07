@@ -11,8 +11,9 @@
 <meta name="apple-mobile-web-app-title" content="WEICON ASİST">
 <title>WEICON ASİST — Mesaj Ayarları</title>
 <script>document.documentElement.style.visibility='hidden';</script>
-<link rel="stylesheet" href="home-style.css?v=WG.071026.1205.742">
-<link rel="stylesheet" href="ayarlar-style.css">
+<link rel="stylesheet" href="home-style.css?v=WG.071026.1422.744">
+<link rel="stylesheet" href="ayarlar-style.css?v=WG.071026.1445.745">
+<link rel="stylesheet" href="send-style.css?v=WG.021026.1245.709">
 </head>
 <body>
 
@@ -34,6 +35,22 @@
 
 <main class="sayfa">
 
+  <!-- HAREKET BAZLI METİNLER (07.10.2026, Abdullah'ın isteğiyle) — artık TEK
+       ortak mail/WhatsApp metni yok, NUMUNE/FİYAT TEKLİFİ/PROFORMA
+       FATURA/SİPARİŞ'in HER BİRİNİN kendi metni var. Seçici cart.html'deki
+       hareket seçimiyle BİREBİR aynı renk/stil (.tip-secim/.tip-btn,
+       send-style.css). Seçime göre altındaki iki kutu ilgili hareketin
+       metnini gösterir — bkz. mesaj-sablonlari-render.js. -->
+  <div class="hareket-secim-bilgi">Hangi hareket için metin düzenlemek istiyorsun?</div>
+  <div class="tip-secim" id="mesajTipSecim">
+    <button class="tip-btn tip-btn--numune" data-tip="numune">NUMUNE</button>
+    <button class="tip-btn tip-btn--teklif" data-tip="teklif">FİYAT<br>TEKLİFİ</button>
+    <button class="tip-btn tip-btn--proforma" data-tip="proforma">PROFORMA<br>FATURA</button>
+    <button class="tip-btn tip-btn--siparis" data-tip="siparis">SİPARİŞ</button>
+  </div>
+
+  <div class="hareket-ayar-baslik" id="mesajHareketBaslik"></div>
+
   <section class="ayar-kutu">
     <label>📧 E-posta metni</label>
     <textarea id="sablonMailMetni" rows="9" placeholder="Mail metnini buraya yaz"></textarea>
@@ -48,7 +65,7 @@
     <div id="whatsappDurum" style="font-size:12px;font-weight:700;margin-top:6px;min-height:16px;"></div>
   </section>
 
-  <div style="font-size:11px;color:#8a96a3;font-weight:600;padding:0 2px;">Yazdığın metin olduğu gibi gönderilir. İki özel yer tutucu var (büyük harfle): <b>HAREKET</b> — gönderirken işleme göre "Siparişi / Fiyat teklifini / Proforma faturayı / Numuneyi" olur. <b>BELGE</b> — "Sipariş / Fiyat teklifi / Proforma fatura / Numune" olur. Örn: "...HAREKET göndermenizi rica ederim. BELGE formu ektedir."</div>
+  <div style="font-size:11px;color:#8a96a3;font-weight:600;padding:0 2px;">Her hareketin (NUMUNE / FİYAT TEKLİFİ / PROFORMA FATURA / SİPARİŞ) kendi mail ve WhatsApp metni ayrı ayrı kaydedilir — biri değişince diğerleri etkilenmez. Yazdığın metin olduğu gibi gönderilir. İki özel yer tutucu var (büyük harfle): <b>HAREKET</b> — gönderirken işleme göre "Siparişi / Fiyat teklifini / Proforma faturayı / Numuneyi" olur. <b>BELGE</b> — "Sipariş / Fiyat teklifi / Proforma fatura / Numune" olur. Örn: "...HAREKET göndermenizi rica ederim. BELGE formu ektedir."</div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -58,7 +75,7 @@
 <script src="auth.js?v=WG.051026.1055.730"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="mesaj-data.js?v=WG.280926.1620.658"></script>
-<script src="mesaj-sablonlari-render.js?v=WG.300926.1400.677"></script>
+<script src="mesaj-data.js?v=WG.071026.1445.745"></script>
+<script src="mesaj-sablonlari-render.js?v=WG.071026.1445.745"></script>
 </body>
 </html>
