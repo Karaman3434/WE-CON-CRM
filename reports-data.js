@@ -327,6 +327,29 @@ var ReportsData = (function(){
     }).sort(function(a,b){ return b.gun-a.gun; });
   }
 
+  // BAKİYEDEKİ ÜRÜNLER (07.10.2026, Abdullah'ın isteğiyle) — stokta tam
+  // olmayıp müşteride bakiyede bırakılan ürün SATIRLARINI, tüm kayıtlar
+  // (tip fark etmeksizin) içinden TEK TEK düz bir listeye çıkarır — bir
+  // siparişte birden fazla bakiyeli ürün varsa, her biri AYRI bir satır
+  // olur. Her satır kendi siparişini (tip+ts) taşır — "Bakiyedeki
+  // Ürünler" ekranında bir satıra dokununca o siparişin TAM tablosu
+  // açılabilsin diye (bkz. bakiye-urunler-render.js).
+  function bakiyedekiUrunler(){
+    var satirlar = [];
+    sonIslemler().forEach(function(k){
+      (k.urunler||[]).forEach(function(u){
+        if(!(u.bakiyeAdet>0)) return;
+        satirlar.push({
+          tip:k.tip, ts:k.ts, kod:k.kod, tarih:k.tarih||"",
+          musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"",
+          urunAd:u.ad||"İsimsiz Ürün", bakiyeAdet:u.bakiyeAdet, bakiyeNot:u.bakiyeNot||""
+        });
+      });
+    });
+    satirlar.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+    return satirlar;
+  }
+
   // Bu müşteride, henüz siparişe (veya sonraki aşamaya) dönüşmemiş en son
   // teklif/proforma/numune kaydını döndürür (yoksa null). Ürün eşleştirmesi
   // YAPMAZ — sadece "bu müşteride açık bir şey var mı" sorusuna cevap verir
@@ -581,7 +604,8 @@ var ReportsData = (function(){
           var satirToplam = u.toplamEuro !== undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
           return s + satirToplam;
         }, 0);
-        return {tip:"siparis", ts:k.ts, kod:k.kod, tarih:k.tarih||"", musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"", toplam:toplam, kanal:k.kanal||null, durum:k.durum, revizeZamani:k.revizeZamani};
+        var bakiyeVarMi = (k.urunler||[]).some(function(u){ return (u.bakiyeAdet||0)>0; });
+        return {tip:"siparis", ts:k.ts, kod:k.kod, tarih:k.tarih||"", musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"", toplam:toplam, kanal:k.kanal||null, durum:k.durum, revizeZamani:k.revizeZamani, bakiyeVarMi:bakiyeVarMi};
       })
       .sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
   }
@@ -597,7 +621,8 @@ var ReportsData = (function(){
           var satirToplam = u.toplamEuro !== undefined ? u.toplamEuro : ((u.iskBirim||0)*(u.adet||0));
           return s + satirToplam;
         }, 0);
-        kacanlar.push({tip:tip, ts:k.ts, kod:k.kod, musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"", tarih:k.tarih, tutar:tutar});
+        var bakiyeVarMi = (k.urunler||[]).some(function(u){ return (u.bakiyeAdet||0)>0; });
+        kacanlar.push({tip:tip, ts:k.ts, kod:k.kod, musteri:k.musteri, musteriId:k.musteriId||null, sehir:k.sehir||"", tarih:k.tarih, tutar:tutar, bakiyeVarMi:bakiyeVarMi});
       });
     });
     kacanlar.sort(function(a,b){ return siralama==="eski" ? (a.ts||0)-(b.ts||0) : (b.ts||0)-(a.ts||0); });
@@ -618,6 +643,7 @@ var ReportsData = (function(){
     son6Ay: son6Ay,
     acikSurecleriHesapla: acikSurecleriHesapla,
     beklemedeSiparisleriHesapla: beklemedeSiparisleriHesapla,
+    bakiyedekiUrunler: bakiyedekiUrunler,
     yillikOzet: yillikOzet,
     aylikPrimOzeti12: aylikPrimOzeti12,
     enCokSatisYapilanMusteriler: enCokSatisYapilanMusteriler,

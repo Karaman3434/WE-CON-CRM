@@ -611,6 +611,36 @@
 .hesapla-kutu .hc-listeye-ekle-buton--bekliyor { background: #FC8D33; }
 .hesapla-kutu .hc-listeye-ekle-buton--hazir { background: #0e6b34; }
 
+/* 5) BAKİYE (07.10.2026, Abdullah'ın isteğiyle) — "Stokta yok, bakiye
+      bırak" satırı + açılınca çıkan adet/not kutusu. Turuncu, uygulamadaki
+      diğer "bekleyen/bakiye" renk diliyle (#b7601f/#faeeda) aynı. */
+.hc-bakiye-link {
+  display: flex; align-items: center; gap: 6px;
+  background: #faeeda; color: #b7601f;
+  border: 1.5px dashed #b7601f; border-radius: 8px;
+  padding: 9px 10px; font-size: 12px; font-weight: 800;
+  margin-bottom: 9px; cursor: pointer;
+}
+.hc-bakiye-alan {
+  background: #fff; border: 1.5px solid #b7601f; border-radius: 8px;
+  padding: 10px; margin-bottom: 9px;
+}
+.hc-bakiye-alan-baslik {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; font-weight: 800; color: #b7601f; margin-bottom: 6px;
+}
+.hc-bakiye-kapat {
+  border: none; background: none; color: #b7601f; font-size: 13px;
+  font-weight: 900; line-height: 1; padding: 2px 4px; cursor: pointer;
+}
+.hc-bakiye-alan input {
+  width: 100%; box-sizing: border-box; border: 1.5px solid #e7c89a;
+  border-radius: 7px; padding: 9px; font-size: 14px; font-weight: 700;
+  color: #1a2733;
+}
+.hc-bakiye-alan input#hpBakiyeAdet { margin-bottom: 8px; text-align: center; }
+.hc-bakiye-alan input.hc-bakiye-not { font-weight: 500; font-size: 12.5px; }
+
 /* ---------- Müşterisiz Gönder — gerçek Gönder ekranıyla aynı görünüm
    (WG.290926.1651.670, Abdullah'ın isteğiyle) ---------- */
 .musterisiz-onizleme-kutu { max-height: 88vh; overflow-y: auto; }

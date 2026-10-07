@@ -49,7 +49,13 @@ var HareketTablo = (function(){
       var iskYuz100 = (u.iskonto||0) === 100;
       var toplamHucreIcerik = !toplamVarMi ? "-" : ((u.ozelEtiket === "bedelsiz") ? "NUMUNE" : paraHtml(fmt(h.toplamEuro),"EURO"));
       var netTl = toplamVarMi ? netTlHtml(h.iskontoluFiyat, kur) : "";
-      var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div></td>";
+      // BAKİYE ROZETİ (07.10.2026, Abdullah'ın isteğiyle) — stokta tam
+      // yoksa müşteride bakiyede bırakılan adet, ürün adının altında küçük
+      // turuncu bir rozetle gösterilir. Bu fonksiyon TEK paylaşılan tablo
+      // kaynağı olduğu için Sepet/Gönder/Belge Önizleme/mail-WhatsApp
+      // görseli HEPSİNDE otomatik aynı anda görünür.
+      var bakiyeRozetHtml = (u.bakiyeAdet>0) ? "<div class='belge-td-urun-bakiye'>📦 Bakiye: " + htmlEsc(u.bakiyeAdet) + " adet</div>" : "";
+      var urunHucre = "<td class='belge-td-urun'><div class='belge-td-urun-kod'><span class='kod-blok kod-blok--b'><span class='kod-harf'>B</span> " + htmlEsc(u.berta||"-") + "</span> - <span class='kod-blok kod-blok--a'><span class='kod-harf'>A</span> " + htmlEsc(u.abas||"-") + "</span>" + "</div><div class='belge-td-urun-ad'>" + htmlEsc(u.ad) + "</div>" + bakiyeRozetHtml + "</td>";
       if(basit){
         return "<tr class='" + (zeminSinifi||"") + "'>"
           + urunHucre

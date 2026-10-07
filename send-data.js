@@ -133,7 +133,12 @@ var SendData = (function(){
           adet: parseFloat(u.adet)||0,
           iskBirim: h.iskontoluFiyat || 0,
           toplamEuro: h.toplamEuro || 0,
-          ozelEtiket: u.ozelEtiket || null
+          ozelEtiket: u.ozelEtiket || null,
+          // BAKİYE (07.10.2026) — stokta olmayıp müşteride bakiyede kalan
+          // adet + opsiyonel not. "adet" alanı yukarıda zaten gönderilen/
+          // faturalanan miktar olarak kaydediliyor, bu sadece ek metadata.
+          bakiyeAdet: parseFloat(u.bakiyeAdet)||0,
+          bakiyeNot: u.bakiyeNot || ""
         };
       });
       var yeniImza = urunSetiImzaOlustur(urunlerKaydi);

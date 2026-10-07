@@ -111,8 +111,15 @@ function tlKartHTML(k, gosterIsim){
     + "</div>"
     + (kacanMi && k.kacanRakip ? "<div class='tl-durum-ek'>Rakip: " + htmlEsc(k.kacanRakip) + "</div>" : "")
     + (k.durum==="beklemede" ? "<div class='tl-durum-ek tl-durum-ek--beklemede'>⏳ Beklemede" + (k.beklemedeNot ? ": " + htmlEsc(k.beklemedeNot) : "") + "</div>" : "")
+    + (bakiyeKayitVarMi(k) ? "<div class='tl-durum-ek tl-durum-ek--bakiye'>📦 Bekleyen ürün var</div>" : "")
     + "</div>"
     + "</div>";
+}
+// BAKİYE (07.10.2026) — kayıt satislarListele/tumKacanlar'dan geldiyse
+// hazır "bakiyeVarMi" bayrağını, sonIslemler()'den ham geldiyse urunler
+// dizisini kontrol eder (bkz. reports-data.js).
+function bakiyeKayitVarMi(k){
+  return !!k.bakiyeVarMi || (k.urunler||[]).some(function(u){ return (u.bakiyeAdet||0)>0; });
 }
 function tlGrupla(liste){
   var gruplar = [], harita = {};

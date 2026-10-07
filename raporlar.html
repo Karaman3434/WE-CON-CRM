@@ -18,7 +18,7 @@
 <title>WEICON ASİST — Raporlar</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.071026.1205.742">
-<link rel="stylesheet" href="hareketler-style.css?v=WG.011026.2210.702">
+<link rel="stylesheet" href="hareketler-style.css?v=WG.071026.2200.747">
 </head>
 <body>
 
@@ -65,22 +65,42 @@
       <span class="hareketler-tile-ikon">❌</span>
       <span class="hareketler-tile-baslik">KAÇAN SATIŞLAR</span>
     </a>
+    <a class="hareketler-tile hareketler-tile--bakiye" href="bakiye-urunler.html">
+      <span class="hareketler-tile-sayac" id="bakiyeSayac" hidden></span>
+      <span class="hareketler-tile-ikon">📦</span>
+      <span class="hareketler-tile-baslik">BAKİYEDEKİ ÜRÜNLER</span>
+    </a>
   </div>
 
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-config.js?v=WG.011026.2340.706"></script>
 <script src="auth.js?v=WG.051026.1055.730"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="reports-data.js?v=WG.071026.2200.747"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function(){
   var gunler = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
   var aylar = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
   var d = new Date();
   document.getElementById("gunTarihi").textContent = gunler[d.getDay()] + ", " + d.getDate() + " " + aylar[d.getMonth()] + " " + d.getFullYear();
-  document.getElementById("btnMenu").onclick = function(){ window.location.href = "menu.html"; };
+  var btnMenuEl = document.getElementById("btnMenu");
+  if(btnMenuEl) btnMenuEl.onclick = function(){ window.location.href = "menu.html"; };
+
+  // BAKİYEDEKİ ÜRÜNLER sayacı (07.10.2026, Abdullah'ın isteğiyle).
+  function bakiyeSayaciniGuncelle(){
+    try{
+      var n = ReportsData.bakiyedekiUrunler().length;
+      var el = document.getElementById("bakiyeSayac");
+      if(n>0){ el.textContent = n; el.hidden = false; } else { el.hidden = true; }
+    }catch(e){}
+  }
+  ReportsData.arsivDegistiginde(bakiyeSayaciniGuncelle);
 });
 </script>
 </body>

@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.071026.1645.746 — bakiye-urunler.html -->
+<!--
+  "Bakiyedeki Ürünler" (07.10.2026, Abdullah'ın isteğiyle) — stokta tam
+  olmayıp müşteride bakiyede bırakılan ürün satırlarını tek listede
+  gösterir. satis-listesi.html ile aynı iskelet/stil; veri kaynağı
+  ReportsData.bakiyedekiUrunler() (bkz. reports-data.js).
+-->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -9,7 +16,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="WEICON ASİST">
-<title>WEICON ASİST — Görevlerim</title>
+<title>WEICON ASİST — Bakiyedeki Ürünler</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.071026.1205.742">
 <link rel="stylesheet" href="reports-style.css?v=WG.071026.2200.747">
@@ -28,26 +35,16 @@
 </nav>
 </div>
 <div class="sayfa-rota-serit">
-  <span class="sayfa-rota-serit-isim">📌 Görevlerim</span>
+  <span class="sayfa-rota-serit-isim">📦 Bakiyedeki Ürünler</span>
   <span class="sayfa-rota-serit-rota">Raporlar</span>
 </div>
 
 <main class="sayfa">
 
-  <div class="gorev-ekle-kutu">
-    <input type="text" id="gorevMusteri" placeholder="Müşteri / konu">
-    <input type="text" id="gorevAciklama" placeholder="Görev açıklaması">
-    <div class="gorev-tarih-satir">
-      <input type="date" id="gorevTarih">
-      <input type="time" id="gorevSaat">
-    </div>
-    <button class="gorev-ekle-buton" id="btnGorevEkle">+ Görev Ekle</button>
-  </div>
-  <div class="gorev-arama-kutusu">
-    <input type="text" id="gorevAra" placeholder="Görevlerde ara (müşteri/açıklama)..." autocomplete="off">
-  </div>
-  <div id="gorevListesiKapsayici"></div>
-  <p class="bos-mesaj" id="gorevBosMesaj" hidden>Henüz görev yok.</p>
+  <div class="bekleyen-baslik" id="buBaslik" style="margin-bottom:8px;" hidden></div>
+  <div id="buListe"></div>
+
+  <p class="bos-mesaj" id="buBos" hidden>Bakiyede bekleyen ürün yok.</p>
 
 </main>
 
@@ -57,10 +54,9 @@
 <script src="firebase-config.js?v=WG.011026.2340.706"></script>
 <script src="auth.js?v=WG.051026.1055.730"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
-<script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="reports-data.js?v=WG.071026.2200.747"></script>
-<script src="reports-safety-fix.js?v=WG.020926.1338.87"></script>
+<script src="reports-safety-fix.js?v=WG.020926.1523.89"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="gorevler-render.js?v=WG.300926.1400.677"></script>
+<script src="bakiye-urunler-render.js?v=WG.071026.2200.747"></script>
 </body>
 </html>

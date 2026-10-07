@@ -58,5 +58,18 @@
 .hareketler-tile--tehlike { background: #fdeaea; border-color: #c0392b; border: 1.5px solid #c0392b;}
 .hareketler-tile--tehlike .hareketler-tile-baslik { color: #c0392b; }
 
+/* BAKİYEDEKİ ÜRÜNLER karosu (07.10.2026, Abdullah'ın isteğiyle) —
+   uygulamadaki diğer "bekleyen/bakiye" turuncusuyla (#b7601f/#faeeda) aynı
+   renk dili, sağ üstte kaç kayıt olduğunu gösteren kırmızı sayaç. */
+.hareketler-tile--bakiye { background: #faeeda; border: 1.5px solid #b7601f; position: relative; }
+.hareketler-tile--bakiye .hareketler-tile-baslik { color: #b7601f; }
+.hareketler-tile-sayac {
+  position: absolute; top: -7px; right: -7px;
+  background: #c0392b; color: #fff;
+  font-size: 10px; font-weight: 900; line-height: 1;
+  border-radius: 10px; padding: 4px 6px; border: 2px solid #fff;
+  min-width: 10px; text-align: center;
+}
+
 .hareketler-tile-satir + .hareketler-tile-satir { margin-top: 12px; }
 .hareketler-tile-satir--tek { grid-template-columns: 1fr; }
