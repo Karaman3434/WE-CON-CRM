@@ -122,7 +122,13 @@
    standart lacivert stili taşıyor, bu modifikatöre gerek kalmadı — TEK
    KURAL, iki farklı görünüm yerine tek bir WEICON rozeti tüm belgede. */
 .belge-musteri-govde { padding: 7px 8px; }
-.belge-musteri-ad { font-size: 14px; font-weight: 700; color: #1a2a3a; margin-bottom: 8px; }
+.belge-musteri-ad { font-size: 14px; font-weight: 700; color: #1a2a3a; margin-bottom: 8px; padding-left: 10px; }
+/* İsim başındaki • işareti (07.10.2026) — ayrı elemanda, metinle hizalı. */
+.ck-isim-nokta { margin-right: 2px; color: #1a2a3a; }
+/* Adres/ünvan DEĞER metni (07.10.2026) — etiket (📄 FATURA ADRESİ vb.)
+   satır başında sabit kalırken, altındaki açık adres/ünvan metni satır
+   başından ~3mm (≈10px) daha içeriden başlar. */
+.belge-adres-govde { display: block; padding-left: 10px; }
 .belge-musteri-ad--sade { margin-bottom: 2px; }
 .belge-musteri-sehir { font-size: 11px; color: #8a96a3; margin-bottom: 4px; }
 .belge-adres-blok {
@@ -188,6 +194,11 @@
   font-weight: 700;
   line-height: 1.5;
 }
+/* YETKİLİ değeri (07.10.2026): belge-onizleme.html yolunda (.belge-yetkili-blok
+   içinde) kendi 10px girintisini burada alır. Sepet/Mail-WhatsApp yolunda
+   (send-render.js) ise .ck-kart zaten 10px girinti veriyor — ikisi üst
+   üste binmesin diye indent SADECE .belge-yetkili-blok bağlamında eklenir. */
+.belge-yetkili-blok .belge-yetkili-satir { padding-left: 10px; }
 .belge-yetkili-detay { color: #667085; font-size: 11px; font-weight: 500; }
 
 .belge-belge-baslik-serit {
@@ -301,24 +312,23 @@
 /* İSK ve NET artık ayrı bir rozet/kutu DEĞİL — sadece renk taşıyor, LİSTE ve
    TOPLAM ile birebir aynı yapı/boyut/hiza. % işareti, EURO/TL gibi rakamın
    ALTINDA küçük birim satırı. */
-/* İSKONTO ROZETİ (06.10.2026, Abdullah'ın isteğiyle) — sayı artık düz
-   renkli metin değil, açık kırmızı zeminli küçük bir rozet içinde BEYAZ
-   rakam/% olarak gösteriliyor. Rozet SADECE sayının kendisini sarıyor,
-   hücrenin tamamını kaplamıyor. Gönder ekranının kendi sayı/birim
-   sınıfları (.belge-td-sayi/.belge-td-birim, bkz. send-render.js) da aynı
-   rozetin içine sarılıyor, o yüzden renk kuralı ikisini de kapsıyor.
-   Satır rengine göre (sarı/yeşil, aşağıdaki .hareket-satir--sari/--yesil
-   kuralları) ezilmesin diye !important. */
+/* İSKONTO GÖSTERİMİ (07.10.2026, Abdullah'ın isteğiyle) — kırmızı zeminli
+   rozet KALDIRILDI: html2canvas ile mail/WhatsApp'a gönderilen görselde,
+   zemin içindeki BEYAZ yazı görünmüyordu (sadece kırmızı kutu çıkıyordu).
+   Kutuyu tamamen kaldırıp sayı/%'i DÜZ KIRMIZI METİN yapmak, bu rozetin
+   html2canvas'ta sorunsuz çizilmesini sağlıyor. Satır rengine göre
+   (sarı/yeşil, aşağıdaki .hareket-satir--sari/--yesil kuralları) ezilmesin
+   diye !important. */
 .belge-isk-metin {
   display: inline-block;
-  background: #e74c3c;
-  border-radius: 4px;
-  padding: 2px 6px;
+  background: none;
+  border-radius: 0;
+  padding: 0;
 }
 .belge-isk-metin .belge-para-sayi,
 .belge-isk-metin .belge-para-birim,
 .belge-isk-metin .belge-td-sayi,
-.belge-isk-metin .belge-td-birim { color: #fff !important; }
+.belge-isk-metin .belge-td-birim { color: #c0392b !important; font-weight: 800 !important; }
 .rozet-net { color: #0e6b34; }
 
 /* NET TL SATIRI (01.10.2026, Abdullah'ın isteğiyle) — NET hücresinin

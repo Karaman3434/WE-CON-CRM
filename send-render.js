@@ -81,7 +81,7 @@ function adresleriBelirle(musteri){
 // gönderilen belge türüne göre değişir (bkz. mesaj-data.js — NUMUNE de
 // 28.09.2026'dan itibaren aynı ortak "mail" şablonunu kullanıyor).
 function mesajMetniOlustur(musteri, sepet, tip, kanal){
-  return MesajData.uygula(MesajData.oku(kanal === "whatsapp" ? "whatsapp" : "mail"), tip);
+  return MesajData.uygula(MesajData.oku(kanal === "whatsapp" ? "whatsapp" : "mail", tip), tip);
 }
 
 // Gönder ekranı yeniden düzeni (WG.210926.1512.583): 1) Cari Bilgi üst şeridi
@@ -138,7 +138,15 @@ function cariKutulariHtml(musteri, vade, faturaTuru, kargo, faturaAdr, teslimatA
   // çoğu zaman bambaşka bir ilçe/ildedir, ona hiç eklenmez (29.09.2026,
   // Abdullah'ın bildirdiği hata: teslimat adresine fatura şehri sızıyordu).
   var sehirEk = musteri.sehir ? ", " + htmlEsc(musteri.sehir) : "";
-  var html = "<div class='ck-isim-satir'>" + htmlEsc(musteri.ad) + "</div>"
+  // DÜZELTME (07.10.2026, Abdullah'ın isteğiyle, mockup üzerinden onaylandı):
+  // 1) Firma/ticari müşteri isminin başına kalın • işareti eklendi.
+  // 2) Etiketler (VADE/FATURA/KARGO/FATURA ADRESİ/YETKİLİ ikonu+başlığı)
+  //    satır başında sabit kalıyor — altlarındaki DEĞERLER (firma ismi,
+  //    açık adres, yetkili ismi) artık ~3mm (10px) daha içeriden başlıyor
+  //    (bkz. cari-kart-style.css .ck-isim-satir/.ck-kart padding-left).
+  // 3) Yetkili isminin önündeki 👤 ikonu kaldırıldı (bkz. hareket-tablo.js
+  //    yetkiliSatiriHtml) — sadece "👤 YETKİLİ" etiketinde kalıyor.
+  var html = "<div class='ck-isim-satir'><b class='ck-isim-nokta'>•</b> " + htmlEsc(musteri.ad) + "</div>"
     + "<div class='ozet-satir-3 ozet-satir-3--birlesik'>"
     +   "<div class='ozet-alan'><span class='ozet-ikon'>📅</span><div class='ozet-metin'><div class='ozet-baslik'>VADE</div><div class='ozet-deger'>" + htmlEsc(vade||"-") + "</div></div></div>"
     +   "<div class='ozet-alan'><span class='ozet-ikon'>🧾</span><div class='ozet-metin'><div class='ozet-baslik'>FATURA</div><div class='ozet-deger'>" + htmlEsc(faturaTuru||"-") + "</div></div></div>"

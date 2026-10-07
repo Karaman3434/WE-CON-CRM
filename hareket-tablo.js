@@ -163,12 +163,16 @@ var HareketTablo = (function(){
       + "</div>";
   }
 
+  // DÜZELTME (07.10.2026, Abdullah'ın isteğiyle): isim önündeki 👤 ikonu
+  // kaldırıldı — ikon artık sadece üstteki "👤 YETKİLİ" etiketinde var,
+  // isim etiketle aynı sol kenardan değil, ~3mm daha içeriden başlıyor
+  // (bkz. cari-kart-style.css .ck-kart / belge-style.css .belge-yetkili-satir).
   function yetkiliSatiriHtml(isim, tel, eposta){
     if(!isim && !tel && !eposta) return "";
     var parcalar = [];
     if(tel) parcalar.push("📞 " + tel);
     if(eposta) parcalar.push("✉️ " + eposta);
-    return "<div class='belge-yetkili-satir'>👤 <b>" + htmlEsc(isim||"-") + "</b>"
+    return "<div class='belge-yetkili-satir'><b>" + htmlEsc(isim||"-") + "</b>"
       + (parcalar.length ? " — <span class='belge-yetkili-detay'>" + htmlEsc(parcalar.join(" · ")) + "</span>" : "")
       + "</div>";
   }

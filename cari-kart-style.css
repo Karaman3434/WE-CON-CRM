@@ -97,12 +97,15 @@
   background: none;
   border: none;
   border-bottom: 1px solid #e1e6ea;
-  padding: 0 0 6px;
+  padding: 0 0 6px 10px;
   margin-bottom: 6px;
   font-size: 14px;
   font-weight: 700;
   color: #1a2733;
 }
+/* İsim başındaki • işareti (07.10.2026) — etiket satırı sabit kalsın diye
+   kalın noktayı ayrı bir elemanda tutuyoruz, metinle aynı hizada. */
+.ck-isim-nokta { margin-right: 2px; color: #1a2733; }
 
 .ck-tiklanabilir-alan { cursor: pointer; }
 .ck-tiklanabilir-alan:active { background: #f4f6f9; }
@@ -327,7 +330,7 @@
 
 .ck-kart-liste { display: flex; flex-direction: column; }
 .ck-kart {
-  padding: 4px 0;
+  padding: 4px 0 4px 10px;
   font-size: 12.5px;
   color: #1a2733;
 }
