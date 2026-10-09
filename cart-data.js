@@ -5,6 +5,17 @@
   anahtarı üzerinden) okumak/güncellemek ve fiyat hesaplama formüllerini
   uygulamak. Formüller eski app-part3.js -> hesapla() fonksiyonundan BİREBİR
   taşındı, iş mantığı değişmedi.
+
+  FIREBASE YEDEĞİ (09.10.2026, kod incelemesi sonrası): sepet eskiden SADECE
+  localStorage'da tutuluyordu — cihaz değişince veya tarayıcı verisi
+  silinince taslak sepet tamamen kaybolabiliyordu. localStorage HÂLÂ ana/anlık
+  kaynak (hızlı, çevrimdışı çalışır); AMA her kaydet()'te ayrıca kullanıcının
+  kendi oturumuna bağlı "sepetTaslak/{uid}" yoluna da yazılıyor (bkz.
+  database.rules.json — bu yol SADECE o kullanıcının kendi uid'siyle
+  okunabilir/yazılabilir). Sayfa açıldığında, localStorage boşsa (yeni cihaz
+  veya veri silinmiş) weiconAuthHazir (auth.js) olayından sonra bu yedek bir
+  kez kontrol edilir; bulunursa sepete geri yüklenir ve "weiconSepetGeriYuklendi"
+  olayı tetiklenir (cart-render.js bunu dinleyip ekranı yeniden çizer).
 */
 
 var CartData = (function(){
@@ -19,8 +30,44 @@ var CartData = (function(){
     if(kayitli) sepet = JSON.parse(kayitli);
   }catch(e){ sepet = []; }
 
+  var fbUid = null;
+
+  function fbYoluAl(){ return fbUid ? ("sepetTaslak/" + fbUid) : null; }
+
+  // Yedekten GERİ YÜKLEME — SADECE bu cihazda sepet zaten boşsa (yeni cihaz /
+  // temizlenmiş veri) devreye girer; dolu bir sepetin üzerine ASLA yazmaz.
+  function fbYukle(){
+    if(!fbUid || typeof firebase === "undefined") return;
+    try{
+      firebase.database().ref(fbYoluAl()).once("value").then(function(snap){
+        var uzak = snap.val();
+        if(uzak && Array.isArray(uzak.sepet) && sepet.length === 0 && uzak.sepet.length > 0){
+          sepet = uzak.sepet;
+          try{ localStorage.setItem(SEPET_KEY, JSON.stringify(sepet)); }catch(e){}
+          try{ document.dispatchEvent(new CustomEvent("weiconSepetGeriYuklendi")); }catch(e){}
+        }
+      }).catch(function(err){ console.error("Sepet yedeği okunamadı:", err); });
+    }catch(e){ console.error("Sepet yedeği okunamadı:", e); }
+  }
+
+  function fbKaydet(){
+    if(!fbUid || typeof firebase === "undefined") return;
+    try{
+      firebase.database().ref(fbYoluAl()).set({sepet: sepet, zaman: Date.now()})
+        .catch(function(err){ console.error("Sepet yedeği Firebase'e yazılamadı:", err); });
+    }catch(e){ console.error("Sepet yedeği Firebase'e yazılamadı:", e); }
+  }
+
+  try{
+    window.addEventListener("weiconAuthHazir", function(ev){
+      try{ fbUid = ev.detail.user.uid; }catch(e){ fbUid = null; }
+      fbYukle();
+    });
+  }catch(e){}
+
   function kaydet(){
     try{ localStorage.setItem(SEPET_KEY, JSON.stringify(sepet)); }catch(e){}
+    fbKaydet();
   }
 
   function liste(){ return sepet; }

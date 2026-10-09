@@ -302,7 +302,14 @@ function kurElleSorVeDevamEt(devamFn){
     return;
   }
   try{
-    AyarlarSync.kurKaydet(sayisalDeger);
+    AyarlarSync.kurKaydet(sayisalDeger, "elle", function(basarili){
+      // Kaydı/gönderimi bu yüzden durdurmuyoruz (yerel değer zaten geçerli) —
+      // sadece merkez senkronu başarısızsa kullanıcıyı bilgilendiriyoruz
+      // (09.10.2026, kod incelemesi sonrası eklendi).
+      if(!basarili){
+        hataGoster("⚠️ Kur bu cihazda kaydedildi ama merkez sunucuya yazılamadı (bağlantı sorunu olabilir) — diğer cihazlar henüz bu kuru görmeyebilir.");
+      }
+    });
   }catch(e){
     hataGoster("Kur kaydedilemedi: " + e.message);
     return;
@@ -576,5 +583,8 @@ document.addEventListener("DOMContentLoaded", function(){
 
   CustomerData.listeDegistiginde(sayfayiCiz);
   window.addEventListener("weiconAuthHazir", sayfayiCiz);
+  // Sepet, bu cihazda boşken Firebase yedeğinden geri yüklenirse (bkz.
+  // cart-data.js fbYukle) ekranı yeniden çiz (09.10.2026).
+  document.addEventListener("weiconSepetGeriYuklendi", sayfayiCiz);
   sayfayiCiz();
 });

@@ -1,6 +1,6 @@
 // Tek merkezi sürüm bilgisi — home.html içindeki #versiyonEtiketi ile
 // senkron tutulmalıdır. Format: WG.(GGAAYY).(SSDD).(sıra no)
-var APP_VERSION = "WG.091026.1725.756";
+var APP_VERSION = "WG.091026.2250.757";
 
 var AY_ADLARI_AYARLAR = ["","Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 
@@ -91,7 +91,12 @@ function ayarlariKaydet(){
     var hedefEl = document.getElementById("hedefInput");
     var hedef = hedefEl ? (parseFloat(hedefEl.value) || 0) : 0;
     if(typeof AyarlarSync !== "undefined"){
-      AyarlarSync.kurKaydet(kur);
+      // 09.10.2026, kod incelemesi sonrası: kur yazması artık Firebase
+      // sonucunu bekleyip başarısızsa ayrıca uyarıyor (localStorage'a yazma
+      // zaten anında/optimistik, akışı kesmiyoruz).
+      AyarlarSync.kurKaydet(kur, "elle", function(basarili){
+        if(!basarili) hataGoster("⚠️ Kur bu cihazda kaydedildi ama merkez sunucuya yazılamadı — diğer cihazlar henüz görmeyebilir.");
+      });
       AyarlarSync.kdvKaydet(kdv);
       if(typeof AyarlarSync.hedefKaydet === "function") AyarlarSync.hedefKaydet(hedef);
     } else {

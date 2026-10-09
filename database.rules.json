@@ -16,7 +16,10 @@
       ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()"
     },
     "pin":                 { ".read": "auth != null", ".write": "auth != null" },
-    "ayarlar":             { ".read": "auth != null", ".write": "auth != null" },
+    "ayarlar": {
+      ".read": "auth != null",
+      ".write": "auth != null && (!root.child('kisitliKullanicilar').child(auth.uid).exists() || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('sepet').val() === true || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('maasHesaplama').val() === true || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('netMaasHesaplama').val() === true)"
+    },
     "kmTakip": {
       ".read": "auth != null && (!root.child('kisitliKullanicilar').child(auth.uid).exists() || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('kmTakip').val() === true)",
       ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()"
@@ -45,7 +48,13 @@
       ".read": "auth != null && (!root.child('kisitliKullanicilar').child(auth.uid).exists() || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('gonder').val() === true)",
       ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()"
     },
-    "hatalar":             { ".read": "auth != null", ".write": "auth != null" },
+    "hatalar": {
+      ".read": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()",
+      ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()",
+      "$hataId": {
+        ".write": "auth != null"
+      }
+    },
     "odenebilirKomisyon": {
       ".read": "auth != null && (!root.child('kisitliKullanicilar').child(auth.uid).exists() || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('odenebilirKomisyon').val() === true)",
       ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()"
@@ -54,9 +63,28 @@
       ".read": "auth != null && (!root.child('kisitliKullanicilar').child(auth.uid).exists() || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('odenebilirKomisyon').val() === true)",
       ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()"
     },
-    "urunler":             { ".read": "auth != null", ".write": "auth != null" },
-    "cihazlar":            { ".read": "auth != null", ".write": "auth != null" },
-    "cihazPin":            { ".read": "auth != null", ".write": "auth != null" },
+    "urunler": {
+      ".read": "auth != null",
+      ".write": "auth != null && (!root.child('kisitliKullanicilar').child(auth.uid).exists() || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('sepet').val() === true || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('urunBul').val() === true)"
+    },
+    "cihazlar": {
+      ".read": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()",
+      ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()",
+      "$cihazId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "cihazPin": {
+      ".read": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()",
+      ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()"
+    },
+    "sepetTaslak": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
     "maasKayitlari": {
       ".read": "auth != null && (!root.child('kisitliKullanicilar').child(auth.uid).exists() || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('maasHesaplama').val() === true || root.child('kisitliKullanicilar').child(auth.uid).child('izinler').child('netMaasHesaplama').val() === true)",
       ".write": "auth != null && !root.child('kisitliKullanicilar').child(auth.uid).exists()"

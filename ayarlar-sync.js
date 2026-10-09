@@ -1,5 +1,5 @@
 /*
-  ayarlar-sync.js — WG.051026.0940.729
+  ayarlar-sync.js — WG.091026.2250.757
   ===============
   Kur ve KDV oranı SADECE localStorage'da tutulmuyor — Firebase'in
   "ayarlar/" yoluna da yazılıyor ki bir cihazda (örn. Samsung S22) girilen
@@ -141,14 +141,33 @@ var AyarlarSync = (function(){
     if(typeof fn === "function" && dinleyiciler.indexOf(fn)===-1) dinleyiciler.push(fn);
   }
 
-  function kurKaydet(v, kaynak){
+  // DÜZELTME (09.10.2026, kod incelemesi sonrası): önceden Firebase
+  // yazması "fırlat ve unut" şeklindeydi — localStorage HER ZAMAN güncellenir,
+  // Firebase'e yazma başarısız olsa bile kimse haberdar olmazdı; bu durumda
+  // bu cihazda görünen kur ile merkezdeki (ve diğer cihazlardaki) kur
+  // sessizce birbirinden ayrışabiliyordu. Artık localStorage ANINDA
+  // güncellenir (ekran/akış kesilmesin diye optimistik), AMA Firebase
+  // yazmasının sonucu da ayrıca beklenir — başarısız olursa isteğe bağlı
+  // geriBildir(false, hata) ile çağırana bildirilir, o da kullanıcıyı
+  // uyarabilir (bkz. cart-render.js kurElleSorVeDevamEt, ayarlar-render.js
+  // ayarlariKaydet).
+  function kurKaydet(v, kaynak, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : null;
     var zaman = Date.now();
     localStorage.setItem("weicon_kur", v);
     localStorage.setItem("weicon_kur_zaman", zaman);
     if(kaynak) localStorage.setItem("weicon_kur_kaynak", kaynak);
     try{
-      firebase.database().ref("ayarlar").update({kur:v, kurZaman:zaman, kurKaynak:kaynak||null});
-    }catch(e){}
+      firebase.database().ref("ayarlar").update({kur:v, kurZaman:zaman, kurKaynak:kaynak||null})
+        .then(function(){ if(cb) cb(true); })
+        .catch(function(err){
+          console.error("Kur Firebase'e yazılamadı (cihazda kaydedildi ama merkezde değil):", err);
+          if(cb) cb(false, err);
+        });
+    }catch(e){
+      console.error("Kur Firebase'e yazılamadı:", e);
+      if(cb) cb(false, e);
+    }
   }
 
   function kdvKaydet(v){
