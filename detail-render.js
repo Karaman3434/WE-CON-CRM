@@ -1,5 +1,5 @@
 /*
-  detail-render.js — WG.051026.1500.731
+  detail-render.js — WG.091026.0955.752
   ================
   Seçili müşterinin bilgilerini, sipariş geçmişini (ReportsData.sonIslemler
   üzerinden filtrelenmiş) ve ziyaret geçmişini gösterir.
@@ -292,6 +292,22 @@ document.addEventListener("DOMContentLoaded", function(){
   musteriGorevleriniCiz();
   ReportsData.arsivDegistiginde(faturaTakipOzetiGuncelle);
   faturaTakipOzetiGuncelle();
+  // HATA DÜZELTME (09.10.2026, Abdullah'ın isteğiyle) — "Ürün Geçmişi"
+  // paneli SADECE tıklanma anındaki arşiv verisiyle bir kerelik çiziliyordu.
+  // Sayfa "?ac=urun" ile otomatik açıldığında (ya da kullanıcı panele erken
+  // dokunduğunda) Firebase'den arşiv verisi henüz gelmemiş olabiliyor —
+  // panel "henüz satılmış ürün yok" yazıp kalıyordu, veri birazdan gelse
+  // bile kendini hiç yenilemiyordu (diğer panellerin hepsinde bu dinleyici
+  // zaten vardı, sadece burada unutulmuştu). Panel açıkken ve kullanıcı bir
+  // ürünün detayına girmemişken (liste görünümündeyken) arşiv güncellenince
+  // otomatik tazeleniyor.
+  ReportsData.arsivDegistiginde(function(){
+    try{
+      var overlay = document.getElementById("urunGecmisiOverlay");
+      var detayEl = document.getElementById("urunGecmisiDetay");
+      if(overlay && !overlay.hidden && detayEl && detayEl.hidden) urunGecmisiniAc();
+    }catch(e){}
+  });
   // Firebase müşteri listesi sayfa tam yüklenmeden önce gelmiş olabilir —
   // dinleyici bu ilk anlık görüntüyü kaçırmış olabilir. Zaten yüklenmişse
   // hemen taze veriyle güncelle.
