@@ -59,11 +59,17 @@
 #tileFaturaTakip { background: #fdeaea; border: 2.5px solid #c0392b; }
 #tileFaturaTakip .islemler-tile-alt { color: #c0392b; }
 
+/* DÜZELTME (09.10.2026, Abdullah'ın isteğiyle, mockup üzerinden onaylandı)
+   — arkadaki ekran (örn. İşlemler kutucukları) yarı saydam siyah zeminin
+   (rgba(0,0,0,0.55)) ardından hâlâ seçilebiliyordu, dikkat dağıtıyordu.
+   Zemin artık tam opak beyaz — arka plan HİÇ görünmüyor. Bu sınıf paylaşılan
+   (cart.html, calc.html, customer-cari-kart.html, customer-temas.html,
+   customer-detail.html) — değişiklik hepsinde aynı şekilde geçerli. */
 .tip-secim-overlay {
   position: fixed;
   top: var(--ust-sabit-yukseklik, 100px);
   left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.55);
+  background: #ffffff;
   display: flex;
   align-items: flex-start;
   justify-content: center;
