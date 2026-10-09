@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!-- WEICON ASİST V2 — VERSİYON: WG.091026.1540.755 — ajanda.html -->
+<!--
+  WEICON ASİST — AJANDA (günlük not defteri fotoğraf arşivi)
+  ================================================================
+  09.10.2026, Abdullah'ın isteğiyle: kağıt ajandasına günlük tuttuğu
+  işle ilgili notların fotoğraflarını tarihe göre saklayıp, ay
+  takviminden (kayıtlı günlerde rozet) tek dokunuşla o güne gidip,
+  oradan sağa/sola kaydırarak (swipe) TÜM sayfalar arasında kronolojik
+  sırayla gezinebilmesi için — gerçek bir ajandanın yapraklarını
+  çevirmesine en yakın dijital karşılık. "📷 Fotoğraf Çek" butonu
+  galeriden seçtirmez, doğrudan kamerayı açar (capture="environment") —
+  o anda çekilen kare otomatik küçültülüp seçili güne kaydedilir.
+
+  Takvim bileşeni (filtre satırı + ay takvimi + rozetler), Ziyaret
+  Takvimi (ziyaret.html/ziyaret-render.js) ile AYNI tasarım — bkz.
+  ajanda-style.css başlık yorumu. Veri modeli ve Firebase Storage
+  kullanım gerekçesi için bkz. ajanda-data.js.
+-->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3d8c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WEICON ASİST">
+<title>WEICON ASİST — Ajanda</title>
+<script>document.documentElement.style.visibility='hidden';</script>
+<link rel="stylesheet" href="home-style.css?v=WG.071026.1205.742">
+<link rel="stylesheet" href="ajanda-style.css?v=WG.091026.1540.755">
+</head>
+<body>
+
+<div class="app-ust-sabit">
+<header class="app-header">
+  <div class="logo">WEICON</div>
+  <div class="tarih" id="gunTarihi"></div>
+</header>
+
+<nav class="app-nav">
+  <a class="nav-btn nav-btn--geri" href="home.html"><span class='nav-ikon nav-ikon--geri-kucuk'>‹</span><span class='nav-ikon nav-ikon--geri-buyuk'>‹</span><span class='nav-etiket'>Geri</span></a>
+  <a class="nav-btn nav-btn--ana" href="home.html"><span class='nav-ikon'>🏠</span><span class='nav-etiket'>Ana Sayfa</span></a>
+</nav>
+</div>
+<div class="sayfa-rota-serit">
+  <span class="sayfa-rota-serit-isim">📓 Ajanda</span>
+</div>
+
+<main class="sayfa" style="padding-bottom:76px;">
+
+  <div class="aj-filtre-satir">
+    <div class="aj-gun-filtre-yari">
+      <span class="aj-filtre-ikon">📅</span>
+      <input type="date" id="ajGunFiltre" class="aj-gun-filtre-input">
+    </div>
+    <button type="button" class="aj-ay-sec-btn" id="btnAySecAc">
+      <span class="aj-filtre-ikon">🗓️</span><span id="ajAyBaslik"></span>
+    </button>
+  </div>
+
+  <div class="aj-takvim-kutu">
+    <div class="aj-gun-basliklari">
+      <span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span>
+      <span class="aj-tatil-baslik">Cmt</span><span class="aj-tatil-baslik">Paz</span>
+    </div>
+    <div class="aj-takvim-grid" id="ajTakvimGrid"></div>
+  </div>
+
+  <p class="aj-secili-gun-baslik" id="ajSeciliGunBaslik"></p>
+  <div class="aj-sayfa-seridi" id="ajSayfaSeridi"></div>
+  <p class="aj-bos-gun" id="ajBosGun" hidden>Bu günde kayıtlı sayfa yok. Sağ alttaki "Fotoğraf Çek" ile ekleyebilirsin.</p>
+
+</main>
+
+<button type="button" class="aj-cek-btn" id="btnAjFotoCek"><span class="aj-cek-ikon">📷</span>Fotoğraf Çek</button>
+<input type="file" accept="image/*" capture="environment" id="ajFotoSecici" hidden>
+
+<!-- Ay Seç pop-up — Ziyaret Takvimi'ndekiyle aynı desen. -->
+<div class="aj-ay-sec-overlay" id="ajAySecOverlay" hidden>
+  <div class="aj-ay-sec-kutu">
+    <div class="aj-ay-sec-baslik">Ay seç</div>
+    <div class="aj-ay-sec-satir" id="ajAySecSatir"></div>
+    <button class="aj-ay-sec-kapat-btn" id="btnAjAySecKapat">Kapat</button>
+  </div>
+</div>
+
+<!-- Tam ekran kaydırmalı sayfa görüntüleyici. -->
+<div class="aj-viewer" id="ajViewer" hidden>
+  <div class="aj-viewer-ust">
+    <button class="aj-viewer-kapat" id="btnAjViewerKapat">✕ Kapat</button>
+    <button class="aj-viewer-sil" id="btnAjViewerSil">🗑 Sil</button>
+  </div>
+  <div class="aj-viewer-govde" id="ajViewerGovde">
+    <button class="aj-viewer-ok aj-viewer-ok--sol" id="btnAjViewerOnceki">‹</button>
+    <img class="aj-viewer-foto" id="ajViewerFoto" alt="Ajanda sayfası" hidden>
+    <p class="aj-viewer-bos" id="ajViewerBos" hidden>Henüz hiç sayfa eklenmemiş.</p>
+    <button class="aj-viewer-ok aj-viewer-ok--sag" id="btnAjViewerSonraki">›</button>
+  </div>
+  <div class="aj-viewer-alt" id="ajViewerAlt"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js?v=WG.011026.2340.706"></script>
+<script src="auth.js?v=WG.051026.1055.730"></script>
+<script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
+<script src="ajanda-data.js?v=WG.091026.1540.755"></script>
+<script src="hata-log.js?v=WG.130926.2010.553"></script>
+<script src="ajanda-render.js?v=WG.091026.1540.755"></script>
+</body>
+</html>
