@@ -1,9 +1,21 @@
 /*
-  ziyaret-render.js
-  =================
-  Aylık takvim görünümü: Pazartesi başlangıç, Cmt/Paz kırmızı. Güne
-  dokununca o günün kayıtları + yeni kayıt ekleme paneli açılır.
-  Sayfa açıldığında bugüne ait hatırlatmalar varsa uyarı popup'ı gösterilir.
+  ziyaret-render.js — VERSİYON: WG.091026.1725.756
+  ====================================================
+  Aylık takvim görünümü: Pazartesi başlangıç, Cmt/Paz kırmızı. Her günde
+  İKİ renkli rozet aynı anda: solda mavi (temas/işlem sayısı), sağda
+  kırmızı (ajanda sayfası sayısı). Güne dokununca önce "Temas mı, Ajanda
+  mı?" seçimi çıkar; seçilen türün paneli TEK BAŞINA açılır (ikisi
+  birlikte gösterilmez) — "‹ Türü değiştir" ile aynı gün için diğerine
+  geçilir.
+
+  AJANDA BİRLEŞTİRME (09.10.2026, Abdullah'ın isteğiyle): ayrı bir
+  "Ajanda" sayfası/menü satırı vardı, kaldırıldı — kağıt ajandasının
+  günlük not sayfalarının fotoğrafları artık doğrudan bu takvime
+  bağlı. "📷 Ekle" kamerayı doğrudan açar; sayfalar yatay kaydırılabilir
+  "film şeridi" halinde gösterilir (ortadaki kart "aktif"), kaydırdıkça
+  üstteki yüzen tarih etiketi günceli takip eder — gün sınırını fark
+  ettirmeden geçer, ajanda yaprağı çevirir gibi. Veri modeli/Firebase
+  Storage gerekçesi için bkz. ajanda-data.js.
 */
 
 function hataGoster(mesaj){
@@ -41,9 +53,14 @@ function cariSatirHTML(kod, isim, sehir){
 function gunAnahtari(yil, ay, gun){
   return yil + "-" + String(ay+1).padStart(2,"0") + "-" + String(gun).padStart(2,"0");
 }
+function gosterimTarihUret(tarihAnahtari){
+  var p = tarihAnahtari.split("-");
+  return p[2] + " " + AY_ADLARI[parseInt(p[1],10)-1] + " " + p[0];
+}
 
 var goruntulenenYil, goruntulenenAy; // ay: 0-11
 var seciliGunAnahtari = null;
+var seciliGorunum = null; // null | "temas" | "ajanda"
 var seciliFirma = null;
 var seciliTur = "ziyaret";
 var TUR_META = {
@@ -83,27 +100,30 @@ function aySecPopupDoldur(){
   }catch(e){ hataGoster("Ay listesi açılamadı: " + e.message); }
 }
 
+// Temas/işlem + ajanda sayfa sayılarını gün başına hesaplar.
+function gunSayilariniHesapla(){
+  var temas = {};
+  CustomerData.tumZiyaretTemaslar().forEach(function(k){
+    var d = new Date(k.ts);
+    var a = gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate());
+    temas[a] = (temas[a]||0) + 1;
+  });
+  if(typeof ReportsData !== "undefined"){
+    ReportsData.sonIslemler().forEach(function(k){
+      var d = new Date(k.ts);
+      var a = gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate());
+      temas[a] = (temas[a]||0) + 1;
+    });
+  }
+  var ajanda = (typeof AjandaData !== "undefined") ? AjandaData.gunSayilari() : {};
+  return {temas: temas, ajanda: ajanda};
+}
+
 function takvimiCiz(){
   try{
     document.getElementById("ziyAyBaslik").textContent = AY_ADLARI[goruntulenenAy] + " " + goruntulenenYil;
 
-    var kayitlar = CustomerData.tumZiyaretTemaslar();
-    var gunSayilari = {};
-    kayitlar.forEach(function(k){
-      var d = new Date(k.ts);
-      var anahtar = gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate());
-      gunSayilari[anahtar] = (gunSayilari[anahtar]||0) + 1;
-    });
-    // Takvimdeki gün rozeti artık temas/ziyaretlerin YANINDA o günkü
-    // sipariş/teklif/proforma/numune sayısını da içeriyor (15.09.2026,
-    // Abdullah'ın "günün işlemleri de rozette görünsün" isteği).
-    if(typeof ReportsData !== "undefined"){
-      ReportsData.sonIslemler().forEach(function(k){
-        var d = new Date(k.ts);
-        var anahtar = gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate());
-        gunSayilari[anahtar] = (gunSayilari[anahtar]||0) + 1;
-      });
-    }
+    var sayilar = gunSayilariniHesapla();
 
     var ilkGun = new Date(goruntulenenYil, goruntulenenAy, 1);
     // JS: Pazar=0..Cumartesi=6 → Pazartesi başlangıçlı indekse çevir
@@ -118,34 +138,90 @@ function takvimiCiz(){
       var anahtar = gunAnahtari(goruntulenenYil, goruntulenenAy, g);
       var haftaGunu = new Date(goruntulenenYil, goruntulenenAy, g).getDay();
       var tatilMi = haftaGunu===0 || haftaGunu===6;
-      var sayi = gunSayilari[anahtar] || 0;
+      var sayiTemas = sayilar.temas[anahtar] || 0;
+      var sayiAjanda = sayilar.ajanda[anahtar] || 0;
       var siniflar = "ziy-gun-hucre";
       if(tatilMi) siniflar += " ziy-gun-hucre--tatil";
       if(anahtar===bugunAnahtar) siniflar += " ziy-gun-hucre--bugun";
       if(anahtar===seciliGunAnahtari) siniflar += " ziy-gun-hucre--secili";
       html += "<div class='" + siniflar + "' data-anahtar='" + anahtar + "'>"
         + g
-        + (sayi>0 ? "<span class='ziy-gun-rozet'>" + sayi + "</span>" : "")
+        + (sayiTemas>0 ? "<span class='ziy-gun-rozet-cift ziy-gun-rozet-cift--temas'>" + sayiTemas + "</span>" : "")
+        + (sayiAjanda>0 ? "<span class='ziy-gun-rozet-cift ziy-gun-rozet-cift--ajanda'>" + sayiAjanda + "</span>" : "")
         + "</div>";
     }
     document.getElementById("ziyTakvimGrid").innerHTML = html;
 
     document.querySelectorAll(".ziy-gun-hucre:not(.ziy-gun-hucre--bos)").forEach(function(hucre){
-      hucre.onclick = function(){
-        seciliGunAnahtari = this.getAttribute("data-anahtar");
-        takvimiCiz();
-        gunPaneliniAc(seciliGunAnahtari, kayitlar);
-      };
+      hucre.onclick = function(){ gunSecildi(this.getAttribute("data-anahtar")); };
     });
   }catch(e){ hataGoster("Takvim çizilemedi: " + e.message); }
 }
 
-function gunPaneliniAc(anahtar, tumKayitlar){
-  try{
-    var parca = anahtar.split("-");
-    var gosterimTarih = parca[2] + " " + AY_ADLARI[parseInt(parca[1],10)-1] + " " + parca[0];
-    document.getElementById("ziyGunPanelBaslik").textContent = gosterimTarih + " — seçili gün";
+// Bir güne dokununca — önce tür seçim ekranı açılır.
+function gunSecildi(anahtar){
+  seciliGunAnahtari = anahtar;
+  seciliGorunum = null;
+  takvimiCiz();
+  panelBasligiGuncelle();
 
+  var sayilar = gunSayilariniHesapla();
+  document.getElementById("ziyGorunumSecimTemasSayi").textContent = (sayilar.temas[anahtar]||0) + " kayıt";
+  document.getElementById("ziyGorunumSecimAjandaSayi").textContent = (sayilar.ajanda[anahtar]||0) + " sayfa";
+
+  document.getElementById("ziyGorunumSecim").hidden = false;
+  document.getElementById("ziyTemasPanel").hidden = true;
+  document.getElementById("ziyAjandaPanel").hidden = true;
+  document.getElementById("ziyGunPanel").hidden = false;
+  document.getElementById("ziyGunPanel").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function panelBasligiGuncelle(){
+  var el = document.getElementById("ziyGunPanelBaslik");
+  if(!seciliGunAnahtari){ el.textContent = ""; return; }
+  var gosterim = gosterimTarihUret(seciliGunAnahtari);
+  if(seciliGorunum === "temas") el.textContent = gosterim + " — 📍 Temas";
+  else if(seciliGorunum === "ajanda") el.textContent = gosterim + " — 📓 Ajanda";
+  else el.textContent = gosterim + " — hangisi?";
+}
+
+function gorunumSec(tur){
+  seciliGorunum = tur;
+  panelBasligiGuncelle();
+  document.getElementById("ziyGorunumSecim").hidden = true;
+  if(tur === "temas"){
+    document.getElementById("ziyTemasPanel").hidden = false;
+    document.getElementById("ziyAjandaPanel").hidden = true;
+    temasPaneliniDoldur(seciliGunAnahtari);
+  } else {
+    document.getElementById("ziyAjandaPanel").hidden = false;
+    document.getElementById("ziyTemasPanel").hidden = true;
+    ajandaFilmSeridiniCiz(seciliGunAnahtari);
+  }
+}
+
+function gorunumDegistir(){
+  seciliGorunum = null;
+  panelBasligiGuncelle();
+  document.getElementById("ziyTemasPanel").hidden = true;
+  document.getElementById("ziyAjandaPanel").hidden = true;
+  var sayilar = gunSayilariniHesapla();
+  document.getElementById("ziyGorunumSecimTemasSayi").textContent = (sayilar.temas[seciliGunAnahtari]||0) + " kayıt";
+  document.getElementById("ziyGorunumSecimAjandaSayi").textContent = (sayilar.ajanda[seciliGunAnahtari]||0) + " sayfa";
+  document.getElementById("ziyGorunumSecim").hidden = false;
+}
+
+function panelKapat(){
+  document.getElementById("ziyGunPanel").hidden = true;
+  seciliGunAnahtari = null;
+  seciliGorunum = null;
+  takvimiCiz();
+}
+
+// ——— TEMAS PANELİ ———
+function temasPaneliniDoldur(anahtar){
+  try{
+    var tumKayitlar = CustomerData.tumZiyaretTemaslar();
     var buGununKayitlari = tumKayitlar.filter(function(k){
       var d = new Date(k.ts);
       return gunAnahtari(d.getFullYear(), d.getMonth(), d.getDate()) === anahtar;
@@ -178,10 +254,8 @@ function gunPaneliniAc(anahtar, tumKayitlar){
     document.getElementById("ziyHatirlatmaTarih").value = anahtar;
     turSecimGuncelle();
 
-    document.getElementById("ziyGunPanel").hidden = false;
-    document.getElementById("ziyGunPanel").scrollIntoView({behavior:"smooth", block:"start"});
     gununIslemleriniCiz(anahtar);
-  }catch(e){ hataGoster("Gün paneli açılamadı: " + e.message); }
+  }catch(e){ hataGoster("Temas paneli açılamadı: " + e.message); }
 }
 
 var ISLEM_TUR_ETIKET = {numune:"Numune", teklif:"Teklif", proforma:"Proforma", siparis:"Sipariş"};
@@ -240,6 +314,156 @@ function firmaAramaCiz(){
   });
 }
 
+// ——— AJANDA FİLM ŞERİDİ ———
+// Seçilen fotoğrafı küçültüp JPEG olarak sıkıştırır (maks. 1100px
+// genişlik, %65 kalite — el yazısı okunabilir kalsın).
+function resimSikistir(file, geriBildir){
+  try{
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        try{
+          var maxGenislik = 1100;
+          var olcek = Math.min(1, maxGenislik / img.width);
+          var canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.width * olcek));
+          canvas.height = Math.max(1, Math.round(img.height * olcek));
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          geriBildir(canvas.toDataURL("image/jpeg", 0.65));
+        }catch(e){ geriBildir(null); }
+      };
+      img.onerror = function(){ geriBildir(null); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){ geriBildir(null); };
+    reader.readAsDataURL(file);
+  }catch(e){ geriBildir(null); }
+}
+
+// Film şeridini TÜM sayfalardan (kronolojik) kurar, hedef tarihe en
+// yakın karta kaydırıp "aktif" yapar.
+function ajandaFilmSeridiniCiz(hedefTarih){
+  try{
+    var tumKayitlar = (typeof AjandaData !== "undefined") ? AjandaData.tumKayitlarKronolojik() : [];
+    var seridEl = document.getElementById("ajFilmSeridi");
+    var bosEl = document.getElementById("ajFilmBos");
+
+    if(tumKayitlar.length === 0){
+      seridEl.innerHTML = "";
+      bosEl.hidden = false;
+      document.getElementById("ajYuzenTarih").textContent = gosterimTarihUret(hedefTarih);
+      return;
+    }
+    bosEl.hidden = true;
+
+    seridEl.innerHTML = tumKayitlar.map(function(k){
+      var saat = new Date(k.zaman).toLocaleTimeString("tr-TR", {hour:"2-digit", minute:"2-digit"});
+      return "<div class='aj-film-kart' data-id='" + k.id + "' data-tarih='" + k.tarih + "' data-yol='" + htmlEsc(k.yol) + "'>"
+        + "<button type='button' class='aj-film-sil' data-id='" + k.id + "' data-tarih='" + k.tarih + "' data-yol='" + htmlEsc(k.yol) + "'>🗑</button>"
+        + "<div class='aj-film-resim' style='background-image:url(" + "\"" + k.url + "\"" + ")'></div>"
+        + "<div class='aj-film-saat'>" + gosterimTarihUret(k.tarih) + " — " + saat + "</div>"
+        + "</div>";
+    }).join("");
+
+    seridEl.querySelectorAll(".aj-film-sil").forEach(function(btn){
+      btn.onclick = function(ev){
+        ev.stopPropagation();
+        ajandaSayfasiSil(this.getAttribute("data-tarih"), this.getAttribute("data-id"), this.getAttribute("data-yol"));
+      };
+    });
+
+    // Hedef tarihe eşit ya da ondan sonraki ilk kart (yoksa son kart).
+    var hedefIndex = tumKayitlar.length - 1;
+    for(var i=0; i<tumKayitlar.length; i++){
+      if(tumKayitlar[i].tarih >= hedefTarih){ hedefIndex = i; break; }
+    }
+    ajFilmKaydirVeAktifEt(hedefIndex, false);
+  }catch(e){ hataGoster("Ajanda film şeridi çizilemedi: " + e.message); }
+}
+
+function ajFilmKaydirVeAktifEt(index, animasyonlu){
+  var serit = document.getElementById("ajFilmSeridi");
+  var kartlar = serit.querySelectorAll(".aj-film-kart");
+  if(!kartlar.length || !kartlar[index]) return;
+  var kart = kartlar[index];
+  var hedefScroll = kart.offsetLeft - (serit.clientWidth - kart.offsetWidth) / 2;
+  serit.scrollTo({left: Math.max(0, hedefScroll), behavior: animasyonlu ? "smooth" : "auto"});
+  kartlar.forEach(function(k){ k.classList.remove("aj-film-kart--aktif"); });
+  kart.classList.add("aj-film-kart--aktif");
+  document.getElementById("ajYuzenTarih").textContent = gosterimTarihUret(kart.getAttribute("data-tarih"));
+}
+
+// Kaydırma bittikçe ortadaki kartı bulup "aktif" yapar, üstteki yüzen
+// tarih etiketini günceller — gün sınırını fark ettirmeden geçer.
+var ajFilmKaydirmaCercevesi = null;
+function ajFilmKaydirmaDegisti(){
+  if(ajFilmKaydirmaCercevesi) cancelAnimationFrame(ajFilmKaydirmaCercevesi);
+  ajFilmKaydirmaCercevesi = requestAnimationFrame(function(){
+    var serit = document.getElementById("ajFilmSeridi");
+    var kartlar = serit.querySelectorAll(".aj-film-kart");
+    if(!kartlar.length) return;
+    var seritOrta = serit.scrollLeft + serit.clientWidth / 2;
+    var enYakinKart = null, enYakinFark = Infinity;
+    kartlar.forEach(function(kart){
+      var kartOrta = kart.offsetLeft + kart.offsetWidth / 2;
+      var fark = Math.abs(kartOrta - seritOrta);
+      if(fark < enYakinFark){ enYakinFark = fark; enYakinKart = kart; }
+    });
+    if(!enYakinKart) return;
+    kartlar.forEach(function(k){ k.classList.remove("aj-film-kart--aktif"); });
+    enYakinKart.classList.add("aj-film-kart--aktif");
+    document.getElementById("ajYuzenTarih").textContent = gosterimTarihUret(enYakinKart.getAttribute("data-tarih"));
+  });
+}
+
+function ajandaEkleTiklandi(){
+  document.getElementById("ajFotoSecici").click();
+}
+
+function ajandaFotoSecildi(file){
+  if(!file || !seciliGunAnahtari) return;
+  // Hedef: film şeridindeki o an ortadaki (aktif) kartın tarihi, yoksa
+  // takvimden seçilen gün.
+  var aktifKart = document.querySelector(".aj-film-kart--aktif");
+  var hedefTarih = aktifKart ? aktifKart.getAttribute("data-tarih") : seciliGunAnahtari;
+
+  var btn = document.getElementById("btnAjandaEkle");
+  btn.disabled = true;
+  btn.innerHTML = "<span>⏳</span>Yükleniyor";
+  resimSikistir(file, function(dataUrl){
+    if(!dataUrl){
+      btn.disabled = false;
+      btn.innerHTML = "<span>📷</span>Ekle";
+      hataGoster("Fotoğraf işlenemedi, tekrar dener misin?");
+      return;
+    }
+    AjandaData.fotografEkle(hedefTarih, dataUrl, function(basarili, err){
+      btn.disabled = false;
+      btn.innerHTML = "<span>📷</span>Ekle";
+      if(!basarili){
+        hataGoster("Fotoğraf kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+        return;
+      }
+      ajandaFilmSeridiniCiz(hedefTarih);
+      takvimiCiz();
+    });
+  });
+}
+
+function ajandaSayfasiSil(tarih, id, yol){
+  if(!confirm("Bu sayfa fotoğrafı silinsin mi? Bu işlem geri alınamaz.")) return;
+  AjandaData.fotografSil(tarih, id, yol, function(basarili, err){
+    if(!basarili){
+      hataGoster("Silinemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
+      return;
+    }
+    ajandaFilmSeridiniCiz(seciliGunAnahtari);
+    takvimiCiz();
+  });
+}
+
 function hatirlatmalariKontrolEt(){
   try{
     var liste = CustomerData.hatirlatmalarBugun();
@@ -282,15 +506,25 @@ document.addEventListener("DOMContentLoaded", function(){
     var parca = deger.split("-");
     goruntulenenYil = parseInt(parca[0], 10);
     goruntulenenAy = parseInt(parca[1], 10) - 1;
-    seciliGunAnahtari = deger;
     takvimiCiz();
-    gunPaneliniAc(seciliGunAnahtari, CustomerData.tumZiyaretTemaslar());
+    gunSecildi(deger);
   };
-  document.getElementById("btnZiyGunKapat").onclick = function(){
-    document.getElementById("ziyGunPanel").hidden = true;
-    seciliGunAnahtari = null;
-    takvimiCiz();
-  };
+  document.getElementById("btnZiyGunKapat").onclick = panelKapat;
+
+  // Tür seçim kartları + geri linkleri.
+  document.getElementById("ziyGorunumSecimTemas").onclick = function(){ gorunumSec("temas"); };
+  document.getElementById("ziyGorunumSecimAjanda").onclick = function(){ gorunumSec("ajanda"); };
+  document.getElementById("btnZiyTemasGeri").onclick = gorunumDegistir;
+  document.getElementById("btnZiyAjandaGeri").onclick = gorunumDegistir;
+
+  // Ajanda — Ekle + film şeridi kaydırma dinleyicisi.
+  document.getElementById("btnAjandaEkle").onclick = ajandaEkleTiklandi;
+  document.getElementById("ajFotoSecici").addEventListener("change", function(){
+    var file = this.files && this.files[0];
+    ajandaFotoSecildi(file);
+    this.value = "";
+  });
+  document.getElementById("ajFilmSeridi").addEventListener("scroll", ajFilmKaydirmaDegisti, {passive:true});
 
   document.getElementById("ziyFirmaAra").addEventListener("input", firmaAramaCiz);
 
@@ -326,8 +560,7 @@ document.addEventListener("DOMContentLoaded", function(){
       btn.disabled = false;
       btn.textContent = "✓ Kaydet";
       if(basarili){
-        document.getElementById("ziyGunPanel").hidden = true;
-        takvimiCiz();
+        panelKapat();
       } else {
         hataGoster("Kaydedilemedi: " + (err && err.message ? err.message : "bilinmeyen hata"));
       }
@@ -342,7 +575,13 @@ document.addEventListener("DOMContentLoaded", function(){
   if(typeof ReportsData !== "undefined"){
     ReportsData.arsivDegistiginde(function(){
       takvimiCiz();
-      if(seciliGunAnahtari) gununIslemleriniCiz(seciliGunAnahtari);
+      if(seciliGunAnahtari && seciliGorunum==="temas") gununIslemleriniCiz(seciliGunAnahtari);
+    });
+  }
+  if(typeof AjandaData !== "undefined"){
+    AjandaData.degistiginde(function(){
+      takvimiCiz();
+      if(seciliGunAnahtari && seciliGorunum==="ajanda") ajandaFilmSeridiniCiz(seciliGunAnahtari);
     });
   }
 
@@ -352,10 +591,9 @@ document.addEventListener("DOMContentLoaded", function(){
     var parcaUrl = urlTarih.split("-");
     goruntulenenYil = parseInt(parcaUrl[0], 10);
     goruntulenenAy = parseInt(parcaUrl[1], 10) - 1;
-    seciliGunAnahtari = urlTarih;
     document.getElementById("ziyGunFiltre").value = urlTarih;
     takvimiCiz();
-    gunPaneliniAc(seciliGunAnahtari, CustomerData.tumZiyaretTemaslar());
+    gunSecildi(urlTarih);
   } else {
     takvimiCiz();
   }

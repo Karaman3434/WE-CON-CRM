@@ -1,192 +1,75 @@
 /*
-  ajanda-style.css — VERSİYON: WG.091026.1540.755
+  ajanda-style.css — VERSİYON: WG.091026.1725.756
   ==================================================
-  AJANDA sayfasına özel TÜM görsel stiller ("aj-" önekli sınıflar).
-  Takvim/filtre/ay-seç bölümü, Ziyaret Takvimi'ndeki (.ziy-takvim-*,
-  .ziy-filtre-*, .ziy-ay-sec-*) GERÇEK tasarımın bire bir aynısı —
-  sadece bu sayfaya özel olsun diye "aj-" önekiyle kopyalanmıştır (o
-  sayfanın kendi dosyasına bağımlı kalınmadı, WEICON ASİST'teki her
-  sayfanın kendi "<sayfa>-style.css" dosyası olması kuralına uyuldu).
-  Fotoğraf kutusu görünümü de Ödenebilir Komisyon'daki (.ok-foto-kutu)
-  tasarımdan esinlenilmiştir. Tam ekran kaydırmalı görüntüleyici (.aj-
-  viewer-*) ise bu sayfaya özel, YENİ bir bileşendir (09.10.2026,
-  Abdullah'ın isteğiyle — "günlük not defteri" sayfa fotoğraflarını
-  takvimden tek dokunuşla açıp film şeridi gibi kaydırarak gezme).
+  09.10.2026 — Abdullah'ın isteğiyle, ayrı bir "Ajanda" sayfası yerine
+  Ziyaret Takvimi (ziyaret.html) içine TAŞINDI/BİRLEŞTİRİLDİ: artık ayrı
+  bir menü satırı ve ayrı bir sayfa yok. Bu dosya SADECE günün ajanda
+  (not defteri) sayfa fotoğraflarının "film şeridi" görünümüne ait
+  stilleri tutar ("aj-" önekli sınıflar); takvim/rozet/tür-seçim gibi
+  Ziyaret Takvimi'nin kendi bileşenleri ziyaret-style.css'te.
+
+  Film şeridi: seçili günün (ve komşu günlerin) sayfaları yatayda
+  kaydırılabilir büyük kartlar halinde, ortadaki kart "aktif" kabul
+  edilir; üstte küçük bir "Ekle" (kamera) butonu ve kaydırdıkça
+  güncellenen yüzen bir tarih etiketi bulunur — gerçek ajandanın
+  yapraklarını çevirmesine en yakın dijital karşılık.
 */
 
-.aj-filtre-satir {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.aj-gun-filtre-yari,
-.aj-ay-sec-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background: #fff;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 9px 6px;
-  font-size: 11.5px;
-  box-sizing: border-box;
-}
-.aj-filtre-ikon { font-size: 13px; line-height: 1; }
-.aj-gun-filtre-input {
-  border: none;
-  background: transparent;
-  padding: 0;
-  font-size: 11.5px;
-  color: #2d3540;
-  min-width: 0;
-}
-.aj-ay-sec-btn {
-  border-color: #003a70;
-  background: #eaf2fc;
-  color: #003a70;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.aj-takvim-kutu {
-  background: #ffffff;
-  border: 1px solid #e2e6ec;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 14px;
-}
-.aj-gun-basliklari {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  font-size: 10px;
-  font-weight: 900;
-  text-align: center;
-  color: #2d3540;
-  margin-bottom: 4px;
-}
-.aj-tatil-baslik { color: #c0392b; }
-
-.aj-takvim-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
-}
-.aj-gun-hucre {
+.aj-film-ust {
   position: relative;
-  text-align: center;
-  padding: 8px 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: #333333;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.aj-gun-hucre--bos { cursor: default; }
-.aj-gun-hucre--tatil { color: #c0392b; }
-.aj-gun-hucre--bugun { background: #eaf2fc; border: 2px solid #3569b8; }
-.aj-gun-hucre--secili { background: #faeeda; border: 2px solid #b7601f; }
-.aj-gun-rozet {
-  position: absolute;
-  top: 1px;
-  right: 2px;
-  background: #e0730f;
-  color: #ffffff;
-  border-radius: 50%;
-  width: 15px;
-  height: 15px;
-  font-size: 9px;
-  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #b35c0c;
+  margin-bottom: 10px;
+  min-height: 34px;
 }
-
-/* Ay seç pop-up — aylar tek satırda yan yana, yatay kaydırılabilir. */
-.aj-ay-sec-overlay {
-  position: fixed;
-  top: var(--ust-sabit-yukseklik, 100px);
-  left: 0; right: 0; bottom: 0;
-  background: #ffffff;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  z-index: 900;
-  padding: 0;
-}
-.aj-ay-sec-overlay[hidden] { display: none; }
-.aj-ay-sec-kutu {
-  background: #ffffff;
-  border-radius: 0;
-  padding: 18px;
-  max-width: none;
-  width: 100%;
-}
-.aj-ay-sec-baslik {
-  font-size: 15px;
-  font-weight: 900;
-  color: #003a70;
-  margin-bottom: 12px;
-  text-align: center;
-}
-.aj-ay-sec-satir {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  -webkit-overflow-scrolling: touch;
-}
-.aj-ay-secenek {
-  flex: 0 0 auto;
-  background: #eaf2fc;
-  color: #003a70;
-  border-radius: 5px;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.aj-ay-secenek--secili { background: #003a70; color: #fff; }
-.aj-ay-sec-kapat-btn {
-  width: 100%;
-  background: #c0392b;
-  color: #ffffff;
+.aj-ekle-kucuk {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #0e6b34;
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 12px;
-  min-height: 44px;
-  font-size: 13px;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 11.5px;
   font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   cursor: pointer;
-  margin-top: 8px;
+}
+.aj-ekle-kucuk[disabled] { opacity: .6; pointer-events: none; }
+.aj-yuzen-tarih {
+  background: #003a70;
+  color: #fff;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 11.5px;
+  font-weight: 900;
+  box-shadow: 0 3px 10px rgba(0,58,112,.3);
 }
 
-/* Seçili günün başlığı + küçük önizleme şeridi */
-.aj-secili-gun-baslik {
-  font-size: 11px;
-  font-weight: 800;
-  color: #556170;
-  margin: 0 0 8px;
-}
-.aj-sayfa-seridi {
+.aj-film-seridi {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 4px 10px;
 }
-.aj-sayfa-kutu {
-  flex: 0 0 100px;
-  background: #f4f7fb;
-  border: 1.5px solid #0e6b34;
-  border-radius: 10px;
-  padding: 6px;
-  text-align: center;
-  cursor: pointer;
+.aj-film-kart {
+  position: relative;
+  flex: 0 0 72%;
+  scroll-snap-align: center;
+  background: #fff;
+  border: 1.5px solid #e2e6ec;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
-.aj-sayfa-resim {
+.aj-film-kart--aktif { border-color: #0e6b34; }
+.aj-film-resim {
   width: 100%;
   aspect-ratio: 3/4;
   background-color: #dfe7f3;
@@ -194,115 +77,30 @@
   background-position: center;
   border-radius: 8px;
 }
-.aj-sayfa-saat {
-  font-size: 9.5px;
+.aj-film-saat {
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 800;
   color: #556170;
-  font-weight: 700;
-  margin-top: 5px;
+  margin-top: 6px;
 }
-.aj-bos-gun {
-  font-size: 12px;
-  color: #8a8f98;
-  padding: 10px 0 4px;
-}
-
-/* "Fotoğraf Çek" — sağ altta sabit, kamera uygulamasını açar */
-.aj-cek-btn {
-  position: fixed;
-  right: 16px;
-  bottom: 18px;
-  z-index: 60;
-  background: #0e6b34;
+.aj-film-sil {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(192,57,43,.9);
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 13px 18px;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: 0 4px 14px rgba(14,107,52,.35);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-}
-.aj-cek-ikon { font-size: 17px; }
-.aj-cek-btn--yukleniyor { opacity: .6; pointer-events: none; }
-
-/* Tam ekran kaydırmalı görüntüleyici — kronolojik sırayla TÜM sayfalar
-   arasında sağa/sola kaydırarak (swipe) gezilir, gün sınırını otomatik
-   geçer (09.10.2026, Abdullah'ın "ajanda yaprağı çevirir gibi" isteği).
-   Fotoğraf ekranı neredeyse tamamen kaplar (09.10.2026, ikinci istek). */
-.aj-viewer {
-  position: fixed;
-  inset: 0;
-  background: #0b0f14;
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-  z-index: 950;
-}
-.aj-viewer[hidden] { display: none; }
-.aj-viewer-ust {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 14px;
-  background: rgba(0,0,0,.35);
-}
-.aj-viewer-kapat, .aj-viewer-sil {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 800;
-  padding: 8px;
-  cursor: pointer;
-}
-.aj-viewer-sil { color: #ff8a80; }
-.aj-viewer-govde {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  padding: 4px;
-  touch-action: pan-y;
-}
-.aj-viewer-foto {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  box-shadow: 0 6px 24px rgba(0,0,0,.5);
-}
-.aj-viewer-ok {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,.14);
-  border: none;
-  color: #fff;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  font-size: 18px;
-  cursor: pointer;
-}
-.aj-viewer-ok--sol { left: 10px; }
-.aj-viewer-ok--sag { right: 10px; }
-.aj-viewer-ok[disabled] { opacity: .25; }
-.aj-viewer-alt {
-  text-align: center;
-  padding: 8px 14px 12px;
+  width: 26px;
+  height: 26px;
   font-size: 12px;
-  font-weight: 800;
-  color: #cbd5e1;
-  background: rgba(0,0,0,.35);
+  cursor: pointer;
 }
-.aj-viewer-alt b { color: #fff; }
-.aj-viewer-bos {
-  font-size: 13px;
-  color: #9aa5b3;
+.aj-film-bos {
+  font-size: 12px;
+  color: #8a8f98;
   text-align: center;
-  padding: 0 24px;
+  padding: 18px 0;
+  margin: 0;
 }

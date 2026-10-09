@@ -377,3 +377,61 @@
 .ziy-islem-tablo { width: 100%; border-collapse: collapse; font-size: 11.5px; }
 .ziy-islem-tablo th, .ziy-islem-tablo td { border: 1px solid #e8ecf1; padding: 6px; text-align: left; }
 .ziy-islem-tablo th { background: #f4f6f9; color: #556170; font-weight: 700; }
+
+/* ——— AJANDA BİRLEŞTİRME (09.10.2026, Abdullah'ın isteğiyle) ———
+   Ayrı "Ajanda" sayfası kaldırılıp bu takvime taşındı/birleştirildi.
+   Takvimde artık İKİ renkli rozet aynı anda: tarihin SOLUNDA mavi
+   (temas/işlem sayısı), SAĞINDA kırmızı (ajanda sayfası sayısı).
+   Bir güne dokununca önce "Temas mı, Ajanda mı?" seçimi çıkar — ikisi
+   ASLA aynı anda gösterilmez, seçilen türün paneli tek başına açılır;
+   "‹ Türü değiştir" ile aynı gün için diğerine geçilebilir. */
+.ziy-gun-rozet-cift {
+  position: absolute;
+  top: -4px;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  font-size: 9px;
+  font-weight: 900;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ziy-gun-rozet-cift--temas { left: -4px; background: #2f6fd6; border: 1.5px solid #1d4f9e; }
+.ziy-gun-rozet-cift--ajanda { right: -4px; background: #d6392f; border: 1.5px solid #a02920; }
+
+.ziy-gorunum-secim-satir {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ziy-gorunum-secim-kart {
+  flex: 1;
+  border-radius: 10px;
+  padding: 14px 8px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 900;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ziy-gorunum-secim-kart--temas { background: #eaf2fc; color: #1d4f9e; }
+.ziy-gorunum-secim-kart--temas.ziy-gorunum-secim-kart--secili { border-color: #1d4f9e; }
+.ziy-gorunum-secim-kart--ajanda { background: #fbeae8; color: #a02920; }
+.ziy-gorunum-secim-kart--ajanda.ziy-gorunum-secim-kart--secili { border-color: #a02920; }
+.ziy-gorunum-secim-ikon { font-size: 20px; }
+.ziy-gorunum-secim-sayi { font-size: 10.5px; font-weight: 700; opacity: .8; }
+
+.ziy-gorunum-geri-link {
+  font-size: 11px;
+  font-weight: 800;
+  color: #556170;
+  cursor: pointer;
+  margin-bottom: 10px;
+  display: inline-block;
+}

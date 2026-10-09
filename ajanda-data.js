@@ -1,5 +1,5 @@
 /*
-  ajanda-data.js — VERSİYON: WG.091026.1540.755
+  ajanda-data.js — VERSİYON: WG.091026.1725.756
   =================================================
   09.10.2026, Abdullah'ın isteğiyle: günlük kağıt ajandasının (not
   defteri) sayfa fotoğraflarını tarihe göre saklayıp hızlıca geri
@@ -20,7 +20,7 @@
   açıldığında veya görüntüleyicide sırası geldiğinde (tarayıcının kendi
   <img>/background-image yüklemesiyle) çekilir.
 
-  Fotoğraf, yüklenmeden ÖNCE ajanda-render.js'teki resimSikistir() ile
+  Fotoğraf, yüklenmeden ÖNCE ziyaret-render.js'teki resimSikistir() ile
   (Ödenebilir Komisyon'daki AYNI yöntem: canvas'a çizip küçültüp %60
   kaliteli JPEG'e çevirme) sıkıştırılıp sonra buraya "data:image/jpeg;
   base64,..." olarak verilir.

@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <!--
-  WEICON ASİST — ZİYARET / TEMAS TAKVİMİ v2
+  WEICON ASİST — ZİYARET / TEMAS TAKVİMİ v3
   =============================================
-  Aylık takvim: Pazartesi başlangıç, Cmt/Paz kırmızı. Güne dokununca o günün
-  ziyaret/temas kayıtları + yeni kayıt ekleme formu (firma seç, ziyaret/temas,
-  not, opsiyonel hatırlatma tarihi) açılır. Gün üzerinde kaç kayıt varsa rozet
-  gösterir.
+  Aylık takvim: Pazartesi başlangıç, Cmt/Paz kırmızı. Her günde İKİ renkli
+  rozet aynı anda: solda mavi (temas/işlem sayısı), sağda kırmızı (ajanda
+  sayfası sayısı — bkz. aşağı). Güne dokununca önce "Temas mı, Ajanda mı?"
+  seçimi çıkar; seçilen türün paneli TEK BAŞINA açılır (ikisi birlikte
+  gösterilmez), "‹ Türü değiştir" ile aynı gün için diğerine geçilir.
+
+  AJANDA BİRLEŞTİRME (09.10.2026, Abdullah'ın isteğiyle): kağıt
+  ajandasının günlük not sayfalarının fotoğraflarını buraya, bu takvime
+  taşıdık — eskiden ayrı bir "Ajanda" sayfası/menü satırı vardı, artık
+  yok. "📷 Ekle" ile kamera doğrudan açılır, çekilen kare küçültülüp
+  seçili güne kaydedilir; sayfalar yatay kaydırılabilir "film şeridi"
+  halinde gösterilir, kaydırdıkça üstteki yüzen tarih etiketi güncellenir
+  (gün sınırını fark ettirmeden geçer — ajanda yaprağı çevirir gibi).
+  Veri modeli/Firebase Storage gerekçesi için bkz. ajanda-data.js.
 -->
 <html lang="tr">
 <head>
@@ -20,7 +30,8 @@
 <title>WEICON ASİST — Ziyaret Takvimi</title>
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.071026.1205.742">
-<link rel="stylesheet" href="ziyaret-style.css?v=WG.011026.2210.702">
+<link rel="stylesheet" href="ziyaret-style.css?v=WG.091026.1725.756">
+<link rel="stylesheet" href="ajanda-style.css?v=WG.091026.1725.756">
 </head>
 <body>
 
@@ -67,45 +78,69 @@
   </div>
 
   <section class="ziy-gun-panel" id="ziyGunPanel" hidden>
-    <!-- İşlemler + seçili gün etiketi tek satırda (25.09.2026, eskiden
-         seçili gün başlığı ayrı bir satırdı). -->
-    <div class="ziy-ust-bilgi-satir">
-      <span class="ziy-islem-baslik" id="ziyIslemBaslik" hidden>📋 İşlemler</span>
-      <span class="ziy-gun-panel-baslik" id="ziyGunPanelBaslik"></span>
-    </div>
+    <div class="ziy-gun-panel-baslik" id="ziyGunPanelBaslik" style="margin-bottom:10px;"></div>
 
-    <!-- Günün işlemleri (15.09.2026) — takvimin/başlığın hemen altında,
-         görev girme (temas/yeni kayıt ekle) bölümünden ÖNCE gösterilir. -->
-    <div id="ziyIslemTablosu"></div>
-
-    <div id="ziyGunKayitListesi"></div>
-    <p class="bos-mesaj" id="ziyGunKayitBos" hidden>Bu günde kayıt yok.</p>
-
-    <div class="ziy-yeni-kayit-baslik">+ Yeni kayıt ekle</div>
-    <div class="ziy-arama-temas-satir">
-      <div class="arama-kutusu">
-        <input type="text" id="ziyFirmaAra" placeholder="Firma ara..." autocomplete="off">
-        <span class="arama-ikon">🔍</span>
+    <!-- TÜR SEÇ — gün seçilince önce burası gösterilir. -->
+    <div id="ziyGorunumSecim" hidden>
+      <div class="ziy-gorunum-secim-satir">
+        <div class="ziy-gorunum-secim-kart ziy-gorunum-secim-kart--temas" id="ziyGorunumSecimTemas">
+          <span class="ziy-gorunum-secim-ikon">📍</span><span>Temas</span>
+          <span class="ziy-gorunum-secim-sayi" id="ziyGorunumSecimTemasSayi"></span>
+        </div>
+        <div class="ziy-gorunum-secim-kart ziy-gorunum-secim-kart--ajanda" id="ziyGorunumSecimAjanda">
+          <span class="ziy-gorunum-secim-ikon">📓</span><span>Ajanda</span>
+          <span class="ziy-gorunum-secim-sayi" id="ziyGorunumSecimAjandaSayi"></span>
+        </div>
       </div>
-      <button type="button" class="ziy-temas-ac-btn" id="btnZiyTemasAc">Temas</button>
     </div>
-    <div id="ziyFirmaSonuclari"></div>
-    <div class="ziy-secili-firma" id="ziySeciliFirma" hidden></div>
 
-    <input type="text" id="ziyNot" placeholder="Not (opsiyonel)">
+    <!-- TEMAS PANELİ — İşlemler + kayıtlar + yeni kayıt ekle formu. -->
+    <div id="ziyTemasPanel" hidden>
+      <span class="ziy-gorunum-geri-link" id="btnZiyTemasGeri">‹ Türü değiştir</span>
+      <span class="ziy-islem-baslik" id="ziyIslemBaslik" hidden>📋 İşlemler</span>
+      <div id="ziyIslemTablosu"></div>
 
-    <label class="ziy-hatirlatma-satir">
-      <input type="checkbox" id="ziyHatirlatmaCheck">
-      <span>🔔 Hatırlatma ekle</span>
-    </label>
-    <input type="date" id="ziyHatirlatmaTarih" hidden>
-    <p class="ziy-hatirlatma-not">Bu tarihin sabahı, uygulamayı açtığında hatırlatma bildirimi gösterilir.</p>
+      <div id="ziyGunKayitListesi"></div>
+      <p class="bos-mesaj" id="ziyGunKayitBos" hidden>Bu günde kayıt yok.</p>
 
-    <div class="ziy-alt-buton-satir">
-      <button class="ziy-panel-kapat-btn" id="btnZiyGunKapat">Kapat</button>
+      <div class="ziy-yeni-kayit-baslik">+ Yeni kayıt ekle</div>
+      <div class="ziy-arama-temas-satir">
+        <div class="arama-kutusu">
+          <input type="text" id="ziyFirmaAra" placeholder="Firma ara..." autocomplete="off">
+          <span class="arama-ikon">🔍</span>
+        </div>
+        <button type="button" class="ziy-temas-ac-btn" id="btnZiyTemasAc">Temas</button>
+      </div>
+      <div id="ziyFirmaSonuclari"></div>
+      <div class="ziy-secili-firma" id="ziySeciliFirma" hidden></div>
+
+      <input type="text" id="ziyNot" placeholder="Not (opsiyonel)">
+
+      <label class="ziy-hatirlatma-satir">
+        <input type="checkbox" id="ziyHatirlatmaCheck">
+        <span>🔔 Hatırlatma ekle</span>
+      </label>
+      <input type="date" id="ziyHatirlatmaTarih" hidden>
+      <p class="ziy-hatirlatma-not">Bu tarihin sabahı, uygulamayı açtığında hatırlatma bildirimi gösterilir.</p>
+
       <button class="ziy-kaydet-btn" id="btnZiyKaydet">✓ Kaydet</button>
     </div>
+
+    <!-- AJANDA PANELİ — film şeridi + "Ekle" + yüzen tarih (09.10.2026). -->
+    <div id="ziyAjandaPanel" hidden>
+      <span class="ziy-gorunum-geri-link" id="btnZiyAjandaGeri">‹ Türü değiştir</span>
+      <div class="aj-film-ust">
+        <button type="button" class="aj-ekle-kucuk" id="btnAjandaEkle"><span>📷</span>Ekle</button>
+        <span class="aj-yuzen-tarih" id="ajYuzenTarih"></span>
+      </div>
+      <div class="aj-film-seridi" id="ajFilmSeridi"></div>
+      <p class="aj-film-bos" id="ajFilmBos" hidden>Henüz hiç sayfa eklenmemiş — "Ekle" ile çekebilirsin.</p>
+    </div>
+
+    <button class="ziy-panel-kapat-btn" id="btnZiyGunKapat" style="margin-top:10px;">Kapat</button>
   </section>
+
+  <input type="file" accept="image/*" capture="environment" id="ajFotoSecici" hidden>
 
 </main>
 
@@ -148,12 +183,14 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="firebase-config.js?v=WG.011026.2340.706"></script>
 <script src="auth.js?v=WG.051026.1055.730"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="customer-data.js?v=WG.300926.1130.675"></script>
 <script src="reports-data.js?v=WG.071026.2200.747"></script>
+<script src="ajanda-data.js?v=WG.091026.1725.756"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="ziyaret-render.js?v=WG.300926.1400.677"></script>
+<script src="ziyaret-render.js?v=WG.091026.1725.756"></script>
 </body>
 </html>
