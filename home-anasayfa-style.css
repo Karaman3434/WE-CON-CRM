@@ -1,5 +1,5 @@
 /*
-  home-anasayfa-style.css — WG.061026.1310.734
+  home-anasayfa-style.css — WG.101026.1135.758
   ========================
   SADECE home.html'e özel — Abdullah'ın paylaştığı referans fotoğrafa göre
   yeniden tasarlanan Ana Sayfa (canlı mavi/yeşil, kartlı, çekmece menülü).
@@ -182,10 +182,15 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* 10.10.2026, Abdullah'ın isteğiyle: eskiden justify-content:space-between
+     ile ikon/etiket sola, sayı sağa yaslanıyordu (kutunun iki ucuna
+     yapışıyordu) — artık içerik (ikon+etiket VE sayı) kutunun ortasında TEK
+     blok gibi, aralarında küçük sabit boşlukla duruyor. */
+  justify-content: center;
+  gap: 8px;
 }
 .as-isgunu-ikon { font-size: 14px; line-height: 1; }
-.as-isgunu-etiket { font-size: 10px; font-weight: 700; color: #c0392b; line-height: 1.2; margin-top: 2px; }
+.as-isgunu-etiket { font-size: 10px; font-weight: 700; color: #c0392b; line-height: 1.2; margin-top: 2px; text-align: center; }
 .as-isgunu-deger { font-size: 21px; font-weight: 800; color: #c0392b; line-height: 1; }
 
 .as-kur-panel {
@@ -198,9 +203,11 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* 10.10.2026 — bkz. .as-isgunu-panel'deki aynı tarihli not. */
+  justify-content: center;
+  gap: 8px;
 }
-.as-kur-etiket { font-size: 10px; font-weight: 700; color: #1a8a5e; line-height: 1.2; }
+.as-kur-etiket { font-size: 10px; font-weight: 700; color: #1a8a5e; line-height: 1.2; text-align: center; }
 .as-kur-deger { font-size: 21px; font-weight: 800; color: #0e5c3e; line-height: 1; }
 
 /* ---------- Hedef kartı (koyu lacivert) ---------- */
