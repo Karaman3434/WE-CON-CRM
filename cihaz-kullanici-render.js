@@ -1,5 +1,5 @@
 /*
-  cihaz-kullanici-render.js — VERSİYON: WG.061026.1620.737
+  cihaz-kullanici-render.js — VERSİYON: WG.101026.1325.759
   ============================================================
   "Cihazlar ve Kullanıcılar" sayfasının TEK render dosyası — eski
   cihazlar-render.js (cihaz listesi/engelleme) ve calisan-erisim-render.js
@@ -63,6 +63,45 @@ function tarihSaatGoster(ms){
 /* ========================================================================
    "Bu Cihaz" kartı — cihazlar.html'den BİREBİR taşındı, değişmedi.
    ======================================================================== */
+function cihazAdiniGercektenKaydet(ad){
+  CihazData.adiKaydet(ad, function(basarili){
+    if(basarili){
+      var ok = document.getElementById("czAdKaydedildi");
+      ok.hidden = false;
+      setTimeout(function(){ ok.hidden = true; }, 2500);
+    }
+    ckErisimKontrolEt();
+  });
+}
+
+// AYNI İSİMLİ KOPYA KARAR EKRANI (10.10.2026) — bkz. cihaz-data.js
+// aktifAyniIsimdeBaskaCihazBulAsync üstündeki açıklama.
+function czAyniIsimOverlayAc(ad, bulunan){
+  var overlay = document.getElementById("czAyniIsimOverlay");
+  var aciklama = document.getElementById("czAyniIsimAciklama");
+  if(!overlay || !aciklama) { cihazAdiniGercektenKaydet(ad); return; } // overlay yoksa eski davranışa düş
+
+  aciklama.textContent = "\"" + ad + "\" adında, hâlâ aktif (engellenmemiş) başka bir cihaz kaydı var (son görülme: "
+    + zamanGoster(bulunan.sonGorulme) + "). Bu büyük ihtimalle BU telefonun önceki kaydı — cihaz verisi bir "
+    + "şekilde temizlendiği için program bu telefonu yeni bir cihaz sanıp yeniden kaydetti.";
+  overlay.hidden = false;
+
+  document.getElementById("btnCzAyniIsimDegistir").onclick = function(){
+    overlay.hidden = true;
+    CihazData.cihaziSil(bulunan.id, function(basarili, hata){
+      if(!basarili){ hataGoster(hata || "Eski kayıt silinemedi, yeniden dene."); return; }
+      cihazAdiniGercektenKaydet(ad);
+    });
+  };
+  document.getElementById("btnCzAyniIsimFarkli").onclick = function(){
+    overlay.hidden = true;
+    cihazAdiniGercektenKaydet(ad);
+  };
+  document.getElementById("btnCzAyniIsimVazgec").onclick = function(){
+    overlay.hidden = true;
+  };
+}
+
 function buCihazKartiniHazirla(){
   var input = document.getElementById("czBuCihazAdi");
   var yerel = localStorage.getItem("weicon_cihaz_adi");
@@ -71,13 +110,15 @@ function buCihazKartiniHazirla(){
   document.getElementById("btnCzAdKaydet").onclick = function(){
     var ad = input.value.trim();
     if(!ad) return;
-    CihazData.adiKaydet(ad, function(basarili){
-      if(basarili){
-        var ok = document.getElementById("czAdKaydedildi");
-        ok.hidden = false;
-        setTimeout(function(){ ok.hidden = true; }, 2500);
+    var btn = this;
+    btn.disabled = true;
+    CihazData.aktifAyniIsimdeBaskaCihazBulAsync(ad, function(bulunan){
+      btn.disabled = false;
+      if(bulunan){
+        czAyniIsimOverlayAc(ad, bulunan);
+      } else {
+        cihazAdiniGercektenKaydet(ad);
       }
-      ckErisimKontrolEt();
     });
   };
 }
@@ -335,7 +376,13 @@ function czEngellenmisKartHtml(c){
     + "<div class='cz-kart-ust'><span class='cz-kart-ad'>" + htmlEsc(c.ad || "Adsız Cihaz") + "</span> <span class='cz-kart-rozet cz-kart-rozet--engelli'>Engelli</span></div>"
     + kullaniciSatiri
     + "<div class='cz-kart-son-gorulme'>Son görülme: " + zamanGoster(c.sonGorulme) + "</div>"
-    + "<div class='cz-kart-alt'><button class='cz-kaldir-btn' data-id='" + htmlEsc(c.id) + "'>✓ Engeli Kaldır</button></div>"
+    // 10.10.2026 (Abdullah'ın isteğiyle): "Engeli Kaldır"ın yanına gerçek,
+    // kalıcı bir "Sil" eklendi — eskiden engellenen bir kayıt asla
+    // silinemiyordu, bu da listenin sürekli büyümesine neden oluyordu.
+    + "<div class='cz-kart-alt cz-kart-alt--iki'>"
+    + "<button class='cz-kaldir-btn' data-id='" + htmlEsc(c.id) + "'>✓ Engeli Kaldır</button>"
+    + "<button class='cz-sil-btn' data-id='" + htmlEsc(c.id) + "' data-ad='" + htmlEsc(c.ad||"Adsız Cihaz") + "'>🗑 Kalıcı Sil</button>"
+    + "</div>"
     + "</div>";
 }
 
@@ -396,6 +443,18 @@ function cihazListesiniCiz(liste){
         var id = this.getAttribute("data-id");
         CihazData.engeliKaldir(id, function(basarili, hata){
           if(!basarili) hataGoster(hata || "Engel kaldırılamadı.");
+        });
+      };
+    });
+    kapsayici.querySelectorAll(".cz-sil-btn").forEach(function(btn){
+      btn.onclick = function(){
+        var id = this.getAttribute("data-id");
+        var ad = this.getAttribute("data-ad");
+        if(!confirm("\"" + ad + "\" cihaz kaydı KALICI olarak silinsin mi? Bu işlem geri alınamaz.")) return;
+        btn.disabled = true;
+        CihazData.cihaziSil(id, function(basarili, hata){
+          if(!basarili){ btn.disabled = false; hataGoster(hata || "Cihaz silinemedi."); }
+          // başarılıysa Firebase dinleyicisi listeyi zaten yeniden çizecek
         });
       };
     });

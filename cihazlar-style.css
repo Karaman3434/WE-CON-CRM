@@ -74,6 +74,40 @@
 .cz-kaldir-btn { background: #eafaf0; color: #0e6b34; border: 1.5px solid #0e6b34;}
 .cz-korumali-not { font-size: 12px; color: #8b95a1; font-style: italic; }
 
+/* "Kalıcı Sil" (10.10.2026, Abdullah'ın isteğiyle) — "Engeli Kaldır"ın
+   yanında, ayrı/koyu renkte: yanlışlıkla "Engeli Kaldır" yerine basılmasın
+   diye bilinçli olarak farklı bir görünüm. */
+.cz-kart-alt--iki { display: flex; gap: 6px; }
+.cz-kart-alt--iki .cz-kaldir-btn { width: auto; flex: 1; }
+.cz-sil-btn {
+  flex: 1;
+  border: 1.5px solid #1c232c;
+  background: #2d3540;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cz-sil-btn[disabled] { opacity: .6; pointer-events: none; }
+
+/* Aynı isimli kopya karar ekranındaki nötr (ortanca) seçenek — .btn-kaydet
+   (yeşil, "eskisinin yerine geç") ve .btn-vazgec (kırmızı, "Vazgeç") ile
+   karışmasın diye bilerek nötr gri/beyaz. */
+.cz-dup-notr-btn {
+  width: 100%;
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  color: #445;
+}
+
 /* KULLANICI ADI + GEÇMİŞİ (03.10.2026, Abdullah'ın isteğiyle) — cihaz
    kartında, cihaz adının (cz-kart-ad) hemen altında; o cihazı kullanan
    kişinin KENDİ tanımladığı isim. Şifre/giriş hesabıyla ilgisi yoktur. */

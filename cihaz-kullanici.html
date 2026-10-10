@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WEICON ASİST V2 — VERSİYON: WG.061026.1620.737 — cihaz-kullanici.html -->
+<!-- WEICON ASİST V2 — VERSİYON: WG.101026.1325.759 — cihaz-kullanici.html -->
 <!--
   CİHAZLAR VE KULLANICILAR (03.10.2026, Abdullah'ın isteğiyle)
   ================================================================
@@ -40,7 +40,7 @@
 <script>document.documentElement.style.visibility='hidden';</script>
 <link rel="stylesheet" href="home-style.css?v=WG.071026.1205.742">
 <link rel="stylesheet" href="pin-style.css">
-<link rel="stylesheet" href="cihazlar-style.css?v=WG.061026.1620.737">
+<link rel="stylesheet" href="cihazlar-style.css?v=WG.101026.1325.759">
 <link rel="stylesheet" href="calisan-erisim-style.css?v=WG.011026.2340.706">
 <link rel="stylesheet" href="ayarlar-style.css?v=WG.071026.1445.745">
 </head>
@@ -73,6 +73,18 @@
       <button class="cz-bu-cihaz-kaydet-btn" id="btnCzAdKaydet">Kaydet</button>
     </div>
     <div class="cz-bu-cihaz-ok" id="czAdKaydedildi" hidden>✓ Kaydedildi</div>
+  </div>
+
+  <!-- AYNI İSİMLİ KOPYA KARAR EKRANI (10.10.2026, Abdullah'ın isteğiyle) —
+       bkz. cihaz-data.js aktifAyniIsimdeBaskaCihazBulAsync üstündeki not. -->
+  <div class="overlay" id="czAyniIsimOverlay" hidden>
+    <div class="sheet">
+      <div class="sheet-baslik">⚠️ Aynı isimde cihaz bulundu</div>
+      <div class="sheet-alt" id="czAyniIsimAciklama"></div>
+      <div class="sheet-buton-satir"><button type="button" class="btn-kaydet" id="btnCzAyniIsimDegistir">🔁 Eskisinin yerine geç</button></div>
+      <div class="sheet-buton-satir"><button type="button" class="cz-dup-notr-btn" id="btnCzAyniIsimFarkli">➕ Hayır, farklı bir cihaz</button></div>
+      <div class="sheet-buton-satir"><button type="button" class="btn-vazgec" id="btnCzAyniIsimVazgec">Vazgeç</button></div>
+    </div>
   </div>
 
   <!-- SADECE S22 DEĞİLSE -->
@@ -126,8 +138,8 @@
 <script src="auth.js?v=WG.051026.1055.730"></script>
 <script src="ust-sabit-olcum.js?v=WG.060926.2105.156"></script>
 <script src="pin-utils.js?v=WG.150926.1241.572"></script>
-<script src="cihaz-data.js?v=WG.061026.1620.737"></script>
+<script src="cihaz-data.js?v=WG.101026.1325.759"></script>
 <script src="hata-log.js?v=WG.130926.2010.553"></script>
-<script src="cihaz-kullanici-render.js?v=WG.061026.1620.737"></script>
+<script src="cihaz-kullanici-render.js?v=WG.101026.1325.759"></script>
 </body>
 </html>

@@ -144,6 +144,59 @@ var CihazData = (function(){
     }catch(e){ cb(false, e.message); }
   }
 
+  /* ---------- AYNI İSİMLİ KOPYA TESPİTİ (10.10.2026, Abdullah'ın isteğiyle)
+     ----------
+     KÖK NEDEN: cihazId tarayıcının localStorage'ına bağlı — bu silinirse
+     (veri temizleme, PWA'yı silip yeniden ekleme, depolama temizliği vb.)
+     program o telefonu "yeni bir cihaz" sanıp sıfırdan kaydediyor. Kullanıcı
+     ona eski ismini (örn. "Samsung S22") tekrar verince AYNI isimde ama
+     FARKLI id'li bir ikinci kayıt oluşuyor — eskisi yetim kalıyor.
+     "Engelle" bunu sadece listeden gizliyor, listeyi büyütmeye devam ediyor.
+
+     ÇÖZÜM: "Bu Cihaz" adı kaydedilmeden ÖNCE, aynı isimde BAŞKA (ve hâlâ
+     aktif/engellenmemiş) bir kayıt var mı diye tek seferlik kontrol edilir
+     (bkz. cihaz-kullanici-render.js). Varsa kullanıcıya (Abdullah'a) açıkça
+     sorulur: eskisinin yerine mi geçiliyor (yetim kayıt silinir, liste
+     büyümez) yoksa gerçekten farklı bir cihaz mı (ikisi de kalır). Otomatik
+     silme YAPILMAZ — karar her zaman insana bırakılır. */
+  function aktifAyniIsimdeBaskaCihazBulAsync(ad, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    try{
+      var aranan = String(ad||"").trim().toLowerCase();
+      if(!aranan){ cb(null); return; }
+      baslat();
+      var kendiId = benimIdim();
+      firebase.database().ref("cihazlar").once("value").then(function(snap){
+        var veri = snap.val() || {};
+        var bulunan = null;
+        Object.keys(veri).forEach(function(id){
+          if(bulunan || id === kendiId) return;
+          var c = veri[id];
+          if(!c || c.engelli) return; // engellenmiş olanlar zaten "ölü" sayılır, çakışma değildir
+          if(String(c.ad||"").trim().toLowerCase() === aranan){
+            bulunan = Object.assign({id:id}, c);
+          }
+        });
+        cb(bulunan);
+      }).catch(function(){ cb(null); }); // okunamazsa engelleme — kayıt normal akışla devam etsin
+    }catch(e){ cb(null); }
+  }
+
+  // Bir cihaz kaydını Firebase'den KALICI OLARAK siler (engelle'nin aksine
+  // geri alınamaz) — hem "eskisinin yerine geç" akışında yetim kaydı
+  // temizlemek için, hem de "Engellenen cihazlar" listesinden elle silmek
+  // için kullanılıyor. Üzerinde bulunduğun cihazı kendi kendine silemezsin.
+  function cihaziSil(id, geriBildir){
+    var cb = typeof geriBildir === "function" ? geriBildir : function(){};
+    try{
+      if(!id){ cb(false, "Cihaz kimliği eksik."); return; }
+      if(id === benimIdim()){ cb(false, "Şu an üzerinde olduğun cihazı silemezsin."); return; }
+      baslat();
+      firebase.database().ref("cihazlar/" + id).remove()
+        .then(function(){ cb(true); }).catch(function(err){ cb(false, err.message); });
+    }catch(e){ cb(false, e.message); }
+  }
+
   function tumCihazlariDinle(fn){
     try{
       baslat();
@@ -200,7 +253,9 @@ var CihazData = (function(){
     tumCihazlariDinle: tumCihazlariDinle,
     engelle: engelle,
     engeliKaldir: engeliKaldir,
-    benEngelliMiyim: benEngelliMiyim
+    benEngelliMiyim: benEngelliMiyim,
+    aktifAyniIsimdeBaskaCihazBulAsync: aktifAyniIsimdeBaskaCihazBulAsync,
+    cihaziSil: cihaziSil
   };
 
 })();
